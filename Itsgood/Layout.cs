@@ -83,8 +83,11 @@ namespace ItsGood
                     worldObject.Position, 
                     worldObject.Source, 
                     worldObject.Color, 
-                    0, Vector2.One, Vector2.One, 
-                    worldObject.IsMirrored ? SpriteEffects.FlipHorizontally: SpriteEffects.None, 0
+                    0, 
+                    new Vector2(worldObject.Source.Width * 0.5f, worldObject.Source.Height * 0.5f), 
+                    Vector2.One, 
+                    worldObject.IsMirrored ? SpriteEffects.FlipHorizontally: SpriteEffects.None, 
+                    0
                 );
             }
 

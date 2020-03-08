@@ -3,7 +3,7 @@ using ItsGood.Builtins;
 
 namespace Core
 {
-    public class PlayerBehavior : Behavior, PlatformerBehavior.ICallbackReceiver
+    public class PlayerBehavior : Behavior, PlatformerBehavior.IAnimationCallbacks
     {
         private AnimatedBehavior _animatedBehavior;
 
@@ -11,7 +11,7 @@ namespace Core
         {
             _animatedBehavior = Owner.GetBehavior<AnimatedBehavior>();
 
-            Owner.GetBehavior<PlatformerBehavior>().SetCallbackReceiver(this);
+            Owner.GetBehavior<PlatformerBehavior>().SetAnimationCallbacks(this);
         }
 
         public void OnMoved()
@@ -22,6 +22,16 @@ namespace Core
         public void OnStopped()
         {
             _animatedBehavior.Play("Idle");
+        }
+
+        public void OnJumped()
+        {
+            //_animatedBehavior.Play("Jump");
+        }
+
+        public void OnLanded()
+        {
+            
         }
     }
 }
