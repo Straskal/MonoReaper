@@ -9,6 +9,12 @@
             _worldObject = worldObject;
         }
 
+        public WorldObjectBuilder MakeSolid() 
+        {
+            _worldObject.IsSolid = true;
+            return this;
+        }
+
         public WorldObjectBuilder WithBehavior<T>() where T : Behavior, new()
         {
             _worldObject.Behaviors.Add(new T { Owner = _worldObject });

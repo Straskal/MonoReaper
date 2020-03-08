@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ItsGood.Utils.Extensions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 
 namespace ItsGood.Builtins
 {
@@ -26,6 +28,7 @@ namespace ItsGood.Builtins
         private IAnimationCallbacks _receiver;
         private Vector2 _velocity;
         private float _jumpTime;
+        private bool _isColliding;
 
         private Action<GameTime> _currentAction;
 
@@ -44,10 +47,14 @@ namespace ItsGood.Builtins
             _currentAction.Invoke(gameTime);
 
             Owner.Position += _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Owner.UpdateBBox();
+            HandleCollisions();
         }
 
         private void Stopped(GameTime gameTime) 
         {
+            _velocity = Vector2.Zero;
+
             if (GetMovement() != 0) 
             {
                 _receiver.OnMoved();
@@ -144,6 +151,9 @@ namespace ItsGood.Builtins
 
         private void ApplyMovement(GameTime gameTime)
         {
+            if (_isColliding)
+                return;
+
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             float movement = GetMovement();
 
@@ -168,6 +178,38 @@ namespace ItsGood.Builtins
         private bool IsOnGround()
         {
             return Owner.Bounds.Bottom >= Owner.Layout.Game.ViewportHeight;
+        }
+
+        private void HandleCollisions() 
+        {
+            var grid = Owner.Layout.Grid;
+            var collisions = grid.QueryCollisions(Owner);
+
+            _isColliding = collisions.Any();
+
+            foreach (var collision in collisions)
+            {
+                Vector2 depth = Owner.Bounds.GetIntersectionDepth(collision.Bounds);
+
+                Console.WriteLine(depth.ToString());
+
+                if (depth != Vector2.Zero)
+                {
+                    float absDepthX = Math.Abs(depth.X);
+                    float absDepthY = Math.Abs(depth.Y);
+
+                    if (absDepthY < absDepthX)
+                    {
+                        Owner.Position = new Vector2(Owner.Position.X, (int)(Owner.Position.Y + depth.Y));
+                    }
+                    else
+                    {
+                        Owner.Position = new Vector2((int)(Owner.Position.X + depth.X), Owner.Position.Y);
+                    }
+
+                    Owner.UpdateBBox();
+                }
+            }
         }
     }
 }

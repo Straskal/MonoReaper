@@ -22,7 +22,10 @@ namespace ItsGood
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
             _allBehaviors = new List<Behavior>();
+            Grid = new Grid(256, 4, 4);
         }
+
+        internal Grid Grid { get; }
 
         public MainGame Game { get; }
         public LayoutView View { get; }
@@ -56,11 +59,8 @@ namespace ItsGood
         {
             InvokeBehaviorCallbacks();
             SyncWorldObjectLists();
-
-            foreach (var behavior in _allBehaviors) 
-            {
-                behavior.Tick(gameTime);
-            }
+            SyncPreviousFrameData();
+            TickAllBehaviors(gameTime);
         }
 
         internal void Draw(SpriteBatch batch)
@@ -124,6 +124,9 @@ namespace ItsGood
 
                 _worldObjects.Add(toSpawn);
 
+                Grid.Add(toSpawn);
+                toSpawn.UpdateBBoxNoGrid();
+
                 foreach (var behavior in toSpawn.Behaviors)
                 {
                     behavior.OnOwnerCreated();
@@ -135,11 +138,29 @@ namespace ItsGood
             foreach (var toDestroy in _toDestroy) 
             {
                 _worldObjects.Remove(toDestroy);
+
+                Grid.Remove(toDestroy);
             }
 
             _toDestroy.Clear();
 
             _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.Behaviors);
+        }
+
+        private void SyncPreviousFrameData() 
+        {
+            foreach (var worldObject in _worldObjects) 
+            {
+                worldObject.PreviousPosition = worldObject.Position;
+            }
+        }
+
+        private void TickAllBehaviors(GameTime gameTime) 
+        {
+            foreach (var behavior in _allBehaviors)
+            {
+                behavior.Tick(gameTime);
+            }
         }
     }
 }

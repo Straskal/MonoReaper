@@ -38,7 +38,7 @@ namespace ItsGood
             _gpuManager = new GraphicsDeviceManager(this)
             {
                 HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = gameSettings.IsVsyncEnabled
+                SynchronizeWithVerticalRetrace = gameSettings.IsVsyncEnabled,
             };
 
             Content.RootDirectory = "Content";

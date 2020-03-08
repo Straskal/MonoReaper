@@ -75,6 +75,13 @@ namespace Core
                     }
                 });
 
+                var other = game.RunningLayout.CreateObject(
+                    "player",
+                    new Rectangle(0, 0, 32, 32),
+                    new Vector2(96, 148));
+
+                other.MakeSolid();
+
                 game.Run();
             }
         }
