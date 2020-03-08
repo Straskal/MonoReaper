@@ -21,7 +21,7 @@ namespace ItsGood.Builtins
         private const float JUMP_VELOCITY = -1500f;
         private const float JUMP_CONTROL = 0.14f;
         private const float GRAVITY_ACCELERATION = 1200f;
-        private const float MAX_FALL_SPEED = 300f;
+        private const float MAX_FALL_SPEED = 250f;
 
         private IAnimationCallbacks _receiver;
         private Vector2 _velocity;

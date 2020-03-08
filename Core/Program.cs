@@ -61,6 +61,16 @@ namespace Core
                                 new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(32, 32, 32, 32) },
                                 new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(64, 32, 32, 32) },
                             }
+                        },
+                        new AnimatedBehavior.AnimationInfo
+                        {
+                            Name = "Jump",
+                            SecPerFrame = 0.2f,
+                            Frames = new []
+                            {
+                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(32, 0, 32, 32) },
+                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(64, 0, 32, 32) },
+                            }
                         }
                     }
                 });

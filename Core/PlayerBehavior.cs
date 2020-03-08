@@ -26,7 +26,7 @@ namespace Core
 
         public void OnJumped()
         {
-            //_animatedBehavior.Play("Jump");
+            _animatedBehavior.Play("Jump");
         }
 
         public void OnLanded()
