@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +8,9 @@ namespace ItsGood
 {
     public class WorldObject
     {
+        private Vector2 _positionRemainder;
+        private Vector2 _position;
+
         public WorldObject(Layout layout) 
         {
             Layout = layout;
@@ -17,7 +21,11 @@ namespace ItsGood
         public Texture2D Image { get; set; }
         public Rectangle Source { get; set; }
         public Color Color { get; set; }
-        public Vector2 Position { get; set; }
+        public Vector2 Position 
+        {
+            get => _position;
+            set => _position = value;
+        }
         public Vector2 PreviousPosition { get; set; }
         public bool IsMirrored { get; set; }
         public bool IsSolid { get; set; }
@@ -36,6 +44,60 @@ namespace ItsGood
         public T GetBehavior<T>() where T : Behavior 
         {
             return Behaviors.FirstOrDefault(behavior => behavior is T) as T;
+        }
+
+        public WorldObject MoveX(float amount)
+        {
+            _positionRemainder.X += amount;
+
+            int pixelsToMove = (int)Math.Round(_positionRemainder.X);
+
+            if (pixelsToMove != 0) 
+            {
+                _positionRemainder.X -= pixelsToMove;
+
+                int sign = Math.Sign(pixelsToMove);
+
+                while (pixelsToMove != 0)
+                {
+                    var collision = Layout.Grid.TestOverlap(this, new Vector2(sign, 0));
+
+                    if (collision != null)
+                        return collision;
+
+                    _position.X += sign;
+                    pixelsToMove -= sign;
+                }
+            }
+
+            return null;
+        }
+
+        public WorldObject MoveY(float amount)
+        {
+            _positionRemainder.Y += amount;
+
+            int pixelsToMove = (int)Math.Round(_positionRemainder.Y);
+
+            if (pixelsToMove != 0)
+            {
+                _positionRemainder.Y -= pixelsToMove;
+
+                int sign = Math.Sign(pixelsToMove);
+
+                while (pixelsToMove != 0)
+                {
+                    var collision = Layout.Grid.TestOverlap(this, new Vector2(0, sign));
+
+                    if (collision != null)
+                        return collision;
+
+                    _position.Y += sign;
+                    pixelsToMove -= sign;
+                }
+            }
+
+            return null;
         }
 
         public void UpdateBBox() 

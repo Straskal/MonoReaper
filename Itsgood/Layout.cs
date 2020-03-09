@@ -13,7 +13,7 @@ namespace ItsGood
 
         private IEnumerable<Behavior> _allBehaviors;
 
-        public Layout(MainGame game) 
+        public Layout(MainGame game)
         {
             Game = game;
             View = new LayoutView(game);
@@ -45,9 +45,23 @@ namespace ItsGood
             return new WorldObjectBuilder(worldObject);
         }
 
-        public void DestroyObject(WorldObject worldObject) 
+        public WorldObjectBuilder CreateObject(Rectangle source, Vector2 position)
         {
-            if (!worldObject.MarkedForDestroy) 
+            var worldObject = new WorldObject(this)
+            {
+                Position = position,
+                Source = source,
+                Color = Color.White
+            };
+
+            _toSpawn.Add(worldObject);
+
+            return new WorldObjectBuilder(worldObject);
+        }
+
+        public void DestroyObject(WorldObject worldObject)
+        {
+            if (!worldObject.MarkedForDestroy)
             {
                 worldObject.MarkForDestroy();
 
@@ -78,15 +92,18 @@ namespace ItsGood
 
             foreach (var worldObject in _worldObjects)
             {
+                if (worldObject.Image == null)
+                    continue;
+
                 batch.Draw(
-                    worldObject.Image, 
-                    worldObject.Position, 
-                    worldObject.Source, 
-                    worldObject.Color, 
-                    0, 
-                    new Vector2(worldObject.Source.Width * 0.5f, worldObject.Source.Height * 0.5f), 
-                    Vector2.One, 
-                    worldObject.IsMirrored ? SpriteEffects.FlipHorizontally: SpriteEffects.None, 
+                    worldObject.Image,
+                    worldObject.Position,
+                    worldObject.Source,
+                    worldObject.Color,
+                    0,
+                    new Vector2(worldObject.Source.Width * 0.5f, worldObject.Source.Height * 0.5f),
+                    Vector2.One,
+                    worldObject.IsMirrored ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     0
                 );
             }
@@ -94,11 +111,11 @@ namespace ItsGood
             batch.End();
         }
 
-        private void InvokeBehaviorCallbacks() 
+        private void InvokeBehaviorCallbacks()
         {
-            foreach (var toSpawn in _toSpawn) 
+            foreach (var toSpawn in _toSpawn)
             {
-                foreach (var behavior in toSpawn.Behaviors) 
+                foreach (var behavior in toSpawn.Behaviors)
                 {
                     behavior.Initialize();
                 }
@@ -120,7 +137,8 @@ namespace ItsGood
 
             foreach (var toSpawn in _toSpawn)
             {
-                toSpawn.Image = Game.Content.Load<Texture2D>(toSpawn.ImageFilePath);
+                if (!string.IsNullOrWhiteSpace(toSpawn.ImageFilePath))
+                    toSpawn.Image = Game.Content.Load<Texture2D>(toSpawn.ImageFilePath);
 
                 _worldObjects.Add(toSpawn);
 
@@ -135,7 +153,7 @@ namespace ItsGood
 
             _toSpawn.Clear();
 
-            foreach (var toDestroy in _toDestroy) 
+            foreach (var toDestroy in _toDestroy)
             {
                 _worldObjects.Remove(toDestroy);
 
@@ -147,15 +165,15 @@ namespace ItsGood
             _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.Behaviors);
         }
 
-        private void SyncPreviousFrameData() 
+        private void SyncPreviousFrameData()
         {
-            foreach (var worldObject in _worldObjects) 
+            foreach (var worldObject in _worldObjects)
             {
                 worldObject.PreviousPosition = worldObject.Position;
             }
         }
 
-        private void TickAllBehaviors(GameTime gameTime) 
+        private void TickAllBehaviors(GameTime gameTime)
         {
             foreach (var behavior in _allBehaviors)
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ItsGood
@@ -36,7 +37,6 @@ namespace ItsGood
             int cellX = (int)(worldObject.Position.X / _cellSize);
             int cellY = (int)(worldObject.Position.Y / _cellSize);
 
-            _cells[cellX, cellY].WorldObjects = _cells[cellX, cellY].WorldObjects ?? new List<WorldObject>();
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
@@ -45,7 +45,6 @@ namespace ItsGood
             int cellX = (int)(worldObject.Position.X / _cellSize);
             int cellY = (int)(worldObject.Position.Y / _cellSize);
 
-            _cells[cellX, cellY].WorldObjects = _cells[cellX, cellY].WorldObjects ?? new List<WorldObject>();
             _cells[cellX, cellY].WorldObjects.Remove(worldObject);
         }
 
@@ -63,20 +62,39 @@ namespace ItsGood
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
+        public WorldObject TestOverlap(WorldObject worldObject, Vector2 offset)
+        {
+            var position = worldObject.Position + offset;
+
+            GetCellPosition(position, out int cellX, out int cellY);
+
+            var bounds = new Rectangle(
+                (int)(position.X - worldObject.Source.Width * 0.5),
+                (int)(position.Y - worldObject.Source.Height * 0.5),
+                worldObject.Source.Width,
+                worldObject.Source.Height);
+
+            return _cells[cellX, cellY].WorldObjects.FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
+        }
+
         public IEnumerable<WorldObject> QueryCollisions(WorldObject worldObject)
         {
-            int cellX = (int)(worldObject.Position.X / _cellSize);
-            int cellY = (int)(worldObject.Position.Y / _cellSize);
+            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             return _cells[cellX, cellY].WorldObjects.Where(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(worldObject.Bounds));
         }
 
         public IEnumerable<WorldObject> QueryOverlaps(WorldObject worldObject)
         {
-            int cellX = (int)(worldObject.Position.X / _cellSize);
-            int cellY = (int)(worldObject.Position.Y / _cellSize);
+            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             return _cells[cellX, cellY].WorldObjects.Where(other => other != worldObject && other.Bounds.Intersects(worldObject.Bounds));
+        }
+
+        private void GetCellPosition(Vector2 position, out int column, out int row) 
+        {
+            column = (int)(position.X / _cellSize);
+            row = (int)(position.Y / _cellSize);
         }
     }
 }

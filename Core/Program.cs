@@ -25,7 +25,7 @@ namespace Core
                 var player = game.RunningLayout.CreateObject(
                     "player",
                     new Rectangle(0, 0, 32, 32),
-                    new Vector2(32, 148));
+                    new Vector2(32, 64));
 
                 player.WithBehavior<PlayerBehavior>();
                 player.WithBehavior<PlatformerBehavior>();
@@ -75,12 +75,34 @@ namespace Core
                     }
                 });
 
-                var other = game.RunningLayout.CreateObject(
+                //game.RunningLayout.CreateObject(
+                //    "player",
+                //    new Rectangle(0, 0, 32, 32),
+                //    new Vector2(0, 160))
+                //    .MakeSolid();
+
+                //game.RunningLayout.CreateObject(
+                //    "player",
+                //    new Rectangle(0, 0, 32, 32),
+                //    new Vector2(32, 160))
+                //    .MakeSolid();
+
+                //game.RunningLayout.CreateObject(
+                //    "player",
+                //    new Rectangle(0, 0, 32, 32),
+                //    new Vector2(64, 160))
+                //    .MakeSolid();
+
+                game.RunningLayout.CreateObject(
                     "player",
                     new Rectangle(0, 0, 32, 32),
-                    new Vector2(96, 148));
+                    new Vector2(96, 128))
+                    .MakeSolid();
 
-                other.MakeSolid();
+                game.RunningLayout.CreateObject(
+                    new Rectangle(0, 0, 320, 32),
+                    new Vector2(160, 160))
+                    .MakeSolid();
 
                 game.Run();
             }
