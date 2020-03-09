@@ -25,10 +25,9 @@ namespace ItsGood
             _allBehaviors = new List<Behavior>();
         }
 
-        internal Grid Grid { get; }
-
         public MainGame Game { get; }
         public LayoutView View { get; }
+        internal Grid Grid { get; }
 
         public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position)
         {
@@ -69,12 +68,17 @@ namespace ItsGood
             }
         }
 
+        public IEnumerable<WorldObject> TestOverlap(Rectangle bounds) 
+        {
+            return Grid.TestOverlap(bounds);
+        }
+
         internal void Tick(GameTime gameTime)
         {
             InvokeBehaviorCallbacks();
             SyncWorldObjectLists();
-            SyncPreviousFrameData();
             TickAllBehaviors(gameTime);
+            SyncPreviousFrameData();
         }
 
         internal void Draw(SpriteBatch batch)

@@ -8,8 +8,8 @@ namespace ItsGood.Builtins
         private const float MOVE_ACCELERATION = 2000f;
         private const float MAX_MOVE_SPEED = 100f;
         private const float DRAG = 0.8f;
-        private const float MAX_JUMP_TIME = 0.35f;
-        private const float JUMP_VELOCITY = -1500;
+        private const float MAX_JUMP_TIME = 0.5f;
+        private const float JUMP_VELOCITY = -1200;
         private const float JUMP_CONTROL = 0.14f;
         private const float GRAVITY_ACCELERATION = 1400f;
         private const float MAX_FALL_SPEED = 400f;
@@ -19,14 +19,9 @@ namespace ItsGood.Builtins
         private float _movement;
         private bool _jumpRequested;
         private bool _wasJumping;
+        private bool _isOnGround;
 
         private Vector2 _velocity;
-
-        public Vector2 Velocity
-        {
-            get => _velocity;
-            set => _velocity = value;
-        }
 
         public void Move(float movement)
         {
@@ -55,7 +50,7 @@ namespace ItsGood.Builtins
 
         public bool IsOnGround()
         {
-            return Owner.Layout.Grid.TestOverlap(Owner, new Vector2(0, GROUNDED_BUFFER_IN_PX)) != null;
+            return _isOnGround;
         }
 
         public override void Tick(GameTime gameTime)
@@ -75,13 +70,14 @@ namespace ItsGood.Builtins
             _velocity.X += MOVE_ACCELERATION * _movement * elapsedTime;
             _velocity.X *= DRAG;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_MOVE_SPEED, MAX_MOVE_SPEED);
+            _isOnGround = Owner.Layout.Grid.TestOverlapOffset(Owner, 0, GROUNDED_BUFFER_IN_PX);
         }
 
         private void SimilateJump(float elapsedTime)
         {
             if (_jumpRequested)
             {
-                if (!_wasJumping && IsOnGround()) 
+                if (!_wasJumping && _isOnGround) 
                 {
                     _jumpTime += elapsedTime;
                 }
@@ -93,22 +89,22 @@ namespace ItsGood.Builtins
                 if (_jumpTime > 0f && _jumpTime <= MAX_JUMP_TIME)
                 {
                     // Fully override the vertical velocity with a power curve that gives players more control over the top of the jump
-                    _velocity.Y = JUMP_VELOCITY * (1.0f - (float)Math.Pow(_jumpTime / MAX_JUMP_TIME, JUMP_CONTROL));
+                    _velocity.Y = JUMP_VELOCITY * (1f - (float)Math.Pow(_jumpTime / MAX_JUMP_TIME, JUMP_CONTROL));
                 }
                 else
                 {
-                    _jumpTime = 0.0f;
+                    _jumpTime = 0f;
                 }
             }
             else
             {
-                _jumpTime = 0.0f;
+                _jumpTime = 0f;
             }
         }
 
         private void SimulateGravity(float elapsedTime)
         {
-            _velocity.Y = MathHelper.Clamp(_velocity.Y + GRAVITY_ACCELERATION * elapsedTime, -MAX_FALL_SPEED, MAX_FALL_SPEED);
+            _velocity.Y = MathHelper.Clamp(_velocity.Y + GRAVITY_ACCELERATION * elapsedTime, JUMP_VELOCITY, MAX_FALL_SPEED);
         }
 
         private void ApplyVelocity(float elapsedTime)

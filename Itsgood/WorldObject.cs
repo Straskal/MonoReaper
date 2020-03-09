@@ -5,18 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace ItsGood
-{
+{    public class Sprite
+    {
+        public string TextureFilePath { get; set; }
+        public Texture2D Texture { get; set; }
+        public Rectangle Source { get; set; }
+    }
+
     public class WorldObject
     {
         private Vector2 _positionRemainder;
         private Vector2 _position;
 
-        public WorldObject(Layout layout) 
+        internal WorldObject(Layout layout) 
         {
             Layout = layout;
         }
 
+        // Image
+        // Source
+        // Position
+        // Bounds
+        // Origin
+
         public Layout Layout { get; }
+        public Sprite Sprite { get; }
         public string ImageFilePath { get; set; }
         public Texture2D Image { get; set; }
         public Rectangle Source { get; set; }
@@ -54,9 +67,7 @@ namespace ItsGood
 
                 while (pixelsToMove != 0)
                 {
-                    var collision = Layout.Grid.TestOverlap(this, new Vector2(sign, 0));
-
-                    if (collision != null)
+                    if (Layout.Grid.TestOverlapOffset(this, sign, 0, out var collision))
                         return collision;
 
                     _position.X += sign;
@@ -81,9 +92,7 @@ namespace ItsGood
 
                 while (pixelsToMove != 0)
                 {
-                    var collision = Layout.Grid.TestOverlap(this, new Vector2(0, sign));
-
-                    if (collision != null)
+                    if (Layout.Grid.TestOverlapOffset(this, 0, sign, out var collision))
                         return collision;
 
                     _position.Y += sign;
@@ -114,9 +123,15 @@ namespace ItsGood
                 Source.Height);
         }
 
+        internal void Load() 
+        {
+
+        }
+
         internal void UpdatePreviousPosition()
         {
             PreviousPosition = Position;
+
             PreviousBounds = new Rectangle(
                 (int)Math.Round(PreviousPosition.X - Source.Width * 0.5f),
                 (int)Math.Round(PreviousPosition.Y - Source.Height * 0.5f),

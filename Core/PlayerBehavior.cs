@@ -8,7 +8,7 @@ namespace Core
 {
     public class PlayerBehavior : Behavior
     {
-        private AnimationBehavior _animationBehavior;
+        private AnimatedSpriteBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
         private KeyboardState _previousKeyState;
 
@@ -16,7 +16,7 @@ namespace Core
 
         public override void OnOwnerCreated()
         {
-            _animationBehavior = Owner.GetBehavior<AnimationBehavior>();
+            _animationBehavior = Owner.GetBehavior<AnimatedSpriteBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
             GoToIdle();
@@ -50,6 +50,10 @@ namespace Core
             else if (_platformerBehavior.IsFalling())
             {
                 GoToFall();
+            }
+            else if (keyboardState.IsKeyDown(Keys.Left)) 
+            {
+                GoToAttack();
             }
         }
 
@@ -161,6 +165,37 @@ namespace Core
             }
 
             _platformerBehavior.Move(movement);
+        }
+
+        private void GoToAttack() 
+        {
+            _animationBehavior.Play("Attack");
+            _currentState = Attack;
+        }
+
+        private void Attack(float elapsedTime)
+        {
+            if (_animationBehavior.CurrentFrame == 2) 
+            {
+                var bounds = new Rectangle(
+                    (int)Math.Round(Owner.Position.X - 16),
+                    (int)Math.Round(Owner.Position.Y - 16),
+                    32, 32);
+
+                var overlaps = Owner.Layout.TestOverlap(bounds);
+
+                foreach (var overlap in overlaps) 
+                {
+                    if (overlap == Owner)
+                        continue;
+
+                    overlap.Color = Color.Red;
+                }
+            }
+            else if (_animationBehavior.IsFinished) 
+            {
+                GoToIdle();
+            }
         }
     }
 }

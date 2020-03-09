@@ -59,16 +59,36 @@ namespace ItsGood
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
-        public WorldObject TestOverlap(WorldObject worldObject, Vector2 offset)
+        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
         {
-            var testedPosition = worldObject.Position + offset;
+            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
             int width = worldObject.Source.Width;
             int height = worldObject.Source.Height;
             var bounds = new Rectangle((int)Math.Round(testedPosition.X - width * 0.5f), (int)Math.Round(testedPosition.Y - height * 0.5f), width, height);
 
             GetCellPosition(testedPosition, out int cellX, out int cellY);
 
-            return _cells[cellX, cellY].WorldObjects.FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
+            return _cells[cellX, cellY].WorldObjects.Any(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
+        }
+
+        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        {
+            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
+            int width = worldObject.Source.Width;
+            int height = worldObject.Source.Height;
+            var bounds = new Rectangle((int)Math.Round(testedPosition.X - width * 0.5f), (int)Math.Round(testedPosition.Y - height * 0.5f), width, height);
+
+            GetCellPosition(testedPosition, out int cellX, out int cellY);
+
+            overlappedWorldObject = _cells[cellX, cellY].WorldObjects.FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
+            return overlappedWorldObject != null;
+        }
+
+        public IEnumerable<WorldObject> TestOverlap(Rectangle bounds)
+        {
+            GetCellPosition(bounds.Center.ToVector2(), out int cellX, out int cellY);
+
+            return _cells[cellX, cellY].WorldObjects.Where(other => other.Bounds.Intersects(bounds));
         }
 
         private void GetCellPosition(Vector2 position, out int column, out int row)
