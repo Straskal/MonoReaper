@@ -23,20 +23,17 @@ namespace ItsGood
         public Color Color { get; set; }
         public bool IsMirrored { get; set; }
         public bool IsSolid { get; set; }
-
         public Rectangle Bounds { get; private set; }
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
+        internal List<Behavior> Behaviors { get; } = new List<Behavior>();
+        internal bool MarkedForDestroy { get; private set; }
 
         public Vector2 Position
         {
             get => _position;
             set => _position = value;
         }
-
-
-        internal List<Behavior> Behaviors { get; } = new List<Behavior>();
-        internal bool MarkedForDestroy { get; private set; }
 
         public T GetBehavior<T>() where T : Behavior 
         {

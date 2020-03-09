@@ -1,8 +1,5 @@
-﻿using ItsGood.Utils.Extensions;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Linq;
 
 namespace ItsGood.Builtins
 {
@@ -24,13 +21,16 @@ namespace ItsGood.Builtins
         private const float JUMP_CONTROL = 0.14f;
         private const float GRAVITY_ACCELERATION = 1400f;
         private const float MAX_FALL_SPEED = 400f;
+        private const int GROUNDED_BUFFER_IN_PX = 5;
 
         private IAnimationCallbacks _receiver;
 
         private float _jumpTime;
         private float _movement;
-        private bool _isJumping;
+        private bool _wasMoving;
+        private bool _jumpRequested;
         private bool _wasJumping;
+        private bool _wasOnGround;
 
         private Vector2 _velocity;
 
@@ -52,45 +52,49 @@ namespace ItsGood.Builtins
 
         public void Jump()
         {
-            _isJumping = true;
+            _jumpRequested = true;
         }
 
         public override void Tick(GameTime gameTime)
         {
-            ApplyPhysics(gameTime);
+            float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _movement = 0;
-            _isJumping = false;
+            SimulateMovement(elapsedTime);
+            SimilateJump(elapsedTime);
+            SimulateGravity(elapsedTime);
+            ApplyVelocity(elapsedTime);
+
+            ResetInputValues();
         }
 
-        public void ApplyPhysics(GameTime gameTime)
+        private void SimulateMovement(float elapsedTime) 
         {
-            float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (!_wasMoving && _movement != 0f) 
+            {
+                _receiver.OnMoved();
+            }
+            else if (_wasMoving && _movement == 0f) 
+            {
+                _receiver.OnStopped();
+            }
 
             _velocity.X += MOVE_ACCELERATION * _movement * elapsedTime;
             _velocity.X *= DRAG;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_MOVE_SPEED, MAX_MOVE_SPEED);
-            _velocity.Y = MathHelper.Clamp(_velocity.Y + GRAVITY_ACCELERATION * elapsedTime, -MAX_FALL_SPEED, MAX_FALL_SPEED);
-
-            HandleJump(gameTime);
-
-            Owner.MoveX(_velocity.X * elapsedTime);
-            Owner.MoveY(_velocity.Y * elapsedTime);
-            Owner.UpdateBBox();
-
-            if (Owner.Position.Y == Owner.PreviousPosition.Y)
-                _velocity.Y = 0f;
         }
 
-        private void HandleJump(GameTime gameTime)
+        private void SimilateJump(float elapsedTime)
         {
-            if (_isJumping)
+            if (_jumpRequested)
             {
-                // Initial jump or continuation.
-                if ((!_wasJumping && IsOnGround()) || _jumpTime > 0f)
+                if (!_wasJumping && IsOnGround()) 
                 {
-                    _jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    _jumpTime += elapsedTime;
                     _receiver.OnJumped();
+                }
+                else if (_jumpTime > 0f) 
+                {
+                    _jumpTime += elapsedTime;
                 }
 
                 if (_jumpTime > 0f && _jumpTime <= MAX_JUMP_TIME)
@@ -105,16 +109,54 @@ namespace ItsGood.Builtins
             }
             else
             {
-                // Continues not jumping or cancels a jump in progress
                 _jumpTime = 0.0f;
             }
+        }
 
-            _wasJumping = _isJumping;
+        private void SimulateGravity(float elapsedTime)
+        {
+            _velocity.Y = MathHelper.Clamp(_velocity.Y + GRAVITY_ACCELERATION * elapsedTime, -MAX_FALL_SPEED, MAX_FALL_SPEED);
+        }
+
+        private void ApplyVelocity(float elapsedTime)
+        {
+            Owner.MoveX(_velocity.X * elapsedTime);
+            Owner.MoveY(_velocity.Y * elapsedTime);
+            Owner.UpdateBBox();
+
+            if (!_wasOnGround && IsOnGround())
+            {
+                if (_movement != 0f) 
+                {
+                    _receiver.OnMoved();
+                }
+                else 
+                {
+                    _receiver.OnLanded();
+                }
+            }
         }
 
         private bool IsOnGround()
         {
-            return Owner.Layout.Grid.TestOverlap(Owner, new Vector2(0, 1)) != null;
+            return Owner.Layout.Grid.TestOverlap(Owner, new Vector2(0, GROUNDED_BUFFER_IN_PX)) != null;
+        }
+
+        private void ResetInputValues()
+        {
+            // If the position remains the same, then we're still on a ledge.
+            // Let's set our velocity to zero so that when we walk off of a ledge, we don't shoot down to the ground.
+            if (Owner.Position.Y == Owner.PreviousPosition.Y)
+            {
+                _velocity.Y = 0f;
+            }
+
+            _wasMoving = _movement != 0f;
+            _wasJumping = _jumpRequested;
+
+            _movement = 0;
+            _jumpRequested = false;
+            _wasOnGround = IsOnGround();
         }
     }
 }

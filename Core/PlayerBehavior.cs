@@ -7,12 +7,12 @@ namespace Core
 {
     public class PlayerBehavior : Behavior, PlatformerBehavior.IAnimationCallbacks
     {
-        private AnimatedBehavior _animatedBehavior;
+        private AnimationBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
 
         public override void OnOwnerCreated()
         {
-            _animatedBehavior = Owner.GetBehavior<AnimatedBehavior>();
+            _animationBehavior = Owner.GetBehavior<AnimationBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
             _platformerBehavior.SetAnimationCallbacks(this);
         }
@@ -38,36 +38,27 @@ namespace Core
                 _platformerBehavior.Jump();
             }
 
-            if (movement == 0f)
-            {
-                _animatedBehavior.Play("Idle");
-            }
-            else
-            {
-                _animatedBehavior.Play("Run");
-            }
-
             _platformerBehavior.Move(movement);
         }
 
         public void OnMoved()
         {
-            _animatedBehavior.Play("Run");
+            _animationBehavior.Play("Run");
         }
 
         public void OnStopped()
         {
-            _animatedBehavior.Play("Idle");
+            _animationBehavior.Play("Idle");
         }
 
         public void OnJumped()
         {
-            _animatedBehavior.Play("Jump");
+            _animationBehavior.Play("Jump");
         }
 
         public void OnLanded()
         {
-            
+            _animationBehavior.Play("Idle");
         }
     }
 }

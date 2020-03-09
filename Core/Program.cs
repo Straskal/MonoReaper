@@ -29,47 +29,47 @@ namespace Core
 
                 player.WithBehavior<PlayerBehavior>();
                 player.WithBehavior<PlatformerBehavior>();
-                player.WithBehavior<AnimatedBehavior, AnimationParams>(new AnimationParams 
+                player.WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params 
                 {
                     Animations = new []
                     {
-                        new AnimatedBehavior.AnimationInfo
+                        new AnimationBehavior.Animation
                         {
                             Name = "Idle",
                             SecPerFrame = 0.1f,
                             Frames = new []
                             {
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(96, 32, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
 
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(0, 64, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(32, 64, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(64, 64, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(96, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
 
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(0, 96, 32, 32) }
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
                             }
                         },
-                        new AnimatedBehavior.AnimationInfo
+                        new AnimationBehavior.Animation
                         {
                             Name = "Run",
                             SecPerFrame = 0.2f,
                             Frames = new []
                             {
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(96, 0, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 0, 32, 32) },
 
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(0, 32, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(32, 32, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(64, 32, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 32, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 32, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 32, 32, 32) },
                             }
                         },
-                        new AnimatedBehavior.AnimationInfo
+                        new AnimationBehavior.Animation
                         {
                             Name = "Jump",
                             SecPerFrame = 0.2f,
                             Frames = new []
                             {
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(32, 0, 32, 32) },
-                                new AnimatedBehavior.AnimationFrameInfo { Source = new Rectangle(64, 0, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 0, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 0, 32, 32) },
                             }
                         }
                     }
