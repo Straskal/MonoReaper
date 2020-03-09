@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,14 +17,14 @@ namespace ItsGood
         private readonly int _height;
         private readonly Cell[,] _cells;
 
-        public Grid(int cellSize, int width, int height) 
+        public Grid(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
             _width = width;
             _height = height;
             _cells = new Cell[width, height];
 
-            for (int i = 0; i < _width; i++) 
+            for (int i = 0; i < _width; i++)
             {
                 for (int j = 0; i < _height; i++)
                 {
@@ -32,28 +33,24 @@ namespace ItsGood
             }
         }
 
-        public void Add(WorldObject worldObject) 
+        public void Add(WorldObject worldObject)
         {
-            int cellX = (int)(worldObject.Position.X / _cellSize);
-            int cellY = (int)(worldObject.Position.Y / _cellSize);
+            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
         public void Remove(WorldObject worldObject)
         {
-            int cellX = (int)(worldObject.Position.X / _cellSize);
-            int cellY = (int)(worldObject.Position.Y / _cellSize);
+            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             _cells[cellX, cellY].WorldObjects.Remove(worldObject);
         }
 
-        public void Update(WorldObject worldObject) 
+        public void Update(WorldObject worldObject)
         {
-            int previousCellX = (int)(worldObject.PreviousPosition.X / _cellSize);
-            int previousCellY = (int)(worldObject.PreviousPosition.Y / _cellSize);
-            int cellX = (int)(worldObject.Position.X / _cellSize);
-            int cellY = (int)(worldObject.Position.Y / _cellSize);
+            GetCellPosition(worldObject.PreviousPosition, out int previousCellX, out int previousCellY);
+            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             if (previousCellX == cellX && previousCellY == cellY)
                 return;
@@ -64,34 +61,17 @@ namespace ItsGood
 
         public WorldObject TestOverlap(WorldObject worldObject, Vector2 offset)
         {
-            var position = worldObject.Position + offset;
+            var testedPosition = worldObject.Position + offset;
+            int width = worldObject.Source.Width;
+            int height = worldObject.Source.Height;
+            var bounds = new Rectangle((int)Math.Round(testedPosition.X - width * 0.5f), (int)Math.Round(testedPosition.Y - height * 0.5f), width, height);
 
-            GetCellPosition(position, out int cellX, out int cellY);
-
-            var bounds = new Rectangle(
-                (int)(position.X - worldObject.Source.Width * 0.5),
-                (int)(position.Y - worldObject.Source.Height * 0.5),
-                worldObject.Source.Width,
-                worldObject.Source.Height);
+            GetCellPosition(testedPosition, out int cellX, out int cellY);
 
             return _cells[cellX, cellY].WorldObjects.FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
         }
 
-        public IEnumerable<WorldObject> QueryCollisions(WorldObject worldObject)
-        {
-            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
-
-            return _cells[cellX, cellY].WorldObjects.Where(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(worldObject.Bounds));
-        }
-
-        public IEnumerable<WorldObject> QueryOverlaps(WorldObject worldObject)
-        {
-            GetCellPosition(worldObject.Position, out int cellX, out int cellY);
-
-            return _cells[cellX, cellY].WorldObjects.Where(other => other != worldObject && other.Bounds.Intersects(worldObject.Bounds));
-        }
-
-        private void GetCellPosition(Vector2 position, out int column, out int row) 
+        private void GetCellPosition(Vector2 position, out int column, out int row)
         {
             column = (int)(position.X / _cellSize);
             row = (int)(position.Y / _cellSize);

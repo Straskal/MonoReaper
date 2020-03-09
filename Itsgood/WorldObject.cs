@@ -21,22 +21,19 @@ namespace ItsGood
         public Texture2D Image { get; set; }
         public Rectangle Source { get; set; }
         public Color Color { get; set; }
-        public Vector2 Position 
+        public bool IsMirrored { get; set; }
+        public bool IsSolid { get; set; }
+
+        public Rectangle Bounds { get; private set; }
+        public Vector2 PreviousPosition { get; private set; }
+        public Rectangle PreviousBounds { get; private set; }
+
+        public Vector2 Position
         {
             get => _position;
             set => _position = value;
         }
-        public Vector2 PreviousPosition { get; set; }
-        public bool IsMirrored { get; set; }
-        public bool IsSolid { get; set; }
-        public Rectangle PreviousBounds => 
-            new Rectangle(
-                (int)(PreviousPosition.X - Source.Width * 0.5),
-                (int)(PreviousPosition.Y - Source.Height * 0.5),
-                Source.Width,
-                Source.Height);
 
-        public Rectangle Bounds { get; private set; }
 
         internal List<Behavior> Behaviors { get; } = new List<Behavior>();
         internal bool MarkedForDestroy { get; private set; }
@@ -103,8 +100,8 @@ namespace ItsGood
         public void UpdateBBox() 
         {
             Bounds = new Rectangle(
-                (int)(Position.X - Source.Width * 0.5f),
-                (int)(Position.Y - Source.Height * 0.5f),
+                (int)Math.Round(Position.X - Source.Width * 0.5f),
+                (int)Math.Round(Position.Y - Source.Height * 0.5f),
                 Source.Width, 
                 Source.Height);
 
@@ -114,8 +111,18 @@ namespace ItsGood
         public void UpdateBBoxNoGrid() 
         {
             Bounds = new Rectangle(
-                (int)(Position.X - Source.Width * 0.5),
-                (int)(Position.Y - Source.Height * 0.5),
+                (int)Math.Round(Position.X - Source.Width * 0.5f),
+                (int)Math.Round(Position.Y - Source.Height * 0.5f),
+                Source.Width,
+                Source.Height);
+        }
+
+        internal void UpdatePreviousPosition()
+        {
+            PreviousPosition = Position;
+            PreviousBounds = new Rectangle(
+                (int)Math.Round(PreviousPosition.X - Source.Width * 0.5f),
+                (int)Math.Round(PreviousPosition.Y - Source.Height * 0.5f),
                 Source.Width,
                 Source.Height);
         }

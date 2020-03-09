@@ -169,7 +169,7 @@ namespace ItsGood
         {
             foreach (var worldObject in _worldObjects)
             {
-                worldObject.PreviousPosition = worldObject.Position;
+                worldObject.UpdatePreviousPosition();
             }
         }
 
