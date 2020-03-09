@@ -106,9 +106,21 @@ namespace Core
                     }
                 });
 
+                int num = 320 / 32;
+
+                for (int i = 0; i < num; i++) 
+                {
+                    game.RunningLayout.CreateObject(
+                        "tiles",
+                        new Rectangle(0, 0, 32, 32),
+                        new Vector2(i * 32, 160))
+                        .MakeSolid();
+                }
+
                 game.RunningLayout.CreateObject(
-                    new Rectangle(0, 0, 320, 32),
-                    new Vector2(160, 160))
+                    "tiles",
+                    new Rectangle(0, 0, 32, 32),
+                    new Vector2(96, 128))
                     .MakeSolid();
 
                 game.Run();

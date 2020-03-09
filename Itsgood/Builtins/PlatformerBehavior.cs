@@ -10,6 +10,7 @@ namespace ItsGood.Builtins
             void OnMoved();
             void OnStopped();
             void OnJumped();
+            void OnFall();
             void OnLanded();
         }
 
@@ -21,7 +22,7 @@ namespace ItsGood.Builtins
         private const float JUMP_CONTROL = 0.14f;
         private const float GRAVITY_ACCELERATION = 1400f;
         private const float MAX_FALL_SPEED = 400f;
-        private const int GROUNDED_BUFFER_IN_PX = 5;
+        private const int GROUNDED_BUFFER_IN_PX = 3;
 
         private IAnimationCallbacks _receiver;
 
@@ -124,7 +125,9 @@ namespace ItsGood.Builtins
             Owner.MoveY(_velocity.Y * elapsedTime);
             Owner.UpdateBBox();
 
-            if (!_wasOnGround && IsOnGround())
+            bool onGround = IsOnGround();
+
+            if (!_wasOnGround && onGround)
             {
                 if (_movement != 0f) 
                 {
@@ -134,6 +137,10 @@ namespace ItsGood.Builtins
                 {
                     _receiver.OnLanded();
                 }
+            }
+            else if (_wasOnGround && !onGround)
+            {
+                _receiver.OnFall();
             }
         }
 

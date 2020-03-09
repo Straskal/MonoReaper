@@ -56,6 +56,11 @@ namespace Core
             _animationBehavior.Play("Jump");
         }
 
+        public void OnFall()
+        {
+            _animationBehavior.Play("Jump");
+        }
+
         public void OnLanded()
         {
             _animationBehavior.Play("Idle");
