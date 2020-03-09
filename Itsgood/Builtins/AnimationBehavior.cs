@@ -27,6 +27,7 @@ namespace ItsGood.Builtins
         private Animation[] _animations;
         private float _lastFrameTime;
         private float _time;
+        private bool _isFinished;
 
         public Animation CurrentAnimation { get; private set; }
         public int CurrentFrame { get; private set; }
@@ -44,10 +45,14 @@ namespace ItsGood.Builtins
 
             CurrentAnimation = _animations.Single(anim => anim.Name == name);
             CurrentFrame = 0;
+            _isFinished = false;
         }
 
         public override void Tick(GameTime gameTime)
         {
+            if (_isFinished)
+                return;
+
             var elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _time += elapsedTime;
@@ -58,7 +63,15 @@ namespace ItsGood.Builtins
 
                 if (CurrentFrame == CurrentAnimation.Frames.Length)
                 {
-                    CurrentFrame = 0;
+                    if (CurrentAnimation.Loops) 
+                    {
+                        CurrentFrame = 0;
+                    }
+                    else 
+                    {
+                        _isFinished = true;
+                        return;
+                    }
                 }
 
                 _lastFrameTime = _time;

@@ -37,6 +37,7 @@ namespace Core
                         {
                             Name = "Idle",
                             SecPerFrame = 0.1f,
+                            Loops = true,
                             Frames = new []
                             {
                                 new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
@@ -53,6 +54,7 @@ namespace Core
                         {
                             Name = "Run",
                             SecPerFrame = 0.2f,
+                            Loops = true,
                             Frames = new []
                             {
                                 new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 0, 32, 32) },
@@ -75,11 +77,34 @@ namespace Core
                     }
                 });
 
-                game.RunningLayout.CreateObject(
+                var other = game.RunningLayout.CreateObject(
                     "player",
                     new Rectangle(0, 0, 32, 32),
-                    new Vector2(96, 128))
-                    .MakeSolid();
+                    new Vector2(96, 128));
+
+                other.WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
+                {
+                    Animations = new[]
+                    {
+                        new AnimationBehavior.Animation
+                        {
+                            Name = "Idle",
+                            SecPerFrame = 0.1f,
+                            Loops = true,
+                            Frames = new []
+                            {
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
+
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
+
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
+                            }
+                        }
+                    }
+                });
 
                 game.RunningLayout.CreateObject(
                     new Rectangle(0, 0, 320, 32),

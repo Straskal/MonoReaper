@@ -17,12 +17,12 @@ namespace ItsGood
         {
             Game = game;
             View = new LayoutView(game);
+            Grid = new Grid(256, 4, 4);
 
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
             _allBehaviors = new List<Behavior>();
-            Grid = new Grid(256, 4, 4);
         }
 
         internal Grid Grid { get; }
