@@ -38,7 +38,7 @@ namespace ItsGood
         public int VirtualWidth { get; }
         public int VirtualHeight { get; }
 
-        public Matrix TransformationMatrix 
+        public Matrix TransformationMatrix
         {
             get
             {
@@ -79,7 +79,7 @@ namespace ItsGood
             }
         }
 
-        public void Sync() 
+        public void Sync()
         {
             ScreenWidth = _window.ClientBounds.Width;
             ScreenHeight = _window.ClientBounds.Height;
@@ -89,12 +89,7 @@ namespace ItsGood
             _gpu.Viewport = GetLargestVirtualViewport();
         }
 
-        public void Scroll(Vector2 value)
-        {
-            Position += value;
-        }
-
-        private Viewport GetFullViewport() 
+        private Viewport GetFullViewport()
         {
             return new Viewport
             {
@@ -105,7 +100,7 @@ namespace ItsGood
             };
         }
 
-        private Viewport GetLargestVirtualViewport() 
+        private Viewport GetLargestVirtualViewport()
         {
             var targetAspectRatio = VirtualWidth / (float)VirtualHeight;
             var width = ScreenWidth;

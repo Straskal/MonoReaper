@@ -13,7 +13,7 @@ namespace Core
         {
             var settings = new GameSettings 
             {
-                ViewportWidth = 360,
+                ViewportWidth = 320,
                 ViewportHeight = 180,
                 IsFullscreen = false,
                 IsResizable = true,
@@ -64,17 +64,6 @@ namespace Core
                         "tiles",
                         new Rectangle(0, 0, 32, 32),
                         new Vector2(i * 32, 160),
-                        new Rectangle(0, 0, 32, 32),
-                        new Point(0, 0))
-                        .MakeSolid();
-                }
-
-                for (int i = 4; i < 5; i++)
-                {
-                    game.RunningLayout.CreateObject(
-                        "tiles",
-                        new Rectangle(0, 0, 32, 32),
-                        new Vector2(i * 32, 128),
                         new Rectangle(0, 0, 32, 32),
                         new Point(0, 0))
                         .MakeSolid();

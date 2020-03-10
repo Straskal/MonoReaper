@@ -27,6 +27,28 @@ namespace Core
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             _previousKeyState = Keyboard.GetState();
+
+            if (Owner.Position.X > 200) 
+            {
+                Owner.Layout.View.Zoom = MathHelper.SmoothStep(Owner.Layout.View.Zoom, 0.8f, 0.1f);
+                Owner.Layout.View.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.View.Position.X, 400, 0.1f), Owner.Layout.View.Position.Y);
+            }
+            else
+            {
+                Owner.Layout.View.Zoom = MathHelper.SmoothStep(Owner.Layout.View.Zoom, 1f, 0.1f);
+                Owner.Layout.View.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.View.Position.X, 100, 0.1f), Owner.Layout.View.Position.Y);
+            }
+
+            var keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.Down)) 
+            {
+                Owner.Layout.View.Zoom += 0.1f;
+            }
+            else if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                Owner.Layout.View.Zoom -= 0.1f;
+            }
         }
 
         private void GoToIdle() 
@@ -79,16 +101,20 @@ namespace Core
                 movement += 1;
                 Owner.IsMirrored = false;
             }
-            if (_platformerBehavior.IsOnGround() && keyboardState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space))
-            {
-                GoToJump();
-            }
 
             _platformerBehavior.Move(movement);
 
             if (movement == 0f) 
             {
                 GoToIdle();
+            }
+            if (_platformerBehavior.IsOnGround() && keyboardState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space))
+            {
+                GoToJump();
+            }
+            else if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                GoToAttack();
             }
         }
 
@@ -101,15 +127,8 @@ namespace Core
 
         private void Jump(float elapesedTime)
         {
-            if (_platformerBehavior.IsFalling()) 
-            {
-                GoToFall();
-                return;
-            }
-
-            float movement = 0;
-
             var keyboardState = Keyboard.GetState();
+            float movement = 0;
 
             if (keyboardState.IsKeyDown(Keys.A))
             {
@@ -127,6 +146,17 @@ namespace Core
             }
 
             _platformerBehavior.Move(movement);
+
+            if (_platformerBehavior.IsFalling())
+            {
+                GoToFall();
+            }
+            else if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                _platformerBehavior.GravityAcceleration = 0;
+                _platformerBehavior.Velocity = Vector2.Zero;
+                GoToAttack();
+            }
         }
 
         private void GoToFall()
@@ -137,21 +167,9 @@ namespace Core
 
         private void Fall(float elapesedTime)
         {
-            if (_platformerBehavior.IsOnGround()) 
-            {
-                if (_platformerBehavior.IsMoving()) 
-                {
-                    GoToMove();
-                }
-                else 
-                {
-                    GoToIdle();
-                }
-            }
+            var keyboardState = Keyboard.GetState();
 
             float movement = 0;
-
-            var keyboardState = Keyboard.GetState();
 
             if (keyboardState.IsKeyDown(Keys.A))
             {
@@ -165,6 +183,25 @@ namespace Core
             }
 
             _platformerBehavior.Move(movement);
+
+            if (_platformerBehavior.IsOnGround())
+            {
+                if (_platformerBehavior.IsMoving())
+                {
+                    GoToMove();
+                }
+                else
+                {
+                    GoToIdle();
+                }
+            }
+            else if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                _platformerBehavior.GravityAcceleration = 0;
+                _platformerBehavior.Velocity = Vector2.Zero;
+
+                GoToAttack();
+            }
         }
 
         private void GoToAttack() 
@@ -178,9 +215,9 @@ namespace Core
             if (_animationBehavior.CurrentFrame == 2) 
             {
                 var bounds = new Rectangle(
-                    (int)Math.Round(Owner.Position.X - 16),
+                    (int)Math.Round(Owner.Position.X + 16),
                     (int)Math.Round(Owner.Position.Y - 16),
-                    32, 32);
+                    16, 16);
 
                 var overlaps = Owner.Layout.TestOverlap(bounds);
 
@@ -194,6 +231,7 @@ namespace Core
             }
             else if (_animationBehavior.IsFinished) 
             {
+                _platformerBehavior.GravityAcceleration = 1400f;
                 GoToIdle();
             }
         }
