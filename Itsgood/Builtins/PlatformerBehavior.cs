@@ -13,7 +13,7 @@ namespace ItsGood.Builtins
         private const float JUMP_CONTROL = 0.14f;
         private const float GRAVITY_ACCELERATION = 1400f;
         private const float MAX_FALL_SPEED = 400f;
-        private const int GROUNDED_BUFFER_IN_PX = 3;
+        private const int GROUNDED_BUFFER_IN_PX = 1;
 
         private float _jumpTime;
         private float _movement;

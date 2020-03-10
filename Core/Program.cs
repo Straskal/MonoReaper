@@ -26,14 +26,16 @@ namespace Core
                 game.RunningLayout.CreatePlayer(32, 64);
 
                 var other = game.RunningLayout.CreateObject(
+                    new Vector2(96, 128),
                     new Rectangle(0, 0, 32, 32),
-                    new Vector2(96, 128));
+                    new Point(16, 32));
 
-                other.WithBehavior<AnimatedSpriteBehavior, AnimatedSpriteBehavior.Params>(new AnimatedSpriteBehavior.Params
+                other.WithBehavior<PlatformerBehavior>();
+                other.WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
                 {
                     Animations = new[]
                     {
-                        new AnimatedSpriteBehavior.Animation
+                        new AnimationBehavior.Animation
                         {
                             Name = "Idle",
                             ImageFilePath = "player",
@@ -41,14 +43,14 @@ namespace Core
                             Loop = true,
                             Frames = new []
                             {
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
 
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
 
-                                new AnimatedSpriteBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
+                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
                             }
                         }
                     }
@@ -61,7 +63,20 @@ namespace Core
                     game.RunningLayout.CreateObject(
                         "tiles",
                         new Rectangle(0, 0, 32, 32),
-                        new Vector2(i * 32, 160))
+                        new Vector2(i * 32, 160),
+                        new Rectangle(0, 0, 32, 32),
+                        new Point(0, 0))
+                        .MakeSolid();
+                }
+
+                for (int i = 4; i < 5; i++)
+                {
+                    game.RunningLayout.CreateObject(
+                        "tiles",
+                        new Rectangle(0, 0, 32, 32),
+                        new Vector2(i * 32, 128),
+                        new Rectangle(0, 0, 32, 32),
+                        new Point(0, 0))
                         .MakeSolid();
                 }
 

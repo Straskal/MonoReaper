@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ItsGood
 {
-    internal class Grid
+    internal class LayoutGrid
     {
         struct Cell
         {
@@ -17,7 +17,7 @@ namespace ItsGood
         private readonly int _height;
         private readonly Cell[,] _cells;
 
-        public Grid(int cellSize, int width, int height)
+        public LayoutGrid(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
             _width = width;
@@ -26,7 +26,7 @@ namespace ItsGood
 
             for (int i = 0; i < _width; i++)
             {
-                for (int j = 0; i < _height; i++)
+                for (int j = 0; j < _height; j++)
                 {
                     _cells[i, j].WorldObjects = new List<WorldObject>();
                 }
@@ -62,9 +62,12 @@ namespace ItsGood
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
         {
             var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-            int width = worldObject.Source.Width;
-            int height = worldObject.Source.Height;
-            var bounds = new Rectangle((int)Math.Round(testedPosition.X - width * 0.5f), (int)Math.Round(testedPosition.Y - height * 0.5f), width, height);
+
+            var bounds = new Rectangle(
+                (int)Math.Round(testedPosition.X - worldObject.Origin.X), 
+                (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
+                worldObject.Bounds.Width,
+                worldObject.Bounds.Height);
 
             GetCellPosition(testedPosition, out int cellX, out int cellY);
 
@@ -74,9 +77,12 @@ namespace ItsGood
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-            int width = worldObject.Source.Width;
-            int height = worldObject.Source.Height;
-            var bounds = new Rectangle((int)Math.Round(testedPosition.X - width * 0.5f), (int)Math.Round(testedPosition.Y - height * 0.5f), width, height);
+
+            var bounds = new Rectangle(
+                (int)Math.Round(testedPosition.X - worldObject.Origin.X),
+                (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
+                worldObject.Bounds.Width,
+                worldObject.Bounds.Height);
 
             GetCellPosition(testedPosition, out int cellX, out int cellY);
 

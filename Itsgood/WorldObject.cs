@@ -5,40 +5,28 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace ItsGood
-{    public class Sprite
-    {
-        public string TextureFilePath { get; set; }
-        public Texture2D Texture { get; set; }
-        public Rectangle Source { get; set; }
-    }
-
+{ 
     public class WorldObject
     {
         private Vector2 _positionRemainder;
         private Vector2 _position;
+        private Point _origin;
+        private Rectangle _bounds;
 
         internal WorldObject(Layout layout) 
         {
             Layout = layout;
         }
 
-        // Image
-        // Source
-        // Position
-        // Bounds
-        // Origin
-
         public Layout Layout { get; }
-        public Sprite Sprite { get; }
         public string ImageFilePath { get; set; }
         public Texture2D Image { get; set; }
         public Rectangle Source { get; set; }
         public Color Color { get; set; }
-        public bool IsMirrored { get; set; }
-        public bool IsSolid { get; set; }
-        public Rectangle Bounds { get; private set; }
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
+        public bool IsMirrored { get; set; }
+        public bool IsSolid { get; set; }
         internal List<Behavior> Behaviors { get; } = new List<Behavior>();
         internal bool MarkedForDestroy { get; private set; }
 
@@ -46,6 +34,18 @@ namespace ItsGood
         {
             get => _position;
             set => _position = value;
+        }
+
+        public Point Origin 
+        {
+            get => _origin;
+            set => _origin = value;
+        }
+
+        public Rectangle Bounds
+        {
+            get => _bounds;
+            set => _bounds = value;
         }
 
         public T GetBehavior<T>() where T : Behavior 
@@ -105,38 +105,21 @@ namespace ItsGood
 
         public void UpdateBBox() 
         {
-            Bounds = new Rectangle(
-                (int)Math.Round(Position.X - Source.Width * 0.5f),
-                (int)Math.Round(Position.Y - Source.Height * 0.5f),
-                Source.Width, 
-                Source.Height);
+            UpdateBBoxNoGrid();
 
             Layout.Grid.Update(this);
         }
 
         public void UpdateBBoxNoGrid() 
         {
-            Bounds = new Rectangle(
-                (int)Math.Round(Position.X - Source.Width * 0.5f),
-                (int)Math.Round(Position.Y - Source.Height * 0.5f),
-                Source.Width,
-                Source.Height);
-        }
-
-        internal void Load() 
-        {
-
+            _bounds.X = (int)Math.Round(Position.X - Origin.X);
+            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
         }
 
         internal void UpdatePreviousPosition()
         {
             PreviousPosition = Position;
-
-            PreviousBounds = new Rectangle(
-                (int)Math.Round(PreviousPosition.X - Source.Width * 0.5f),
-                (int)Math.Round(PreviousPosition.Y - Source.Height * 0.5f),
-                Source.Width,
-                Source.Height);
+            PreviousBounds = Bounds;
         }
 
         internal void MarkForDestroy() 

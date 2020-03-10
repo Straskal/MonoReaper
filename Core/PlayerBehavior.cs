@@ -8,7 +8,7 @@ namespace Core
 {
     public class PlayerBehavior : Behavior
     {
-        private AnimatedSpriteBehavior _animationBehavior;
+        private AnimationBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
         private KeyboardState _previousKeyState;
 
@@ -16,7 +16,7 @@ namespace Core
 
         public override void OnOwnerCreated()
         {
-            _animationBehavior = Owner.GetBehavior<AnimatedSpriteBehavior>();
+            _animationBehavior = Owner.GetBehavior<AnimationBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
             GoToIdle();

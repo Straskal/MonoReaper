@@ -17,7 +17,7 @@ namespace ItsGood
         {
             Game = game;
             View = new LayoutView(game);
-            Grid = new Grid(256, 4, 4);
+            Grid = new LayoutGrid(256, 4, 4);
 
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();
@@ -27,16 +27,18 @@ namespace ItsGood
 
         public MainGame Game { get; }
         public LayoutView View { get; }
-        internal Grid Grid { get; }
+        internal LayoutGrid Grid { get; }
 
-        public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position)
+        public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
         {
             var worldObject = new WorldObject(this)
             {
                 ImageFilePath = imageFilePath,
-                Position = position,
                 Source = source,
-                Color = Color.White
+                Position = position,
+                Color = Color.White,
+                Bounds = bounds,
+                Origin = origin
             };
 
             _toSpawn.Add(worldObject);
@@ -44,13 +46,14 @@ namespace ItsGood
             return new WorldObjectBuilder(worldObject);
         }
 
-        public WorldObjectBuilder CreateObject(Rectangle source, Vector2 position)
+        public WorldObjectBuilder CreateObject(Vector2 position, Rectangle bounds, Point origin)
         {
             var worldObject = new WorldObject(this)
             {
                 Position = position,
-                Source = source,
-                Color = Color.White
+                Color = Color.White,
+                Bounds = bounds,
+                Origin = origin
             };
 
             _toSpawn.Add(worldObject);
@@ -99,14 +102,20 @@ namespace ItsGood
                 if (worldObject.Image == null)
                     continue;
 
+                int xPosition = worldObject.IsMirrored 
+                    ? (int)worldObject.Position.X - (worldObject.Source.Width - worldObject.Origin.X)
+                    : (int)worldObject.Position.X - worldObject.Origin.X;
+
+                int yPosition = (int)worldObject.Position.Y - worldObject.Origin.Y;
+                var destination = new Rectangle(xPosition, yPosition, worldObject.Source.Width, worldObject.Source.Height);
+
                 batch.Draw(
                     worldObject.Image,
-                    worldObject.Position,
+                    destination,
                     worldObject.Source,
                     worldObject.Color,
                     0,
-                    new Vector2(worldObject.Source.Width * 0.5f, worldObject.Source.Height * 0.5f),
-                    Vector2.One,
+                    Vector2.Zero,
                     worldObject.IsMirrored ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     0
                 );

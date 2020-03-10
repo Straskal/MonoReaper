@@ -5,7 +5,7 @@ using System.Linq;
 namespace ItsGood.Builtins
 {
 
-    public class AnimatedSpriteBehavior : Behavior<AnimatedSpriteBehavior.Params>
+    public class AnimationBehavior : Behavior<AnimationBehavior.Params>
     {
         public class Params
         {
