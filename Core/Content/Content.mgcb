@@ -37,6 +37,12 @@
 /processorParam:TextureFormat=Color
 /build:player_attack.png
 
+#begin Shaders/SolidColor.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/SolidColor.fx
+
 #begin tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor

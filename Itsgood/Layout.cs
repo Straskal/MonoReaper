@@ -86,49 +86,21 @@ namespace ItsGood
 
         internal void Draw(SpriteBatch batch)
         {
-            View.Sync();
-
-            batch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullNone,
-                null, View.TransformationMatrix
-            );
+            View.BeginDraw(batch);
 
             foreach (var worldObject in _worldObjects)
             {
-                if (worldObject.Image == null)
-                    continue;
-
-                int xPosition = worldObject.IsMirrored 
-                    ? (int)worldObject.Position.X - (worldObject.Source.Width - worldObject.Origin.X)
-                    : (int)worldObject.Position.X - worldObject.Origin.X;
-
-                int yPosition = (int)worldObject.Position.Y - worldObject.Origin.Y;
-                var destination = new Rectangle(xPosition, yPosition, worldObject.Source.Width, worldObject.Source.Height);
-
-                batch.Draw(
-                    worldObject.Image,
-                    destination,
-                    worldObject.Source,
-                    worldObject.Color,
-                    0,
-                    Vector2.Zero,
-                    worldObject.IsMirrored ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                    0
-                );
+                View.Draw(batch, worldObject);
             }
 
-            batch.End();
+            View.EndDraw(batch);
         }
 
         private void InvokeBehaviorCallbacks()
         {
             foreach (var toSpawn in _toSpawn)
             {
-                foreach (var behavior in toSpawn.Behaviors)
+                foreach (var behavior in toSpawn.GetBehaviors())
                 {
                     behavior.Initialize();
                 }
@@ -136,7 +108,7 @@ namespace ItsGood
 
             foreach (var toDestroy in _toDestroy)
             {
-                foreach (var behavior in toDestroy.Behaviors)
+                foreach (var behavior in toDestroy.GetBehaviors())
                 {
                     behavior.OnOwnerDestroyed();
                 }
@@ -153,12 +125,15 @@ namespace ItsGood
                 if (!string.IsNullOrWhiteSpace(toSpawn.ImageFilePath))
                     toSpawn.Image = Game.Content.Load<Texture2D>(toSpawn.ImageFilePath);
 
+                if (!string.IsNullOrWhiteSpace(toSpawn.EffectFilePath))
+                    toSpawn.Effect = Game.Content.Load<Effect>(toSpawn.EffectFilePath);
+
                 _worldObjects.Add(toSpawn);
 
                 Grid.Add(toSpawn);
-                toSpawn.UpdateBBoxNoGrid();
+                toSpawn.UpdateBBox();
 
-                foreach (var behavior in toSpawn.Behaviors)
+                foreach (var behavior in toSpawn.GetBehaviors())
                 {
                     behavior.OnOwnerCreated();
                 }
@@ -175,7 +150,7 @@ namespace ItsGood
 
             _toDestroy.Clear();
 
-            _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.Behaviors);
+            _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.GetBehaviors());
         }
 
         private void SyncPreviousFrameData()

@@ -30,7 +30,9 @@ namespace Core
                     new Rectangle(0, 0, 32, 32),
                     new Point(16, 32));
 
+                other.WithEffect("Shaders/SolidColor", false);
                 other.WithBehavior<PlatformerBehavior>();
+                other.WithBehavior<DamageableBehavior>();
                 other.WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
                 {
                     Animations = new[]

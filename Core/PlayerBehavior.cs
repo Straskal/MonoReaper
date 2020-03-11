@@ -206,16 +206,19 @@ namespace Core
 
         private void GoToAttack() 
         {
+            _hasCheckedForHits = false;
             _animationBehavior.Play("Attack");
             _currentState = Attack;
         }
 
+        private bool _hasCheckedForHits;
+
         private void Attack(float elapsedTime)
         {
-            if (_animationBehavior.CurrentFrame == 2) 
+            if (_animationBehavior.CurrentFrame == 2 && !_hasCheckedForHits) 
             {
                 var bounds = new Rectangle(
-                    (int)Math.Round(Owner.Position.X + 16),
+                    Owner.IsMirrored ? Owner.Bounds.Left - 16 : Owner.Bounds.Right + 16,
                     (int)Math.Round(Owner.Position.Y - 16),
                     16, 16);
 
@@ -226,8 +229,15 @@ namespace Core
                     if (overlap == Owner)
                         continue;
 
-                    overlap.Color = Color.Red;
+                    var damageable = overlap.GetBehavior<DamageableBehavior>();
+
+                    if (damageable == null)
+                        continue;
+
+                    damageable.Damage(1);
                 }
+
+                _hasCheckedForHits = true;
             }
             else if (_animationBehavior.IsFinished) 
             {

@@ -8,6 +8,8 @@ namespace ItsGood
 { 
     public class WorldObject
     {
+        private readonly List<Behavior> _behaviors;
+
         private Vector2 _positionRemainder;
         private Vector2 _position;
         private Point _origin;
@@ -16,18 +18,22 @@ namespace ItsGood
         internal WorldObject(Layout layout) 
         {
             Layout = layout;
+
+            _behaviors = new List<Behavior>();
         }
 
         public Layout Layout { get; }
         public string ImageFilePath { get; set; }
         public Texture2D Image { get; set; }
+        public string EffectFilePath { get; set; }
+        public Effect Effect { get; set; }
+        public bool IsEffectEnabled { get; set; }
         public Rectangle Source { get; set; }
         public Color Color { get; set; }
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
         public bool IsSolid { get; set; }
-        internal List<Behavior> Behaviors { get; } = new List<Behavior>();
         internal bool MarkedForDestroy { get; private set; }
 
         public Vector2 Position
@@ -50,7 +56,12 @@ namespace ItsGood
 
         public T GetBehavior<T>() where T : Behavior 
         {
-            return Behaviors.FirstOrDefault(behavior => behavior is T) as T;
+            return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
+        }
+
+        public IEnumerable<Behavior> GetBehaviors() 
+        {
+            return _behaviors;
         }
 
         public WorldObject MoveX(float amount)
@@ -105,15 +116,20 @@ namespace ItsGood
 
         public void UpdateBBox() 
         {
-            UpdateBBoxNoGrid();
+            _bounds.X = (int)Math.Round(Position.X - Origin.X);
+            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
 
             Layout.Grid.Update(this);
         }
 
-        public void UpdateBBoxNoGrid() 
+        internal void AddBehavior<T>() where T : Behavior, new()
         {
-            _bounds.X = (int)Math.Round(Position.X - Origin.X);
-            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
+            _behaviors.Add(new T { Owner = this });
+        }
+
+        public void AddBehavior<T, U>(U state) where T : Behavior<U>, new()
+        {
+            _behaviors.Add(new T { Owner = this, State = state });
         }
 
         internal void UpdatePreviousPosition()
