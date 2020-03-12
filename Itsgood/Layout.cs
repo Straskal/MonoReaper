@@ -7,6 +7,8 @@ namespace ItsGood
 {
     public class Layout
     {
+
+        private readonly LayoutGrid _grid;
         private readonly List<WorldObject> _worldObjects;
         private readonly List<WorldObject> _toSpawn;
         private readonly List<WorldObject> _toDestroy;
@@ -17,8 +19,8 @@ namespace ItsGood
         {
             Game = game;
             View = new LayoutView(game);
-            Grid = new LayoutGrid(256, 4, 4);
 
+            _grid = new LayoutGrid(256, 4, 4);
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
@@ -27,7 +29,6 @@ namespace ItsGood
 
         public MainGame Game { get; }
         public LayoutView View { get; }
-        internal LayoutGrid Grid { get; }
 
         public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
         {
@@ -71,9 +72,24 @@ namespace ItsGood
             }
         }
 
+        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset) 
+        {
+            return _grid.TestOverlapOffset(worldObject, xOffset, yOffset);
+        }
+
+        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        {
+            return _grid.TestOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
+        }
+
         public IEnumerable<WorldObject> TestOverlap(Rectangle bounds) 
         {
-            return Grid.TestOverlap(bounds);
+            return _grid.TestOverlap(bounds);
+        }
+
+        internal void UpdatePosition(WorldObject worldObject)
+        {
+            _grid.Update(worldObject);
         }
 
         internal void Tick(GameTime gameTime)
@@ -122,15 +138,10 @@ namespace ItsGood
 
             foreach (var toSpawn in _toSpawn)
             {
-                if (!string.IsNullOrWhiteSpace(toSpawn.ImageFilePath))
-                    toSpawn.Image = Game.Content.Load<Texture2D>(toSpawn.ImageFilePath);
-
-                if (!string.IsNullOrWhiteSpace(toSpawn.EffectFilePath))
-                    toSpawn.Effect = Game.Content.Load<Effect>(toSpawn.EffectFilePath);
-
                 _worldObjects.Add(toSpawn);
 
-                Grid.Add(toSpawn);
+                toSpawn.Load();
+                _grid.Add(toSpawn);
                 toSpawn.UpdateBBox();
 
                 foreach (var behavior in toSpawn.GetBehaviors())
@@ -145,7 +156,7 @@ namespace ItsGood
             {
                 _worldObjects.Remove(toDestroy);
 
-                Grid.Remove(toDestroy);
+                _grid.Remove(toDestroy);
             }
 
             _toDestroy.Clear();

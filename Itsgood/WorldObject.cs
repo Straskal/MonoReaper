@@ -78,7 +78,7 @@ namespace ItsGood
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.Grid.TestOverlapOffset(this, sign, 0, out var collision))
+                    if (Layout.TestOverlapOffset(this, sign, 0, out var collision))
                         return collision;
 
                     _position.X += sign;
@@ -103,7 +103,7 @@ namespace ItsGood
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.Grid.TestOverlapOffset(this, 0, sign, out var collision))
+                    if (Layout.TestOverlapOffset(this, 0, sign, out var collision))
                         return collision;
 
                     _position.Y += sign;
@@ -119,7 +119,7 @@ namespace ItsGood
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
             _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
 
-            Layout.Grid.Update(this);
+            Layout.UpdatePosition(this);
         }
 
         internal void AddBehavior<T>() where T : Behavior, new()
@@ -127,9 +127,20 @@ namespace ItsGood
             _behaviors.Add(new T { Owner = this });
         }
 
-        public void AddBehavior<T, U>(U state) where T : Behavior<U>, new()
+        internal void AddBehavior<T, U>(U state) where T : Behavior<U>, new()
         {
             _behaviors.Add(new T { Owner = this, State = state });
+        }
+
+        internal void Load() 
+        {
+            var contentManager = Layout.Game.Content;
+
+            if (!string.IsNullOrWhiteSpace(ImageFilePath))
+                Image = contentManager.Load<Texture2D>(ImageFilePath);
+
+            if (!string.IsNullOrWhiteSpace(EffectFilePath))
+                Effect = contentManager.Load<Effect>(EffectFilePath);
         }
 
         internal void UpdatePreviousPosition()

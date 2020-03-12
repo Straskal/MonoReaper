@@ -75,7 +75,7 @@ namespace ItsGood.Builtins
             _velocity.X += Acceleration * _movement * elapsedTime;
             _velocity.X *= Drag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
-            _isOnGround = Owner.Layout.Grid.TestOverlapOffset(Owner, 0, GroundBufferInPixels);
+            _isOnGround = Owner.Layout.TestOverlapOffset(Owner, 0, GroundBufferInPixels);
         }
 
         private void SimilateJump(float elapsedTime)

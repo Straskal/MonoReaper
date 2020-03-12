@@ -30,33 +30,36 @@ namespace Core
                     new Rectangle(0, 0, 32, 32),
                     new Point(16, 32));
 
-                other.WithEffect("Shaders/SolidColor", false);
-                other.WithBehavior<PlatformerBehavior>();
-                other.WithBehavior<DamageableBehavior>();
-                other.WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
-                {
-                    Animations = new[]
+                other
+                    .WithEffect("Shaders/SolidColor", false)
+                    .WithBehavior<EnemyBehavior>()
+                    .WithBehavior<PlatformerBehavior>()
+                    .WithBehavior<TimerBehavior>()
+                    .WithBehavior<DamageableBehavior>()
+                    .WithBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
                     {
-                        new AnimationBehavior.Animation
+                        Animations = new[]
                         {
-                            Name = "Idle",
-                            ImageFilePath = "player",
-                            SecPerFrame = 0.1f,
-                            Loop = true,
-                            Frames = new []
+                            new AnimationBehavior.Animation
                             {
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
+                                Name = "Idle",
+                                ImageFilePath = "player",
+                                SecPerFrame = 0.1f,
+                                Loop = true,
+                                Frames = new []
+                                {
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 32, 32, 32) },
 
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 64, 32, 32) },
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(32, 64, 32, 32) },
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(64, 64, 32, 32) },
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(96, 64, 32, 32) },
 
-                                new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
+                                    new AnimationBehavior.AnimationFrame { Source = new Rectangle(0, 96, 32, 32) }
+                                }
                             }
                         }
-                    }
-                });
+                    });
 
                 int num = 320 / 32;
 

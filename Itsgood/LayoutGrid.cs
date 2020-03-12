@@ -17,7 +17,7 @@ namespace ItsGood
         private readonly int _height;
         private readonly Cell[,] _cells;
 
-        public LayoutGrid(int cellSize, int width, int height)
+        internal LayoutGrid(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
             _width = width;
@@ -33,21 +33,21 @@ namespace ItsGood
             }
         }
 
-        public void Add(WorldObject worldObject)
+        internal void Add(WorldObject worldObject)
         {
             GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
-        public void Remove(WorldObject worldObject)
+        internal void Remove(WorldObject worldObject)
         {
             GetCellPosition(worldObject.Position, out int cellX, out int cellY);
 
             _cells[cellX, cellY].WorldObjects.Remove(worldObject);
         }
 
-        public void Update(WorldObject worldObject)
+        internal void Update(WorldObject worldObject)
         {
             GetCellPosition(worldObject.PreviousPosition, out int previousCellX, out int previousCellY);
             GetCellPosition(worldObject.Position, out int cellX, out int cellY);
@@ -59,7 +59,7 @@ namespace ItsGood
             _cells[cellX, cellY].WorldObjects.Add(worldObject);
         }
 
-        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
+        internal bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
         {
             var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
 
@@ -74,7 +74,7 @@ namespace ItsGood
             return _cells[cellX, cellY].WorldObjects.Any(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
         }
 
-        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        internal bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
 
@@ -90,7 +90,7 @@ namespace ItsGood
             return overlappedWorldObject != null;
         }
 
-        public IEnumerable<WorldObject> TestOverlap(Rectangle bounds)
+        internal IEnumerable<WorldObject> TestOverlap(Rectangle bounds)
         {
             GetCellPosition(bounds.Center.ToVector2(), out int cellX, out int cellY);
 
