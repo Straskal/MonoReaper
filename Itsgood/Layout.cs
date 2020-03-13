@@ -1,75 +1,58 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ItsGood
 {
     public class Layout
     {
-
+        private readonly LayoutView _view;
         private readonly LayoutGrid _grid;
-        private readonly List<WorldObject> _worldObjects;
-        private readonly List<WorldObject> _toSpawn;
-        private readonly List<WorldObject> _toDestroy;
-
-        private IEnumerable<Behavior> _allBehaviors;
+        private readonly WorldObjectList _worldObjectList;
 
         public Layout(MainGame game)
         {
             Game = game;
-            View = new LayoutView(game);
 
+            _view = new LayoutView(game);
             _grid = new LayoutGrid(256, 4, 4);
-            _worldObjects = new List<WorldObject>();
-            _toSpawn = new List<WorldObject>();
-            _toDestroy = new List<WorldObject>();
-            _allBehaviors = new List<Behavior>();
+            _worldObjectList = new WorldObjectList(this);
         }
 
         public MainGame Game { get; }
-        public LayoutView View { get; }
+
+        public Vector2 Position
+        {
+            get => _view.Position;
+            set => _view.Position = value;
+        }
+
+        public float Zoom 
+        {
+            get => _view.Zoom;
+            set => _view.Zoom = value;
+        }
 
         public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
         {
-            var worldObject = new WorldObject(this)
-            {
-                ImageFilePath = imageFilePath,
-                Source = source,
-                Position = position,
-                Color = Color.White,
-                Bounds = bounds,
-                Origin = origin
-            };
-
-            _toSpawn.Add(worldObject);
+            var worldObject = _worldObjectList.CreateObject(imageFilePath, source, position, bounds, origin);
+            _grid.Add(worldObject);
 
             return new WorldObjectBuilder(worldObject);
         }
 
         public WorldObjectBuilder CreateObject(Vector2 position, Rectangle bounds, Point origin)
         {
-            var worldObject = new WorldObject(this)
-            {
-                Position = position,
-                Color = Color.White,
-                Bounds = bounds,
-                Origin = origin
-            };
-
-            _toSpawn.Add(worldObject);
+            var worldObject = _worldObjectList.CreateObject(position, bounds, origin);
+            _grid.Add(worldObject);
 
             return new WorldObjectBuilder(worldObject);
         }
 
         public void DestroyObject(WorldObject worldObject)
         {
-            if (!worldObject.MarkedForDestroy)
-            {
-                worldObject.MarkForDestroy();
-
-                _toDestroy.Add(worldObject);
-            }
+            _grid.Remove(worldObject);
+            _worldObjectList.DestroyObject(worldObject);
         }
 
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset) 
@@ -87,97 +70,21 @@ namespace ItsGood
             return _grid.TestOverlap(bounds);
         }
 
-        internal void UpdatePosition(WorldObject worldObject)
+        internal void UpdateGridCell(WorldObject worldObject)
         {
             _grid.Update(worldObject);
         }
 
         internal void Tick(GameTime gameTime)
         {
-            InvokeBehaviorCallbacks();
-            SyncWorldObjectLists();
-            TickAllBehaviors(gameTime);
-            SyncPreviousFrameData();
+            _worldObjectList.Tick(gameTime);
         }
 
         internal void Draw(SpriteBatch batch)
         {
-            View.BeginDraw(batch);
-
-            foreach (var worldObject in _worldObjects)
-            {
-                View.Draw(batch, worldObject);
-            }
-
-            View.EndDraw(batch);
-        }
-
-        private void InvokeBehaviorCallbacks()
-        {
-            foreach (var toSpawn in _toSpawn)
-            {
-                foreach (var behavior in toSpawn.GetBehaviors())
-                {
-                    behavior.Initialize();
-                }
-            }
-
-            foreach (var toDestroy in _toDestroy)
-            {
-                foreach (var behavior in toDestroy.GetBehaviors())
-                {
-                    behavior.OnOwnerDestroyed();
-                }
-            }
-        }
-
-        private void SyncWorldObjectLists()
-        {
-            if (_toSpawn.Count == 0 && _toDestroy.Count == 0)
-                return;
-
-            foreach (var toSpawn in _toSpawn)
-            {
-                _worldObjects.Add(toSpawn);
-
-                toSpawn.Load();
-                _grid.Add(toSpawn);
-                toSpawn.UpdateBBox();
-
-                foreach (var behavior in toSpawn.GetBehaviors())
-                {
-                    behavior.OnOwnerCreated();
-                }
-            }
-
-            _toSpawn.Clear();
-
-            foreach (var toDestroy in _toDestroy)
-            {
-                _worldObjects.Remove(toDestroy);
-
-                _grid.Remove(toDestroy);
-            }
-
-            _toDestroy.Clear();
-
-            _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.GetBehaviors());
-        }
-
-        private void SyncPreviousFrameData()
-        {
-            foreach (var worldObject in _worldObjects)
-            {
-                worldObject.UpdatePreviousPosition();
-            }
-        }
-
-        private void TickAllBehaviors(GameTime gameTime)
-        {
-            foreach (var behavior in _allBehaviors)
-            {
-                behavior.Tick(gameTime);
-            }
+            _view.BeginDraw(batch);
+            _worldObjectList.Draw(_view, batch);
+            _view.EndDraw(batch);
         }
     }
 }

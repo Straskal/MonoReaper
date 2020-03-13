@@ -119,7 +119,7 @@ namespace ItsGood
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
             _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
 
-            Layout.UpdatePosition(this);
+            Layout.UpdateGridCell(this);
         }
 
         internal void AddBehavior<T>() where T : Behavior, new()
@@ -130,6 +130,30 @@ namespace ItsGood
         internal void AddBehavior<T, U>(U state) where T : Behavior<U>, new()
         {
             _behaviors.Add(new T { Owner = this, State = state });
+        }
+
+        internal void Initialize() 
+        {
+            foreach (var behavior in _behaviors) 
+            {
+                behavior.Initialize();
+            }
+        }
+
+        internal void OnCreated() 
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.OnOwnerCreated();
+            }
+        }
+
+        internal void OnDestroyed() 
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.OnOwnerDestroyed();
+            }
         }
 
         internal void Load() 

@@ -90,11 +90,11 @@ namespace ItsGood
             return overlappedWorldObject != null;
         }
 
-        internal IEnumerable<WorldObject> TestOverlap(Rectangle bounds)
+        internal WorldObject[] TestOverlap(Rectangle bounds)
         {
             GetCellPosition(bounds.Center.ToVector2(), out int cellX, out int cellY);
 
-            return _cells[cellX, cellY].WorldObjects.Where(other => other.Bounds.Intersects(bounds));
+            return _cells[cellX, cellY].WorldObjects.Where(other => other.Bounds.Intersects(bounds)).ToArray();
         }
 
         private void GetCellPosition(Vector2 position, out int column, out int row)

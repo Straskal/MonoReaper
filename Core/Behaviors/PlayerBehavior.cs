@@ -30,24 +30,24 @@ namespace Core
 
             if (Owner.Position.X > 200) 
             {
-                Owner.Layout.View.Zoom = MathHelper.SmoothStep(Owner.Layout.View.Zoom, 0.8f, 0.1f);
-                Owner.Layout.View.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.View.Position.X, 400, 0.1f), Owner.Layout.View.Position.Y);
+                Owner.Layout.Zoom = MathHelper.SmoothStep(Owner.Layout.Zoom, 0.8f, 0.1f);
+                Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, 400, 0.1f), Owner.Layout.Position.Y);
             }
             else
             {
-                Owner.Layout.View.Zoom = MathHelper.SmoothStep(Owner.Layout.View.Zoom, 1f, 0.1f);
-                Owner.Layout.View.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.View.Position.X, 100, 0.1f), Owner.Layout.View.Position.Y);
+                Owner.Layout.Zoom = MathHelper.SmoothStep(Owner.Layout.Zoom, 1f, 0.1f);
+                Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, 100, 0.1f), Owner.Layout.Position.Y);
             }
 
             var keyboardState = Keyboard.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Down)) 
             {
-                Owner.Layout.View.Zoom += 0.1f;
+                Owner.Layout.Zoom += 0.1f;
             }
             else if (keyboardState.IsKeyDown(Keys.Up))
             {
-                Owner.Layout.View.Zoom -= 0.1f;
+                Owner.Layout.Zoom -= 0.1f;
             }
         }
 
