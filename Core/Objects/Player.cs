@@ -6,7 +6,7 @@ namespace Core.Objects
 {
     public static class Player
     {
-        public static WorldObjectDefinition GetTemplate() 
+        public static WorldObjectDefinition Definition() 
         {
             var playerDefinition = new WorldObjectDefinition(32, 32);
 

@@ -55,7 +55,7 @@ namespace Core
 
             if (keyboardState.IsKeyDown(Keys.Right) && !_spawned)
             {
-                Owner.Layout.Spawn(Player.GetTemplate(), Owner.Position + new Vector2(64, 0));
+                Owner.Layout.Spawn(Definitions.Get("other"), Owner.Position + new Vector2(64, 0));
                 _spawned = true;
             }
             else if (keyboardState.IsKeyUp(Keys.Right))
