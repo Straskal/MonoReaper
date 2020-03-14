@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace ItsGood
 {
@@ -33,26 +32,13 @@ namespace ItsGood
             set => _view.Zoom = value;
         }
 
-        public WorldObjectBuilder CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
+        public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
-            var worldObject = _worldObjectList.CreateObject(imageFilePath, source, position, bounds, origin);
+            var worldObject = _worldObjectList.Create(position);
+            definition.Build(worldObject);
+
             _grid.Add(worldObject);
-
-            return new WorldObjectBuilder(worldObject);
-        }
-
-        public WorldObjectBuilder CreateObject(Vector2 position, Rectangle bounds, Point origin)
-        {
-            var worldObject = _worldObjectList.CreateObject(position, bounds, origin);
-            _grid.Add(worldObject);
-
-            return new WorldObjectBuilder(worldObject);
-        }
-
-        public void DestroyObject(WorldObject worldObject)
-        {
-            _grid.Remove(worldObject);
-            _worldObjectList.DestroyObject(worldObject);
+            return worldObject;
         }
 
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset) 
@@ -65,9 +51,15 @@ namespace ItsGood
             return _grid.TestOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
         }
 
-        public IEnumerable<WorldObject> TestOverlap(Rectangle bounds) 
+        public WorldObject[] TestOverlap(Rectangle bounds) 
         {
             return _grid.TestOverlap(bounds);
+        }
+               
+        internal void Destroy(WorldObject worldObject)
+        {
+            _grid.Remove(worldObject);
+            _worldObjectList.DestroyObject(worldObject);
         }
 
         internal void UpdateGridCell(WorldObject worldObject)

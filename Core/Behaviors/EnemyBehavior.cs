@@ -16,7 +16,7 @@ namespace Core
             _health -= amount;
 
             if (_health <= 0)
-                Owner.Layout.DestroyObject(Owner);
+                Owner.Destroy();
         }
     }
 }

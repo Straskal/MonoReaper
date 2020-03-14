@@ -24,6 +24,18 @@ namespace ItsGood
             _allBehaviors = new List<Behavior>();
         }
 
+        public WorldObject Create(Vector2 position)
+        {
+            var worldObject = new WorldObject(_layout)
+            {
+                Position = position
+            };
+
+            _toSpawn.Add(worldObject);
+
+            return worldObject;
+        }
+
         public WorldObject CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
         {
             var worldObject = new WorldObject(_layout)

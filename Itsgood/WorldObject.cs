@@ -122,6 +122,11 @@ namespace ItsGood
             Layout.UpdateGridCell(this);
         }
 
+        public void Destroy() 
+        {
+            Layout.Destroy(this);
+        }
+
         internal void AddBehavior<T>() where T : Behavior, new()
         {
             _behaviors.Add(new T { Owner = this });

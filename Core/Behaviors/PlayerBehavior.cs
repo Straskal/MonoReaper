@@ -1,4 +1,5 @@
-﻿using ItsGood;
+﻿using Core.Objects;
+using ItsGood;
 using ItsGood.Builtins;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +22,8 @@ namespace Core
 
             GoToIdle();
         }
+
+        private bool _spawned;
 
         public override void Tick(GameTime gameTime)
         {
@@ -48,6 +51,16 @@ namespace Core
             else if (keyboardState.IsKeyDown(Keys.Up))
             {
                 Owner.Layout.Zoom -= 0.1f;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Right) && !_spawned)
+            {
+                Owner.Layout.Spawn(Player.GetTemplate(), Owner.Position + new Vector2(64, 0));
+                _spawned = true;
+            }
+            else if (keyboardState.IsKeyUp(Keys.Right))
+            {
+                _spawned = false;
             }
         }
 

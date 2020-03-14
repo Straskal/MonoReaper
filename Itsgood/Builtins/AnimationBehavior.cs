@@ -12,8 +12,13 @@ namespace ItsGood.Builtins
             public Animation[] Animations { get; set; }
         }
 
-        public struct AnimationFrame
+        public struct Frame
         {
+            public Frame(int x, int y, int width, int height)
+            {
+                Source = new Rectangle(x, y, width, height);
+            }
+
             public Rectangle Source;
         }
 
@@ -22,7 +27,7 @@ namespace ItsGood.Builtins
             public string Name { get; set; }
             public string ImageFilePath { get; set; }
             public Texture2D Image { get; set; }
-            public AnimationFrame[] Frames { get; set; }
+            public Frame[] Frames { get; set; }
             public float SecPerFrame { get; set; }
             public bool Loop { get; set; }
         }
