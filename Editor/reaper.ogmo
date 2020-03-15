@@ -16,7 +16,7 @@
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
-  "playCommand": "dotnet C:\\git\\MonoReaper\\Core\\bin\\Debug\\netcoreapp2.0\\Core.dll",
+  "playCommand": "dotnet C:\\git\\MonoReaper\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
   "entityTags": ["player"],
   "layers": [
     {
