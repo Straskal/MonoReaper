@@ -17,7 +17,7 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "dotnet C:\\git\\MonoReaper\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
-  "entityTags": ["player", "enemies", "templates"],
+  "entityTags": ["templates", "player", "enemies"],
   "layers": [
     {
       "definition": "tile",

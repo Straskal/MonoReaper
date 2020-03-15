@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace Reaper.Engine.Behaviors
 {
@@ -17,61 +18,47 @@ namespace Reaper.Engine.Behaviors
             public Texture2D Texture { get; set; }
         }
 
-        public MapData Data { get; }
+        private readonly List<WorldObject> _colliders;
 
         public TilemapBehavior(WorldObject owner, MapData data) : base(owner)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
+
+            _colliders = new List<WorldObject>();
         }
+
+        public MapData Data { get; }
 
         public override void Load(ContentManager contentManager)
         {
-            var tileDefinition = new WorldObjectDefinition(32, 32);
-            tileDefinition.MakeSolid();
-
             Data.Texture = contentManager.Load<Texture2D>(Data.TilesetFilePath);
 
-            var tiles = Data.Tiles;
+            var tileDefinition = new WorldObjectDefinition(Data.CellSize, Data.CellSize).MakeSolid();
 
-            int cellSize = Data.CellSize;
-            int cellsX = Data.CellsX;
-
-            int currentX = 0;
-            int currentY = 0;
-
-            for (int j = 0; j < tiles.Length; j++)
+            foreach (var dest in GetTileDestinations()) 
             {
-                if (currentX == (cellsX))
-                {
-                    currentX = 0;
-                    currentY++;
-                }
-
-                int cx = currentX++;
-
-                if (tiles[j] == -1)
-                {
-                    continue;
-                }
-
-                Owner.Layout.Spawn(tileDefinition, new Vector2(cx * cellSize, currentY * cellSize));
+                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(dest.X, dest.Y)));
             }
         }
 
         public override void Draw(LayoutView view)
         {
-            var texture = Data.Texture;
-            var tiles = Data.Tiles;
+            foreach (var dest in GetTileDestinations())
+            {
+                Rectangle source = new Rectangle(0, 0, Data.CellSize, Data.CellSize);
 
-            int cellSize = Data.CellSize;
-            int cellsX = Data.CellsX;
+                view.Draw(Data.Texture, source, dest, Color.White, false);
+            }
+        }
 
+        private IEnumerable<Rectangle> GetTileDestinations()
+        {
             int currentX = 0;
             int currentY = 0;
 
-            for (int j = 0; j < tiles.Length; j++)
+            for (int j = 0; j < Data.Tiles.Length; j++)
             {
-                if (currentX == (cellsX))
+                if (currentX == Data.CellsX)
                 {
                     currentX = 0;
                     currentY++;
@@ -79,15 +66,10 @@ namespace Reaper.Engine.Behaviors
 
                 int cx = currentX++;
 
-                if (tiles[j] == -1)
-                {
+                if (Data.Tiles[j] == -1)
                     continue;
-                }
 
-                Rectangle dest = new Rectangle(cx * cellSize, currentY * cellSize, cellSize, cellSize);
-                Rectangle source = new Rectangle(0, 0, 32, 32);
-
-                view.Draw(texture, source, dest, Color.White, false);
+                yield return new Rectangle(cx * Data.CellSize, currentY * Data.CellSize, Data.CellSize, Data.CellSize);
             }
         }
     }
