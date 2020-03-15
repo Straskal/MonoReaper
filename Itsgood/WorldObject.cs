@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -17,19 +18,12 @@ namespace ItsGood
 
         internal WorldObject(Layout layout) 
         {
-            Layout = layout;
+            Layout = layout ?? throw new ArgumentNullException(nameof(layout));
 
             _behaviors = new List<Behavior>();
         }
 
         public Layout Layout { get; }
-        public string ImageFilePath { get; set; }
-        public Texture2D Image { get; set; }
-        public string EffectFilePath { get; set; }
-        public Effect Effect { get; set; }
-        public bool IsEffectEnabled { get; set; }
-        public Rectangle Source { get; set; }
-        public Color Color { get; set; }
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
@@ -127,21 +121,16 @@ namespace ItsGood
             Layout.Destroy(this);
         }
 
-        internal void AddBehavior<T>() where T : Behavior, new()
+        internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
-            _behaviors.Add(new T { Owner = this });
+            _behaviors.Add(createFunc?.Invoke(this));
         }
 
-        internal void AddBehavior<T, U>(U state) where T : Behavior<U>, new()
-        {
-            _behaviors.Add(new T { Owner = this, State = state });
-        }
-
-        internal void Initialize() 
+        internal void Load(ContentManager contentManager) 
         {
             foreach (var behavior in _behaviors) 
             {
-                behavior.Initialize();
+                behavior.Load(contentManager);
             }
         }
 
@@ -153,23 +142,28 @@ namespace ItsGood
             }
         }
 
+        internal void Tick(GameTime gameTime) 
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.Tick(gameTime);
+            }
+        }
+
+        internal void Draw(LayoutView view)
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.Draw(view);
+            }
+        }
+
         internal void OnDestroyed() 
         {
             foreach (var behavior in _behaviors)
             {
                 behavior.OnOwnerDestroyed();
             }
-        }
-
-        internal void Load() 
-        {
-            var contentManager = Layout.Game.Content;
-
-            if (!string.IsNullOrWhiteSpace(ImageFilePath))
-                Image = contentManager.Load<Texture2D>(ImageFilePath);
-
-            if (!string.IsNullOrWhiteSpace(EffectFilePath))
-                Effect = contentManager.Load<Effect>(EffectFilePath);
         }
 
         internal void UpdatePreviousPosition()

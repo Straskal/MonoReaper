@@ -13,6 +13,10 @@ namespace Core
         private TimerBehavior _timerBehavior;
         private IDamageableCallback _damageableCallback;
 
+        public DamageableBehavior(WorldObject owner) : base(owner)
+        {
+        }
+
         public override void OnOwnerCreated()
         {
             _timerBehavior = Owner.GetBehavior<TimerBehavior>();
@@ -25,9 +29,9 @@ namespace Core
 
         public void Damage(int amount)
         {
-            Owner.IsEffectEnabled = true;
+            //Owner.IsEffectEnabled = true;
 
-            _timerBehavior.StartTimer(0.1f, () => Owner.IsEffectEnabled = false);
+            //_timerBehavior.StartTimer(0.1f, () => Owner.IsEffectEnabled = false);
 
             _damageableCallback?.OnDamaged(amount);
         }

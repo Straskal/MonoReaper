@@ -16,6 +16,10 @@ namespace ItsGood.Builtins
 
         private float _currentTime;
 
+        public TimerBehavior(WorldObject owner) : base(owner)
+        {
+        }
+
         public void StartTimer(float seconds, Action onTimer) 
         {
             _timers.Add(new Instance { Time = _currentTime + seconds, Callback = onTimer });

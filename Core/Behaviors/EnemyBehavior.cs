@@ -6,6 +6,10 @@ namespace Core
     {
         private int _health = 3;
 
+        public EnemyBehavior(WorldObject owner) : base(owner)
+        {
+        }
+
         public override void OnOwnerCreated()
         {
             Owner.GetBehavior<DamageableBehavior>().SetCallback(this);

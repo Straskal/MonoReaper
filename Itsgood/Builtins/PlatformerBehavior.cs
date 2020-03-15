@@ -12,6 +12,10 @@ namespace ItsGood.Builtins
         private bool _isOnGround;
         private Vector2 _velocity;
 
+        public PlatformerBehavior(WorldObject owner) : base(owner)
+        {
+        }
+
         public float Acceleration { get; set; } = 2000f;
         public float MaxSpeed { get; set; } = 100f;
         public float Drag { get; set; } = 0.8f;

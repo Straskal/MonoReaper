@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Linq;
 
 namespace ItsGood.Builtins
 {
 
-    public class AnimationBehavior : Behavior<AnimationBehavior.Params>
+    public class SpriteSheetBehavior : Behavior
     {
         public class Params
         {
@@ -32,23 +34,25 @@ namespace ItsGood.Builtins
             public bool Loop { get; set; }
         }
 
-        private Animation[] _animations;
+        private readonly Animation[] _animations;
+
         private float _lastFrameTime;
         private float _time;
+
+        public SpriteSheetBehavior(WorldObject owner, Animation[] animations) : base(owner)
+        {
+            _animations = animations ?? throw new ArgumentNullException(nameof(animations));
+        }
 
         public Animation CurrentAnimation { get; private set; }
         public int CurrentFrame { get; private set; }
         public bool IsFinished { get; private set; }
 
-        public override void Initialize()
+        public override void Load(ContentManager contentManager)
         {
-            _animations = State.Animations;
-
-            var content = Owner.Layout.Game.Content;
-
             foreach (var animation in _animations) 
             {
-                animation.Image = content.Load<Texture2D>(animation.ImageFilePath);
+                animation.Image = contentManager.Load<Texture2D>(animation.ImageFilePath);
             }
 
             Play(_animations[0].Name);
@@ -62,7 +66,6 @@ namespace ItsGood.Builtins
             CurrentAnimation = _animations.Single(anim => anim.Name == name);
             CurrentFrame = 0;
             IsFinished = false;
-            Owner.Image = CurrentAnimation.Image;
         }
 
         public override void Tick(GameTime gameTime)
@@ -86,6 +89,7 @@ namespace ItsGood.Builtins
                     }
                     else 
                     {
+                        CurrentFrame--;
                         IsFinished = true;
                         return;
                     }
@@ -93,8 +97,19 @@ namespace ItsGood.Builtins
 
                 _lastFrameTime = _time;
             }
+        }
 
-            Owner.Source = CurrentAnimation.Frames[CurrentFrame].Source;
+        public override void Draw(LayoutView view)
+        {
+            Frame frame = CurrentAnimation.Frames[CurrentFrame];
+
+            int xPosition = Owner.IsMirrored
+                ? (int)Owner.Position.X - (frame.Source.Width - Owner.Origin.X)
+                : (int)Owner.Position.X - Owner.Origin.X;
+
+            Rectangle dest = new Rectangle(xPosition, (int)Owner.Position.Y - Owner.Origin.Y, frame.Source.Width, frame.Source.Height);
+
+            view.Draw(CurrentAnimation.Image, frame.Source, dest, Color.White, Owner.IsMirrored);
         }
     }
 }

@@ -29,7 +29,6 @@ namespace Core
                 game.RunningLayout.Spawn(Definitions.Get("other"), new Vector2(64, 32));
 
                 var tile = new WorldObjectDefinition(32, 32);
-                tile.AddImage("tiles", new Rectangle(0, 0, 32, 32));
                 tile.MakeSolid();
 
                 int num = 320 / 32;

@@ -1,21 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using System;
 
 namespace ItsGood
 {
     public abstract class Behavior
     {
-        protected Behavior() { }
+        public Behavior(WorldObject owner) 
+        {
+            Owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        }
 
-        public WorldObject Owner { get; internal set; }
+        public WorldObject Owner { get; }
 
-        public virtual void Initialize() { }
+        public virtual void Load(ContentManager contentManager) { }
         public virtual void OnOwnerCreated() { }
         public virtual void Tick(GameTime gameTime) { }
+        public virtual void Draw(LayoutView view) { }
         public virtual void OnOwnerDestroyed() { }
-    }
-
-    public abstract class Behavior<T> : Behavior
-    {
-        public T State { get; internal set; }
     }
 }

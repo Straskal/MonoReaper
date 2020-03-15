@@ -8,6 +8,8 @@ namespace ItsGood
         private readonly GameWindow _window;
         private readonly GraphicsDevice _gpu;
 
+        private SpriteBatch _batch;
+
         private Matrix _camTranslationMatrix = Matrix.Identity;
         private Matrix _camRotationMatrix = Matrix.Identity;
         private Matrix _camScaleMatrix = Matrix.Identity;
@@ -83,14 +85,16 @@ namespace ItsGood
 
         internal void BeginDraw(SpriteBatch batch)
         {
+            _batch = batch;
             _currentEffect = null;
+
             SyncViewport();
-            PrepareBatch(batch);
+            PrepareBatch();
         }
 
-        private void PrepareBatch(SpriteBatch batch) 
+        private void PrepareBatch() 
         {
-            batch.Begin(
+            _batch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
@@ -101,43 +105,22 @@ namespace ItsGood
             );
         }
 
-        internal void Draw(SpriteBatch batch, WorldObject worldObject) 
+        public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null) 
         {
-            if (worldObject.Image == null)
-                return;
+            if (_currentEffect != effect) 
+            {
+                _currentEffect = effect;
 
-            if (!worldObject.IsEffectEnabled && _currentEffect != null) 
-            {
-                _currentEffect = null;
-                batch.End();
-                PrepareBatch(batch);
-            }
-            else if (worldObject.IsEffectEnabled && worldObject.Effect != _currentEffect) 
-            {
-                _currentEffect = worldObject.Effect;
-                batch.End();
-                PrepareBatch(batch);
+                EndDraw();
+                PrepareBatch();
             }
 
-            int xPosition = worldObject.IsMirrored
-                ? (int)worldObject.Position.X - (worldObject.Source.Width - worldObject.Origin.X)
-                : (int)worldObject.Position.X - worldObject.Origin.X;
-
-            batch.Draw(
-                worldObject.Image,
-                new Rectangle(xPosition, (int)worldObject.Position.Y - worldObject.Origin.Y, worldObject.Source.Width, worldObject.Source.Height),
-                worldObject.Source,
-                worldObject.Color,
-                0,
-                Vector2.Zero,
-                worldObject.IsMirrored ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                0
-            );
+            _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        internal void EndDraw(SpriteBatch batch) 
+        internal void EndDraw() 
         {
-            batch.End();
+            _batch.End();
         }
 
         private void SyncViewport()

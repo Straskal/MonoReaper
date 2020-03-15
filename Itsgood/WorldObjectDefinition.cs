@@ -16,17 +16,6 @@ namespace ItsGood
             });
         }
 
-        public WorldObjectDefinition AddImage(string path, Rectangle source) 
-        {
-            _buildSteps.Add(worldObject =>
-            {
-                worldObject.ImageFilePath = path;
-                worldObject.Source = source;
-                worldObject.Color = Color.White;
-            });
-            return this;
-        }
-
         public WorldObjectDefinition SetOrigin(Point origin)
         {
             _buildSteps.Add(worldObject => worldObject.Origin = origin);
@@ -39,25 +28,15 @@ namespace ItsGood
             return this;
         }
 
-        public WorldObjectDefinition AddBehavior<T>() where T : Behavior, new()
+        public WorldObjectDefinition AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
-            _buildSteps.Add(worldObject => worldObject.AddBehavior<T>());
-            return this;
-        }
-
-        public WorldObjectDefinition AddBehavior<T, U>(U state) where T : Behavior<U>, new()
-        {
-            _buildSteps.Add(worldObject => worldObject.AddBehavior<T, U>(state));
+            _buildSteps.Add(worldObject => worldObject.AddBehavior(createFunc));
             return this;
         }
 
         public WorldObjectDefinition AddEffect(string name, bool isEnabled) 
         {
-            _buildSteps.Add(worldObject => 
-            {
-                worldObject.EffectFilePath = name;
-                worldObject.IsEffectEnabled = isEnabled;
-            });
+            
             
             return this;
         }

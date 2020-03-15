@@ -30,35 +30,31 @@ namespace Core.Objects
                 var other = new WorldObjectDefinition(32, 32);
 
                 other
-                    .AddImage("player", new Rectangle(0, 0, 32, 32))
                     .SetOrigin(new Point(16, 32))
                     .AddEffect("Shaders/SolidColor", false)
-                    .AddBehavior<EnemyBehavior>()
-                    .AddBehavior<PlatformerBehavior>()
-                    .AddBehavior<TimerBehavior>()
-                    .AddBehavior<DamageableBehavior>()
-                    .AddBehavior<AnimationBehavior, AnimationBehavior.Params>(new AnimationBehavior.Params
+                    .AddBehavior(wo => new EnemyBehavior(wo))
+                    .AddBehavior(wo => new PlatformerBehavior(wo))
+                    .AddBehavior(wo => new TimerBehavior(wo))
+                    .AddBehavior(wo => new DamageableBehavior(wo))
+                    .AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
                     {
-                        Animations = new[]
+                        new SpriteSheetBehavior.Animation
                         {
-                            new AnimationBehavior.Animation
+                            Name = "Idle",
+                            ImageFilePath = "player",
+                            SecPerFrame = 0.1f,
+                            Loop = true,
+                            Frames = new []
                             {
-                                Name = "Idle",
-                                ImageFilePath = "player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new AnimationBehavior.Frame { Source = new Rectangle(96, 32, 32, 32) },
-                                    new AnimationBehavior.Frame { Source = new Rectangle(0, 64, 32, 32) },
-                                    new AnimationBehavior.Frame { Source = new Rectangle(32, 64, 32, 32) },
-                                    new AnimationBehavior.Frame { Source = new Rectangle(64, 64, 32, 32) },
-                                    new AnimationBehavior.Frame { Source = new Rectangle(96, 64, 32, 32) },
-                                    new AnimationBehavior.Frame { Source = new Rectangle(0, 96, 32, 32) }
-                                }
+                                new SpriteSheetBehavior.Frame(96, 32, 32, 32),
+                                new SpriteSheetBehavior.Frame(0, 64, 32, 32),
+                                new SpriteSheetBehavior.Frame(32, 64, 32, 32),
+                                new SpriteSheetBehavior.Frame(64, 64, 32, 32),
+                                new SpriteSheetBehavior.Frame(96, 64, 32, 32),
+                                new SpriteSheetBehavior.Frame(0, 96, 32, 32)
                             }
                         }
-                    });
+                    }));
 
                 return other;
             });

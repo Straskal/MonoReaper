@@ -9,7 +9,7 @@ namespace Core
 {
     public class PlayerBehavior : Behavior
     {
-        private AnimationBehavior _animationBehavior;
+        private SpriteSheetBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
         private KeyboardState _previousKeyState;
 
@@ -17,7 +17,7 @@ namespace Core
 
         public override void OnOwnerCreated()
         {
-            _animationBehavior = Owner.GetBehavior<AnimationBehavior>();
+            _animationBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
             GoToIdle();
@@ -225,6 +225,10 @@ namespace Core
         }
 
         private bool _hasCheckedForHits;
+
+        public PlayerBehavior(WorldObject owner) : base(owner)
+        {
+        }
 
         private void Attack(float elapsedTime)
         {

@@ -36,38 +36,6 @@ namespace ItsGood
             return worldObject;
         }
 
-        public WorldObject CreateObject(string imageFilePath, Rectangle source, Vector2 position, Rectangle bounds, Point origin)
-        {
-            var worldObject = new WorldObject(_layout)
-            {
-                ImageFilePath = imageFilePath,
-                Source = source,
-                Position = position,
-                Color = Color.White,
-                Bounds = bounds,
-                Origin = origin
-            };
-
-            _toSpawn.Add(worldObject);
-
-            return worldObject;
-        }
-
-        public WorldObject CreateObject(Vector2 position, Rectangle bounds, Point origin)
-        {
-            var worldObject = new WorldObject(_layout)
-            {
-                Position = position,
-                Color = Color.White,
-                Bounds = bounds,
-                Origin = origin
-            };
-
-            _toSpawn.Add(worldObject);
-
-            return worldObject;
-        }
-
         public void DestroyObject(WorldObject worldObject)
         {
             if (!worldObject.MarkedForDestroy)
@@ -86,11 +54,11 @@ namespace ItsGood
             SyncPreviousFrameData();
         }
 
-        public void Draw(LayoutView view, SpriteBatch batch) 
+        public void Draw(LayoutView view) 
         {
             foreach (var worldObject in _worldObjects)
             {
-                view.Draw(batch, worldObject);
+                worldObject.Draw(view);
             }
         }
 
@@ -98,7 +66,7 @@ namespace ItsGood
         {
             foreach (var toSpawn in _toSpawn)
             {
-                toSpawn.Initialize();
+                toSpawn.Load(_layout.Game.Content);
             }
 
             foreach (var toDestroy in _toDestroy)
@@ -116,7 +84,7 @@ namespace ItsGood
             {
                 _worldObjects.Add(toSpawn);
 
-                toSpawn.Load();
+                toSpawn.Load(_layout.Game.Content);
                 toSpawn.UpdateBBox();
                 toSpawn.OnCreated();
             }

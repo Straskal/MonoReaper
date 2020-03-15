@@ -75,8 +75,8 @@ namespace ItsGood
         internal void Draw(SpriteBatch batch)
         {
             _view.BeginDraw(batch);
-            _worldObjectList.Draw(_view, batch);
-            _view.EndDraw(batch);
+            _worldObjectList.Draw(_view);
+            _view.EndDraw();
         }
     }
 }
