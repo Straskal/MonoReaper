@@ -11,7 +11,7 @@ namespace Reaper.Objects
         {
             var thugDef = new WorldObjectDefinition(32, 32);
 
-            thugDef.SetOrigin(new Point(entity.OriginX, entity.OriginY));
+            thugDef.SetOgmoDefaults(entity);
             thugDef.AddBehavior(wo => new EnemyBehavior(wo));
             thugDef.AddBehavior(wo => new PlatformerBehavior(wo));
             thugDef.AddBehavior(wo => new TimerBehavior(wo));

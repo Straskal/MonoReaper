@@ -63,7 +63,7 @@
           "y": 160,
           "originX": 17,
           "originY": 32,
-          "flippedX": false,
+          "flippedX": true,
           "values": {"DrawOrder": 0}
         }
       ]

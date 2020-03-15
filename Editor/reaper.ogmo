@@ -85,7 +85,7 @@
         {"name": "Health", "definition": "Integer", "defaults": 3, "bounded": true, "min": 0, "max": 10},
         {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
       ],
-      "texture": "../../LizardPeople/assets/art/player/player_preview1.png",
+      "texture": "Previews/player_preview.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAe1JREFUWIXFlrFLI0EUxn/x7AQlgmBptPCwuoAiQUUb/wAb7SQiLgg2ByIWYmEVgmChIKyFwU7/BUUQFFECWp1G8HKgcEUKUYhgtRayIZtMnPeWFb9uZmfe971v3ptZ+GbEwmxyUkmv+NRi/JaIl3HPr8Rxm6QLx38OezZygOJTS2WtBCoHNIEBDm9PrfHFDjippJV8f2eaRLwsDQlAs3Rhte2JeJlMdj7wfWpuD6Ay749tEDvwGTl8ZB8GagHV5MtL2w0z3Vrui1aA6Wwz2fm6zEtbFwAsZP5QyDnWuhELMPV26T4fcMAnB7kD4iJsFLQRUUdPP+0jjrUNVQJMJIHxwqA6hroITZia26srRkn2EOItKOQcrzZzEyIX8Cu95rUVXwBwZ17q7A9DLhZQTV6NWiETK3cAnJysiwWIitBEDuDstgJ3Ui4jrEpHRxdVL6APqQvWLnhOtKrJNXusAo5nO3FnzEfQCPtjj9EJgI8LJ4wTkQkAeVZaoWIBkssHdParBHwVVAJs9oapE9VreJ1bjW1MDnkAvw/OAn3upJIeBWBsQCXA6kDpPq8KqIVVQG/ajWlF9KbdaB8jH779EDyCjckh7+bhFTD/un2GSLrAJw+Db29D9T/h5uUbAN1d/d7ff/mK3Uf/fxjnbXgHHd2fRntdOJIAAAAASUVORK5CYII="
     },
     {
@@ -124,7 +124,9 @@
       "tags": ["enemies"],
       "values": [
         {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
-      ]
+      ],
+      "texture": "Previews/thug_preview.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAjJJREFUWIXtV79L81AUPZFODnHUrT/g24tGcKsIIjh0leJgp+rgKA4dOmRwEP8AdXITO37DByKUZBO+Cu6CGuI/0M6F55A+fUnufS9JRRfPVF5u3zn33PtuXoBf/DCsr96w0TgS8veoauPxqqfl+DIBKjEF3z8juUqzkNbbrlh4GRvjRlUb8Olnc0XJG42jTOQA8HjVsziHCjlQb7sCBPmoauOgFV+7PoniuBLk7oGk7RRpEgdbfCPmKkGSvNU1k0twJSjcA62unTlWd0Iy9UCt4miPmKyzTlgYeOS61oFaxREqOdf1i7vzCAMPYeDFxADA8sWT1i1WgCnr82t6PQw8DILJB7mE090m48kScORh4MFeb2LhZTx14zMzlWCjnN6233HzTcLn16FFiaHKQBFmBVkCjhyYjtUp1Hqf7v+Nxan268AOCF0PON3tVNZSwM3dPXY213B80fx4phtEuXpAYnjyD0iIuLm7B4AUuWxIDqQykwAJygkVg2DCNp9EqgeykgORE7oMKfL/T5PY/in5qn3JxuJEDI1REfYe3lLJaSehKmZW7D28iUN7KbVe+GVUlHz1TylWlpmuZCac37oCAFYYcoBwINlUcijlRXL2U+QA4UC/41q47An1eD2/Dq16O8pGd82W733fP7OOy00xCCbYKJdYclIAJyIv5PTrG+JYhn7HteSfZfY6mL4LOBjrq5Jz9qvk3O2Xw7ccQx0yFXnsRROxVnEEdyrknU8XQ+Ed61vnUM5vJA0AAAAASUVORK5CYII="
     },
     {
       "exportID": "30520947",
