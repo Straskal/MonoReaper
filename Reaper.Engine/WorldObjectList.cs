@@ -65,9 +65,9 @@ namespace Reaper.Engine
 
         private void InvokeBehaviorCallbacks()
         {
-            foreach (var toSpawn in _toSpawn)
+            for (int i = 0; i < _toSpawn.Count; i++) 
             {
-                toSpawn.Load(_layout.Game.Content);
+                _toSpawn[i].Load(_layout.Game.Content);
             }
 
             foreach (var toDestroy in _toDestroy)
@@ -85,7 +85,6 @@ namespace Reaper.Engine
             {
                 _worldObjects.Add(toSpawn);
 
-                toSpawn.Load(_layout.Game.Content);
                 toSpawn.UpdateBBox();
                 toSpawn.OnCreated();
             }

@@ -1,0 +1,61 @@
+{
+  "ogmoVersion": "3.3.0",
+  "width": 544,
+  "height": 192,
+  "offsetX": 0,
+  "offsetY": 0,
+  "values": {"Solid": false},
+  "layers": [
+    {
+      "name": "background",
+      "_eid": "15480928",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 17,
+      "gridCellsY": 6,
+      "tileset": "tiles",
+      "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "exportMode": 0,
+      "arrayMode": 0
+    },
+    {
+      "name": "middleground",
+      "_eid": "27966601",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 17,
+      "gridCellsY": 6,
+      "tileset": "tiles",
+      "data": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+      "exportMode": 0,
+      "arrayMode": 0
+    },
+    {
+      "name": "worldobjects",
+      "_eid": "15521523",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 17,
+      "gridCellsY": 6,
+      "entities": [
+        {
+          "name": "player",
+          "id": 1,
+          "_eid": "15498917",
+          "x": 64,
+          "y": 160,
+          "originX": 16,
+          "originY": 32,
+          "flippedX": false,
+          "values": {"Health": 3}
+        }
+      ]
+    }
+  ]
+}

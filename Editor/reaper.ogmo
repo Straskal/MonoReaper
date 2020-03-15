@@ -1,0 +1,94 @@
+{
+  "name": "Reaper",
+  "ogmoVersion": "3.3.0",
+  "levelPaths": ["."],
+  "backgroundColor": "#282c34ff",
+  "gridColor": "#3c4049cc",
+  "anglesRadians": true,
+  "directoryDepth": 5,
+  "layerGridDefaultSize": {"x": 32, "y": 32},
+  "levelDefaultSize": {"x": 320, "y": 240},
+  "levelMinSize": {"x": 128, "y": 128},
+  "levelMaxSize": {"x": 4096, "y": 4096},
+  "levelValues": [
+    {"name": "Solid", "definition": "Boolean", "defaults": false}
+  ],
+  "defaultExportMode": ".json",
+  "compactExport": false,
+  "externalScript": "",
+  "playCommand": "dotnet C:\\git\\MonoReaper\\Core\\bin\\Debug\\netcoreapp2.0\\Core.dll",
+  "entityTags": ["player"],
+  "layers": [
+    {
+      "definition": "tile",
+      "name": "background",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "15480928",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "tiles"
+    },
+    {
+      "definition": "tile",
+      "name": "middleground",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "27966601",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "tiles"
+    },
+    {
+      "definition": "entity",
+      "name": "worldobjects",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "15521523",
+      "requiredTags": [],
+      "excludedTags": []
+    }
+  ],
+  "entities": [
+    {
+      "exportID": "15498917",
+      "name": "player",
+      "limit": 10,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 16, "y": 32},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": true,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["player"],
+      "values": [
+        {"name": "Health", "definition": "Integer", "defaults": 3, "bounded": true, "min": 0, "max": 10}
+      ],
+      "texture": "../../LizardPeople/assets/art/player/player_preview1.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAe1JREFUWIXFlrFLI0EUxn/x7AQlgmBptPCwuoAiQUUb/wAb7SQiLgg2ByIWYmEVgmChIKyFwU7/BUUQFFECWp1G8HKgcEUKUYhgtRayIZtMnPeWFb9uZmfe971v3ptZ+GbEwmxyUkmv+NRi/JaIl3HPr8Rxm6QLx38OezZygOJTS2WtBCoHNIEBDm9PrfHFDjippJV8f2eaRLwsDQlAs3Rhte2JeJlMdj7wfWpuD6Ay749tEDvwGTl8ZB8GagHV5MtL2w0z3Vrui1aA6Wwz2fm6zEtbFwAsZP5QyDnWuhELMPV26T4fcMAnB7kD4iJsFLQRUUdPP+0jjrUNVQJMJIHxwqA6hroITZia26srRkn2EOItKOQcrzZzEyIX8Cu95rUVXwBwZ17q7A9DLhZQTV6NWiETK3cAnJysiwWIitBEDuDstgJ3Ui4jrEpHRxdVL6APqQvWLnhOtKrJNXusAo5nO3FnzEfQCPtjj9EJgI8LJ4wTkQkAeVZaoWIBkssHdParBHwVVAJs9oapE9VreJ1bjW1MDnkAvw/OAn3upJIeBWBsQCXA6kDpPq8KqIVVQG/ajWlF9KbdaB8jH779EDyCjckh7+bhFTD/un2GSLrAJw+Db29D9T/h5uUbAN1d/d7ff/mK3Uf/fxjnbXgHHd2fRntdOJIAAAAASUVORK5CYII="
+    }
+  ],
+  "tilesets": [
+    {"label": "tiles", "path": "tiles.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAAAXNSR0IArs4c6QAAAIJJREFUeJzt0qEBwkAUBcG7NIRMV1QThacSRCQlQRlf7EwD74nd5/X8rUGP92dyfr3u7x49MOyYPsAsAcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOL+D3oGQJGtxloAAAAASUVORK5CYII=", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
+  ]
+}

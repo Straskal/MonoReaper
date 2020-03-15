@@ -26,7 +26,7 @@ namespace Reaper
 
             using (var game = MainGameFactory.Create(settings))
             {
-                game.LoadOgmoLayout("test.json");
+                game.LoadOgmoLayout("testlevel.json");
                 game.Run();
             }
         }
