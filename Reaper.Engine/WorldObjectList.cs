@@ -100,6 +100,7 @@ namespace Reaper.Engine
 
             _toDestroy.Clear();
 
+            _worldObjects.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
             _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.GetBehaviors());
         }
 

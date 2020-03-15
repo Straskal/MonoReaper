@@ -27,6 +27,7 @@ namespace Reaper.Engine
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
+        public int ZOrder { get; set; }
         public bool IsSolid { get; set; }
         internal bool MarkedForDestroy { get; private set; }
 

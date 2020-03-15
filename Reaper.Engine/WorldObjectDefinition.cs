@@ -16,6 +16,12 @@ namespace Reaper.Engine
             });
         }
 
+        public WorldObjectDefinition SetZOrder(int order)
+        {
+            _buildSteps.Add(worldObject => worldObject.ZOrder = order);
+            return this;
+        }
+
         public WorldObjectDefinition SetOrigin(Point origin)
         {
             _buildSteps.Add(worldObject => worldObject.Origin = origin);

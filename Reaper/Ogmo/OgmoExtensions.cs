@@ -13,6 +13,7 @@ namespace Reaper.Ogmo
         {
             worldObjectDefinition.SetOrigin(new Point(ogmoEntity.OriginX, ogmoEntity.OriginY));
             worldObjectDefinition.SetMirrored(ogmoEntity.FlippedX);
+            worldObjectDefinition.SetZOrder(ogmoEntity.Values.DrawOrder);
         }
 
         public static void LoadOgmoLayout(this IGame game, string filename)
