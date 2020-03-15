@@ -48,14 +48,24 @@
           "name": "player",
           "id": 2,
           "_eid": "15498917",
-          "x": 96,
+          "x": 160,
           "y": 160,
           "originX": 16,
           "originY": 32,
           "flippedX": false,
-          "values": {"Health": 3}
+          "values": {"Health": 3, "DrawOrder": 1}
         },
-        {"name": "thug", "id": 3, "_eid": "30241187", "x": 224, "y": 160, "originX": 17, "originY": 32, "flippedX": false}
+        {
+          "name": "thug",
+          "id": 3,
+          "_eid": "30241187",
+          "x": 224,
+          "y": 160,
+          "originX": 17,
+          "originY": 32,
+          "flippedX": false,
+          "values": {"DrawOrder": 0}
+        }
       ]
     }
   ]

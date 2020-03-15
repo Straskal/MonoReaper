@@ -1,51 +1,5 @@
 {
-  "name": "Reaper",
   "ogmoVersion": "3.3.0",
-  "levelPaths": ["."],
-  "backgroundColor": "#282c34ff",
-  "gridColor": "#3c4049cc",
-  "anglesRadians": true,
-  "directoryDepth": 5,
-  "layerGridDefaultSize": {"x": 32, "y": 32},
-  "levelDefaultSize": {"x": 320, "y": 240},
-  "levelMinSize": {"x": 128, "y": 128},
-  "levelMaxSize": {"x": 4096, "y": 4096},
-  "levelValues": [
-    {"name": "Solid", "definition": "Boolean", "defaults": false}
-  ],
-  "defaultExportMode": ".json",
-  "compactExport": false,
-  "externalScript": "",
-  "playCommand": "dotnet C:\\git\\MonoReaper\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
-  "entityTags": ["player", "enemies", "templates"],
-  "layers": [
-    {
-      "definition": "tile",
-      "name": "background",
-      "gridSize": {"x": 32, "y": 32},
-      "exportID": "15480928",
-      "exportMode": 0,
-      "arrayMode": 0,
-      "defaultTileset": "tiles"
-    },
-    {
-      "definition": "tile",
-      "name": "middleground",
-      "gridSize": {"x": 32, "y": 32},
-      "exportID": "27966601",
-      "exportMode": 0,
-      "arrayMode": 0,
-      "defaultTileset": "tiles"
-    },
-    {
-      "definition": "entity",
-      "name": "worldobjects",
-      "gridSize": {"x": 32, "y": 32},
-      "exportID": "15521523",
-      "requiredTags": [],
-      "excludedTags": []
-    }
-  ],
   "entities": [
     {
       "exportID": "15498917",
@@ -122,15 +76,13 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": ["enemies"],
-      "values": [
-        {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
-      ]
+      "values": []
     },
     {
       "exportID": "30520947",
       "name": "baseEntity",
       "limit": -1,
-      "size": {"x": 32, "y": 32},
+      "size": {"x": 16, "y": 16},
       "origin": {"x": 0, "y": 0},
       "originAnchored": true,
       "shape": {
@@ -152,20 +104,17 @@
       "resizeableY": false,
       "rotatable": false,
       "rotationDegrees": 360,
-      "canFlipX": true,
+      "canFlipX": false,
       "canFlipY": false,
       "canSetColor": false,
       "hasNodes": false,
       "nodeLimit": 0,
       "nodeDisplay": 0,
       "nodeGhost": true,
-      "tags": ["templates"],
+      "tags": [],
       "values": [
-        {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": true, "min": 0, "max": 1000}
+        {"name": "draw_order", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
       ]
     }
-  ],
-  "tilesets": [
-    {"label": "tiles", "path": "tiles.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAAAXNSR0IArs4c6QAAAIJJREFUeJzt0qEBwkAUBcG7NIRMV1QThacSRCQlQRlf7EwD74nd5/X8rUGP92dyfr3u7x49MOyYPsAsAcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOL+D3oGQJGtxloAAAAASUVORK5CYII=", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
   ]
 }

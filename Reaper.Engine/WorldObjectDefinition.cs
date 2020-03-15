@@ -22,6 +22,12 @@ namespace Reaper.Engine
             return this;
         }
 
+        public WorldObjectDefinition SetMirrored(bool mirrored)
+        {
+            _buildSteps.Add(worldObject => worldObject.IsMirrored = mirrored);
+            return this;
+        }
+
         public WorldObjectDefinition MakeSolid() 
         {
             _buildSteps.Add(worldObject => worldObject.IsSolid = true);

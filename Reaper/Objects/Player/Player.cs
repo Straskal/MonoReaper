@@ -1,6 +1,6 @@
 ﻿using Reaper.Engine;
 using Reaper.Engine.Behaviors;
-using Microsoft.Xna.Framework;
+using Reaper.Ogmo;
 
 namespace Reaper.Objects
 {
@@ -10,11 +10,19 @@ namespace Reaper.Objects
         {
             var playerDefinition = new WorldObjectDefinition(32, 32);
 
-            playerDefinition.SetOrigin(new Point(16, 32));
-            playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
+            playerDefinition.SetOgmoDefaults(entity);
+            playerDefinition.AddBehavior(wo =>
+            {
+                return new PlayerBehavior(wo)
+                {
+                    Health = entity.Values.Health
+                };
+            });
+
             playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo));
             playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
             playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
+
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
             {
                 new SpriteSheetBehavior.Animation

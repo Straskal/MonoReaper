@@ -15,6 +15,8 @@ namespace Reaper
 
         private Action<float> _currentState;
 
+        public int Health { get; set; }
+
         public override void OnOwnerCreated()
         {
             _animationBehavior = Owner.GetBehavior<SpriteSheetBehavior>();

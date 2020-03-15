@@ -3,6 +3,7 @@ using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using Reaper.Ogmo;
 
 namespace Reaper.Objects
 {

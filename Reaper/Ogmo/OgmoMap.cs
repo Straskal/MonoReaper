@@ -1,4 +1,6 @@
-﻿namespace Reaper
+﻿using Newtonsoft.Json.Linq;
+
+namespace Reaper.Ogmo
 {
     public class OgmoMap
     {
@@ -25,5 +27,7 @@
         public int Y { get; set; }
         public int OriginX { get; set; }
         public int OriginY { get; set; }
+        public bool FlippedX { get; set; }
+        public dynamic Values { get; set; }
     }
 }

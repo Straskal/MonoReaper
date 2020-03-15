@@ -5,10 +5,16 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System.IO;
 
-namespace Reaper.Extensions
+namespace Reaper.Ogmo
 {
     public static class OgmoExtensions
     {
+        public static void SetOgmoDefaults(this WorldObjectDefinition worldObjectDefinition, OgmoEntity ogmoEntity) 
+        {
+            worldObjectDefinition.SetOrigin(new Point(ogmoEntity.OriginX, ogmoEntity.OriginY));
+            worldObjectDefinition.SetMirrored(ogmoEntity.FlippedX);
+        }
+
         public static void LoadOgmoLayout(this IGame game, string filename)
         {
             OgmoMap map;
