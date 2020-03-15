@@ -1,7 +1,7 @@
-﻿using ItsGood;
-using ItsGood.Builtins;
+﻿using Reaper.Engine;
+using Reaper.Engine.Builtins;
 
-namespace Core
+namespace Reaper
 {
     public class DamageableBehavior : Behavior
     {

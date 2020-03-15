@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ItsGood.Builtins
+namespace Reaper.Engine.Builtins
 {
     public class TimerBehavior : Behavior
     {

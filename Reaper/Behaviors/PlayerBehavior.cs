@@ -1,11 +1,11 @@
-﻿using Core.Objects;
-using ItsGood;
-using ItsGood.Builtins;
+﻿using Reaper.Objects;
+using Reaper.Engine;
+using Reaper.Engine.Builtins;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 
-namespace Core
+namespace Reaper
 {
     public class PlayerBehavior : Behavior
     {

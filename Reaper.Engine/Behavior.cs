@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using System;
 
-namespace ItsGood
+namespace Reaper.Engine
 {
     public abstract class Behavior
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace ItsGood
+namespace Reaper.Engine
 {
     public class Layout
     {

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ItsGood
+namespace Reaper.Engine
 {
     internal class WorldObjectList
     {
@@ -16,7 +17,7 @@ namespace ItsGood
 
         public WorldObjectList(Layout layout) 
         {
-            _layout = layout;
+            _layout = layout ?? throw new ArgumentNullException(nameof(layout));
 
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();

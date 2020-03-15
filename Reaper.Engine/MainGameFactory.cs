@@ -1,4 +1,4 @@
-﻿namespace ItsGood
+﻿namespace Reaper.Engine
 {
     public static class MainGameFactory
     {

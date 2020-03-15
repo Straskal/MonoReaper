@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ItsGood
+namespace Reaper.Engine
 {
     public class WorldObjectDefinition
     {
@@ -36,8 +36,6 @@ namespace ItsGood
 
         public WorldObjectDefinition AddEffect(string name, bool isEnabled) 
         {
-            
-            
             return this;
         }
 

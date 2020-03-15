@@ -1,6 +1,6 @@
-﻿using ItsGood;
+﻿using Reaper.Engine;
 
-namespace Core
+namespace Reaper
 {
     public class EnemyBehavior : Behavior, DamageableBehavior.IDamageableCallback
     {

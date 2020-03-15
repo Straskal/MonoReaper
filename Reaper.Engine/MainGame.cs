@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
-namespace ItsGood
+namespace Reaper.Engine
 {
     public struct GameSettings 
     {
@@ -20,10 +20,13 @@ namespace ItsGood
         Layout RunningLayout { get; }
         int ViewportWidth { get; }
         int ViewportHeight { get; }
+
+
         bool IsFullscreen { get; }
 
+        void ChangeLayout(Layout layout);
+        Layout GetEmptyLayout(int v, int width, int height);
         void Run();
-        void ToBlankLayout();
         void ToggleFullscreen();
     }
 
@@ -32,6 +35,7 @@ namespace ItsGood
         private readonly GraphicsDeviceManager _gpuManager;
 
         private SpriteBatch _spriteBatch;
+        private Layout _nextLayout;
 
         internal MainGame(GameSettings gameSettings)
         {
@@ -52,8 +56,6 @@ namespace ItsGood
             _gpuManager.PreferredBackBufferWidth = ViewportWidth;
             _gpuManager.PreferredBackBufferHeight = ViewportHeight;
             _gpuManager.ApplyChanges();
-
-            ToBlankLayout();
         }
 
         public Layout RunningLayout { get; private set; }
@@ -61,9 +63,14 @@ namespace ItsGood
         public int ViewportHeight { get; }
         public bool IsFullscreen => _gpuManager.IsFullScreen;
 
-        public void ToBlankLayout() 
+        public Layout GetEmptyLayout(int cellSize, int width, int height)
         {
-            RunningLayout = new Layout(this);
+            return new Layout(this);
+        }
+
+        public void ChangeLayout(Layout layout) 
+        {
+            _nextLayout = layout;
         }
 
         public void ToggleFullscreen()
@@ -84,6 +91,12 @@ namespace ItsGood
         
         protected override void Update(GameTime gameTime)
         {
+            if (_nextLayout != null) 
+            {
+                RunningLayout = _nextLayout;
+                _nextLayout = null;
+            }
+
             var keyboardState = Keyboard.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Escape))

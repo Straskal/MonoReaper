@@ -1,12 +1,13 @@
-﻿using ItsGood;
-using ItsGood.Builtins;
+﻿using Reaper.Engine;
+using Reaper.Engine.Builtins;
 using Microsoft.Xna.Framework;
+using Reaper;
 
-namespace Core.Objects
+namespace Reaper.Objects
 {
     public static class Player
     {
-        public static WorldObjectDefinition Definition()
+        public static WorldObjectDefinition Definition(OgmoEntity entity)
         {
             var playerDefinition = new WorldObjectDefinition(32, 32);
 

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ItsGood
+namespace Reaper.Engine
 { 
     public class WorldObject
     {

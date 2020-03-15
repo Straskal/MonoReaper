@@ -1,10 +1,11 @@
-﻿using Core.Objects;
-using ItsGood;
-using ItsGood.Builtins;
+﻿using Reaper.Extensions;
+using Reaper.Objects;
+using Reaper.Engine;
+using Reaper.Engine.Builtins;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Core
+namespace Reaper
 {
     public static class Program
     {
@@ -25,19 +26,7 @@ namespace Core
 
             using (var game = MainGameFactory.Create(settings))
             {
-                game.RunningLayout.Spawn(Definitions.Get("player"), new Vector2(32, 32));
-                game.RunningLayout.Spawn(Definitions.Get("other"), new Vector2(64, 32));
-
-                var tile = new WorldObjectDefinition(32, 32);
-                tile.MakeSolid();
-
-                int num = 320 / 32;
-
-                for (int i = 0; i < num; i++) 
-                {
-                    game.RunningLayout.Spawn(tile, new Vector2(i * 32, 160));
-                }
-
+                game.LoadOgmoLayout("test.json");
                 game.Run();
             }
         }
