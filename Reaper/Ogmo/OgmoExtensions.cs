@@ -1,14 +1,13 @@
 ﻿using Reaper.Objects;
 using Reaper.Engine;
-using Reaper.Engine.Builtins;
+using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Reaper;
 using System.IO;
 
 namespace Reaper.Extensions
 {
-    public static class LayoutExtension
+    public static class OgmoExtensions
     {
         public static void LoadOgmoLayout(this IGame game, string filename)
         {

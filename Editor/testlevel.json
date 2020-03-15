@@ -46,15 +46,16 @@
       "entities": [
         {
           "name": "player",
-          "id": 1,
+          "id": 2,
           "_eid": "15498917",
-          "x": 64,
+          "x": 96,
           "y": 160,
           "originX": 16,
           "originY": 32,
           "flippedX": false,
           "values": {"Health": 3}
-        }
+        },
+        {"name": "thug", "id": 3, "_eid": "30241187", "x": 224, "y": 160, "originX": 17, "originY": 32, "flippedX": false}
       ]
     }
   ]

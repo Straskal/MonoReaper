@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
 
-namespace Reaper.Engine.Builtins
+namespace Reaper.Engine.Behaviors
 {
 
     public class SpriteSheetBehavior : Behavior

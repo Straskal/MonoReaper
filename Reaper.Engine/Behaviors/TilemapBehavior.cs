@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Reaper.Engine.Builtins
+namespace Reaper.Engine.Behaviors
 {
     public class TilemapBehavior : Behavior
     {

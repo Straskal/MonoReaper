@@ -1,7 +1,6 @@
 ﻿using Reaper.Engine;
-using Reaper.Engine.Builtins;
+using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
-using Reaper;
 
 namespace Reaper.Objects
 {

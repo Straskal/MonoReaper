@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Reaper.Engine.Builtins
+namespace Reaper.Engine.Behaviors
 {
     public class PlatformerBehavior : Behavior
     {
