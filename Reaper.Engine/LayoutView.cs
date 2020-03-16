@@ -38,6 +38,7 @@ namespace Reaper.Engine
             Position = new Vector2(VirtualWidth * 0.5f, VirtualHeight * 0.5f);
         }
 
+        public SpriteBatch SpriteBatch => _batch;
         public float Zoom { get; set; }
         public float Rotation { get; set; }
         public Vector2 Position 

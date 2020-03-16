@@ -16,7 +16,7 @@
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
-  "playCommand": "dotnet C:\\git\\MonoReaper\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
+  "playCommand": "dotnet build ..\\Core.sln & dotnet ..\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
   "entityTags": ["templates", "player", "enemies"],
   "layers": [
     {
@@ -82,7 +82,7 @@
       "nodeGhost": true,
       "tags": ["player"],
       "values": [
-        {"name": "Health", "definition": "Integer", "defaults": 3, "bounded": true, "min": 0, "max": 10},
+        {"name": "Health", "definition": "Integer", "defaults": 5, "bounded": true, "min": 0, "max": 10},
         {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
       ],
       "texture": "Previews/player_preview.png",

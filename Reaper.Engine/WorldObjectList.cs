@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,8 @@ namespace Reaper.Engine
             {
                 worldObject.Draw(view);
             }
+
+            DebugTools.DrawBounds(view.SpriteBatch, _worldObjects);
         }
 
         private void InvokeBehaviorCallbacks()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Reaper.Engine.Tools;
 using System;
 
 namespace Reaper.Engine
@@ -76,7 +77,12 @@ namespace Reaper.Engine
         {
             _gpuManager.ToggleFullScreen();
         }
-        
+
+        protected override void LoadContent()
+        {
+            DebugTools.Initialize(_gpuManager.GraphicsDevice);
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (_nextLayout != null) 
@@ -92,6 +98,8 @@ namespace Reaper.Engine
 
             if (keyboardState.IsKeyDown(Keys.F))
                 ToggleFullscreen();
+
+            DebugTools.Tick();
 
             RunningLayout.Tick(gameTime);
             base.Update(gameTime);
