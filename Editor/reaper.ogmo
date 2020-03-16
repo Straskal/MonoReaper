@@ -20,13 +20,12 @@
   "entityTags": ["templates", "player", "enemies"],
   "layers": [
     {
-      "definition": "tile",
-      "name": "background",
-      "gridSize": {"x": 16, "y": 16},
-      "exportID": "15480928",
-      "exportMode": 0,
-      "arrayMode": 0,
-      "defaultTileset": "4tiles"
+      "definition": "entity",
+      "name": "worldobjects",
+      "gridSize": {"x": 8, "y": 8},
+      "exportID": "15521523",
+      "requiredTags": [],
+      "excludedTags": []
     },
     {
       "definition": "tile",
@@ -38,12 +37,13 @@
       "defaultTileset": "4tiles"
     },
     {
-      "definition": "entity",
-      "name": "worldobjects",
-      "gridSize": {"x": 8, "y": 8},
-      "exportID": "15521523",
-      "requiredTags": [],
-      "excludedTags": []
+      "definition": "tile",
+      "name": "background",
+      "gridSize": {"x": 16, "y": 16},
+      "exportID": "15480928",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "4tiles"
     }
   ],
   "entities": [
