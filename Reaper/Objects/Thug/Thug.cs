@@ -8,15 +8,15 @@ namespace Reaper.Objects
     {
         public static WorldObjectDefinition Definition()
         {
-            var thugDef = new WorldObjectDefinition();
+            var thug = new WorldObjectDefinition();
 
-            thugDef.SetSize(32, 32);
-            thugDef.SetOrigin(new Point(32, 32));
-            thugDef.AddBehavior(wo => new EnemyBehavior(wo));
-            thugDef.AddBehavior(wo => new PlatformerBehavior(wo));
-            thugDef.AddBehavior(wo => new TimerBehavior(wo));
-            thugDef.AddBehavior(wo => new DamageableBehavior(wo));
-            thugDef.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
+            thug.SetSize(32, 32);
+            thug.SetOrigin(new Point(16, 32));
+            thug.AddBehavior(wo => new ThugBehavior(wo));
+            thug.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 50f });
+            thug.AddBehavior(wo => new TimerBehavior(wo));
+            thug.AddBehavior(wo => new DamageableBehavior(wo));
+            thug.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
             {
                 new SpriteSheetBehavior.Animation
                 {
@@ -31,10 +31,24 @@ namespace Reaper.Objects
                         new SpriteSheetBehavior.Frame(0, 64, 32, 32),
                         new SpriteSheetBehavior.Frame(32, 64, 32, 32),
                     }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "Walk",
+                    ImageFilePath = "thug",
+                    SecPerFrame = 0.2f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(64, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(96, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(0, 32, 32, 32),
+                        new SpriteSheetBehavior.Frame(32, 32, 32, 32),
+                    }
                 }
             }));
 
-            return thugDef;
+            return thug;
         }
     }
 }

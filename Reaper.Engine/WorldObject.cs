@@ -80,7 +80,7 @@ namespace Reaper.Engine
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.TestOverlapOffset(this, sign, 0, out var collision))
+                    if (Layout.TestOverlapSolidOffset(this, sign, 0, out var collision))
                     {
                         _positionRemainder.X = 0f;
 
@@ -112,7 +112,7 @@ namespace Reaper.Engine
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.TestOverlapOffset(this, 0, sign, out var collision))
+                    if (Layout.TestOverlapSolidOffset(this, 0, sign, out var collision))
                     {
                         _positionRemainder.Y = 0f;
 

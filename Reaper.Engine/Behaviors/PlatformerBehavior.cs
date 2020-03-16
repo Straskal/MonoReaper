@@ -37,6 +37,20 @@ namespace Reaper.Engine.Behaviors
             _movement = movement;
         }
 
+        public void Freeze() 
+        {
+            _velocity.X = 0;
+            _velocity.Y = 0;
+            _jumpTime = 0;
+
+            GravityAcceleration = 0f;
+        }
+
+        public void Unfreeze()
+        {
+            GravityAcceleration = 1350f;
+        }
+
         public void Jump()
         {
             _jumpRequested = true;
@@ -79,7 +93,7 @@ namespace Reaper.Engine.Behaviors
             _velocity.X += Acceleration * _movement * elapsedTime;
             _velocity.X *= Drag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
-            _isOnGround = Owner.Layout.TestOverlapOffset(Owner, 0, GroundBufferInPixels);
+            _isOnGround = Owner.Layout.TestOverlapSolidOffset(Owner, 0, GroundBufferInPixels);
         }
 
         private void SimilateJump(float elapsedTime)

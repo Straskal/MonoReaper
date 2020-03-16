@@ -54,17 +54,17 @@ namespace Reaper.Engine
             return worldObject;
         }
 
-        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset) 
+        public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset) 
         {
             return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset);
         }
 
-        public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
         }
 
-        public WorldObject[] TestOverlap(Rectangle bounds) 
+        public WorldObject[] QueryBounds(Rectangle bounds) 
         {
             return _grid.QueryBounds(bounds);
         }

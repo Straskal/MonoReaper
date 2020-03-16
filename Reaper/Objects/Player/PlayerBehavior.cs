@@ -12,10 +12,11 @@ namespace Reaper
         private SpriteSheetBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
         private KeyboardState _previousKeyState;
-
         private Action<float> _currentState;
 
-        public int Health { get; set; }
+        public PlayerBehavior(WorldObject owner) : base(owner)
+        {
+        }
 
         public override void OnOwnerCreated()
         {
@@ -32,7 +33,6 @@ namespace Reaper
         public override void Tick(GameTime gameTime)
         {
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
-
             _previousKeyState = Keyboard.GetState();
 
             Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
@@ -214,16 +214,13 @@ namespace Reaper
 
         private void GoToAttack() 
         {
+            _platformerBehavior.Freeze();
             _hasCheckedForHits = false;
             _animationBehavior.Play("Attack");
             _currentState = Attack;
         }
 
         private bool _hasCheckedForHits;
-
-        public PlayerBehavior(WorldObject owner) : base(owner)
-        {
-        }
 
         private void Attack(float elapsedTime)
         {
@@ -234,7 +231,7 @@ namespace Reaper
                     (int)Math.Round(Owner.Position.Y - 16),
                     16, 16);
 
-                var overlaps = Owner.Layout.TestOverlap(bounds);
+                var overlaps = Owner.Layout.QueryBounds(bounds);
 
                 foreach (var overlap in overlaps) 
                 {
@@ -253,7 +250,7 @@ namespace Reaper
             }
             else if (_animationBehavior.IsFinished) 
             {
-                _platformerBehavior.GravityAcceleration = 1400f;
+                _platformerBehavior.Unfreeze();
                 GoToIdle();
             }
         }
