@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace Reaper.Engine.Behaviors
 {
-
     public class SpriteSheetBehavior : Behavior
     {
         public class Params

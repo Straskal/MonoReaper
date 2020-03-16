@@ -16,8 +16,8 @@ namespace Reaper.Engine.Behaviors
         {
         }
 
-        public float Acceleration { get; set; } = 2000f;
-        public float MaxSpeed { get; set; } = 100f;
+        public float Acceleration { get; set; } = 1500f;
+        public float MaxSpeed { get; set; } = 115f;
         public float Drag { get; set; } = 0.8f;
         public float MaxJumpTime { get; set; } = 0.5f;
         public float JumpVelocity { get; set; } = -1200;

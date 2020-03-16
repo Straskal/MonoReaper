@@ -64,7 +64,7 @@ namespace Reaper.Engine
 
         public Layout GetEmptyLayout(int cellSize, int width, int height)
         {
-            return new Layout(this);
+            return new Layout(this, cellSize, width, height);
         }
 
         public void ChangeLayout(Layout layout) 

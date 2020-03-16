@@ -45,7 +45,7 @@ namespace Reaper.Objects
                 {
                     Name = "Run",
                     ImageFilePath = "player",
-                    SecPerFrame = 0.2f,
+                    SecPerFrame = 0.15f,
                     Loop = true,
                     Frames = new []
                     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Reaper.Engine
 {
@@ -9,12 +9,12 @@ namespace Reaper.Engine
         private readonly LayoutGrid _grid;
         private readonly WorldObjectList _worldObjectList;
 
-        public Layout(MainGame game)
+        public Layout(MainGame game, int cellSize, int width, int height)
         {
             Game = game;
 
             _view = new LayoutView(game);
-            _grid = new LayoutGrid(256, 4, 4);
+            _grid = new LayoutGrid(cellSize * 10, (int)Math.Ceiling((double)width / cellSize * 10), (int)Math.Ceiling((double)height / cellSize * 10));
             _worldObjectList = new WorldObjectList(this);
         }
 
