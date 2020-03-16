@@ -4,6 +4,7 @@ using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System.IO;
+using System;
 
 namespace Reaper.Ogmo
 {
@@ -19,7 +20,7 @@ namespace Reaper.Ogmo
                 map = JsonConvert.DeserializeObject<OgmoMap>(json);
             }
 
-            var layout = game.GetEmptyLayout(32, map.Width, map.Height);
+            var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
 
             foreach (var layer in map.Layers)
             {

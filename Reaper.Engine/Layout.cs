@@ -23,7 +23,7 @@ namespace Reaper.Engine
             Height = height;
 
             _view = new LayoutView(game, this);
-            _grid = new LayoutGrid(cellSize * 10, (int)Math.Ceiling((double)width / cellSize * 10), (int)Math.Ceiling((double)height / cellSize * 10));
+            _grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
             _worldObjectList = new WorldObjectList(this);
 
             Content = new ContentManager(game.Services, "Content");

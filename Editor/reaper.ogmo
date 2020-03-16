@@ -10,7 +10,9 @@
   "levelDefaultSize": {"x": 320, "y": 240},
   "levelMinSize": {"x": 128, "y": 128},
   "levelMaxSize": {"x": 4096, "y": 4096},
-  "levelValues": [],
+  "levelValues": [
+    {"name": "SpatialCellSize", "definition": "Integer", "defaults": 256, "bounded": false, "min": 0, "max": 100}
+  ],
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
@@ -20,20 +22,20 @@
     {
       "definition": "tile",
       "name": "background",
-      "gridSize": {"x": 32, "y": 32},
+      "gridSize": {"x": 16, "y": 16},
       "exportID": "15480928",
       "exportMode": 0,
       "arrayMode": 0,
-      "defaultTileset": "tiles"
+      "defaultTileset": "4tiles"
     },
     {
       "definition": "tile",
       "name": "middleground",
-      "gridSize": {"x": 32, "y": 32},
+      "gridSize": {"x": 16, "y": 16},
       "exportID": "27966601",
       "exportMode": 0,
       "arrayMode": 0,
-      "defaultTileset": "tiles"
+      "defaultTileset": "4tiles"
     },
     {
       "definition": "entity",
@@ -165,6 +167,6 @@
     }
   ],
   "tilesets": [
-    {"label": "tiles", "path": "tiles.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAgCAYAAADaInAlAAAAAXNSR0IArs4c6QAAAIJJREFUeJzt0qEBwkAUBcG7NIRMV1QThacSRCQlQRlf7EwD74nd5/X8rUGP92dyfr3u7x49MOyYPsAsAcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOL+D3oGQJGtxloAAAAASUVORK5CYII=", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
+    {"label": "4tiles", "path": "4tiles", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAALZJREFUWIVjNJ+S95+BAsCxmo0S7QxMFOmmAoA7QH/pYRSJiENn4WLocrjEyAGM/WHW/68//sagKcvFcP3xN5wKccnfZHOmyAHwEMBnOTHyFDtgoMDQcYCmLBdNHMCCyxJaxTleB9DTYhgY8DSAEQK4wLZLjAwMDNwMDAwMDIqCX+nvAGpaigxQooDe8Y/hgIEAA+4AxuvVuyhqD8w/foEiBwx4CIw6YNQBow4YdcCoA0YdMOoAAD/1Lp6BSAZ4AAAAAElFTkSuQmCC", "tileWidth": 16, "tileHeight": 16, "tileSeparationX": 0, "tileSeparationY": 0}
   ]
 }
