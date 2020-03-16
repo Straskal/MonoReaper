@@ -80,7 +80,6 @@
       "nodeGhost": true,
       "tags": ["player"],
       "values": [
-        {"name": "Health", "definition": "Integer", "defaults": 5, "bounded": true, "min": 0, "max": 10},
         {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
       ],
       "texture": "Previews/player_preview.png",

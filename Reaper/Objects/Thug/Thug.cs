@@ -1,16 +1,17 @@
-﻿using Reaper.Engine;
+﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using Reaper.Engine.Behaviors;
-using Reaper.Ogmo;
 
 namespace Reaper.Objects
 {
     public static class Thug
     {
-        public static WorldObjectDefinition Definition(OgmoEntity entity)
+        public static WorldObjectDefinition Definition()
         {
-            var thugDef = new WorldObjectDefinition(32, 32);
+            var thugDef = new WorldObjectDefinition();
 
-            thugDef.SetOgmoDefaults(entity);
+            thugDef.SetSize(32, 32);
+            thugDef.SetOrigin(new Point(32, 32));
             thugDef.AddBehavior(wo => new EnemyBehavior(wo));
             thugDef.AddBehavior(wo => new PlatformerBehavior(wo));
             thugDef.AddBehavior(wo => new TimerBehavior(wo));

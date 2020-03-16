@@ -64,8 +64,10 @@ namespace Reaper.Engine
             return _behaviors;
         }
 
-        public WorldObject MoveXAndCollide(float amount)
+        public bool MoveXAndCollide(float amount, out WorldObject worldObject)
         {
+            worldObject = null;
+
             _positionRemainder.X += amount;
 
             int pixelsToMove = (int)Math.Round(_positionRemainder.X);
@@ -82,7 +84,8 @@ namespace Reaper.Engine
                     {
                         _positionRemainder.X = 0f;
 
-                        return collision;
+                        worldObject = collision;
+                        return true;
                     }
 
                     _position.X += sign;
@@ -90,11 +93,13 @@ namespace Reaper.Engine
                 }
             }
 
-            return null;
+            return false;
         }
 
-        public WorldObject MoveYAndCollide(float amount)
+        public bool MoveYAndCollide(float amount, out WorldObject worldObject)
         {
+            worldObject = null;
+
             _positionRemainder.Y += amount;
 
             int pixelsToMove = (int)Math.Round(_positionRemainder.Y);
@@ -111,7 +116,8 @@ namespace Reaper.Engine
                     {
                         _positionRemainder.Y = 0f;
 
-                        return collision;
+                        worldObject = collision;
+                        return true;
                     }
 
                     _position.Y += sign;
@@ -119,7 +125,7 @@ namespace Reaper.Engine
                 }
             }
 
-            return null;
+            return false;
         }
 
         public void UpdateBBox() 

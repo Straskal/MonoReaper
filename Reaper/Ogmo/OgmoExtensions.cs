@@ -9,13 +9,6 @@ namespace Reaper.Ogmo
 {
     public static class OgmoExtensions
     {
-        public static void SetOgmoDefaults(this WorldObjectDefinition worldObjectDefinition, OgmoEntity ogmoEntity) 
-        {
-            worldObjectDefinition.SetOrigin(new Point(ogmoEntity.OriginX, ogmoEntity.OriginY));
-            worldObjectDefinition.SetMirrored(ogmoEntity.FlippedX);
-            worldObjectDefinition.SetZOrder(ogmoEntity.Values.DrawOrder);
-        }
-
         public static void LoadOgmoLayout(this IGame game, string filename)
         {
             OgmoMap map;
@@ -41,7 +34,7 @@ namespace Reaper.Ogmo
                         Tiles = layer.Data
                     };
 
-                    var tilemapDef = new WorldObjectDefinition(0, 0);
+                    var tilemapDef = new WorldObjectDefinition();
                     tilemapDef.AddBehavior(wo => new TilemapBehavior(wo, data));
 
                     layout.Spawn(tilemapDef, Vector2.Zero);
@@ -50,7 +43,10 @@ namespace Reaper.Ogmo
                 {
                     foreach (var entity in layer.Entities)
                     {
-                        layout.Spawn(Definitions.Get(entity), new Vector2(entity.X, entity.Y));
+                        var wo = layout.Spawn(Definitions.Get(entity), new Vector2(entity.X, entity.Y));
+
+                        wo.IsMirrored = entity.FlippedX;
+                        wo.ZOrder = entity?.Values.DrawOrder ?? 0;
                     }
                 }
             }

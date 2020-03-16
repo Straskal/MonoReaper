@@ -2,7 +2,6 @@
 {
     public class OgmoEntityValues 
     {
-        public int Health { get; set; }
         public int DrawOrder { get; set; }
     }
 

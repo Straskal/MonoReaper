@@ -33,7 +33,9 @@ namespace Reaper.Engine.Behaviors
         {
             Data.Texture = contentManager.Load<Texture2D>(Data.TilesetFilePath);
 
-            var tileDefinition = new WorldObjectDefinition(Data.CellSize, Data.CellSize).MakeSolid();
+            var tileDefinition = new WorldObjectDefinition()
+                .SetSize(Data.CellSize, Data.CellSize)
+                .MakeSolid();
 
             foreach (var tile in GetTileDestinations()) 
             {

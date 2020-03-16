@@ -4,7 +4,6 @@
   "height": 192,
   "offsetX": 0,
   "offsetY": 0,
-  "values": {"Solid": false},
   "layers": [
     {
       "name": "background",
@@ -48,18 +47,18 @@
           "name": "player",
           "id": 2,
           "_eid": "15498917",
-          "x": 176,
+          "x": 208,
           "y": 160,
           "originX": 16,
           "originY": 32,
           "flippedX": false,
-          "values": {"Health": 3, "DrawOrder": 1}
+          "values": {"DrawOrder": 1}
         },
         {
           "name": "thug",
           "id": 3,
           "_eid": "30241187",
-          "x": 256,
+          "x": 272,
           "y": 160,
           "originX": 17,
           "originY": 32,

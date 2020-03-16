@@ -8,29 +8,18 @@ namespace Reaper.Engine
     {
         private readonly List<Action<WorldObject>> _buildSteps = new List<Action<WorldObject>>();
 
-        public WorldObjectDefinition(int width, int height) 
+        public WorldObjectDefinition SetSize(int width, int height) 
         {
-            _buildSteps.Add(worldObject => 
+            _buildSteps.Add(worldObject =>
             {
                 worldObject.Bounds = new Rectangle(0, 0, width, height);
             });
-        }
-
-        public WorldObjectDefinition SetZOrder(int order)
-        {
-            _buildSteps.Add(worldObject => worldObject.ZOrder = order);
             return this;
         }
 
         public WorldObjectDefinition SetOrigin(Point origin)
         {
             _buildSteps.Add(worldObject => worldObject.Origin = origin);
-            return this;
-        }
-
-        public WorldObjectDefinition SetMirrored(bool mirrored)
-        {
-            _buildSteps.Add(worldObject => worldObject.IsMirrored = mirrored);
             return this;
         }
 
