@@ -65,7 +65,7 @@ namespace Reaper.Engine
 
                 Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat4);
 
-                Vector3 resolutionScaleVector = new Vector3(ScreenWidth / VirtualWidth, ScreenWidth / VirtualWidth, 0f);
+                Vector3 resolutionScaleVector = new Vector3((float)ScreenWidth / VirtualWidth, (float)ScreenWidth / VirtualWidth, 1f);
                 Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat4);
 
                 return _translationMat3
@@ -76,7 +76,7 @@ namespace Reaper.Engine
             }
         }
 
-        internal void BeginDraw(SpriteBatch batch)
+        internal void BeginDraw()
         {
             _currentEffect = null;
 

@@ -34,7 +34,6 @@ namespace Reaper.Engine
     {
         private readonly GraphicsDeviceManager _gpuManager;
 
-        private SpriteBatch _spriteBatch;
         private Layout _nextLayout;
 
         internal MainGame(GameSettings gameSettings)
@@ -77,17 +76,6 @@ namespace Reaper.Engine
         {
             _gpuManager.ToggleFullScreen();
         }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-        }
-
-        protected override void UnloadContent()
-        {
-            _spriteBatch.Dispose();
-            
-        }
         
         protected override void Update(GameTime gameTime)
         {
@@ -111,7 +99,7 @@ namespace Reaper.Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            RunningLayout.Draw(_spriteBatch);
+            RunningLayout.Draw();
             base.Draw(gameTime);
         }
     }

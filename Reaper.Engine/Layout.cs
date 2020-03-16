@@ -72,9 +72,9 @@ namespace Reaper.Engine
             _worldObjectList.Tick(gameTime);
         }
 
-        internal void Draw(SpriteBatch batch)
+        internal void Draw()
         {
-            _view.BeginDraw(batch);
+            _view.BeginDraw();
             _worldObjectList.Draw(_view);
             _view.EndDraw();
         }

@@ -35,23 +35,27 @@ namespace Reaper.Engine.Behaviors
 
             var tileDefinition = new WorldObjectDefinition(Data.CellSize, Data.CellSize).MakeSolid();
 
-            foreach (var dest in GetTileDestinations()) 
+            foreach (var tile in GetTileDestinations()) 
             {
-                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(dest.X, dest.Y)));
+                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Destination.X, tile.Destination.Y)));
             }
         }
 
         public override void Draw(LayoutView view)
         {
-            foreach (var dest in GetTileDestinations())
+            foreach (var tile in GetTileDestinations())
             {
-                Rectangle source = new Rectangle(0, 0, Data.CellSize, Data.CellSize);
-
-                view.Draw(Data.Texture, source, dest, Color.White, false);
+                view.Draw(Data.Texture, tile.Source, tile.Destination, Color.White, false);
             }
         }
 
-        private IEnumerable<Rectangle> GetTileDestinations()
+        private struct TileInfo 
+        {
+            public Rectangle Source;
+            public Rectangle Destination;
+        }
+
+        private IEnumerable<TileInfo> GetTileDestinations()
         {
             int currentX = 0;
             int currentY = 0;
@@ -69,7 +73,14 @@ namespace Reaper.Engine.Behaviors
                 if (Data.Tiles[j] == -1)
                     continue;
 
-                yield return new Rectangle(cx * Data.CellSize, currentY * Data.CellSize, Data.CellSize, Data.CellSize);
+                int row = (int)Math.Floor((double)(Data.Tiles[j] / Data.CellsX));
+                int col = (int)Math.Floor((double)(Data.Tiles[j] % Data.CellsY));
+
+                yield return new TileInfo
+                {
+                    Source = new Rectangle(col * Data.CellSize, row * Data.CellSize, Data.CellSize, Data.CellSize),
+                    Destination = new Rectangle(cx * Data.CellSize, currentY * Data.CellSize, Data.CellSize, Data.CellSize)
+                };
             }
         }
     }
