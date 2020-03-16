@@ -6,6 +6,7 @@ namespace Reaper.Engine
     public class LayoutView
     {
         private readonly GameWindow _window;
+        private readonly Layout _layout;
         private readonly GraphicsDevice _gpu;
         private readonly SpriteBatch _batch;
 
@@ -19,11 +20,13 @@ namespace Reaper.Engine
         private Vector3 _scale = Vector3.Zero;
         private Vector3 _resolution = Vector3.Zero;
 
+        private Vector2 _position;
         private Effect _currentEffect;
 
-        public LayoutView(MainGame game)
+        public LayoutView(MainGame game, Layout layout)
         {
             _window = game.Window;
+            _layout = layout;
             _gpu = game.GraphicsDevice;
             _batch = new SpriteBatch(_gpu);
 
@@ -37,7 +40,13 @@ namespace Reaper.Engine
 
         public float Zoom { get; set; }
         public float Rotation { get; set; }
-        public Vector2 Position { get; set; }
+        public Vector2 Position 
+        {
+            get => _position;
+            set => _position = new Vector2(
+                MathHelper.Clamp(value.X, 0 + VirtualWidth * 0.5f, _layout.Width - VirtualWidth * 0.5f),
+                MathHelper.Clamp(value.Y, 0 + VirtualHeight * 0.5f, _layout.Height - VirtualHeight * 0.5f));
+        }
         public int ScreenWidth { get; private set; }
         public int ScreenHeight { get; private set; }
         public int VirtualWidth { get; }

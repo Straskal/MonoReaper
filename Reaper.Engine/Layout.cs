@@ -12,13 +12,18 @@ namespace Reaper.Engine
         public Layout(MainGame game, int cellSize, int width, int height)
         {
             Game = game;
+            Width = width;
+            Height = height;
 
-            _view = new LayoutView(game);
+            _view = new LayoutView(game, this);
             _grid = new LayoutGrid(cellSize * 10, (int)Math.Ceiling((double)width / cellSize * 10), (int)Math.Ceiling((double)height / cellSize * 10));
             _worldObjectList = new WorldObjectList(this);
         }
 
         public MainGame Game { get; }
+
+        public int Width { get; }
+        public int Height { get; }
 
         public Vector2 Position
         {
