@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +40,6 @@ namespace Reaper.Engine
         public Vector2 DrawPosition
         {
             get => _position + _positionRemainder;
-            set => _position = value;
         }
 
         public Point Origin 

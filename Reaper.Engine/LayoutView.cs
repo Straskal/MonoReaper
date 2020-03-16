@@ -7,17 +7,17 @@ namespace Reaper.Engine
     {
         private readonly GameWindow _window;
         private readonly GraphicsDevice _gpu;
+        private readonly SpriteBatch _batch;
 
-        private SpriteBatch _batch;
+        private Matrix _translationMat3 = Matrix.Identity;
+        private Matrix _rotationMat3 = Matrix.Identity;
+        private Matrix _scaleMat3 = Matrix.Identity;
+        private Matrix _resolutionTranslationMat4 = Matrix.Identity;
+        private Matrix _resolutionScaleMat4 = Matrix.Identity;
 
-        private Matrix _camTranslationMatrix = Matrix.Identity;
-        private Matrix _camRotationMatrix = Matrix.Identity;
-        private Matrix _camScaleMatrix = Matrix.Identity;
-        private Matrix _resTranslationMatrix = Matrix.Identity;
-
-        private Vector3 _camTranslationVector = Vector3.Zero;
-        private Vector3 _camScaleVector = Vector3.Zero;
-        private Vector3 _resTranslationVector = Vector3.Zero;
+        private Vector3 _translation = Vector3.Zero;
+        private Vector3 _scale = Vector3.Zero;
+        private Vector3 _resolution = Vector3.Zero;
 
         private Effect _currentEffect;
 
@@ -25,6 +25,7 @@ namespace Reaper.Engine
         {
             _window = game.Window;
             _gpu = game.GraphicsDevice;
+            _batch = new SpriteBatch(_gpu);
 
             VirtualWidth = game.ViewportWidth;
             VirtualHeight = game.ViewportHeight;
@@ -46,46 +47,37 @@ namespace Reaper.Engine
         {
             get
             {
-                _camTranslationVector.X = -Position.X;
-                _camTranslationVector.Y = -Position.Y;
+                _translation.X = -Position.X;
+                _translation.Y = -Position.Y;
 
-                Matrix.CreateTranslation(ref _camTranslationVector, out _camTranslationMatrix);
-                Matrix.CreateRotationZ(Rotation, out _camRotationMatrix);
+                Matrix.CreateTranslation(ref _translation, out _translationMat3);
+                Matrix.CreateRotationZ(Rotation, out _rotationMat3);
 
-                _camScaleVector.X = Zoom;
-                _camScaleVector.Y = Zoom;
-                _camScaleVector.Z = 1;
+                _scale.X = Zoom;
+                _scale.Y = Zoom;
+                _scale.Z = 1;
 
-                Matrix.CreateScale(ref _camScaleVector, out _camScaleMatrix);
+                Matrix.CreateScale(ref _scale, out _scaleMat3);
 
-                _resTranslationVector.X = VirtualWidth * 0.5f;
-                _resTranslationVector.Y = VirtualHeight * 0.5f;
-                _resTranslationVector.Z = 0;
+                _resolution.X = VirtualWidth * 0.5f;
+                _resolution.Y = VirtualHeight * 0.5f;
+                _resolution.Z = 0;
 
-                Matrix.CreateTranslation(ref _resTranslationVector, out _resTranslationMatrix);
+                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat4);
 
-                return _camTranslationMatrix
-                    * _camRotationMatrix
-                    * _camScaleMatrix
-                    * _resTranslationMatrix
-                    * ResolutionScaleMatrix;
-            }
-        }
+                Vector3 resolutionScaleVector = new Vector3(ScreenWidth / VirtualWidth, ScreenWidth / VirtualWidth, 0f);
+                Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat4);
 
-        public Matrix ResolutionScaleMatrix
-        {
-            get
-            {
-                var scaleX = (float)ScreenWidth / VirtualWidth;
-                var scaleY = (float)ScreenWidth / VirtualWidth;
-
-                return Matrix.CreateScale(scaleX, scaleY, 1.0f);
+                return _translationMat3
+                    * _rotationMat3
+                    * _scaleMat3
+                    * _resolutionTranslationMat4
+                    * _resolutionScaleMat4;
             }
         }
 
         internal void BeginDraw(SpriteBatch batch)
         {
-            _batch = batch;
             _currentEffect = null;
 
             SyncViewport();
@@ -107,18 +99,19 @@ namespace Reaper.Engine
 
         public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null) 
         {
-            if (_currentEffect != effect) 
-            {
-                _currentEffect = effect;
-
-                EndDraw();
-                PrepareBatch();
-            }
+            ChangeEffect(effect);
 
             _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
+        {
+            ChangeEffect(effect);
+
+            _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+        }
+
+        private void ChangeEffect(Effect effect) 
         {
             if (_currentEffect != effect)
             {
@@ -127,8 +120,6 @@ namespace Reaper.Engine
                 EndDraw();
                 PrepareBatch();
             }
-
-            _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         internal void EndDraw() 
