@@ -63,6 +63,15 @@ namespace Reaper.Objects
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(32, 0, 32, 32),
+                    }
+                },
+                 new SpriteSheetBehavior.Animation
+                {
+                    Name = "Fall",
+                    ImageFilePath = "player",
+                    SecPerFrame = 0.2f,
+                    Frames = new []
+                    {
                         new SpriteSheetBehavior.Frame(64, 0, 32, 32),
                     }
                 },

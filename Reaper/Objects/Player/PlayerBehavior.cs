@@ -129,7 +129,7 @@ namespace Reaper
         private void GoToJump()
         {
             _platformerBehavior.Jump();
-            _animationBehavior.Play("Idle");
+            _animationBehavior.Play("Jump");
             _currentState = Jump;
         }
 
@@ -169,7 +169,7 @@ namespace Reaper
 
         private void GoToFall()
         {
-            _animationBehavior.Play("Jump");
+            _animationBehavior.Play("Fall");
             _currentState = Fall;
         }
 
