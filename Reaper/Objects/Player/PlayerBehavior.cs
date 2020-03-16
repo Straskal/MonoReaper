@@ -22,6 +22,8 @@ namespace Reaper
             _animationBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
+            Owner.Layout.Zoom = 0.8f;
+
             GoToIdle();
         }
 
@@ -33,16 +35,7 @@ namespace Reaper
 
             _previousKeyState = Keyboard.GetState();
 
-            if (Owner.Position.X > 200) 
-            {
-                Owner.Layout.Zoom = MathHelper.SmoothStep(Owner.Layout.Zoom, 0.8f, 0.1f);
-                Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, 400, 0.1f), Owner.Layout.Position.Y);
-            }
-            else
-            {
-                Owner.Layout.Zoom = MathHelper.SmoothStep(Owner.Layout.Zoom, 1f, 0.1f);
-                Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, 100, 0.1f), Owner.Layout.Position.Y);
-            }
+            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
 
             var keyboardState = Keyboard.GetState();
 

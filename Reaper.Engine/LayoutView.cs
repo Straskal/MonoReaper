@@ -118,6 +118,19 @@ namespace Reaper.Engine
             _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
+        public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
+        {
+            if (_currentEffect != effect)
+            {
+                _currentEffect = effect;
+
+                EndDraw();
+                PrepareBatch();
+            }
+
+            _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+        }
+
         internal void EndDraw() 
         {
             _batch.End();

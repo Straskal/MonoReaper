@@ -27,13 +27,20 @@ namespace Reaper.Engine
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
-        public int ZOrder { get; set; }
         public bool IsSolid { get; set; }
+        public int ZOrder { get; set; }
+
         internal bool MarkedForDestroy { get; private set; }
 
         public Vector2 Position
         {
             get => _position;
+            set => _position = value;
+        }
+
+        public Vector2 DrawPosition
+        {
+            get => _position + _positionRemainder;
             set => _position = value;
         }
 
@@ -74,7 +81,11 @@ namespace Reaper.Engine
                 while (pixelsToMove != 0)
                 {
                     if (Layout.TestOverlapOffset(this, sign, 0, out var collision))
+                    {
+                        _positionRemainder.X = 0f;
+
                         return collision;
+                    }
 
                     _position.X += sign;
                     pixelsToMove -= sign;
@@ -99,7 +110,11 @@ namespace Reaper.Engine
                 while (pixelsToMove != 0)
                 {
                     if (Layout.TestOverlapOffset(this, 0, sign, out var collision))
+                    {
+                        _positionRemainder.Y = 0f;
+
                         return collision;
+                    }
 
                     _position.Y += sign;
                     pixelsToMove -= sign;
