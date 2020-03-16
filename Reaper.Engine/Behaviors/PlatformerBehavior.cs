@@ -119,7 +119,16 @@ namespace Reaper.Engine.Behaviors
         private void ApplyVelocity(float elapsedTime)
         {
             Owner.MoveX(_velocity.X * elapsedTime);
-            Owner.MoveY(_velocity.Y * elapsedTime);
+
+            var overlappedObject = Owner.MoveY(_velocity.Y * elapsedTime);
+
+            // We hit our noggin.
+            if (overlappedObject != null && overlappedObject.Bounds.Bottom < Owner.Bounds.Top) 
+            {
+                _velocity.Y = 0; 
+                _jumpTime = 0f;
+            }
+
             Owner.UpdateBBox();
         }
 

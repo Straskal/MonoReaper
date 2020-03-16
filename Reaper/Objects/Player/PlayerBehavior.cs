@@ -81,7 +81,7 @@ namespace Reaper
             {
                 GoToFall();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left)) 
+            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left)) 
             {
                 GoToAttack();
             }
@@ -120,7 +120,7 @@ namespace Reaper
             {
                 GoToJump();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left))
+            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
             {
                 GoToAttack();
             }
@@ -203,7 +203,7 @@ namespace Reaper
                     GoToIdle();
                 }
             }
-            else if (keyboardState.IsKeyDown(Keys.Left))
+            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
             {
                 _platformerBehavior.GravityAcceleration = 0;
                 _platformerBehavior.Velocity = Vector2.Zero;

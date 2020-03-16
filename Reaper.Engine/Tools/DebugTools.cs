@@ -39,7 +39,7 @@ namespace Reaper.Engine.Tools
             {
                 Rectangle destination = new Rectangle((int)(wo.Position.X - wo.Origin.X), (int)(wo.Position.Y - wo.Origin.Y), wo.Bounds.Width, wo.Bounds.Height);
 
-                batch.Draw(_texture, destination, null, new Color(255, 0, 0, 50));
+                batch.Draw(_texture, destination, null, new Color(150, 0, 0, 50));
             }
         }
     }
