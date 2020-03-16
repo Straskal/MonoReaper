@@ -83,5 +83,10 @@ namespace Reaper.Engine
             _worldObjectList.Draw(_view);
             _view.EndDraw();
         }
+
+        internal void Unload() 
+        {
+            _view.Unload();
+        }
     }
 }

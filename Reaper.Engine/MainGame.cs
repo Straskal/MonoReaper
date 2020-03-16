@@ -83,6 +83,11 @@ namespace Reaper.Engine
             DebugTools.Initialize(_gpuManager.GraphicsDevice);
         }
 
+        protected override void UnloadContent()
+        {
+            RunningLayout.Unload();
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (_nextLayout != null) 

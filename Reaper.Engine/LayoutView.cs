@@ -137,6 +137,11 @@ namespace Reaper.Engine
             _batch.End();
         }
 
+        internal void Unload() 
+        {
+            _batch.Dispose();
+        }
+
         private void SyncViewport()
         {
             ScreenWidth = _window.ClientBounds.Width;

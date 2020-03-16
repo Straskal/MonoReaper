@@ -43,6 +43,7 @@ namespace Reaper.Engine.Behaviors
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }
 
+        public Effect Effect { get; set; }
         public Animation CurrentAnimation { get; private set; }
         public int CurrentFrame { get; private set; }
         public bool IsFinished { get; private set; }
@@ -106,7 +107,7 @@ namespace Reaper.Engine.Behaviors
                 ? Owner.DrawPosition.X - (frame.Source.Width - Owner.Origin.X)
                 : Owner.DrawPosition.X - Owner.Origin.X;
 
-            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - Owner.Origin.Y), Color.White, Owner.IsMirrored);
+            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - Owner.Origin.Y), Color.White, Owner.IsMirrored, Effect);
         }
     }
 }
