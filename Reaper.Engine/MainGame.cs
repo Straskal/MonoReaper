@@ -21,14 +21,12 @@ namespace Reaper.Engine
         Layout RunningLayout { get; }
         int ViewportWidth { get; }
         int ViewportHeight { get; }
-
-
         bool IsFullscreen { get; }
 
-        void ChangeLayout(Layout layout);
         Layout GetEmptyLayout(int v, int width, int height);
-        void Run();
+        void ChangeLayout(Layout layout);
         void ToggleFullscreen();
+        void Run();
     }
 
     public class MainGame : Game, IGame

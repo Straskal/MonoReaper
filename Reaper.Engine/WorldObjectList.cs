@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
@@ -14,8 +13,6 @@ namespace Reaper.Engine
         private readonly List<WorldObject> _toSpawn;
         private readonly List<WorldObject> _toDestroy;
 
-        private IEnumerable<Behavior> _allBehaviors;
-
         public WorldObjectList(Layout layout) 
         {
             _layout = layout ?? throw new ArgumentNullException(nameof(layout));
@@ -23,7 +20,6 @@ namespace Reaper.Engine
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
-            _allBehaviors = new List<Behavior>();
         }
 
         public WorldObject Create(Vector2 position)
@@ -52,7 +48,12 @@ namespace Reaper.Engine
         {
             InvokeBehaviorCallbacks();
             SyncWorldObjectLists();
-            TickAllBehaviors(gameTime);
+
+            foreach (var worldObject in _worldObjects) 
+            {
+                worldObject.Tick(gameTime);
+            }
+
             SyncPreviousFrameData();
         }
 
@@ -70,7 +71,7 @@ namespace Reaper.Engine
         {
             for (int i = 0; i < _toSpawn.Count; i++) 
             {
-                _toSpawn[i].Load(_layout.Game.Content);
+                _toSpawn[i].Load(_layout.Content);
             }
 
             foreach (var toDestroy in _toDestroy)
@@ -104,7 +105,6 @@ namespace Reaper.Engine
             _toDestroy.Clear();
 
             _worldObjects.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
-            _allBehaviors = _worldObjects.SelectMany(worldObject => worldObject.GetBehaviors());
         }
 
         private void SyncPreviousFrameData()
@@ -112,14 +112,6 @@ namespace Reaper.Engine
             foreach (var worldObject in _worldObjects)
             {
                 worldObject.UpdatePreviousPosition();
-            }
-        }
-
-        private void TickAllBehaviors(GameTime gameTime)
-        {
-            foreach (var behavior in _allBehaviors)
-            {
-                behavior.Tick(gameTime);
             }
         }
     }

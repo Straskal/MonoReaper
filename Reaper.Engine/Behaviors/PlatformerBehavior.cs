@@ -118,9 +118,9 @@ namespace Reaper.Engine.Behaviors
 
         private void ApplyVelocity(float elapsedTime)
         {
-            Owner.MoveX(_velocity.X * elapsedTime);
+            Owner.MoveXAndCollide(_velocity.X * elapsedTime);
 
-            var overlappedObject = Owner.MoveY(_velocity.Y * elapsedTime);
+            var overlappedObject = Owner.MoveYAndCollide(_velocity.Y * elapsedTime);
 
             // We hit our noggin.
             if (overlappedObject != null && overlappedObject.Bounds.Bottom < Owner.Bounds.Top) 

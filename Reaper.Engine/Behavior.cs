@@ -4,6 +4,9 @@ using System;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// Behaviors define the actions of a world object.
+    /// </summary>
     public abstract class Behavior
     {
         public Behavior(WorldObject owner) 

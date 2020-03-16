@@ -46,11 +46,6 @@ namespace Reaper.Engine
             return this;
         }
 
-        public WorldObjectDefinition AddEffect(string name, bool isEnabled) 
-        {
-            return this;
-        }
-
         internal void Build(WorldObject worldObject) 
         {
             foreach (var step in _buildSteps)

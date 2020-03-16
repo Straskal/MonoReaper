@@ -13,8 +13,8 @@ namespace Reaper.Engine
         private Matrix _translationMat3 = Matrix.Identity;
         private Matrix _rotationMat3 = Matrix.Identity;
         private Matrix _scaleMat3 = Matrix.Identity;
-        private Matrix _resolutionTranslationMat4 = Matrix.Identity;
-        private Matrix _resolutionScaleMat4 = Matrix.Identity;
+        private Matrix _resolutionTranslationMat3 = Matrix.Identity;
+        private Matrix _resolutionScaleMat3 = Matrix.Identity;
 
         private Vector3 _translation = Vector3.Zero;
         private Vector3 _scale = Vector3.Zero;
@@ -41,13 +41,19 @@ namespace Reaper.Engine
         public SpriteBatch SpriteBatch => _batch;
         public float Zoom { get; set; }
         public float Rotation { get; set; }
+
         public Vector2 Position 
         {
             get => _position;
-            set => _position = new Vector2(
-                MathHelper.Clamp(value.X, 0 + VirtualWidth * 0.5f, _layout.Width - VirtualWidth * 0.5f),
-                MathHelper.Clamp(value.Y, 0 + VirtualHeight * 0.5f, _layout.Height - VirtualHeight * 0.5f));
+            set
+            {
+                var min = new Vector2(0 + VirtualWidth * 0.5f, 0 + VirtualHeight * 0.5f);
+                var max = new Vector2(_layout.Width - VirtualWidth * 0.5f, _layout.Height - VirtualHeight * 0.5f);
+
+                _position = Vector2.Clamp(value, min, max);
+            }
         }
+
         public int ScreenWidth { get; private set; }
         public int ScreenHeight { get; private set; }
         public int VirtualWidth { get; }
@@ -73,16 +79,16 @@ namespace Reaper.Engine
                 _resolution.Y = VirtualHeight * 0.5f;
                 _resolution.Z = 0;
 
-                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat4);
+                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat3);
 
                 Vector3 resolutionScaleVector = new Vector3((float)ScreenWidth / VirtualWidth, (float)ScreenWidth / VirtualWidth, 1f);
-                Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat4);
+                Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat3);
 
                 return _translationMat3
                     * _rotationMat3
                     * _scaleMat3
-                    * _resolutionTranslationMat4
-                    * _resolutionScaleMat4;
+                    * _resolutionTranslationMat3
+                    * _resolutionScaleMat3;
             }
         }
 

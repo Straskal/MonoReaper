@@ -64,7 +64,7 @@ namespace Reaper.Engine
             return _behaviors;
         }
 
-        public WorldObject MoveX(float amount)
+        public WorldObject MoveXAndCollide(float amount)
         {
             _positionRemainder.X += amount;
 
@@ -93,7 +93,7 @@ namespace Reaper.Engine
             return null;
         }
 
-        public WorldObject MoveY(float amount)
+        public WorldObject MoveYAndCollide(float amount)
         {
             _positionRemainder.Y += amount;
 

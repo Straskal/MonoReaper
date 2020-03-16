@@ -1,8 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// Layouts can range from boss battles, levels, to menu screens.
+    /// 
+    /// - Layouts contain world objects.
+    /// - Layouts are mostly a pass through for their components (the view, spatial grid, and object lists, etc...).
+    /// </summary>
     public class Layout
     {
         private readonly LayoutView _view;
@@ -18,10 +25,12 @@ namespace Reaper.Engine
             _view = new LayoutView(game, this);
             _grid = new LayoutGrid(cellSize * 10, (int)Math.Ceiling((double)width / cellSize * 10), (int)Math.Ceiling((double)height / cellSize * 10));
             _worldObjectList = new WorldObjectList(this);
+
+            Content = new ContentManager(game.Services, "Content");
         }
 
         public MainGame Game { get; }
-
+        public ContentManager Content { get; }
         public int Width { get; }
         public int Height { get; }
 
@@ -41,35 +50,34 @@ namespace Reaper.Engine
         {
             var worldObject = _worldObjectList.Create(position);
             definition.Build(worldObject);
-
             _grid.Add(worldObject);
             return worldObject;
         }
 
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset) 
         {
-            return _grid.TestOverlapOffset(worldObject, xOffset, yOffset);
+            return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset);
         }
 
         public bool TestOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
-            return _grid.TestOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
+            return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
         }
 
         public WorldObject[] TestOverlap(Rectangle bounds) 
         {
-            return _grid.TestOverlap(bounds);
-        }
-               
-        internal void Destroy(WorldObject worldObject)
-        {
-            _grid.Remove(worldObject);
-            _worldObjectList.DestroyObject(worldObject);
+            return _grid.QueryBounds(bounds);
         }
 
         internal void UpdateGridCell(WorldObject worldObject)
         {
             _grid.Update(worldObject);
+        }
+
+        internal void Destroy(WorldObject worldObject)
+        {
+            _grid.Remove(worldObject);
+            _worldObjectList.DestroyObject(worldObject);
         }
 
         internal void Tick(GameTime gameTime)
