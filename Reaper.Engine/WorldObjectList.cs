@@ -62,6 +62,14 @@ namespace Reaper.Engine
             SyncPreviousFrameData();
         }
 
+        public void PostTick(GameTime gameTime)
+        {
+            foreach (var worldObject in _worldObjects)
+            {
+                worldObject.PostTick(gameTime);
+            }
+        }
+
         public void Draw(LayoutView view) 
         {
             foreach (var worldObject in _worldObjects)

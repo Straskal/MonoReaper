@@ -170,6 +170,14 @@ namespace Reaper.Engine
             }
         }
 
+        internal void PostTick(GameTime gameTime)
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.PostTick(gameTime);
+            }
+        }
+
         internal void Draw(LayoutView view)
         {
             foreach (var behavior in _behaviors)

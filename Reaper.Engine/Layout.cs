@@ -90,6 +90,11 @@ namespace Reaper.Engine
             _worldObjectList.Tick(gameTime);
         }
 
+        internal void PostTick(GameTime gameTime)
+        {
+            _worldObjectList.PostTick(gameTime);
+        }
+
         internal void Draw()
         {
             _view.BeginDraw();

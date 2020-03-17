@@ -59,6 +59,11 @@ namespace Reaper
             }
         }
 
+        public override void PostTick(GameTime gameTime)
+        {
+            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
+        }
+
         private void GoToIdle() 
         {
             _animationBehavior.Play("Idle");
