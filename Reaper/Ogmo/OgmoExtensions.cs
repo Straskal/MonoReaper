@@ -57,6 +57,16 @@ namespace Reaper.Ogmo
 
                         wo.IsMirrored = entity.FlippedX;
                         wo.ZOrder = entity?.Values.DrawOrder ?? 0;
+
+                        switch (entity.Name) 
+                        {
+                            case "transition":
+                                if (string.IsNullOrWhiteSpace(entity.Values.Level))
+                                    throw new ArgumentException("Level transitions must be provided with a layout to load");
+
+                                wo.GetBehavior<LevelTransitionBehavior>().Level = entity.Values.Level;
+                                break;
+                        }
                     }
                 }
             }

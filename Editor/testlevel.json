@@ -59,6 +59,26 @@
           "originY": 32,
           "flippedX": false,
           "values": {"DrawOrder": 0}
+        },
+        {
+          "name": "transition",
+          "id": 5,
+          "_eid": "48795505",
+          "x": 16,
+          "y": 144,
+          "originX": 0,
+          "originY": 0,
+          "values": {"level": "testlevel2.json"}
+        },
+        {
+          "name": "transition",
+          "id": 6,
+          "_eid": "48795505",
+          "x": 1232,
+          "y": 144,
+          "originX": 0,
+          "originY": 0,
+          "values": {"level": "testlevel2.json"}
         }
       ]
     },

@@ -29,6 +29,7 @@ namespace Reaper.Objects
         {
             _definitionFactories.Add("player", Player.Definition);
             _definitionFactories.Add("thug", Thug.Definition);
+            _definitionFactories.Add("transition", LevelTransitionDefinition.Definition);
         }
     }
 }

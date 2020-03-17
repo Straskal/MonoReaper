@@ -3,6 +3,7 @@
     public class OgmoEntityValues 
     {
         public int DrawOrder { get; set; }
+        public string Level { get; set; }
     }
 
     public class OgmoEntity
