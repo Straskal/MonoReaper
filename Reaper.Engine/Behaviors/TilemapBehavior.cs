@@ -33,6 +33,9 @@ namespace Reaper.Engine.Behaviors
         {
             Data.Texture = contentManager.Load<Texture2D>(Data.TilesetFilePath);
 
+            if (!Owner.IsSolid)
+                return;
+
             var tileDefinition = new WorldObjectDefinition()
                 .SetSize(Data.CellSize, Data.CellSize)
                 .MakeSolid();
@@ -75,8 +78,8 @@ namespace Reaper.Engine.Behaviors
                 if (Data.Tiles[j] == -1)
                     continue;
 
-                int row = (int)Math.Floor((double)(Data.Tiles[j] / Data.CellsX));
-                int col = (int)Math.Floor((double)(Data.Tiles[j] % Data.CellsY));
+                int row = (int)Math.Floor((double)(Data.Tiles[j] / 2));
+                int col = (int)Math.Floor((double)(Data.Tiles[j] % 2));
 
                 yield return new TileInfo
                 {

@@ -2,6 +2,7 @@
 {
     public class OgmoLayer
     {
+        public string Name { get; set; }
         public int GridCellWidth { get; set; }
         public int GridCellHeight { get; set; }
         public int GridCellsX { get; set; }

@@ -22,6 +22,8 @@ namespace Reaper.Ogmo
 
             var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
 
+            int tmDrawLayer = -10;
+
             foreach (var layer in map.Layers)
             {
                 if (layer.Data != null)
@@ -36,9 +38,16 @@ namespace Reaper.Ogmo
                     };
 
                     var tilemapDef = new WorldObjectDefinition();
+
+                    if (layer.Name == "middleground") 
+                    {
+                        tilemapDef.MakeSolid();
+                    }
+
                     tilemapDef.AddBehavior(wo => new TilemapBehavior(wo, data));
 
-                    layout.Spawn(tilemapDef, Vector2.Zero);
+                    var tm = layout.Spawn(tilemapDef, Vector2.Zero);
+                    tm.ZOrder = tmDrawLayer--;
                 }
                 else if (layer.Entities != null)
                 {
