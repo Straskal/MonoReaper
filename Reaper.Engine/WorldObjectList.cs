@@ -22,6 +22,11 @@ namespace Reaper.Engine
             _toDestroy = new List<WorldObject>();
         }
 
+        public T GetWorldObjectOfType<T>() where T : Behavior
+        {
+            return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
+        }
+
         public WorldObject Create(Vector2 position)
         {
             var worldObject = new WorldObject(_layout)

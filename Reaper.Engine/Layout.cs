@@ -54,6 +54,11 @@ namespace Reaper.Engine
             return worldObject;
         }
 
+        public T GetWorldObjectOfType<T>() where T : Behavior
+        {
+            return _worldObjectList.GetWorldObjectOfType<T>();
+        }
+
         public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset) 
         {
             return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset);

@@ -20,7 +20,7 @@ namespace Reaper.Objects
             {
                 new SpriteSheetBehavior.Animation
                 {
-                    Name = "Idle",
+                    Name = "idle",
                     ImageFilePath = "thug",
                     SecPerFrame = 0.1f,
                     Loop = true,
@@ -34,7 +34,7 @@ namespace Reaper.Objects
                 },
                 new SpriteSheetBehavior.Animation
                 {
-                    Name = "Walk",
+                    Name = "walk",
                     ImageFilePath = "thug",
                     SecPerFrame = 0.2f,
                     Loop = true,
@@ -44,6 +44,22 @@ namespace Reaper.Objects
                         new SpriteSheetBehavior.Frame(96, 0, 32, 32),
                         new SpriteSheetBehavior.Frame(0, 32, 32, 32),
                         new SpriteSheetBehavior.Frame(32, 32, 32, 32),
+                    }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "stab",
+                    ImageFilePath = "thug",
+                    SecPerFrame = 0.2f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(0, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(1, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(1, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(2, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(2, 64, 64, 32)
                     }
                 }
             }));

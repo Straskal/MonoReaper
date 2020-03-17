@@ -60,10 +60,10 @@ namespace Reaper.Engine.Behaviors
 
         public void Play(string name)
         {
-            if (CurrentAnimation?.Name == name)
+            if (name.Equals(CurrentAnimation?.Name, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            CurrentAnimation = _animations.Single(anim => anim.Name == name);
+            CurrentAnimation = _animations.Single(anim => anim.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             CurrentFrame = 0;
             IsFinished = false;
         }
