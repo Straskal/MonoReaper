@@ -16,7 +16,7 @@
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
-  "playCommand": "dotnet build ..\\Core.sln --no-restore & dotnet ..\\Reaper\\bin\\Debug\\netcoreapp2.0\\Reaper.dll testlevel.json",
+  "playCommand": "start scripts\\run_level.bat testlevel.json",
   "entityTags": ["templates", "player", "enemies"],
   "layers": [
     {
