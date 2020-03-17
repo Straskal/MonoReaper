@@ -78,8 +78,9 @@ namespace Reaper.Engine.Behaviors
                 if (Data.Tiles[j] == -1)
                     continue;
 
-                int row = (int)Math.Floor((double)(Data.Tiles[j] / 2));
-                int col = (int)Math.Floor((double)(Data.Tiles[j] % 2));
+                int numHorizontalCells = Data.Texture.Width / Data.CellSize;
+                int row = (int)Math.Floor((double)(Data.Tiles[j] / numHorizontalCells));
+                int col = (int)Math.Floor((double)(Data.Tiles[j] % numHorizontalCells));
 
                 yield return new TileInfo
                 {
