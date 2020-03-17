@@ -62,14 +62,34 @@ namespace Reaper.Objects
             _spriteSheet.Play("Walk");
             _platformer.MaxSpeed = 70f;
             _currentState = Chase;
-
         }
 
         private void Chase(GameTime gameTime)
         {
             _platformer.Move(_movement);
 
-            if (!HasPlayerInSight())
+            if (HasPlayerInSight()) 
+            {
+                if (MathHelper.Distance(Owner.Position.X, _player.Owner.Position.X) < 32) 
+                {
+                    GoToAttack(gameTime);
+                }
+            }
+            else 
+            {
+                GoToPatrol(gameTime);
+            }
+        }
+
+        private void GoToAttack(GameTime gameTime)
+        {
+            _spriteSheet.Play("stab");
+            _currentState = Attack;
+        }
+
+        private void Attack(GameTime gameTime)
+        {
+            if (_spriteSheet.IsFinished) 
             {
                 GoToPatrol(gameTime);
             }

@@ -49,17 +49,17 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "stab",
-                    ImageFilePath = "thug",
-                    SecPerFrame = 0.2f,
-                    Loop = true,
+                    ImageFilePath = "thug_attack",
+                    SecPerFrame = 0.15f,
+                    Loop = false,
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 32, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 32, 64, 32),
                         new SpriteSheetBehavior.Frame(0, 64, 64, 32),
-                        new SpriteSheetBehavior.Frame(1, 0, 64, 32),
-                        new SpriteSheetBehavior.Frame(1, 64, 64, 32),
-                        new SpriteSheetBehavior.Frame(2, 0, 64, 32),
-                        new SpriteSheetBehavior.Frame(2, 64, 64, 32)
+                        new SpriteSheetBehavior.Frame(64, 64, 64, 32)
                     }
                 }
             }));

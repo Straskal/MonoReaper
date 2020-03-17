@@ -48,6 +48,28 @@
           "originY": 32,
           "flippedX": false,
           "values": {"DrawOrder": 0}
+        },
+        {
+          "name": "thug",
+          "id": 3,
+          "_eid": "30241187",
+          "x": 392,
+          "y": 96,
+          "originX": 16,
+          "originY": 32,
+          "flippedX": false,
+          "values": {"DrawOrder": 0}
+        },
+        {
+          "name": "thug",
+          "id": 4,
+          "_eid": "30241187",
+          "x": 760,
+          "y": 144,
+          "originX": 16,
+          "originY": 32,
+          "flippedX": false,
+          "values": {"DrawOrder": 0}
         }
       ]
     },
