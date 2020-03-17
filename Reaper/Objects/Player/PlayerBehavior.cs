@@ -243,7 +243,7 @@ namespace Reaper
                     if (damageable == null)
                         continue;
 
-                    damageable.Damage(1);
+                    damageable.Damage(new Damage { Amount = 1 });
                 }
 
                 _hasCheckedForHits = true;

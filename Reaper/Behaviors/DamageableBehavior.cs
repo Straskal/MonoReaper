@@ -2,23 +2,30 @@
 using Microsoft.Xna.Framework.Graphics;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
+using System;
 
 namespace Reaper
 {
+    public struct Damage
+    {
+        public int Amount;
+    }
+
+    public struct DamageResponse
+    {
+
+    }
+
     public class DamageableBehavior : Behavior
     {
-        public interface IDamageableCallback 
-        {
-            void OnDamaged(int amount);
-        }
-
         private TimerBehavior _timerBehavior;
-        private IDamageableCallback _damageableCallback;
         private Effect _damagedEffect;
 
         public DamageableBehavior(WorldObject owner) : base(owner)
         {
         }
+
+        public event Func<Damage, DamageResponse> OnDamaged;
 
         public override void Load(ContentManager contentManager)
         {
@@ -30,18 +37,12 @@ namespace Reaper
             _timerBehavior = Owner.GetBehavior<TimerBehavior>();
         }
 
-        public void SetCallback(IDamageableCallback callback) 
+        public void Damage(Damage damage)
         {
-            _damageableCallback = callback;
-        }
-
-        public void Damage(int amount)
-        {
+            OnDamaged?.Invoke(damage);
             Owner.GetBehavior<SpriteSheetBehavior>().Effect = _damagedEffect;
 
             _timerBehavior.StartTimer(0.1f, () => Owner.GetBehavior<SpriteSheetBehavior>().Effect = null);
-
-            _damageableCallback?.OnDamaged(amount);
         }
     }
 }

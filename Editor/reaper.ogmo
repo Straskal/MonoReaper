@@ -3,7 +3,7 @@
   "ogmoVersion": "3.3.0",
   "levelPaths": ["."],
   "backgroundColor": "#282c34ff",
-  "gridColor": "#3c40491e",
+  "gridColor": "#3c40490c",
   "anglesRadians": true,
   "directoryDepth": 5,
   "layerGridDefaultSize": {"x": 32, "y": 32},

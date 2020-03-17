@@ -2,7 +2,6 @@
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using System;
-using System.Linq;
 
 namespace Reaper.Objects
 {
@@ -11,6 +10,7 @@ namespace Reaper.Objects
         private PlatformerBehavior _platformer;
         private SpriteSheetBehavior _spriteSheet;
         private Action<GameTime> _currentState;
+        private DamageableBehavior _damageable;
         private float _movement;
 
         private PlayerBehavior _player;
@@ -23,17 +23,24 @@ namespace Reaper.Objects
         {
             _platformer = Owner.GetBehavior<PlatformerBehavior>();
             _spriteSheet = Owner.GetBehavior<SpriteSheetBehavior>();
-            _currentState = GoToPatrol;
-
+            _damageable = Owner.GetBehavior<DamageableBehavior>();
             _player = Owner.Layout.GetWorldObjectOfType<PlayerBehavior>();
+            _damageable.OnDamaged += OnDamaged;
+
+            GoToPatrol();
+        }
+
+        public override void OnOwnerDestroyed()
+        {
+            _damageable.OnDamaged -= OnDamaged;
         }
 
         public override void Tick(GameTime gameTime)
         {
-            _currentState.Invoke(gameTime);
+            _currentState?.Invoke(gameTime);
         }
 
-        private void GoToPatrol(GameTime gameTime)
+        private void GoToPatrol()
         {
             _spriteSheet.Play("Walk");
             _movement = Owner.IsMirrored ? -1f : 1f;
@@ -60,7 +67,7 @@ namespace Reaper.Objects
         private void GoToChase(GameTime gameTime)
         {
             _spriteSheet.Play("Walk");
-            _platformer.MaxSpeed = 70f;
+            _platformer.MaxSpeed = 100f;
             _currentState = Chase;
         }
 
@@ -72,16 +79,16 @@ namespace Reaper.Objects
             {
                 if (MathHelper.Distance(Owner.Position.X, _player.Owner.Position.X) < 32) 
                 {
-                    GoToAttack(gameTime);
+                    GoToAttack();
                 }
             }
             else 
             {
-                GoToPatrol(gameTime);
+                GoToPatrol();
             }
         }
 
-        private void GoToAttack(GameTime gameTime)
+        private void GoToAttack()
         {
             _spriteSheet.Play("stab");
             _currentState = Attack;
@@ -91,8 +98,45 @@ namespace Reaper.Objects
         {
             if (_spriteSheet.IsFinished) 
             {
-                GoToPatrol(gameTime);
+                if (HasPlayerInSight())
+                {
+                    GoToChase(gameTime);
+                }
+                else
+                {
+                    _movement *= -1f;
+                    Owner.IsMirrored = !Owner.IsMirrored;
+
+                    GoToPatrol();
+                }
             }
+        }
+
+        private void GoToStunned()
+        {
+            _spriteSheet.Play("Walk");
+            _platformer.Freeze();
+            _currentState = null;
+
+            Owner.GetBehavior<TimerBehavior>().StartTimer(0.2f, () => 
+            {
+                _platformer.Unfreeze();
+
+                if (!HasPlayerInSight())
+                {
+                    _movement *= -1f;
+                    Owner.IsMirrored = !Owner.IsMirrored;
+                }
+
+                GoToAttack();
+            });
+        }
+
+        private DamageResponse OnDamaged(Damage amount) 
+        {
+            GoToStunned();
+
+            return new DamageResponse();
         }
 
         private bool IsGoingToFall()
