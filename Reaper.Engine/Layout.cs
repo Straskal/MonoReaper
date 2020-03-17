@@ -105,6 +105,7 @@ namespace Reaper.Engine
         internal void Unload() 
         {
             _view.Unload();
+            Content.Unload();
         }
     }
 }
