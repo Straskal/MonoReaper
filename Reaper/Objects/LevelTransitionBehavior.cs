@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
-using Reaper.Ogmo;
 
 namespace Reaper.Objects
 {
@@ -31,10 +30,10 @@ namespace Reaper.Objects
 
         public override void Tick(GameTime gameTime)
         {
-            if (Owner.Bounds.Intersects(_player.Bounds)) 
-            {
-                Owner.Layout.Game.LoadOgmoLayout(Level);
-            }
+            //if (Owner.Bounds.Intersects(_player.Bounds)) 
+            //{
+            //    Owner.Layout.Game.LoadOgmoLayout(Level);
+            //}
         }
     }
 }

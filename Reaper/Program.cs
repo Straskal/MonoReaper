@@ -1,7 +1,7 @@
 ﻿using Reaper.Objects;
 using Reaper.Engine;
 using System;
-using Reaper.Ogmo;
+using Reaper.Tiled.Extensions;
 
 namespace Reaper
 {
@@ -16,7 +16,7 @@ namespace Reaper
             {
                 ViewportWidth = 320,
                 ViewportHeight = 180,
-                IsFullscreen = false,
+                IsFullscreen = true,
                 IsResizable = true,
                 IsBordered = true,
                 IsVsyncEnabled = true
@@ -24,7 +24,7 @@ namespace Reaper
 
             using (var game = MainGameFactory.Create(settings))
             {
-                game.LoadOgmoLayout(args[0]);
+                game.LoadTiledLayout("C:/git/MonoReaper/Reaper/Content/Levels/TestLevel.json");
                 game.Run();
             }
         }

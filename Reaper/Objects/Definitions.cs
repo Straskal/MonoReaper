@@ -1,7 +1,6 @@
 ﻿using Reaper.Engine;
 using System;
 using System.Collections.Generic;
-using Reaper.Ogmo;
 
 namespace Reaper.Objects
 {
@@ -9,19 +8,14 @@ namespace Reaper.Objects
     {
         private static readonly Dictionary<string, Func<WorldObjectDefinition>> _definitionFactories = new Dictionary<string, Func<WorldObjectDefinition>>();
         private static readonly Dictionary<string, WorldObjectDefinition> _definitions = new Dictionary<string, WorldObjectDefinition>();
-
-        public static WorldObjectDefinition Get(OgmoEntity ogmoEntity) 
-        {
-            if (!_definitions.ContainsKey(ogmoEntity.Name)) 
-            {
-                _definitions.Add(ogmoEntity.Name, _definitionFactories[ogmoEntity.Name].Invoke());
-            }
-
-            return _definitions[ogmoEntity.Name];
-        }
-
+        
         public static WorldObjectDefinition Get(string name)
         {
+            if (!_definitions.ContainsKey(name))
+            {
+                _definitions.Add(name, _definitionFactories[name].Invoke());
+            }
+
             return _definitions[name];
         }
 

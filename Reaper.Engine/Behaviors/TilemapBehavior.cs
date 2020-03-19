@@ -75,12 +75,12 @@ namespace Reaper.Engine.Behaviors
 
                 int cx = currentX++;
 
-                if (Data.Tiles[j] == -1)
+                if (Data.Tiles[j] <= 0)
                     continue;
 
                 int numHorizontalCells = Data.Texture.Width / Data.CellSize;
-                int row = (int)Math.Floor((double)(Data.Tiles[j] / numHorizontalCells));
-                int col = (int)Math.Floor((double)(Data.Tiles[j] % numHorizontalCells));
+                int row = (int)Math.Floor((double)(Data.Tiles[j] - 1) / numHorizontalCells);
+                int col = (int)Math.Floor((double)(Data.Tiles[j] - 1) % numHorizontalCells);
 
                 yield return new TileInfo
                 {
