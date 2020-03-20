@@ -37,7 +37,7 @@ namespace Reaper.Tiled.Extensions
                                 CellSize = map.TileWidth,
                                 CellsX = layer.Width,
                                 CellsY = layer.Height,
-                                TilesetFilePath = "Art/Tilesets/" + tilesets[i].Name,
+                                TilesetFilePath = "Levels/Tilesets/" + tilesets[i].Name,
                                 Tiles = layer.Data
                             };
 
