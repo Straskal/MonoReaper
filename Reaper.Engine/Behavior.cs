@@ -18,6 +18,7 @@ namespace Reaper.Engine
 
         public virtual void Load(ContentManager contentManager) { }
         public virtual void OnOwnerCreated() { }
+        public virtual void OnLayoutStarted() { }
         public virtual void Tick(GameTime gameTime) { }
         public virtual void PostTick(GameTime gameTime) { }
         public virtual void Draw(LayoutView view) { }

@@ -24,8 +24,12 @@ namespace Reaper.Objects
             _platformer = Owner.GetBehavior<PlatformerBehavior>();
             _spriteSheet = Owner.GetBehavior<SpriteSheetBehavior>();
             _damageable = Owner.GetBehavior<DamageableBehavior>();
-            _player = Owner.Layout.GetWorldObjectOfType<PlayerBehavior>();
             _damageable.OnDamaged += OnDamaged;
+        }
+
+        public override void OnLayoutStarted()
+        {
+            _player = Owner.Layout.GetWorldObjectOfType<PlayerBehavior>();
 
             GoToPatrol();
         }

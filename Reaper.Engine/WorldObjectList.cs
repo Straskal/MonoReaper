@@ -51,14 +51,9 @@ namespace Reaper.Engine
 
         public void Tick(GameTime gameTime)
         {
-            InvokeBehaviorCallbacks();
+            LoadSpawnedWorldObjects();
             SyncWorldObjectLists();
-
-            foreach (var worldObject in _worldObjects) 
-            {
-                worldObject.Tick(gameTime);
-            }
-
+            TickBehaviors(gameTime);
             SyncPreviousFrameData();
         }
 
@@ -80,16 +75,11 @@ namespace Reaper.Engine
             DebugTools.DrawBounds(view.SpriteBatch, _worldObjects);
         }
 
-        private void InvokeBehaviorCallbacks()
+        private void LoadSpawnedWorldObjects()
         {
             for (int i = 0; i < _toSpawn.Count; i++) 
             {
                 _toSpawn[i].Load(_layout.Content);
-            }
-
-            foreach (var toDestroy in _toDestroy)
-            {
-                toDestroy.OnDestroyed();
             }
         }
 
@@ -106,6 +96,11 @@ namespace Reaper.Engine
                 toSpawn.OnCreated();
             }
 
+            foreach (var toSpawn in _toSpawn)
+            {
+                toSpawn.OnLayoutStarted();
+            }
+
             _toSpawn.Clear();
 
             foreach (var toDestroy in _toDestroy)
@@ -118,6 +113,14 @@ namespace Reaper.Engine
             _toDestroy.Clear();
 
             _worldObjects.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
+        }
+
+        private void TickBehaviors(GameTime gameTime) 
+        {
+            foreach (var worldObject in _worldObjects)
+            {
+                worldObject.Tick(gameTime);
+            }
         }
 
         private void SyncPreviousFrameData()

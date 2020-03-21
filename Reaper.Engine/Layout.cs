@@ -34,7 +34,8 @@ namespace Reaper.Engine
         public int Width { get; }
         public int Height { get; }
         public MainGame Game { get; }
-        public ContentManager Content { get; }
+
+        internal ContentManager Content { get; }
 
         public Vector2 Position
         {

@@ -162,6 +162,14 @@ namespace Reaper.Engine
             }
         }
 
+        internal void OnLayoutStarted() 
+        {
+            foreach (var behavior in _behaviors)
+            {
+                behavior.OnLayoutStarted();
+            }
+        }
+
         internal void Tick(GameTime gameTime) 
         {
             foreach (var behavior in _behaviors)
