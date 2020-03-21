@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// Definitions track the steps necessary to build a certain type of world object.
+    /// </summary>
     public class WorldObjectDefinition
     {
         private readonly List<Action<WorldObject>> _buildSteps = new List<Action<WorldObject>>();

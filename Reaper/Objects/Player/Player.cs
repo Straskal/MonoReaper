@@ -21,7 +21,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "Idle",
-                    ImageFilePath = "player",
+                    ImageFilePath = "art/player/player",
                     SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
@@ -37,7 +37,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "Run",
-                    ImageFilePath = "player",
+                    ImageFilePath = "art/player/player",
                     SecPerFrame = 0.15f,
                     Loop = true,
                     Frames = new []
@@ -51,7 +51,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "Jump",
-                    ImageFilePath = "player",
+                    ImageFilePath = "art/player/player",
                     SecPerFrame = 0.2f,
                     Frames = new []
                     {
@@ -61,7 +61,7 @@ namespace Reaper.Objects
                  new SpriteSheetBehavior.Animation
                 {
                     Name = "Fall",
-                    ImageFilePath = "player",
+                    ImageFilePath = "art/player/player",
                     SecPerFrame = 0.2f,
                     Frames = new []
                     {
@@ -71,7 +71,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "Attack",
-                    ImageFilePath = "player_attack",
+                    ImageFilePath = "art/player/player_attack",
                     SecPerFrame = 0.05f,
                     Frames = new []
                     {

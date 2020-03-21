@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
@@ -6,22 +7,32 @@ using System.Linq;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// A data structure that holds all world objects in a layout.
+    /// </summary>
     internal class WorldObjectList
     {
         private readonly Layout _layout;
+        private readonly ContentManager _content;
         private readonly List<WorldObject> _worldObjects;
         private readonly List<WorldObject> _toSpawn;
         private readonly List<WorldObject> _toDestroy;
 
-        public WorldObjectList(Layout layout) 
+        public WorldObjectList(Layout layout, ContentManager content) 
         {
             _layout = layout ?? throw new ArgumentNullException(nameof(layout));
+            _content = content ?? throw new ArgumentNullException(nameof(content));
 
             _worldObjects = new List<WorldObject>();
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
         }
 
+        /// <summary>
+        /// Returns the first found behavior of the specified type or null if not found.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetWorldObjectOfType<T>() where T : Behavior
         {
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
@@ -79,7 +90,7 @@ namespace Reaper.Engine
         {
             for (int i = 0; i < _toSpawn.Count; i++) 
             {
-                _toSpawn[i].Load(_layout.Content);
+                _toSpawn[i].Load(_content);
             }
         }
 

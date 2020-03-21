@@ -33,7 +33,7 @@ namespace Reaper.Ogmo
                         CellSize = layer.GridCellHeight,
                         CellsX = layer.GridCellsX,
                         CellsY = layer.GridCellsX,
-                        TilesetFilePath = layer.Tileset,
+                        TilesetFilePath = "art/tilesets/" + layer.Tileset,
                         Tiles = layer.Data
                     };
 

@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Reaper.Engine
 { 
+    /// <summary>
+    /// A world object is any object that has a position is layout space.
+    /// </summary>
     public class WorldObject
     {
         private readonly List<Behavior> _behaviors;
@@ -31,6 +34,9 @@ namespace Reaper.Engine
 
         internal bool MarkedForDestroy { get; private set; }
 
+        /// <summary>
+        /// The world object's position. UpdateBBox() must be called after modifying this property.
+        /// </summary>
         public Vector2 Position
         {
             get => _position;
@@ -64,6 +70,12 @@ namespace Reaper.Engine
             return _behaviors;
         }
 
+        /// <summary>
+        /// Move the object on the x axis and perform stepped collision checks at pixel perfect positions.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="worldObject"></param>
+        /// <returns></returns>
         public bool MoveXAndCollide(float amount, out WorldObject worldObject)
         {
             worldObject = null;
@@ -96,6 +108,12 @@ namespace Reaper.Engine
             return false;
         }
 
+        /// <summary>
+        /// Move the object on the y axis and perform stepped collision checks at pixel perfect positions.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="worldObject"></param>
+        /// <returns></returns>
         public bool MoveYAndCollide(float amount, out WorldObject worldObject)
         {
             worldObject = null;
@@ -128,6 +146,9 @@ namespace Reaper.Engine
             return false;
         }
 
+        /// <summary>
+        /// Updates the world object's position in the layout's spatial grid.
+        /// </summary>
         public void UpdateBBox() 
         {
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
@@ -136,6 +157,9 @@ namespace Reaper.Engine
             Layout.UpdateGridCell(this);
         }
 
+        /// <summary>
+        /// Destroys the world object.
+        /// </summary>
         public void Destroy() 
         {
             Layout.Destroy(this);

@@ -22,7 +22,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "idle",
-                    ImageFilePath = "thug",
+                    ImageFilePath = "art/enemies/thug",
                     SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
@@ -36,7 +36,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "walk",
-                    ImageFilePath = "thug",
+                    ImageFilePath = "art/enemies/thug",
                     SecPerFrame = 0.2f,
                     Loop = true,
                     Frames = new []
@@ -50,7 +50,7 @@ namespace Reaper.Objects
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "stab",
-                    ImageFilePath = "thug_attack",
+                    ImageFilePath = "art/enemies/thug_attack",
                     SecPerFrame = 0.15f,
                     Loop = false,
                     Frames = new []

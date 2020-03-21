@@ -14,6 +14,7 @@ namespace Reaper.Engine
     /// </summary>
     public class Layout
     {
+        private readonly ContentManager _content;
         private readonly LayoutView _view;
         private readonly LayoutGrid _grid;
         private readonly WorldObjectList _worldObjectList;
@@ -24,11 +25,10 @@ namespace Reaper.Engine
             Width = width;
             Height = height;
 
+            _content = new ContentManager(game.Services, "Content");
             _view = new LayoutView(game, this);
             _grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
-            _worldObjectList = new WorldObjectList(this);
-
-            Content = new ContentManager(game.Services, "Content");
+            _worldObjectList = new WorldObjectList(this, _content);
         }
 
         public int Width { get; }
