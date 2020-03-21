@@ -10,7 +10,7 @@ namespace Reaper.Engine
     /// <summary>
     /// A data structure that holds all world objects in a layout.
     /// </summary>
-    internal class WorldObjectList
+    internal sealed class WorldObjectList
     {
         private readonly Layout _layout;
         private readonly ContentManager _content;
@@ -38,13 +38,14 @@ namespace Reaper.Engine
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
         }
 
-        public WorldObject Create(Vector2 position)
+        public WorldObject Create(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = new WorldObject(_layout)
             {
                 Position = position
             };
 
+            definition.Build(worldObject);
             _toSpawn.Add(worldObject);
 
             return worldObject;
@@ -55,16 +56,25 @@ namespace Reaper.Engine
             if (!worldObject.MarkedForDestroy)
             {
                 worldObject.MarkForDestroy();
-
                 _toDestroy.Add(worldObject);
             }
         }
 
         public void Tick(GameTime gameTime)
         {
-            LoadSpawnedWorldObjects();
-            SyncWorldObjectLists();
-            TickBehaviors(gameTime);
+            var toSpawn = _toSpawn.ToArray();
+            var toDestroy = _toDestroy.ToArray();
+
+            _toSpawn.Clear();
+            _toDestroy.Clear();
+
+            InvokeLoad(toSpawn);
+            InvokeCreated(toSpawn);
+            InvokeStarted(toSpawn);
+            InvokeDestroyed(toDestroy);
+
+            TickWorldObjects(gameTime);
+            ZOrderSort();
             SyncPreviousFrameData();
         }
 
@@ -82,51 +92,48 @@ namespace Reaper.Engine
             {
                 worldObject.Draw(view);
             }
-
-            DebugTools.DrawBounds(view.SpriteBatch, _worldObjects);
         }
 
-        private void LoadSpawnedWorldObjects()
+        private void InvokeLoad(IEnumerable<WorldObject> worldObjects) 
         {
-            for (int i = 0; i < _toSpawn.Count; i++) 
+            foreach (var worldObject in worldObjects)
             {
-                _toSpawn[i].Load(_content);
+                _worldObjects.Add(worldObject);
+
+                worldObject.Load(_content);
             }
         }
 
-        private void SyncWorldObjectLists()
+        private void InvokeCreated(IEnumerable<WorldObject> worldObjects)
         {
-            if (_toSpawn.Count == 0 && _toDestroy.Count == 0)
-                return;
-
-            foreach (var toSpawn in _toSpawn)
+            foreach (var worldObject in worldObjects)
             {
-                _worldObjects.Add(toSpawn);
-
-                toSpawn.UpdateBBox();
-                toSpawn.OnCreated();
+                worldObject.OnCreated();
             }
+        }
 
-            foreach (var toSpawn in _toSpawn)
+        private void InvokeStarted(IEnumerable<WorldObject> worldObjects)
+        {
+            foreach (var worldObject in worldObjects)
             {
-                toSpawn.OnLayoutStarted();
+                worldObject.OnLayoutStarted();
             }
+        }
 
-            _toSpawn.Clear();
-
-            foreach (var toDestroy in _toDestroy)
+        private void InvokeDestroyed(IEnumerable<WorldObject> worldObjects)
+        {
+            foreach (var worldObject in worldObjects)
             {
-                toDestroy.OnDestroyed();
-
-                _worldObjects.Remove(toDestroy);
+                worldObject.Destroy();
             }
+        }
 
-            _toDestroy.Clear();
-
+        private void ZOrderSort() 
+        {
             _worldObjects.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
         }
 
-        private void TickBehaviors(GameTime gameTime) 
+        private void TickWorldObjects(GameTime gameTime) 
         {
             foreach (var worldObject in _worldObjects)
             {

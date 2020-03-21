@@ -9,7 +9,7 @@ namespace Reaper.Engine
     /// <summary>
     /// A world object is any object that has a position is layout space.
     /// </summary>
-    public class WorldObject
+    public sealed class WorldObject
     {
         private readonly List<Behavior> _behaviors;
 

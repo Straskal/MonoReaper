@@ -8,9 +8,11 @@ namespace Reaper.Objects
     {
         public static WorldObjectDefinition Definition()
         {
-            return new WorldObjectDefinition()
-                .SetSize(16, 16)
-                .AddBehavior(wo => new LevelTransitionBehavior(wo));
+            var def = new WorldObjectDefinition();
+            def.SetSize(16, 16);
+            def.AddBehavior(wo => new LevelTransitionBehavior(wo));
+
+            return def;
         }
     }
 

@@ -7,35 +7,31 @@ namespace Reaper.Engine
     /// <summary>
     /// Definitions track the steps necessary to build a certain type of world object.
     /// </summary>
-    public class WorldObjectDefinition
+    public sealed class WorldObjectDefinition
     {
         private readonly List<Action<WorldObject>> _buildSteps = new List<Action<WorldObject>>();
 
-        public WorldObjectDefinition SetSize(int width, int height) 
+        public void SetSize(int width, int height) 
         {
             _buildSteps.Add(worldObject =>
             {
                 worldObject.Bounds = new Rectangle(0, 0, width, height);
             });
-            return this;
         }
 
-        public WorldObjectDefinition SetOrigin(Point origin)
+        public void SetOrigin(Point origin)
         {
             _buildSteps.Add(worldObject => worldObject.Origin = origin);
-            return this;
         }
 
-        public WorldObjectDefinition MakeSolid() 
+        public void MakeSolid() 
         {
             _buildSteps.Add(worldObject => worldObject.IsSolid = true);
-            return this;
         }
 
-        public WorldObjectDefinition AddBehavior(Func<WorldObject, Behavior> createFunc)
+        public void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
             _buildSteps.Add(worldObject => worldObject.AddBehavior(createFunc));
-            return this;
         }
 
         internal void Build(WorldObject worldObject) 

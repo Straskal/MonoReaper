@@ -11,7 +11,7 @@ namespace Reaper.Engine
     /// - Layouts contain world objects.
     /// - Layouts are mostly a pass through for their components (the view, spatial grid, and object lists, etc...).
     /// </summary>
-    public class Layout
+    public sealed class Layout
     {
         private readonly ContentManager _content;
         private readonly LayoutView _view;
@@ -48,9 +48,11 @@ namespace Reaper.Engine
 
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
-            var worldObject = _worldObjectList.Create(position);
-            definition.Build(worldObject);
+            var worldObject = _worldObjectList.Create(definition, position);
+            worldObject.UpdateBBox();
+
             _grid.Add(worldObject);
+
             return worldObject;
         }
 

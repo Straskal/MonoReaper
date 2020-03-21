@@ -6,13 +6,11 @@ using System.Linq;
 
 namespace Reaper.Engine.Behaviors
 {
+    /// <summary>
+    /// A behavior for sprite sheet animations.
+    /// </summary>
     public class SpriteSheetBehavior : Behavior
     {
-        public class Params
-        {
-            public Animation[] Animations { get; set; }
-        }
-
         public struct Frame
         {
             public Frame(int x, int y, int width, int height)
