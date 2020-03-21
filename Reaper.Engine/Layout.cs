@@ -35,8 +35,6 @@ namespace Reaper.Engine
         public int Height { get; }
         public MainGame Game { get; }
 
-        internal ContentManager Content { get; }
-
         public Vector2 Position
         {
             get => _view.Position;
@@ -108,7 +106,7 @@ namespace Reaper.Engine
         internal void Unload() 
         {
             _view.Unload();
-            Content.Unload();
+            _content.Unload();
         }
     }
 }
