@@ -16,6 +16,7 @@ namespace Reaper.Objects
             thug.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 50f });
             thug.AddBehavior(wo => new TimerBehavior(wo));
             thug.AddBehavior(wo => new DamageableBehavior(wo));
+            thug.AddBehavior(wo => new LineOfSightBehavior(wo));
             thug.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
             {
                 new SpriteSheetBehavior.Animation

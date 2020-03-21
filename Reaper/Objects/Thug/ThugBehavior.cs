@@ -8,6 +8,7 @@ namespace Reaper.Objects
     public class ThugBehavior : Behavior
     {
         private PlatformerBehavior _platformer;
+        private LineOfSightBehavior _los;
         private SpriteSheetBehavior _spriteSheet;
         private Action<GameTime> _currentState;
         private DamageableBehavior _damageable;
@@ -22,6 +23,7 @@ namespace Reaper.Objects
         public override void OnOwnerCreated()
         {
             _platformer = Owner.GetBehavior<PlatformerBehavior>();
+            _los = Owner.GetBehavior<LineOfSightBehavior>();
             _spriteSheet = Owner.GetBehavior<SpriteSheetBehavior>();
             _damageable = Owner.GetBehavior<DamageableBehavior>();
             _damageable.OnDamaged += OnDamaged;
@@ -158,11 +160,7 @@ namespace Reaper.Objects
 
         private bool HasPlayerInSight()
         {
-            int reach = 256;
-            int x = Owner.IsMirrored ? Owner.Bounds.Left - reach : Owner.Bounds.Right + 1;
-            Rectangle lineOfSight = new Rectangle(x, (int)Math.Round(Owner.Position.Y - Owner.Bounds.Height * 0.5f), reach, 16);
-
-            return lineOfSight.Intersects(_player.Owner.Bounds);
+            return _los.HasLOS(_player.Owner);
         }
     }
 }
