@@ -2,6 +2,7 @@
 using Reaper.Engine;
 using Reaper.Objects.Player;
 using Reaper.Ogmo;
+using System;
 
 namespace Reaper.Objects.Common
 {
@@ -10,8 +11,16 @@ namespace Reaper.Objects.Common
         public static WorldObjectDefinition Method()
         {
             var def = new WorldObjectDefinition();
-            def.SetSize(16, 16);
             def.AddBehavior(wo => new LevelTransitionBehavior(wo));
+            def.UseLoader((wo, oe) => 
+            {
+                if (string.IsNullOrWhiteSpace(oe.Values.Level))
+                    throw new ArgumentException("Level transitions must be provided with a layout to load");
+
+                wo.Width = oe.Width;
+                wo.Height = oe.Height;
+                wo.GetBehavior<LevelTransitionBehavior>().Level = oe.Values.Level;
+            });
 
             return def;
         }
@@ -27,7 +36,7 @@ namespace Reaper.Objects.Common
 
         public string Level { get; set; }
 
-        public override void OnOwnerCreated()
+        public override void OnLayoutStarted()
         {
             _player = Owner.Layout.GetWorldObjectOfType<PlayerBehavior>().Owner;
         }

@@ -4,9 +4,7 @@ using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System.IO;
-using System;
 using Reaper.Ogmo.Models;
-using Reaper.Objects.Common;
 
 namespace Reaper.Ogmo
 {
@@ -16,10 +14,9 @@ namespace Reaper.Ogmo
         {
             OgmoMap map;
 
-            using (StreamReader r = new StreamReader(filename))
+            using (var sr = new StreamReader(filename))
             {
-                string json = r.ReadToEnd();
-                map = JsonConvert.DeserializeObject<OgmoMap>(json);
+                map = JsonConvert.DeserializeObject<OgmoMap>(sr.ReadToEnd());
             }
 
             var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
@@ -53,29 +50,26 @@ namespace Reaper.Ogmo
                 }
                 else if (layer.Entities != null)
                 {
-                    foreach (var entity in layer.Entities)
-                    {
-                        var wo = layout.Spawn(Definitions.Get(entity.Name), new Vector2(entity.X, entity.Y));
-
-                        wo.IsMirrored = entity.FlippedX;
-                        wo.ZOrder = entity?.Values.DrawOrder ?? 0;
-
-                        switch (entity.Name) 
-                        {
-                            case "transition":
-                                if (string.IsNullOrWhiteSpace(entity.Values.Level))
-                                    throw new ArgumentException("Level transitions must be provided with a layout to load");
-
-                                wo.Width = entity.Width;
-                                wo.Height = entity.Height;
-                                wo.GetBehavior<LevelTransitionBehavior>().Level = entity.Values.Level;
-                                break;
-                        }
-                    }
+                    layout.LoadEntities(layer.Entities);
                 }
             }
 
             game.ChangeLayout(layout);
+        }
+
+        private static void LoadEntities(this Layout layout, OgmoEntity[] entities)
+        {
+            foreach (var entity in entities)
+            {
+                var definition = Definitions.Get(entity.Name);
+                var worldObject = layout.Spawn(definition, new Vector2(entity.X, entity.Y));
+
+                // Default properties for every world object.
+                worldObject.IsMirrored = entity.FlippedX;
+                worldObject.ZOrder = entity?.Values.DrawOrder ?? 0;
+
+                Loaders.Load(definition.Guid, worldObject, entity);
+            }
         }
     }
 }
