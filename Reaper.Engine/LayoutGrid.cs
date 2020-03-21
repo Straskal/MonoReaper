@@ -47,7 +47,7 @@ namespace Reaper.Engine
 
         internal void Remove(WorldObject worldObject)
         {
-            foreach (var cellPos in GetCells(worldObject.PreviousBounds))
+            foreach (var cellPos in GetCells(worldObject.Bounds))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
             }
