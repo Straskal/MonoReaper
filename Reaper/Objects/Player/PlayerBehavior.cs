@@ -4,6 +4,7 @@ using Reaper.Engine.Behaviors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 
 namespace Reaper
 {
@@ -13,6 +14,8 @@ namespace Reaper
         private PlatformerBehavior _platformerBehavior;
         private KeyboardState _previousKeyState;
         private Action<float> _currentState;
+        private Vector2 _lastGroundedPosition;
+        private bool _lastMirroredGrounded;
 
         public PlayerBehavior(WorldObject owner) : base(owner)
         {
@@ -34,8 +37,6 @@ namespace Reaper
         {
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
             _previousKeyState = Keyboard.GetState();
-
-            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
 
             var keyboardState = Keyboard.GetState();
 
@@ -62,6 +63,29 @@ namespace Reaper
         public override void PostTick(GameTime gameTime)
         {
             Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
+
+            var groundRay = new Rectangle(
+                (int)Owner.Position.X - Owner.Origin.X,
+                (int)Owner.Position.Y,
+                16, 128);
+
+            var ground = Owner.Layout.QueryBounds(groundRay)
+                .Where(wo => wo != Owner && wo.IsSolid)
+                .OrderBy(wo => Vector2.Distance(Owner.Position, wo.Position))
+                .FirstOrDefault();
+
+            if (ground != null)
+            {
+                _lastMirroredGrounded = Owner.IsMirrored;
+                _lastGroundedPosition.X = Owner.Position.X;
+                _lastGroundedPosition.Y = ground.Bounds.Top;
+            }
+
+            if (Owner.Position.Y > Owner.Layout.Height) 
+            {
+                Owner.Position = _lastGroundedPosition + new Vector2(_lastMirroredGrounded ? 32 : -32, 0);
+                Owner.UpdateBBox();
+            }
         }
 
         private void GoToIdle() 

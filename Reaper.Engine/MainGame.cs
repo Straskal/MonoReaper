@@ -103,9 +103,9 @@ namespace Reaper.Engine
                 ToggleFullscreen();
 
             DebugTools.Tick();
-
             Singletons.Tick(gameTime);
             RunningLayout.Tick(gameTime);
+            RunningLayout.PostTick(gameTime);
             base.Update(gameTime);
         }
 
