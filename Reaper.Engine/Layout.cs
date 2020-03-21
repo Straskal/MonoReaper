@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Reaper.Engine
 {
@@ -29,10 +31,10 @@ namespace Reaper.Engine
             Content = new ContentManager(game.Services, "Content");
         }
 
-        public MainGame Game { get; }
-        public ContentManager Content { get; }
         public int Width { get; }
         public int Height { get; }
+        public MainGame Game { get; }
+        public ContentManager Content { get; }
 
         public Vector2 Position
         {
@@ -69,7 +71,7 @@ namespace Reaper.Engine
             return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
         }
 
-        public WorldObject[] QueryBounds(Rectangle bounds) 
+        public IEnumerable<WorldObject> QueryBounds(Rectangle bounds) 
         {
             return _grid.QueryBounds(bounds);
         }

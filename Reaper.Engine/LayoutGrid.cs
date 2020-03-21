@@ -9,7 +9,7 @@ namespace Reaper.Engine
     /// The layout grid is a data structure that organizes world objects by their position.
     /// It allows for efficient spatial queries.
     /// </summary>
-    internal class LayoutGrid
+    public class LayoutGrid
     {
         struct Cell
         {
@@ -39,85 +39,77 @@ namespace Reaper.Engine
 
         internal void Add(WorldObject worldObject)
         {
-            if (TryGetCellPosition(worldObject.Position, out int cellX, out int cellY))
+            foreach (var cellPos in GetCells(worldObject.Bounds))
             {
-                _cells[cellX, cellY].WorldObjects.Add(worldObject);
-            }            
+                _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
+            }
         }
 
         internal void Remove(WorldObject worldObject)
         {
-            if (TryGetCellPosition(worldObject.Position, out int cellX, out int cellY))
+            foreach (var cellPos in GetCells(worldObject.PreviousBounds))
             {
-                _cells[cellX, cellY].WorldObjects.Remove(worldObject);
-            }            
+                _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
+            }
         }
 
         internal void Update(WorldObject worldObject)
         {
-            bool prevWithinBounds = TryGetCellPosition(worldObject.PreviousPosition, out int previousCellX, out int previousCellY);
-            bool withinBounds = TryGetCellPosition(worldObject.Position, out int cellX, out int cellY);
-
-            if (previousCellX == cellX && previousCellY == cellY)
+            if (worldObject.Position == worldObject.PreviousPosition)
                 return;
 
-            if (prevWithinBounds)
-            {
-                _cells[previousCellX, previousCellY].WorldObjects.Remove(worldObject);
-            }
-
-            if (withinBounds)
-            {
-                _cells[cellX, cellY].WorldObjects.Add(worldObject);
-            }
+            Remove(worldObject);
+            Add(worldObject);
         }
 
-        internal bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
+        public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
         {
-            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-
-            if (TryGetCellPosition(testedPosition, out int cellX, out int cellY))
-            {
-                var bounds = new Rectangle(
-                    (int)Math.Round(testedPosition.X - worldObject.Origin.X),
-                    (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
-                    worldObject.Bounds.Width,
-                    worldObject.Bounds.Height);
-
-                return _cells[cellX, cellY].WorldObjects.Any(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
-            }
-
-            return false;
+            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
+            return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
         }
 
-        internal bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             overlappedWorldObject = null;
-
-            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-
-            if (TryGetCellPosition(testedPosition, out int cellX, out int cellY))
-            {
-                var bounds = new Rectangle(
-                    (int)Math.Round(testedPosition.X - worldObject.Origin.X),
-                    (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
-                    worldObject.Bounds.Width,
-                    worldObject.Bounds.Height);
-
-                overlappedWorldObject = _cells[cellX, cellY].WorldObjects.FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));                
-            }
-
+            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
+            overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid && other.Bounds.Intersects(bounds));
             return overlappedWorldObject != null;
         }
 
-        internal WorldObject[] QueryBounds(Rectangle bounds)
+        public IEnumerable<WorldObject> QueryBounds(Rectangle bounds)
         {
-            if (TryGetCellPosition(bounds.Center.ToVector2(), out int cellX, out int cellY))
-            {
-                return _cells[cellX, cellY].WorldObjects.Where(other => other.Bounds.Intersects(bounds)).ToArray();
-            }
+            return QueryCells(bounds).Where(other => other.Bounds.Intersects(bounds));
+        }
 
-            return Array.Empty<WorldObject>();
+        private Rectangle GetOffsetBounds(WorldObject worldObject, float xOffset, float yOffset) 
+        {
+            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
+
+            return new Rectangle(
+                (int)Math.Round(testedPosition.X - worldObject.Origin.X),
+                (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
+                worldObject.Bounds.Width,
+                worldObject.Bounds.Height);
+        }
+
+        private IEnumerable<WorldObject> QueryCells(Rectangle bounds) 
+        {
+            return GetCells(bounds).Distinct().SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
+        }
+
+        private IEnumerable<Point> GetCells(Rectangle bounds) 
+        {
+            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
+                yield return new Point(topLeftCol, topLeftRow);
+
+            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topRightCol, out int topRightRow))
+                yield return new Point(topRightCol, topRightRow);
+
+            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int bottomLeftCol, out int bottomLeftRow))
+                yield return new Point(bottomLeftCol, bottomLeftRow);
+
+            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int bottomRightCol, out int bottomRightRow))
+                yield return new Point(bottomRightCol, bottomRightRow);
         }
 
         private bool TryGetCellPosition(Vector2 position, out int column, out int row)
