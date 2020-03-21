@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
+using Reaper.Objects.Common;
 
-namespace Reaper.Objects
+namespace Reaper.Objects.Player
 {
-    public static class Player
+    public static class PlayerDefinition
     {
-        public static WorldObjectDefinition Definition()
+        public static WorldObjectDefinition Method()
         {
             var playerDefinition = new WorldObjectDefinition();
 

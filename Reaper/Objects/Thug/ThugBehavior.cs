@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
+using Reaper.Objects.Common;
+using Reaper.Objects.Player;
 using System;
 
-namespace Reaper.Objects
+namespace Reaper.Objects.Thug
 {
     public class ThugBehavior : Behavior
     {
@@ -66,11 +68,11 @@ namespace Reaper.Objects
 
             if (HasPlayerInSight()) 
             {
-                GoToChase(gameTime);
+                GoToChase();
             }
         }
 
-        private void GoToChase(GameTime gameTime)
+        private void GoToChase()
         {
             _spriteSheet.Play("Walk");
             _platformer.MaxSpeed = 100f;
@@ -106,7 +108,7 @@ namespace Reaper.Objects
             {
                 if (HasPlayerInSight())
                 {
-                    GoToChase(gameTime);
+                    GoToChase();
                 }
                 else
                 {

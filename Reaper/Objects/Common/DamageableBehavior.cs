@@ -4,7 +4,7 @@ using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using System;
 
-namespace Reaper
+namespace Reaper.Objects.Common
 {
     public struct Damage
     {

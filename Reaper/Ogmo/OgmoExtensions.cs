@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System.IO;
 using System;
+using Reaper.Ogmo.Models;
+using Reaper.Objects.Common;
 
 namespace Reaper.Ogmo
 {
@@ -53,7 +55,7 @@ namespace Reaper.Ogmo
                 {
                     foreach (var entity in layer.Entities)
                     {
-                        var wo = layout.Spawn(Definitions.Get(entity), new Vector2(entity.X, entity.Y));
+                        var wo = layout.Spawn(Definitions.Get(entity.Name), new Vector2(entity.X, entity.Y));
 
                         wo.IsMirrored = entity.FlippedX;
                         wo.ZOrder = entity?.Values.DrawOrder ?? 0;

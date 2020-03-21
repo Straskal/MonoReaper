@@ -1,4 +1,4 @@
-﻿namespace Reaper.Ogmo
+﻿namespace Reaper.Ogmo.Models
 {
     public class OgmoEntityValues 
     {
