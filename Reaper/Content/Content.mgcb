@@ -133,3 +133,15 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/SolidColor.fx
 
+#begin Sounds/Hi.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Hi.wav
+
+#begin Sounds/Jump8.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Jump8.wav
+

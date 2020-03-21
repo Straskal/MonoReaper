@@ -30,12 +30,12 @@ namespace Reaper.Engine
             _gpu = game.GraphicsDevice;
             _batch = new SpriteBatch(_gpu);
 
-            VirtualWidth = game.ViewportWidth;
-            VirtualHeight = game.ViewportHeight;
+            Width = game.ViewportWidth;
+            Height = game.ViewportHeight;
 
             Zoom = 1f;
             Rotation = 0.0f;
-            Position = new Vector2(VirtualWidth * 0.5f, VirtualHeight * 0.5f);
+            Position = new Vector2(Width * 0.5f, Height * 0.5f);
         }
 
         public SpriteBatch SpriteBatch => _batch;
@@ -47,17 +47,17 @@ namespace Reaper.Engine
             get => _position;
             set
             {
-                var min = new Vector2(0 + VirtualWidth * 0.5f, 0 + VirtualHeight * 0.5f);
-                var max = new Vector2(_layout.Width - VirtualWidth * 0.5f, _layout.Height - VirtualHeight * 0.5f);
+                var min = new Vector2(0 + Width * 0.5f, 0 + Height * 0.5f);
+                var max = new Vector2(_layout.Width - Width * 0.5f, _layout.Height - Height * 0.5f);
 
                 _position = Vector2.Clamp(value, min, max);
             }
         }
 
-        public int ScreenWidth { get; private set; }
-        public int ScreenHeight { get; private set; }
-        public int VirtualWidth { get; }
-        public int VirtualHeight { get; }
+        public int WindowWidth { get; private set; }
+        public int WindowHeight { get; private set; }
+        public int Width { get; }
+        public int Height { get; }
 
         public Matrix TransformationMatrix
         {
@@ -75,13 +75,13 @@ namespace Reaper.Engine
 
                 Matrix.CreateScale(ref _scale, out _scaleMat3);
 
-                _resolution.X = VirtualWidth * 0.5f;
-                _resolution.Y = VirtualHeight * 0.5f;
+                _resolution.X = Width * 0.5f;
+                _resolution.Y = Height * 0.5f;
                 _resolution.Z = 0;
 
                 Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat3);
 
-                Vector3 resolutionScaleVector = new Vector3((float)ScreenWidth / VirtualWidth, (float)ScreenWidth / VirtualWidth, 1f);
+                Vector3 resolutionScaleVector = new Vector3((float)WindowWidth / Width, (float)WindowWidth / Width, 1f);
                 Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat3);
 
                 return _translationMat3
@@ -96,7 +96,7 @@ namespace Reaper.Engine
         {
             _currentEffect = null;
 
-            SyncViewport();
+            CreatePillarBoxes();
             PrepareBatch();
         }
 
@@ -148,10 +148,10 @@ namespace Reaper.Engine
             _batch.Dispose();
         }
 
-        private void SyncViewport()
+        private void CreatePillarBoxes()
         {
-            ScreenWidth = _window.ClientBounds.Width;
-            ScreenHeight = _window.ClientBounds.Height;
+            WindowWidth = _window.ClientBounds.Width;
+            WindowHeight = _window.ClientBounds.Height;
 
             _gpu.Viewport = GetFullViewport();
             _gpu.Clear(Color.Black);
@@ -164,27 +164,27 @@ namespace Reaper.Engine
             {
                 X = 0,
                 Y = 0,
-                Width = ScreenWidth,
-                Height = ScreenHeight
+                Width = WindowWidth,
+                Height = WindowHeight
             };
         }
 
         private Viewport GetLargestVirtualViewport()
         {
-            var targetAspectRatio = VirtualWidth / (float)VirtualHeight;
-            var width = ScreenWidth;
+            var targetAspectRatio = Width / (float)Height;
+            var width = WindowWidth;
             var height = (int)(width / targetAspectRatio + 0.5f);
 
-            if (height > ScreenHeight)
+            if (height > WindowHeight)
             {
-                height = ScreenHeight;
+                height = WindowHeight;
                 width = (int)(height * targetAspectRatio + .5f);
             }
 
             return new Viewport
             {
-                X = (ScreenWidth / 2) - (width / 2),
-                Y = (ScreenHeight / 2) - (height / 2),
+                X = (WindowWidth / 2) - (width / 2),
+                Y = (WindowHeight / 2) - (height / 2),
                 Width = width,
                 Height = height
             };

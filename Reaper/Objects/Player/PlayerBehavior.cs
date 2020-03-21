@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Linq;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 
 namespace Reaper
 {
@@ -16,9 +18,17 @@ namespace Reaper
         private Action<float> _currentState;
         private Vector2 _lastGroundedPosition;
         private bool _lastMirroredGrounded;
+        private SoundEffect _jumpSound;
+        private SoundEffect _hitSound;
 
         public PlayerBehavior(WorldObject owner) : base(owner)
         {
+        }
+
+        public override void Load(ContentManager contentManager)
+        {
+            _jumpSound = contentManager.Load<SoundEffect>("sounds/jump8");
+            _hitSound = contentManager.Load<SoundEffect>("sounds/hi");
         }
 
         public override void OnOwnerCreated()
@@ -157,6 +167,7 @@ namespace Reaper
 
         private void GoToJump()
         {
+            _jumpSound.Play();
             _platformerBehavior.Jump();
             _animationBehavior.Play("Jump");
             _currentState = Jump;
@@ -274,6 +285,9 @@ namespace Reaper
 
                     damageable.Damage(new Damage { Amount = 1 });
                 }
+
+                if (overlaps.Any())
+                    _hitSound.Play();
 
                 _hasCheckedForHits = true;
             }
