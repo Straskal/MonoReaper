@@ -65,7 +65,9 @@
           "id": 5,
           "_eid": "48795505",
           "x": 16,
-          "y": 144,
+          "y": 0,
+          "width": 16,
+          "height": 160,
           "originX": 0,
           "originY": 0,
           "values": {"level": "testlevel2.json"}
@@ -75,7 +77,9 @@
           "id": 6,
           "_eid": "48795505",
           "x": 1232,
-          "y": 144,
+          "y": 0,
+          "width": 16,
+          "height": 160,
           "originX": 0,
           "originY": 0,
           "values": {"level": "testlevel2.json"}

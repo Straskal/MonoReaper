@@ -48,6 +48,18 @@ namespace Reaper.Engine
             get => _position + _positionRemainder;
         }
 
+        public int Width 
+        {
+            get => _bounds.Width;
+            set => _bounds.Width = value;
+        }
+
+        public int Height
+        {
+            get => _bounds.Height;
+            set => _bounds.Height = value;
+        }
+
         public Point Origin 
         {
             get => _origin;

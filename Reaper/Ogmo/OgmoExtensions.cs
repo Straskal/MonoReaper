@@ -66,6 +66,8 @@ namespace Reaper.Ogmo
                                 if (string.IsNullOrWhiteSpace(entity.Values.Level))
                                     throw new ArgumentException("Level transitions must be provided with a layout to load");
 
+                                wo.Width = entity.Width;
+                                wo.Height = entity.Height;
                                 wo.GetBehavior<LevelTransitionBehavior>().Level = entity.Values.Level;
                                 break;
                         }
