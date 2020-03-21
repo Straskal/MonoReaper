@@ -104,6 +104,7 @@ namespace Reaper.Engine
 
             DebugTools.Tick();
 
+            Singletons.Tick(gameTime);
             RunningLayout.Tick(gameTime);
             base.Update(gameTime);
         }
