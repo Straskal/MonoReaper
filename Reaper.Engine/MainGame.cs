@@ -1,24 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Reaper.Engine.Tools;
 using System;
 
 namespace Reaper.Engine
 {
-    public struct GameSettings 
-    {
-        public int ViewportWidth;
-        public int ViewportHeight;
-        public bool IsFullscreen;
-        public bool IsResizable;
-        public bool IsBordered;
-        public bool IsVsyncEnabled;
-    }
-
     public interface IGame : IDisposable
     {
-        Layout RunningLayout { get; }
+        Layout CurrentLayout { get; }
         int ViewportWidth { get; }
         int ViewportHeight { get; }
         bool IsFullscreen { get; }
@@ -56,16 +45,27 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
-        public Layout RunningLayout { get; private set; }
+        public Layout CurrentLayout { get; private set; }
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
         public bool IsFullscreen => _gpuManager.IsFullScreen;
 
+        /// <summary>
+        /// Returns an empty layout to be filled with world objects.
+        /// </summary>
+        /// <param name="cellSize"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public Layout GetEmptyLayout(int cellSize, int width, int height)
         {
             return new Layout(this, cellSize, width, height);
         }
 
+        /// <summary>
+        /// Set the new running layout of the game.
+        /// </summary>
+        /// <param name="layout"></param>
         public void ChangeLayout(Layout layout) 
         {
             _nextLayout = layout;
@@ -83,17 +83,46 @@ namespace Reaper.Engine
 
         protected override void UnloadContent()
         {
-            RunningLayout.Unload();
+            CurrentLayout.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (_nextLayout != null) 
+            HandleLayoutChange();
+            HandleInput();
+
+            DebugTools.Tick();
+            Singletons.Tick(gameTime);
+
+            CurrentLayout.Tick(gameTime);
+            CurrentLayout.PostTick(gameTime);
+
+            base.Update(gameTime);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            CurrentLayout.Draw();
+            
+            base.Draw(gameTime);
+        }
+
+        private void HandleLayoutChange() 
+        {
+            if (_nextLayout != null)
             {
-                RunningLayout = _nextLayout;
+                if (CurrentLayout != null)
+                    CurrentLayout.Unload();
+
+                CurrentLayout = _nextLayout;
+
                 _nextLayout = null;
             }
+        }
 
+        // For testing purposes.
+        private void HandleInput() 
+        {
             var keyboardState = Keyboard.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Escape))
@@ -101,18 +130,6 @@ namespace Reaper.Engine
 
             if (keyboardState.IsKeyDown(Keys.F))
                 ToggleFullscreen();
-
-            DebugTools.Tick();
-            Singletons.Tick(gameTime);
-            RunningLayout.Tick(gameTime);
-            RunningLayout.PostTick(gameTime);
-            base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            RunningLayout.Draw();
-            base.Draw(gameTime);
         }
     }
 }

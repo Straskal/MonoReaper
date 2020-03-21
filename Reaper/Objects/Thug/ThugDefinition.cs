@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
+using Reaper.Objects.Common;
 
-namespace Reaper.Objects
+namespace Reaper.Objects.Thug
 {
-    public static class Thug
+    public static class ThugDefinition
     {
-        public static WorldObjectDefinition Definition()
+        public static WorldObjectDefinition Method()
         {
             var thug = new WorldObjectDefinition();
 

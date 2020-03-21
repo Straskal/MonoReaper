@@ -1,16 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
+using Reaper.Objects.Player;
 using Reaper.Ogmo;
 
-namespace Reaper.Objects
+namespace Reaper.Objects.Common
 {
     public static class LevelTransitionDefinition
     {
-        public static WorldObjectDefinition Definition()
+        public static WorldObjectDefinition Method()
         {
-            return new WorldObjectDefinition()
-                .SetSize(16, 16)
-                .AddBehavior(wo => new LevelTransitionBehavior(wo));
+            var def = new WorldObjectDefinition();
+            def.SetSize(16, 16);
+            def.AddBehavior(wo => new LevelTransitionBehavior(wo));
+
+            return def;
         }
     }
 

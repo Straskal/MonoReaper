@@ -7,8 +7,9 @@ using System;
 using System.Linq;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Reaper.Objects.Common;
 
-namespace Reaper
+namespace Reaper.Objects.Player
 {
     public class PlayerBehavior : Behavior
     {
