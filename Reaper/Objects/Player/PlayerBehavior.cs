@@ -53,7 +53,7 @@ namespace Reaper.Objects.Player
             _toggleFullscreenAction = input.GetAction<Input.PressedAction>("toggleFullscreen");
             _exitGameAction = input.GetAction<Input.PressedAction>("exitGame");
 
-            Owner.Layout.Zoom = 0.8f;
+            Layout.Zoom = 0.8f;
 
             GoToIdle();
         }
@@ -73,12 +73,11 @@ namespace Reaper.Objects.Player
         {
             UpdateFallRespawnPosition();
             HandleFallingOutsideLayout();
-            ScrollLayout();
         }
 
         private void HandleFallingOutsideLayout()
         {
-            if (Owner.Position.Y > Owner.Layout.Height)
+            if (Owner.Position.Y > Layout.Height)
             {
                 Owner.Position = _groundBelow + new Vector2(_wasMirrored ? 32 : -32, 0);
                 Owner.UpdateBBox();
@@ -92,7 +91,7 @@ namespace Reaper.Objects.Player
                 (int)Owner.Position.Y,
                 16, 128);
 
-            var ground = Owner.Layout.QueryBounds(groundRay)
+            var ground = Layout.QueryBounds(groundRay)
                 .Where(wo => wo != Owner && wo.IsSolid)
                 .OrderBy(wo => Vector2.Distance(Owner.Position, wo.Position))
                 .FirstOrDefault();
@@ -173,7 +172,6 @@ namespace Reaper.Objects.Player
 
         private void GoToJump()
         {
-            _scrollSmoothing = 0.25f;
             _jumpSound.Play();
             _platformerBehavior.Jump();
             _animationBehavior.Play("Jump");
@@ -238,8 +236,6 @@ namespace Reaper.Objects.Player
 
             if (_platformerBehavior.IsOnGround())
             {
-                _scrollSmoothing = DEFAULT_SMOOTHING;
-
                 if (_platformerBehavior.IsMoving())
                 {
                     GoToMove();
@@ -321,14 +317,6 @@ namespace Reaper.Objects.Player
         private bool IsJumpPressed()
         {
             return _jumpAction.WasPressed();
-        }
-
-        private const float DEFAULT_SMOOTHING = 0.3f;
-        private float _scrollSmoothing = 0.3f;
-
-        private void ScrollLayout() 
-        {
-            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, _scrollSmoothing), Owner.Position.Y);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Reaper.Engine.Singletons
             public GamePadState PreviousGamePadState { get; set; }
         }
 
-        public class Action
+        public abstract class Action
         {
             protected readonly InputState inputState;
 
@@ -25,6 +25,9 @@ namespace Reaper.Engine.Singletons
             }
         }
 
+        /// <summary>
+        /// For button presses
+        /// </summary>
         public class PressedAction : Action
         {
             private readonly List<Keys> _keys;
@@ -66,6 +69,9 @@ namespace Reaper.Engine.Singletons
             }
         }
 
+        /// <summary>
+        /// For the given axes
+        /// </summary>
         public class AxisAction : Action
         {
             public enum ThumbSticks
