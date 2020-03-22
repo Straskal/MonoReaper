@@ -28,6 +28,8 @@ namespace Reaper.Engine
             _toDestroy = new List<WorldObject>();
         }
 
+        public List<WorldObject> WorldObjects => _worldObjects;
+
         /// <summary>
         /// Returns the first found behavior of the specified type or null if not found.
         /// </summary>

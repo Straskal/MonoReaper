@@ -66,6 +66,13 @@ namespace Reaper.Engine.Behaviors
             IsFinished = false;
         }
 
+        public void PlayFromBeginning(string name)
+        {
+            CurrentAnimation = _animations.Single(anim => anim.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            CurrentFrame = 0;
+            IsFinished = false;
+        }
+
         public override void Tick(GameTime gameTime)
         {
             if (IsFinished)

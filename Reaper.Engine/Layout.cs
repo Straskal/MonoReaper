@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
 
@@ -101,6 +102,9 @@ namespace Reaper.Engine
         {
             _view.BeginDraw();
             _worldObjectList.Draw(_view);
+
+            DebugTools.Draw(_view.SpriteBatch, _worldObjectList.WorldObjects);
+
             _view.EndDraw();
         }
 

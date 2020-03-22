@@ -71,7 +71,7 @@ namespace Reaper.Objects.Player
                 },
                 new SpriteSheetBehavior.Animation
                 {
-                    Name = "Attack",
+                    Name = "attack_0",
                     ImageFilePath = "art/player/player_attack",
                     SecPerFrame = 0.05f,
                     Frames = new []
@@ -81,8 +81,40 @@ namespace Reaper.Objects.Player
                         new SpriteSheetBehavior.Frame(0, 32, 64, 32),
                         new SpriteSheetBehavior.Frame(64, 32, 64, 32),
                         new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
                     }
-                }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "attack_1",
+                    ImageFilePath = "art/player/player_attack",
+                    SecPerFrame = 0.05f,
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(64, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 96, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 96, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 128, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 128, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 128, 64, 32),
+                    }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "attack_2",
+                    ImageFilePath = "art/player/player_attack",
+                    SecPerFrame = 0.05f,
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(0, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 0, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 32, 64, 32),
+                        new SpriteSheetBehavior.Frame(64, 32, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                    }
+                },
             }));
 
             return playerDefinition;

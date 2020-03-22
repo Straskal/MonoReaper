@@ -21,6 +21,7 @@ namespace Reaper.Objects.Player
         private bool _lastMirroredGrounded;
         private SoundEffect _jumpSound;
         private SoundEffect _hitSound;
+        private SoundEffect _swingSound;
 
         public PlayerBehavior(WorldObject owner) : base(owner)
         {
@@ -30,6 +31,7 @@ namespace Reaper.Objects.Player
         {
             _jumpSound = contentManager.Load<SoundEffect>("sounds/jump8");
             _hitSound = contentManager.Load<SoundEffect>("sounds/hi");
+            _swingSound = contentManager.Load<SoundEffect>("sounds/swing");
         }
 
         public override void OnOwnerCreated()
@@ -51,7 +53,7 @@ namespace Reaper.Objects.Player
 
             var keyboardState = Keyboard.GetState();
 
-            if (keyboardState.IsKeyDown(Keys.Down)) 
+            if (keyboardState.IsKeyDown(Keys.Down))
             {
                 Owner.Layout.Zoom += 0.1f;
             }
@@ -92,20 +94,20 @@ namespace Reaper.Objects.Player
                 _lastGroundedPosition.Y = ground.Bounds.Top;
             }
 
-            if (Owner.Position.Y > Owner.Layout.Height) 
+            if (Owner.Position.Y > Owner.Layout.Height)
             {
                 Owner.Position = _lastGroundedPosition + new Vector2(_lastMirroredGrounded ? 32 : -32, 0);
                 Owner.UpdateBBox();
             }
         }
 
-        private void GoToIdle() 
+        private void GoToIdle()
         {
             _animationBehavior.Play("Idle");
             _currentState = Idle;
         }
 
-        private void Idle(float elapesedTime) 
+        private void Idle(float elapesedTime)
         {
             var keyboardState = Keyboard.GetState();
 
@@ -121,7 +123,7 @@ namespace Reaper.Objects.Player
             {
                 GoToFall();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left)) 
+            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
             {
                 GoToAttack();
             }
@@ -152,7 +154,7 @@ namespace Reaper.Objects.Player
 
             _platformerBehavior.Move(movement);
 
-            if (movement == 0f) 
+            if (movement == 0f)
             {
                 GoToIdle();
             }
@@ -253,19 +255,22 @@ namespace Reaper.Objects.Player
             }
         }
 
-        private void GoToAttack() 
+        private const int MAX_COSECUTIVE_ATTACKS = 3;
+        private int _attackIndex;
+        private bool _hasCheckedForHits;
+
+        private void GoToAttack()
         {
             _platformerBehavior.Freeze();
             _hasCheckedForHits = false;
-            _animationBehavior.Play("Attack");
+            _animationBehavior.PlayFromBeginning($"attack_{_attackIndex}");
             _currentState = Attack;
+            _swingSound.Play();
         }
-
-        private bool _hasCheckedForHits;
 
         private void Attack(float elapsedTime)
         {
-            if (_animationBehavior.CurrentFrame == 2 && !_hasCheckedForHits) 
+            if (_animationBehavior.CurrentFrame == 2 && !_hasCheckedForHits)
             {
                 var bounds = new Rectangle(
                     Owner.IsMirrored ? Owner.Bounds.Left - 16 : Owner.Bounds.Right + 16,
@@ -274,7 +279,7 @@ namespace Reaper.Objects.Player
 
                 var overlaps = Owner.Layout.QueryBounds(bounds);
 
-                foreach (var overlap in overlaps) 
+                foreach (var overlap in overlaps)
                 {
                     if (overlap == Owner)
                         continue;
@@ -292,11 +297,24 @@ namespace Reaper.Objects.Player
 
                 _hasCheckedForHits = true;
             }
-            else if (_animationBehavior.IsFinished) 
+            else if (_animationBehavior.CurrentFrame > 3 && _attackIndex < MAX_COSECUTIVE_ATTACKS - 1 && IsAttacking())
+            {
+                _attackIndex++;
+                GoToAttack();
+            }
+            else if (_animationBehavior.IsFinished)
             {
                 _platformerBehavior.Unfreeze();
+                _attackIndex = 0;
                 GoToIdle();
             }
+        }
+
+        private bool IsAttacking()
+        {
+            var keyboardState = Keyboard.GetState();
+
+            return keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left);
         }
     }
 }
