@@ -3,11 +3,11 @@ using Reaper.Ogmo;
 using Reaper.Ogmo.Models;
 using System;
 
-namespace Reaper.Objects
+namespace Reaper.Ogmo
 {
     public static class DefinitionExtensions
     {
-        public static void UseLoader(this WorldObjectDefinition definition, Action<WorldObject, OgmoEntity> loader) 
+        public static void UseOgmoLoader(this WorldObjectDefinition definition, Action<WorldObject, OgmoEntity> loader) 
         {
             Loaders.Register(definition.Guid, loader);
         }

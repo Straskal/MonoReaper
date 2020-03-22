@@ -12,7 +12,7 @@ namespace Reaper.Objects.Common
         {
             var def = new WorldObjectDefinition();
             def.AddBehavior(wo => new LevelTransitionBehavior(wo));
-            def.UseLoader((wo, oe) => 
+            def.UseOgmoLoader((wo, oe) => 
             {
                 if (string.IsNullOrWhiteSpace(oe.Values.Level))
                     throw new ArgumentException("Level transitions must be provided with a layout to load");

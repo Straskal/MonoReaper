@@ -11,7 +11,7 @@ using LayerNames = Reaper.Constants.Layers;
 
 namespace Reaper.Ogmo
 {
-    public static class OgmoExtensions
+    public static class GameExtensions
     {
         public static void LoadOgmoLayout(this IGame game, string filename)
         {
