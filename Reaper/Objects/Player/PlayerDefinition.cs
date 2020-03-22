@@ -113,6 +113,8 @@ namespace Reaper.Objects.Player
                         new SpriteSheetBehavior.Frame(64, 32, 64, 32),
                         new SpriteSheetBehavior.Frame(0, 64, 64, 32),
                         new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
+                        new SpriteSheetBehavior.Frame(0, 64, 64, 32),
                     }
                 },
             }));

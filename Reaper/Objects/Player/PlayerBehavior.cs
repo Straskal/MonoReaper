@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
+using Reaper.Engine.Singletons;
 using Reaper.Objects.Common;
 using System;
 using System.Linq;
@@ -15,9 +16,6 @@ namespace Reaper.Objects.Player
         private SpriteSheetBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
 
-        private KeyboardState _keyState;
-        private KeyboardState _previousKeyState;
-
         private Action<float> _currentState;
 
         private Vector2 _groundBelow;
@@ -26,6 +24,12 @@ namespace Reaper.Objects.Player
         private SoundEffect _jumpSound;
         private SoundEffect _hitSound;
         private SoundEffect _swingSound;
+
+        private Input.AxisAction _moveAction;
+        private Input.PressedAction _jumpAction;
+        private Input.PressedAction _attackAction;
+        private Input.PressedAction _toggleFullscreenAction;
+        private Input.PressedAction _exitGameAction;
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
@@ -41,14 +45,26 @@ namespace Reaper.Objects.Player
             _animationBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
+            var input = Game.Singletons.Get<Input>();
+
+            _moveAction = input.GetAction<Input.AxisAction>("move");
+            _jumpAction = input.GetAction<Input.PressedAction>("jump");
+            _attackAction = input.GetAction<Input.PressedAction>("attack");
+            _toggleFullscreenAction = input.GetAction<Input.PressedAction>("toggleFullscreen");
+            _exitGameAction = input.GetAction<Input.PressedAction>("exitGame");
+
             Owner.Layout.Zoom = 0.8f;
+
             GoToIdle();
         }
 
         public override void Tick(GameTime gameTime)
         {
-            _previousKeyState = _keyState;
-            _keyState = Keyboard.GetState();
+            if (_toggleFullscreenAction.WasPressed())
+                Owner.Layout.Game.ToggleFullscreen();
+
+            if (_exitGameAction.WasPressed())
+                Owner.Layout.Game.Exit();
 
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
@@ -72,9 +88,9 @@ namespace Reaper.Objects.Player
         private void UpdateFallRespawnPosition()
         {
             var groundRay = new Rectangle(
-                            (int)Owner.Position.X - Owner.Origin.X,
-                            (int)Owner.Position.Y,
-                            16, 128);
+                (int)Owner.Position.X - Owner.Origin.X,
+                (int)Owner.Position.Y,
+                16, 128);
 
             var ground = Owner.Layout.QueryBounds(groundRay)
                 .Where(wo => wo != Owner && wo.IsSolid)
@@ -97,9 +113,7 @@ namespace Reaper.Objects.Player
 
         private void Idle(float elapesedTime)
         {
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.D))
+            if (IsMovementInputDown())
             {
                 GoToMove();
             }
@@ -111,10 +125,15 @@ namespace Reaper.Objects.Player
             {
                 GoToFall();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
+            else if (IsAttackPressed())
             {
                 GoToAttack();
             }
+        }
+
+        private bool IsMovementInputDown() 
+        {
+            return _moveAction.GetAxis() != 0f;
         }
 
         private void GoToMove()
@@ -125,18 +144,14 @@ namespace Reaper.Objects.Player
 
         private void Move(float elapesedTime)
         {
-            float movement = 0;
+            float movement = _moveAction.GetAxis();
 
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.A))
+            if (movement < 0f)
             {
-                movement += -1;
                 Owner.IsMirrored = true;
             }
-            if (keyboardState.IsKeyDown(Keys.D))
+            if (movement > 0f)
             {
-                movement += 1;
                 Owner.IsMirrored = false;
             }
 
@@ -168,16 +183,14 @@ namespace Reaper.Objects.Player
         private void Jump(float elapesedTime)
         {
             var keyboardState = Keyboard.GetState();
-            float movement = 0;
+            float movement = _moveAction.GetAxis();
 
-            if (keyboardState.IsKeyDown(Keys.A))
+            if (movement < 0f)
             {
-                movement += -1;
                 Owner.IsMirrored = true;
             }
-            if (keyboardState.IsKeyDown(Keys.D))
+            if (movement > 0f)
             {
-                movement += 1;
                 Owner.IsMirrored = false;
             }
             if (keyboardState.IsKeyDown(Keys.Space))
@@ -195,6 +208,7 @@ namespace Reaper.Objects.Player
             {
                 _platformerBehavior.GravityAcceleration = 0;
                 _platformerBehavior.Velocity = Vector2.Zero;
+
                 GoToAttack();
             }
         }
@@ -209,16 +223,14 @@ namespace Reaper.Objects.Player
         {
             var keyboardState = Keyboard.GetState();
 
-            float movement = 0;
+            float movement = _moveAction.GetAxis();
 
-            if (keyboardState.IsKeyDown(Keys.A))
+            if (movement < 0f)
             {
-                movement += -1;
                 Owner.IsMirrored = true;
             }
-            if (keyboardState.IsKeyDown(Keys.D))
+            if (movement > 0f)
             {
-                movement += 1;
                 Owner.IsMirrored = false;
             }
 
@@ -237,7 +249,7 @@ namespace Reaper.Objects.Player
                     GoToIdle();
                 }
             }
-            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
+            else if (IsAttackPressed())
             {
                 _platformerBehavior.GravityAcceleration = 0;
                 _platformerBehavior.Velocity = Vector2.Zero;
@@ -303,12 +315,12 @@ namespace Reaper.Objects.Player
 
         private bool IsAttackPressed()
         {
-            return _keyState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left);
+            return _attackAction.WasPressed();
         }
 
         private bool IsJumpPressed()
         {
-            return _keyState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space);
+            return _jumpAction.WasPressed();
         }
 
         private const float DEFAULT_SMOOTHING = 0.3f;

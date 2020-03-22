@@ -33,7 +33,7 @@ namespace Reaper.Engine
 
         public int Width { get; }
         public int Height { get; }
-        public MainGame Game { get; }
+        public IGame Game { get; }
 
         public Vector2 Position
         {

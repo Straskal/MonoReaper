@@ -114,6 +114,8 @@ namespace Reaper.Engine
 
                     _position.X += sign;
                     pixelsToMove -= sign;
+
+                    UpdateBBox();
                 }
             }
 
@@ -152,6 +154,8 @@ namespace Reaper.Engine
 
                     _position.Y += sign;
                     pixelsToMove -= sign;
+
+                    UpdateBBox();
                 }
             }
 

@@ -38,18 +38,6 @@
           "originX": 0,
           "originY": 0,
           "values": {"level": "testlevel3.json"}
-        },
-        {
-          "name": "transition",
-          "id": 2,
-          "_eid": "48795505",
-          "x": 224,
-          "y": 0,
-          "width": 16,
-          "height": 144,
-          "originX": 0,
-          "originY": 0,
-          "values": {"level": "testlevel.json"}
         }
       ]
     },
