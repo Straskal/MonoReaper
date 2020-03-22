@@ -1,13 +1,12 @@
-﻿using Reaper.Objects;
-using Reaper.Engine;
-using Reaper.Engine.Behaviors;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System;
-using System.Linq;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
+using Reaper.Engine;
+using Reaper.Engine.Behaviors;
 using Reaper.Objects.Common;
+using System;
+using System.Linq;
 
 namespace Reaper.Objects.Player
 {
@@ -15,17 +14,20 @@ namespace Reaper.Objects.Player
     {
         private SpriteSheetBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
+
+        private KeyboardState _keyState;
         private KeyboardState _previousKeyState;
+
         private Action<float> _currentState;
-        private Vector2 _lastGroundedPosition;
-        private bool _lastMirroredGrounded;
+
+        private Vector2 _groundBelow;
+        private bool _wasMirrored;
+
         private SoundEffect _jumpSound;
         private SoundEffect _hitSound;
         private SoundEffect _swingSound;
 
-        public PlayerBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public PlayerBehavior(WorldObject owner) : base(owner) { }
 
         public override void Load(ContentManager contentManager)
         {
@@ -40,47 +42,39 @@ namespace Reaper.Objects.Player
             _platformerBehavior = Owner.GetBehavior<PlatformerBehavior>();
 
             Owner.Layout.Zoom = 0.8f;
-
             GoToIdle();
         }
 
-        private bool _spawned;
-
         public override void Tick(GameTime gameTime)
         {
+            _previousKeyState = _keyState;
+            _keyState = Keyboard.GetState();
+
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
-            _previousKeyState = Keyboard.GetState();
-
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                Owner.Layout.Zoom += 0.1f;
-            }
-            else if (keyboardState.IsKeyDown(Keys.Up))
-            {
-                Owner.Layout.Zoom -= 0.1f;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Right) && !_spawned)
-            {
-                Owner.Layout.Spawn(Definitions.Get("other"), Owner.Position + new Vector2(64, 0));
-                _spawned = true;
-            }
-            else if (keyboardState.IsKeyUp(Keys.Right))
-            {
-                _spawned = false;
-            }
         }
 
         public override void PostTick(GameTime gameTime)
         {
-            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, 0.3f), Owner.Layout.Position.Y);
+            UpdateFallRespawnPosition();
+            HandleFallingOutsideLayout();
+            ScrollLayout();
+        }
 
+        private void HandleFallingOutsideLayout()
+        {
+            if (Owner.Position.Y > Owner.Layout.Height)
+            {
+                Owner.Position = _groundBelow + new Vector2(_wasMirrored ? 32 : -32, 0);
+                Owner.UpdateBBox();
+            }
+        }
+
+        private void UpdateFallRespawnPosition()
+        {
             var groundRay = new Rectangle(
-                (int)Owner.Position.X - Owner.Origin.X,
-                (int)Owner.Position.Y,
-                16, 128);
+                            (int)Owner.Position.X - Owner.Origin.X,
+                            (int)Owner.Position.Y,
+                            16, 128);
 
             var ground = Owner.Layout.QueryBounds(groundRay)
                 .Where(wo => wo != Owner && wo.IsSolid)
@@ -89,15 +83,9 @@ namespace Reaper.Objects.Player
 
             if (ground != null)
             {
-                _lastMirroredGrounded = Owner.IsMirrored;
-                _lastGroundedPosition.X = Owner.Position.X;
-                _lastGroundedPosition.Y = ground.Bounds.Top;
-            }
-
-            if (Owner.Position.Y > Owner.Layout.Height)
-            {
-                Owner.Position = _lastGroundedPosition + new Vector2(_lastMirroredGrounded ? 32 : -32, 0);
-                Owner.UpdateBBox();
+                _wasMirrored = Owner.IsMirrored;
+                _groundBelow.X = Owner.Position.X;
+                _groundBelow.Y = ground.Bounds.Top;
             }
         }
 
@@ -115,7 +103,7 @@ namespace Reaper.Objects.Player
             {
                 GoToMove();
             }
-            else if (_platformerBehavior.IsOnGround() && keyboardState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space))
+            else if (_platformerBehavior.IsOnGround() && IsJumpPressed())
             {
                 GoToJump();
             }
@@ -158,11 +146,11 @@ namespace Reaper.Objects.Player
             {
                 GoToIdle();
             }
-            if (_platformerBehavior.IsOnGround() && keyboardState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space))
+            if (_platformerBehavior.IsOnGround() && IsJumpPressed())
             {
                 GoToJump();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left))
+            else if (IsAttackPressed())
             {
                 GoToAttack();
             }
@@ -170,6 +158,7 @@ namespace Reaper.Objects.Player
 
         private void GoToJump()
         {
+            _scrollSmoothing = 0.25f;
             _jumpSound.Play();
             _platformerBehavior.Jump();
             _animationBehavior.Play("Jump");
@@ -237,6 +226,8 @@ namespace Reaper.Objects.Player
 
             if (_platformerBehavior.IsOnGround())
             {
+                _scrollSmoothing = DEFAULT_SMOOTHING;
+
                 if (_platformerBehavior.IsMoving())
                 {
                     GoToMove();
@@ -297,7 +288,7 @@ namespace Reaper.Objects.Player
 
                 _hasCheckedForHits = true;
             }
-            else if (_animationBehavior.CurrentFrame > 3 && _attackIndex < MAX_COSECUTIVE_ATTACKS - 1 && IsAttacking())
+            else if (_animationBehavior.CurrentFrame > 3 && _attackIndex < MAX_COSECUTIVE_ATTACKS - 1 && IsAttackPressed())
             {
                 _attackIndex++;
                 GoToAttack();
@@ -310,11 +301,22 @@ namespace Reaper.Objects.Player
             }
         }
 
-        private bool IsAttacking()
+        private bool IsAttackPressed()
         {
-            var keyboardState = Keyboard.GetState();
+            return _keyState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left);
+        }
 
-            return keyboardState.IsKeyDown(Keys.Left) && _previousKeyState.IsKeyUp(Keys.Left);
+        private bool IsJumpPressed()
+        {
+            return _keyState.IsKeyDown(Keys.Space) && _previousKeyState.IsKeyUp(Keys.Space);
+        }
+
+        private const float DEFAULT_SMOOTHING = 0.3f;
+        private float _scrollSmoothing = 0.3f;
+
+        private void ScrollLayout() 
+        {
+            Owner.Layout.Position = new Vector2(MathHelper.SmoothStep(Owner.Layout.Position.X, Owner.DrawPosition.X, _scrollSmoothing), Owner.Position.Y);
         }
     }
 }

@@ -142,8 +142,6 @@ namespace Reaper.Engine.Behaviors
                 _velocity.Y = 0f;
                 _jumpTime = 0f;
             }
-
-            Owner.UpdateBBox();
         }
 
         private void ResetInputValues()

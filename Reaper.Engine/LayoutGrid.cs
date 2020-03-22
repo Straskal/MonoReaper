@@ -110,13 +110,13 @@ namespace Reaper.Engine
             if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
                 yield return new Point(topLeftCol, topLeftRow);
 
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topRightCol, out int topRightRow))
+            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Top), out int topRightCol, out int topRightRow))
                 yield return new Point(topRightCol, topRightRow);
 
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int bottomLeftCol, out int bottomLeftRow))
+            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Bottom), out int bottomLeftCol, out int bottomLeftRow))
                 yield return new Point(bottomLeftCol, bottomLeftRow);
 
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int bottomRightCol, out int bottomRightRow))
+            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Bottom), out int bottomRightCol, out int bottomRightRow))
                 yield return new Point(bottomRightCol, bottomRightRow);
         }
 
