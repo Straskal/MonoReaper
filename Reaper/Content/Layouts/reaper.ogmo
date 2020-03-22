@@ -29,7 +29,7 @@
     },
     {
       "definition": "tile",
-      "name": "middleground",
+      "name": "solids",
       "gridSize": {"x": 16, "y": 16},
       "exportID": "27966601",
       "exportMode": 0,

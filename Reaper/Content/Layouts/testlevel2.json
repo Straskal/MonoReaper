@@ -33,6 +33,8 @@
           "_eid": "48795505",
           "x": 64,
           "y": 128,
+          "width": 16,
+          "height": 16,
           "originX": 0,
           "originY": 0,
           "values": {"level": "testlevel.json"}
@@ -43,6 +45,8 @@
           "_eid": "48795505",
           "x": 224,
           "y": 128,
+          "width": 16,
+          "height": 16,
           "originX": 0,
           "originY": 0,
           "values": {"level": "testlevel.json"}
@@ -50,7 +54,7 @@
       ]
     },
     {
-      "name": "middleground",
+      "name": "solids",
       "_eid": "27966601",
       "offsetX": 0,
       "offsetY": 0,

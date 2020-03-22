@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 using System.IO;
 using Reaper.Ogmo.Models;
 
+using AssetPaths = Reaper.Constants.AssetPaths;
+using LayerNames = Reaper.Constants.Layers;
+
 namespace Reaper.Ogmo
 {
     public static class OgmoExtensions
@@ -20,33 +23,13 @@ namespace Reaper.Ogmo
             }
 
             var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
-
             int tmDrawLayer = -10;
 
             foreach (var layer in map.Layers)
             {
                 if (layer.Data != null)
                 {
-                    var data = new TilemapBehavior.MapData
-                    {
-                        CellSize = layer.GridCellHeight,
-                        CellsX = layer.GridCellsX,
-                        CellsY = layer.GridCellsX,
-                        TilesetFilePath = "art/tilesets/" + layer.Tileset,
-                        Tiles = layer.Data
-                    };
-
-                    var tilemapDef = new WorldObjectDefinition();
-
-                    if (layer.Name == "middleground") 
-                    {
-                        tilemapDef.MakeSolid();
-                    }
-
-                    tilemapDef.AddBehavior(wo => new TilemapBehavior(wo, data));
-
-                    var tm = layout.Spawn(tilemapDef, Vector2.Zero);
-                    tm.ZOrder = tmDrawLayer--;
+                    layout.LoadTilemap(layer, tmDrawLayer--);
                 }
                 else if (layer.Entities != null)
                 {
@@ -55,6 +38,27 @@ namespace Reaper.Ogmo
             }
 
             game.ChangeLayout(layout);
+        }
+
+        private static void LoadTilemap(this Layout layout, OgmoLayer layer, int drawLayer) 
+        {
+            var tilemapDef = new WorldObjectDefinition();
+            tilemapDef.AddBehavior(wo => new TilemapBehavior(wo, new TilemapBehavior.MapData
+            {
+                CellSize = layer.GridCellHeight,
+                CellsX = layer.GridCellsX,
+                CellsY = layer.GridCellsX,
+                TilesetFilePath = $"{AssetPaths.Tilesets}{layer.Tileset}",
+                Tiles = layer.Data
+            }));
+
+            if (layer.Name == LayerNames.Solids)
+            {
+                tilemapDef.MakeSolid();
+            }
+
+            var tm = layout.Spawn(tilemapDef, Vector2.Zero);
+            tm.ZOrder = drawLayer;
         }
 
         private static void LoadEntities(this Layout layout, OgmoEntity[] entities)
