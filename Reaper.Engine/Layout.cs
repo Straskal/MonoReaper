@@ -41,6 +41,18 @@ namespace Reaper.Engine
             set => _view.Position = value;
         }
 
+        public int OffsetX 
+        {
+            get => _view.OffsetX;
+            set => _view.OffsetX = value;
+        }
+
+        public int OffsetY
+        {
+            get => _view.OffsetY;
+            set => _view.OffsetY = value;
+        }
+
         public float Zoom 
         {
             get => _view.Zoom;

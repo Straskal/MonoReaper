@@ -54,6 +54,8 @@ namespace Reaper.Engine
             }
         }
 
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
         public int WindowWidth { get; private set; }
         public int WindowHeight { get; private set; }
         public int Width { get; }
@@ -63,8 +65,8 @@ namespace Reaper.Engine
         {
             get
             {
-                _translation.X = -Position.X;
-                _translation.Y = -Position.Y;
+                _translation.X = -Position.X - OffsetX;
+                _translation.Y = -Position.Y - OffsetY;
 
                 Matrix.CreateTranslation(ref _translation, out _translationMat3);
                 Matrix.CreateRotationZ(Rotation, out _rotationMat3);

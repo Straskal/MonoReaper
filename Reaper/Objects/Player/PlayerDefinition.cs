@@ -2,6 +2,7 @@
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using Reaper.Objects.Common;
+using Reaper.Ogmo;
 
 namespace Reaper.Objects.Player
 {
@@ -17,7 +18,7 @@ namespace Reaper.Objects.Player
             playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo));
             playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
             playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
-            playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo) { Offset = new Vector2(0f, -32f) });
+            playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
             {
                 new SpriteSheetBehavior.Animation

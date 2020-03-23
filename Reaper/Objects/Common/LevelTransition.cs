@@ -20,7 +20,9 @@ namespace Reaper.Objects.Common
 
                 wo.Width = oe.Width;
                 wo.Height = oe.Height;
+
                 wo.GetBehavior<LevelTransitionBehavior>().Level = oe.Values.Level;
+                wo.GetBehavior<LevelTransitionBehavior>().SpawnPoint = oe.Values.SpawnPoint;
             });
 
             return def;
@@ -36,6 +38,7 @@ namespace Reaper.Objects.Common
         }
 
         public string Level { get; set; }
+        public string SpawnPoint { get; set; }
 
         public override void OnLayoutStarted()
         {
@@ -46,7 +49,7 @@ namespace Reaper.Objects.Common
         {
             if (Owner.Bounds.Intersects(_player.Bounds)) 
             {
-                Owner.Layout.Game.LoadOgmoLayout(Level);
+                Owner.Layout.Game.LoadOgmoLayout(Level, SpawnPoint);
             }
         }
     }

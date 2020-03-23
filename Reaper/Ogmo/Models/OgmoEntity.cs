@@ -4,6 +4,8 @@
     {
         public int DrawOrder { get; set; }
         public string Level { get; set; }
+        public string SpawnPointName { get; set; }
+        public string SpawnPoint { get; set; }
     }
     
     public class OgmoEntity

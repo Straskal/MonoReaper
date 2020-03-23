@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Input;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using Reaper.Engine.Singletons;
@@ -13,13 +12,18 @@ namespace Reaper.Objects.Player
 {
     public class PlayerBehavior : Behavior
     {
+        private const int MAX_COSECUTIVE_ATTACKS = 3;
+
         private SpriteSheetBehavior _animationBehavior;
         private PlatformerBehavior _platformerBehavior;
 
         private Action<float> _currentState;
 
-        private Vector2 _groundBelow;
-        private bool _wasMirrored;
+        private Vector2 _groundBeforeFall;
+        private bool _wasMirroredBeforeFall;
+
+        private int _currentAttackIndex;
+        private bool _hasCheckedForHits;
 
         private SoundEffect _jumpSound;
         private SoundEffect _hitSound;
@@ -75,15 +79,6 @@ namespace Reaper.Objects.Player
             HandleFallingOutsideLayout();
         }
 
-        private void HandleFallingOutsideLayout()
-        {
-            if (Owner.Position.Y > Layout.Height)
-            {
-                Owner.Position = _groundBelow + new Vector2(_wasMirrored ? 32 : -32, 0);
-                Owner.UpdateBBox();
-            }
-        }
-
         private void UpdateFallRespawnPosition()
         {
             var groundRay = new Rectangle(
@@ -98,9 +93,18 @@ namespace Reaper.Objects.Player
 
             if (ground != null)
             {
-                _wasMirrored = Owner.IsMirrored;
-                _groundBelow.X = Owner.Position.X;
-                _groundBelow.Y = ground.Bounds.Top;
+                _wasMirroredBeforeFall = Owner.IsMirrored;
+                _groundBeforeFall.X = Owner.Position.X;
+                _groundBeforeFall.Y = ground.Bounds.Top;
+            }
+        }
+
+        private void HandleFallingOutsideLayout()
+        {
+            if (Owner.Position.Y > Layout.Height)
+            {
+                Owner.Position = _groundBeforeFall + new Vector2(_wasMirroredBeforeFall ? 32 : -32, 0);
+                Owner.UpdateBBox();
             }
         }
 
@@ -112,11 +116,11 @@ namespace Reaper.Objects.Player
 
         private void Idle(float elapesedTime)
         {
-            if (IsMovementInputDown())
+            if (_moveAction.GetAxis() != 0f)
             {
                 GoToMove();
             }
-            else if (_platformerBehavior.IsOnGround() && IsJumpPressed())
+            else if (_jumpAction.WasPressed())
             {
                 GoToJump();
             }
@@ -124,15 +128,10 @@ namespace Reaper.Objects.Player
             {
                 GoToFall();
             }
-            else if (IsAttackPressed())
+            else if (_attackAction.WasPressed())
             {
                 GoToAttack();
             }
-        }
-
-        private bool IsMovementInputDown() 
-        {
-            return _moveAction.GetAxis() != 0f;
         }
 
         private void GoToMove()
@@ -160,11 +159,11 @@ namespace Reaper.Objects.Player
             {
                 GoToIdle();
             }
-            if (_platformerBehavior.IsOnGround() && IsJumpPressed())
+            if (_jumpAction.WasPressed())
             {
                 GoToJump();
             }
-            else if (IsAttackPressed())
+            else if (_attackAction.WasPressed())
             {
                 GoToAttack();
             }
@@ -180,7 +179,6 @@ namespace Reaper.Objects.Player
 
         private void Jump(float elapesedTime)
         {
-            var keyboardState = Keyboard.GetState();
             float movement = _moveAction.GetAxis();
 
             if (movement < 0f)
@@ -191,7 +189,7 @@ namespace Reaper.Objects.Player
             {
                 Owner.IsMirrored = false;
             }
-            if (keyboardState.IsKeyDown(Keys.Space))
+            if (_jumpAction.IsDown())
             {
                 _platformerBehavior.Jump();
             }
@@ -202,7 +200,7 @@ namespace Reaper.Objects.Player
             {
                 GoToFall();
             }
-            else if (keyboardState.IsKeyDown(Keys.Left))
+            else if (_attackAction.WasPressed())
             {
                 _platformerBehavior.GravityAcceleration = 0;
                 _platformerBehavior.Velocity = Vector2.Zero;
@@ -219,8 +217,6 @@ namespace Reaper.Objects.Player
 
         private void Fall(float elapesedTime)
         {
-            var keyboardState = Keyboard.GetState();
-
             float movement = _moveAction.GetAxis();
 
             if (movement < 0f)
@@ -245,7 +241,7 @@ namespace Reaper.Objects.Player
                     GoToIdle();
                 }
             }
-            else if (IsAttackPressed())
+            else if (_attackAction.WasPressed())
             {
                 _platformerBehavior.GravityAcceleration = 0;
                 _platformerBehavior.Velocity = Vector2.Zero;
@@ -254,17 +250,13 @@ namespace Reaper.Objects.Player
             }
         }
 
-        private const int MAX_COSECUTIVE_ATTACKS = 3;
-        private int _attackIndex;
-        private bool _hasCheckedForHits;
-
         private void GoToAttack()
         {
-            _platformerBehavior.Freeze();
             _hasCheckedForHits = false;
-            _animationBehavior.PlayFromBeginning($"attack_{_attackIndex}");
-            _currentState = Attack;
             _swingSound.Play();
+            _platformerBehavior.Freeze();
+            _animationBehavior.PlayFromBeginning($"attack_{_currentAttackIndex}");
+            _currentState = Attack;
         }
 
         private void Attack(float elapsedTime)
@@ -278,45 +270,32 @@ namespace Reaper.Objects.Player
 
                 var overlaps = Owner.Layout.QueryBounds(bounds);
 
+                if (overlaps.Any())
+                    _hitSound.Play();
+
                 foreach (var overlap in overlaps)
                 {
-                    if (overlap == Owner)
-                        continue;
-
-                    var damageable = overlap.GetBehavior<DamageableBehavior>();
-
-                    if (damageable == null)
+                    if (overlap == Owner || !Owner.TryGetBehavior<DamageableBehavior>(out var damageable))
                         continue;
 
                     damageable.Damage(new Damage { Amount = 1 });
                 }
 
-                if (overlaps.Any())
-                    _hitSound.Play();
-
                 _hasCheckedForHits = true;
             }
-            else if (_animationBehavior.CurrentFrame > 3 && _attackIndex < MAX_COSECUTIVE_ATTACKS - 1 && IsAttackPressed())
+            else if (_animationBehavior.CurrentFrame > 3 && _currentAttackIndex < (MAX_COSECUTIVE_ATTACKS - 1) && _attackAction.WasPressed())
             {
-                _attackIndex++;
+                _currentAttackIndex++;
+
                 GoToAttack();
             }
             else if (_animationBehavior.IsFinished)
             {
                 _platformerBehavior.Unfreeze();
-                _attackIndex = 0;
+                _currentAttackIndex = 0;
+
                 GoToIdle();
             }
-        }
-
-        private bool IsAttackPressed()
-        {
-            return _attackAction.WasPressed();
-        }
-
-        private bool IsJumpPressed()
-        {
-            return _jumpAction.WasPressed();
         }
     }
 }

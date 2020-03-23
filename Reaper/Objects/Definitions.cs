@@ -32,7 +32,8 @@ namespace Reaper.Objects
         /// </summary>
         public static void Register() 
         {
-            _definitionFactories.Add("player", PlayerDefinition.Method);
+            _definitionFactories.Add("player", PlayerSpawnPoint.Method);
+            _definitionFactories.Add("playerInstance", PlayerDefinition.Method);
             _definitionFactories.Add("thug", ThugDefinition.Method);
             _definitionFactories.Add("transition", value: LevelTransitionDefinition.Method);
         }

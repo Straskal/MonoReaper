@@ -77,6 +77,12 @@ namespace Reaper.Engine
             return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
         }
 
+        public bool TryGetBehavior<T>(out T behavior) where T : Behavior
+        {
+            behavior = _behaviors.FirstOrDefault(b => b is T) as T;
+            return behavior != null;
+        }
+
         public IEnumerable<Behavior> GetBehaviors() 
         {
             return _behaviors;

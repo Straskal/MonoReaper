@@ -26,7 +26,7 @@ namespace Reaper
                 Definitions.Register();
                 InputBindings.Initialize(game.Singletons.Get<Input>());
 
-                game.LoadOgmoLayout(args[0]);
+                game.LoadOgmoLayout("testlevel.json");
                 game.Run();
             }
         }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,16 +63,28 @@ namespace Reaper.Engine
 
         public void Tick(GameTime gameTime)
         {
-            var toSpawn = _toSpawn.ToArray();
-            var toDestroy = _toDestroy.ToArray();
+            var spawned = new List<WorldObject>();
 
-            _toSpawn.Clear();
-            _toDestroy.Clear();
+            while (_toSpawn.Any()) 
+            {
+                spawned.AddRange(_toSpawn);
 
-            InvokeLoad(toSpawn);
-            InvokeCreated(toSpawn);
-            InvokeStarted(toSpawn);
-            InvokeDestroyed(toDestroy);
+                var temp = _toSpawn.ToArray();
+                _toSpawn.Clear();
+
+                InvokeLoad(temp);
+                InvokeCreated(temp);
+            }
+
+            InvokeStarted(spawned);
+
+            while (_toDestroy.Any())
+            {
+                var temp = _toDestroy.ToArray();
+                _toDestroy.Clear();
+
+                InvokeDestroyed(temp);
+            }
 
             TickWorldObjects(gameTime);
             ZOrderSort();
