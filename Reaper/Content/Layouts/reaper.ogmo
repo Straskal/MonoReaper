@@ -51,49 +51,11 @@
   ],
   "entities": [
     {
-      "exportID": "92578433",
-      "name": "spawnPoint",
-      "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 0, "y": 0},
-      "originAnchored": true,
-      "shape": {
-        "label": "Rectangle",
-        "points": [
-          {"x": -1, "y": -1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": 1}
-        ]
-      },
-      "color": "#00ff1e62",
-      "tileX": false,
-      "tileY": false,
-      "tileSize": {"x": 16, "y": 16},
-      "resizeableX": false,
-      "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
-      "canFlipX": false,
-      "canFlipY": false,
-      "canSetColor": false,
-      "hasNodes": false,
-      "nodeLimit": 0,
-      "nodeDisplay": 0,
-      "nodeGhost": true,
-      "tags": ["common"],
-      "values": [
-        {"name": "Name", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
-      ]
-    },
-    {
       "exportID": "15498917",
       "name": "player",
       "limit": -1,
-      "size": {"x": 16, "y": 16},
-      "origin": {"x": 8, "y": 16},
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 16, "y": 32},
       "originAnchored": true,
       "shape": {
         "label": "Rectangle",
@@ -109,7 +71,7 @@
       "color": "#ff0000ff",
       "tileX": false,
       "tileY": false,
-      "tileSize": {"x": 24, "y": 24},
+      "tileSize": {"x": 32, "y": 32},
       "resizeableX": false,
       "resizeableY": false,
       "rotatable": false,
@@ -126,8 +88,8 @@
         {"name": "DrawOrder", "definition": "Integer", "defaults": 1, "bounded": false, "min": 0, "max": 100},
         {"name": "SpawnPointName", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ],
-      "texture": "../Art/Player/smallplayer-export.png",
-      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAPZJREFUOI1jZMACmBgZ/mMTZ2BgYPj3n4ERmc+IroCJkeG/s7oNAwMDA8OzN+8YGBgYGKREhBievXnHICUixLD35hEUQxixaYZpRNaMzEc2hAWbM2Ga1vXYYPWGZuIROBurATBDRJVNcMjOQrgam/SUCi1c5mIArAbgtplIAxgYGBhWzo4jygCMWNCLb0JR8OjsFRT+hyursEcjNs3IYF+yBAMDAwODiF0aigE4vUAswBmN6MBp7gus4mS5ADmvYARiioUhQQPmnDiPmZSZGBn+94ZawxUVrz4KZyOLMzAwMDCcQDCxhkHx6qMoIV28+ihK9kaWAwD9t0vkf+8ZjgAAAABJRU5ErkJggg=="
+      "texture": "Previews/player_preview.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAe1JREFUWIXFlrFLI0EUxn/x7AQlgmBptPCwuoAiQUUb/wAb7SQiLgg2ByIWYmEVgmChIKyFwU7/BUUQFFECWp1G8HKgcEUKUYhgtRayIZtMnPeWFb9uZmfe971v3ptZ+GbEwmxyUkmv+NRi/JaIl3HPr8Rxm6QLx38OezZygOJTS2WtBCoHNIEBDm9PrfHFDjippJV8f2eaRLwsDQlAs3Rhte2JeJlMdj7wfWpuD6Ay749tEDvwGTl8ZB8GagHV5MtL2w0z3Vrui1aA6Wwz2fm6zEtbFwAsZP5QyDnWuhELMPV26T4fcMAnB7kD4iJsFLQRUUdPP+0jjrUNVQJMJIHxwqA6hroITZia26srRkn2EOItKOQcrzZzEyIX8Cu95rUVXwBwZ17q7A9DLhZQTV6NWiETK3cAnJysiwWIitBEDuDstgJ3Ui4jrEpHRxdVL6APqQvWLnhOtKrJNXusAo5nO3FnzEfQCPtjj9EJgI8LJ4wTkQkAeVZaoWIBkssHdParBHwVVAJs9oapE9VreJ1bjW1MDnkAvw/OAn3upJIeBWBsQCXA6kDpPq8KqIVVQG/ajWlF9KbdaB8jH779EDyCjckh7+bhFTD/un2GSLrAJw+Db29D9T/h5uUbAN1d/d7ff/mK3Uf/fxjnbXgHHd2fRntdOJIAAAAASUVORK5CYII="
     },
     {
       "exportID": "48795505",
@@ -244,6 +206,44 @@
       "tags": ["templates"],
       "values": [
         {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": true, "min": 0, "max": 1000}
+      ]
+    },
+    {
+      "exportID": "92578433",
+      "name": "spawnPoint",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#00ff1e62",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {"name": "Name", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
     }
   ],
