@@ -1,4 +1,5 @@
 ﻿using Reaper.Engine;
+using Reaper.Ogmo;
 
 namespace Reaper.Objects.Common
 {
@@ -8,14 +9,17 @@ namespace Reaper.Objects.Common
         {
             var playerSpawnPoint = new WorldObjectDefinition();
 
-            playerSpawnPoint.AddBehavior(wo => new OnLoad(wo, () => 
+            playerSpawnPoint.LoadFromOgmo((wo, oe) => 
             {
+                // Spawn a player instance and destroy self.
                 var layout = wo.Layout;
 
                 var playerInstance = layout.Spawn(Definitions.Get("playerInstance"), wo.Position);
                 playerInstance.IsMirrored = wo.IsMirrored;
                 playerInstance.ZOrder = wo.ZOrder;
-            }));
+
+                wo.Destroy();
+            });
 
             return playerSpawnPoint;
         }
