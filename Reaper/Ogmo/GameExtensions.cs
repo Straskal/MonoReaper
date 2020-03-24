@@ -31,7 +31,7 @@ namespace Reaper.Ogmo
                 switch (layer.Name) 
                 {
                     case LayerNames.WorldObjects:
-                        layout.LoadWorldObjectsLayer(spawnPoint ?? map.Values.DefaultSpawnPoint, layer.Entities);
+                        layout.LoadWorldObjectsLayer(spawnPoint ?? map.Values.EntrySpawnPoint, layer.Entities);
                         break;
 
                     case LayerNames.Solids:

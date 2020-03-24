@@ -3,7 +3,7 @@
     public class OgmoMapValues
     {
         public int SpatialCellSize { get; set; }
-        public string DefaultSpawnPoint { get; set; }
+        public string EntrySpawnPoint { get; set; }
         public int OffsetX { get; set; }
         public int OffsetY { get; set; }
     }

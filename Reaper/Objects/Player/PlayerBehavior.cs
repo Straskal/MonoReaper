@@ -6,6 +6,7 @@ using Reaper.Engine.Behaviors;
 using Reaper.Engine.Singletons;
 using Reaper.Objects.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Reaper.Objects.Player
@@ -261,21 +262,16 @@ namespace Reaper.Objects.Player
 
         private void Attack(float elapsedTime)
         {
-            if (_animationBehavior.CurrentFrame == 2 && !_hasCheckedForHits)
+            if (IsOnAttackFrame() && !_hasCheckedForHits)
             {
-                var bounds = new Rectangle(
-                    Owner.IsMirrored ? Owner.Bounds.Left - 16 : Owner.Bounds.Right + 16,
-                    (int)Math.Round(Owner.Position.Y - 16),
-                    16, 16);
-
-                var overlaps = Owner.Layout.QueryBounds(bounds);
+                var overlaps = QueryAttackBounds();
 
                 if (overlaps.Any())
                     _hitSound.Play();
 
                 foreach (var overlap in overlaps)
                 {
-                    if (overlap == Owner || !Owner.TryGetBehavior<DamageableBehavior>(out var damageable))
+                    if (IsAttackable(overlap, out var damageable))
                         continue;
 
                     damageable.Damage(new Damage { Amount = 1 });
@@ -283,7 +279,7 @@ namespace Reaper.Objects.Player
 
                 _hasCheckedForHits = true;
             }
-            else if (_animationBehavior.CurrentFrame > 3 && _currentAttackIndex < (MAX_COSECUTIVE_ATTACKS - 1) && _attackAction.WasPressed())
+            else if (CanFollowupAttack() && _attackAction.WasPressed())
             {
                 _currentAttackIndex++;
 
@@ -296,6 +292,31 @@ namespace Reaper.Objects.Player
 
                 GoToIdle();
             }
+        }
+
+        private bool IsOnAttackFrame() 
+        {
+            return _animationBehavior.CurrentFrame == 2;
+        }
+
+        private IEnumerable<WorldObject> QueryAttackBounds() 
+        {
+            var bounds = new Rectangle(
+                Owner.IsMirrored ? Owner.Bounds.Left - 16 : Owner.Bounds.Right + 16,
+                (int)Math.Round(Owner.Position.Y - 16),
+                16, 16);
+
+            return Owner.Layout.QueryBounds(bounds);
+        }
+
+        private bool IsAttackable(WorldObject worldObject, out DamageableBehavior damageable) 
+        {
+            return !worldObject.TryGetBehavior(out damageable) || worldObject == Owner;
+        }
+
+        private bool CanFollowupAttack() 
+        {
+            return _animationBehavior.CurrentFrame > 3 && _currentAttackIndex < (MAX_COSECUTIVE_ATTACKS - 1);
         }
     }
 }
