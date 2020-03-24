@@ -85,7 +85,7 @@ namespace Reaper.Objects.Player
                 (int)Owner.Position.Y,
                 16, 128);
 
-            var ground = Layout.QueryBounds(groundRay)
+            var ground = Layout.Grid.QueryBounds(groundRay)
                 .Where(wo => wo != Owner && wo.IsSolid)
                 .OrderBy(wo => Vector2.Distance(Owner.Position, wo.Position))
                 .FirstOrDefault();
@@ -304,7 +304,7 @@ namespace Reaper.Objects.Player
                 (int)Math.Round(Owner.Position.Y - 16),
                 16, 16);
 
-            return Owner.Layout.QueryBounds(bounds);
+            return Owner.Layout.Grid.QueryBounds(bounds);
         }
 
         private bool IsAttackable(WorldObject worldObject, out DamageableBehavior damageable) 

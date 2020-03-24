@@ -15,22 +15,24 @@ namespace Reaper.Engine
     public sealed class Layout
     {
         private readonly ContentManager _content;
-        private readonly LayoutGrid _grid;
-        private readonly WorldObjectList _worldObjectList;
 
         public Layout(MainGame game, int cellSize, int width, int height)
         {
+            _content = new ContentManager(game.Services, "Content");
+
             Game = game;
             Width = width;
             Height = height;
-
-            _content = new ContentManager(game.Services, "Content");
             View = new LayoutView(game, this);
-            _grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
-            _worldObjectList = new WorldObjectList(this, _content);
+
+            // TODO: This conversion should probably be done by the grid.
+            Grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
+            Objects = new WorldObjectList(this, _content);
         }
 
         public LayoutView View { get; }
+        public LayoutGrid Grid { get; }
+        public WorldObjectList Objects { get; }
         public IGame Game { get; }
 
         public int Width { get; }
@@ -38,61 +40,36 @@ namespace Reaper.Engine
 
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
-            var worldObject = _worldObjectList.Create(definition, position);
+            var worldObject = Objects.Create(definition, position);
             worldObject.UpdateBBox();
 
-            _grid.Add(worldObject);
+            Grid.Add(worldObject);
 
             return worldObject;
         }
 
-        public T GetWorldObjectAsBehavior<T>() where T : Behavior
+        public void Destroy(WorldObject worldObject)
         {
-            return _worldObjectList.GetWorldObjectAsBehavior<T>();
-        }
-
-        public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset) 
-        {
-            return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset);
-        }
-
-        public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
-        {
-            return _grid.TestSolidOverlapOffset(worldObject, xOffset, yOffset, out overlappedWorldObject);
-        }
-
-        public IEnumerable<WorldObject> QueryBounds(Rectangle bounds) 
-        {
-            return _grid.QueryBounds(bounds);
-        }
-
-        internal void UpdateGridCell(WorldObject worldObject)
-        {
-            _grid.Update(worldObject);
-        }
-
-        internal void Destroy(WorldObject worldObject)
-        {
-            _grid.Remove(worldObject);
-            _worldObjectList.DestroyObject(worldObject);
+            Grid.Remove(worldObject);
+            Objects.DestroyObject(worldObject);
         }
 
         internal void Tick(GameTime gameTime)
         {
-            _worldObjectList.Tick(gameTime);
+            Objects.Tick(gameTime);
         }
 
         internal void PostTick(GameTime gameTime)
         {
-            _worldObjectList.PostTick(gameTime);
+            Objects.PostTick(gameTime);
         }
 
         internal void Draw()
         {
             View.BeginDraw();
-            _worldObjectList.Draw(View);
+            Objects.Draw(View);
 
-            DebugTools.Draw(View.SpriteBatch, _worldObjectList.WorldObjects);
+            DebugTools.Draw(View.SpriteBatch, Objects.WorldObjects);
 
             View.EndDraw();
         }

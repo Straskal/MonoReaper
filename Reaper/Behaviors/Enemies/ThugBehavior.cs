@@ -33,7 +33,7 @@ namespace Reaper.Objects.Thug
 
         public override void OnLayoutStarted()
         {
-            _player = Owner.Layout.GetWorldObjectAsBehavior<PlayerBehavior>();
+            _player = Layout.Objects.GetFirstBehaviorOfType<PlayerBehavior>();
 
             GoToPatrol();
         }
@@ -149,7 +149,7 @@ namespace Reaper.Objects.Thug
 
         private bool IsGoingToFall()
         {
-            return !Owner.Layout.TestOverlapSolidOffset(Owner, Owner.IsMirrored ? -Owner.Bounds.Width : Owner.Bounds.Width, 1, out var worldObject)
+            return !Owner.Layout.Grid.TestSolidOverlapOffset(Owner, Owner.IsMirrored ? -Owner.Bounds.Width : Owner.Bounds.Width, 1, out var worldObject)
                 || worldObject.Bounds.Top > Owner.Bounds.Bottom;
         }
 
@@ -157,7 +157,7 @@ namespace Reaper.Objects.Thug
         {
             float reach = Owner.Bounds.Width * 0.5f + 1;
 
-            return Owner.Layout.TestOverlapSolidOffset(Owner, Owner.IsMirrored ? -reach : reach, 0);
+            return Owner.Layout.Grid.TestSolidOverlapOffset(Owner, Owner.IsMirrored ? -reach : reach, 0);
         }
 
         private bool HasPlayerInSight()

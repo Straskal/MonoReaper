@@ -92,7 +92,7 @@ namespace Reaper.Engine.Behaviors
             _velocity.X += Acceleration * _movement * elapsedTime;
             _velocity.X *= IsOnGround() ? Drag : AirDrag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
-            _isOnGround = Owner.Layout.TestOverlapSolidOffset(Owner, 0, GroundBufferInPixels);
+            _isOnGround = Layout.Grid.TestSolidOverlapOffset(Owner, 0, GroundBufferInPixels);
         }
 
         private void SimilateJump(float elapsedTime)

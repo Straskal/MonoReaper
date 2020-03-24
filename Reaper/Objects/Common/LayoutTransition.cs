@@ -40,7 +40,7 @@ namespace Reaper.Objects.Common
 
         public override void OnLayoutStarted()
         {
-            _player = Owner.Layout.GetWorldObjectAsBehavior<PlayerBehavior>().Owner;
+            _player = Owner.Layout.Objects.GetFirstBehaviorOfType<PlayerBehavior>().Owner;
         }
 
         public override void Tick(GameTime gameTime)

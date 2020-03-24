@@ -22,7 +22,7 @@ namespace Reaper.Engine.Behaviors
                 Distance,
                 bounds.Height);
 
-            var hitsByDistance = Owner.Layout.QueryBounds(ray)
+            var hitsByDistance = Layout.Grid.QueryBounds(ray)
                 .Where(wo => wo != Owner)
                 .OrderBy(wo => Vector2.Distance(Owner.Position, wo.Position));
 

@@ -10,7 +10,7 @@ namespace Reaper.Engine
     /// <summary>
     /// A data structure that holds all world objects in a layout.
     /// </summary>
-    internal sealed class WorldObjectList
+    public sealed class WorldObjectList
     {
         private readonly Layout _layout;
         private readonly ContentManager _content;
@@ -35,7 +35,7 @@ namespace Reaper.Engine
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetWorldObjectAsBehavior<T>() where T : Behavior
+        public T GetFirstBehaviorOfType<T>() where T : Behavior
         {
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
         }
