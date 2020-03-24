@@ -18,12 +18,12 @@
       "entities": [
         {
           "name": "player",
-          "id": 0,
+          "id": 1,
           "_eid": "15498917",
-          "x": 48,
+          "x": 72,
           "y": 176,
-          "originX": 16,
-          "originY": 32,
+          "originX": 8,
+          "originY": 16,
           "flippedX": false,
           "values": {"DrawOrder": 1, "SpawnPointName": ""}
         }
