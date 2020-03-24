@@ -29,6 +29,7 @@ namespace Reaper.Engine.Behaviors
             public Frame[] Frames { get; set; }
             public float SecPerFrame { get; set; }
             public bool Loop { get; set; }
+            public Vector2 Origin { get; set; }
         }
 
         private readonly Animation[] _animations;
@@ -109,10 +110,10 @@ namespace Reaper.Engine.Behaviors
             Frame frame = CurrentAnimation.Frames[CurrentFrame];
 
             float xPosition = Owner.IsMirrored
-                ? Owner.DrawPosition.X - (frame.Source.Width - Owner.Origin.X)
-                : Owner.DrawPosition.X - Owner.Origin.X;
+                ? Owner.DrawPosition.X - (frame.Source.Width - CurrentAnimation.Origin.X)
+                : Owner.DrawPosition.X - CurrentAnimation.Origin.X;
 
-            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - Owner.Origin.Y), Color.White, Owner.IsMirrored, Effect);
+            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color.White, Owner.IsMirrored, Effect);
         }
     }
 }
