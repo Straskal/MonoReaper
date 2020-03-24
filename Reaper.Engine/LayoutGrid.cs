@@ -7,8 +7,13 @@ namespace Reaper.Engine
 {
     public enum SpatialType
     {
+        // Not returned from queries.
         Pass = 0,
+
+        // Returned from general queries.
         Overlap = 1 << 0,
+
+        // Returned from all queries.
         Solid = Overlap | (1 << 1)
     }
 
