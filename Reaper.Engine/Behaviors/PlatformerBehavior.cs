@@ -12,14 +12,12 @@ namespace Reaper.Engine.Behaviors
         private bool _isOnGround;
         private Vector2 _velocity;
 
-        public PlatformerBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public PlatformerBehavior(WorldObject owner) : base(owner) { }
 
         public float Acceleration { get; set; } = 1500f;
         public float MaxSpeed { get; set; } = 115f;
         public float Drag { get; set; } = 0.8f;
-        public float MaxJumpTime { get; set; } = 0.5f;
+        public float MaxJumpTime { get; set; } = 0.55f;
         public float JumpVelocity { get; set; } = -2100;
         public float JumpControl { get; set; } = 0.07f;
         public float GravityAcceleration { get; set; } = 1350f;

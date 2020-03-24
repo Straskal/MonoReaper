@@ -19,7 +19,7 @@ namespace Reaper.Ogmo
         {
             OgmoMap map;
 
-            using (var sr = new StreamReader("content/layouts/" + filename))
+            using (var sr = new StreamReader(filename))
                 map = JsonConvert.DeserializeObject<OgmoMap>(sr.ReadToEnd());
 
             var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);

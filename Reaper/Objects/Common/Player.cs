@@ -6,7 +6,7 @@ using Reaper.Ogmo;
 
 namespace Reaper.Objects.Player
 {
-    public static class PlayerDefinition
+    public static class Player
     {
         public static WorldObjectDefinition Method()
         {

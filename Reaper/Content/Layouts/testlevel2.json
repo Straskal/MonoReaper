@@ -25,7 +25,7 @@
           "originX": 16,
           "originY": 32,
           "flippedX": false,
-          "values": {"DrawOrder": 0, "SpawnPointName": "left"}
+          "values": {"DrawOrder": 1, "SpawnPointName": "left"}
         },
         {
           "name": "transition",

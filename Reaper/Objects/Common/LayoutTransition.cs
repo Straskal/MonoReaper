@@ -13,7 +13,7 @@ namespace Reaper.Objects.Common
             var def = new WorldObjectDefinition();
 
             def.AddBehavior(wo => new LevelTransitionBehavior(wo));
-            def.LoadFromOgmo((wo, oe) => 
+            def.LoadFromOgmo((wo, oe) =>
             {
                 if (string.IsNullOrWhiteSpace(oe.Values.Level))
                     throw new ArgumentException("Level transitions must be provided with a layout to load");
@@ -33,9 +33,7 @@ namespace Reaper.Objects.Common
     {
         private WorldObject _player;
 
-        public LevelTransitionBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public LevelTransitionBehavior(WorldObject owner) : base(owner) { }
 
         public string Level { get; set; }
         public string SpawnPoint { get; set; }
@@ -47,7 +45,7 @@ namespace Reaper.Objects.Common
 
         public override void Tick(GameTime gameTime)
         {
-            if (Owner.Bounds.Intersects(_player.Bounds)) 
+            if (Owner.Bounds.Intersects(_player.Bounds))
             {
                 Owner.Layout.Game.LoadOgmoLayout(Level, SpawnPoint);
             }
