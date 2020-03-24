@@ -28,7 +28,12 @@ namespace Reaper.Engine
 
         public void MakeSolid() 
         {
-            _buildSteps.Add(worldObject => worldObject.IsSolid = true);
+            _buildSteps.Add(worldObject => worldObject.Type = SpatialType.Solid);
+        }
+
+        public void MakeDecal()
+        {
+            _buildSteps.Add(worldObject => worldObject.Type = SpatialType.Pass);
         }
 
         public void AddBehavior(Func<WorldObject, Behavior> createFunc)

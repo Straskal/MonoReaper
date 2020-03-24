@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Reaper.Engine
-{ 
+{
     /// <summary>
     /// A world object is any object that has a position is layout space.
     /// </summary>
@@ -13,26 +13,39 @@ namespace Reaper.Engine
     {
         private readonly List<Behavior> _behaviors;
 
+        private SpatialType _type = SpatialType.Overlap;
         private Vector2 _positionRemainder;
         private Vector2 _position;
         private Point _origin;
         private Rectangle _bounds;
 
-        internal WorldObject(Layout layout) 
+        internal WorldObject(Layout layout)
         {
             Layout = layout ?? throw new ArgumentNullException(nameof(layout));
 
             _behaviors = new List<Behavior>();
         }
 
-        public Layout Layout { get; }
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
-        public bool IsSolid { get; set; }
+        public bool IsSolid => Type.HasFlag(SpatialType.Solid);
         public int ZOrder { get; set; }
+        public Layout Layout { get; }
 
         internal bool MarkedForDestroy { get; private set; }
+
+        public SpatialType Type
+        {
+            get => _type;
+            set
+            {
+                var previous = _type;
+                _type = value;
+
+                Layout.Grid.UpdateType(this, previous);
+            }
+        }
 
         /// <summary>
         /// The world object's pixel perfect position. UpdateBBox() must be called after modifying this property.
@@ -51,7 +64,7 @@ namespace Reaper.Engine
             get => _position + _positionRemainder;
         }
 
-        public int Width 
+        public int Width
         {
             get => _bounds.Width;
             set => _bounds.Width = value;
@@ -63,7 +76,7 @@ namespace Reaper.Engine
             set => _bounds.Height = value;
         }
 
-        public Point Origin 
+        public Point Origin
         {
             get => _origin;
             set => _origin = value;
@@ -75,7 +88,7 @@ namespace Reaper.Engine
             set => _bounds = value;
         }
 
-        public T GetBehavior<T>() where T : Behavior 
+        public T GetBehavior<T>() where T : Behavior
         {
             return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
         }
@@ -100,7 +113,7 @@ namespace Reaper.Engine
 
             int pixelsToMove = (int)Math.Round(_positionRemainder.X);
 
-            if (pixelsToMove != 0) 
+            if (pixelsToMove != 0)
             {
                 _positionRemainder.X -= pixelsToMove;
 
@@ -169,7 +182,7 @@ namespace Reaper.Engine
         /// <summary>
         /// Updates the world object's position in the layout's spatial grid. Must be called after directly modifying a world object's position.
         /// </summary>
-        public void UpdateBBox() 
+        public void UpdateBBox()
         {
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
             _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
@@ -180,7 +193,7 @@ namespace Reaper.Engine
         /// <summary>
         /// Destroys the world object.
         /// </summary>
-        public void Destroy() 
+        public void Destroy()
         {
             Layout.Destroy(this);
         }
@@ -190,15 +203,15 @@ namespace Reaper.Engine
             _behaviors.Add(createFunc?.Invoke(this));
         }
 
-        internal void Load(ContentManager contentManager) 
+        internal void Load(ContentManager contentManager)
         {
-            foreach (var behavior in _behaviors) 
+            foreach (var behavior in _behaviors)
             {
                 behavior.Load(contentManager);
             }
         }
 
-        internal void OnCreated() 
+        internal void OnCreated()
         {
             foreach (var behavior in _behaviors)
             {
@@ -206,7 +219,7 @@ namespace Reaper.Engine
             }
         }
 
-        internal void OnLayoutStarted() 
+        internal void OnLayoutStarted()
         {
             foreach (var behavior in _behaviors)
             {
@@ -214,7 +227,7 @@ namespace Reaper.Engine
             }
         }
 
-        internal void Tick(GameTime gameTime) 
+        internal void Tick(GameTime gameTime)
         {
             foreach (var behavior in _behaviors)
             {
@@ -238,7 +251,7 @@ namespace Reaper.Engine
             }
         }
 
-        internal void OnDestroyed() 
+        internal void OnDestroyed()
         {
             foreach (var behavior in _behaviors)
             {
@@ -255,7 +268,7 @@ namespace Reaper.Engine
         /// <summary>
         /// Marks the object to be destroyed. Once this is set, it cannot be unset.
         /// </summary>
-        internal void MarkForDestroy() 
+        internal void MarkForDestroy()
         {
             MarkedForDestroy = true;
         }

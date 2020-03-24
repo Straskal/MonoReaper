@@ -5,6 +5,13 @@ using System.Linq;
 
 namespace Reaper.Engine
 {
+    public enum SpatialType
+    {
+        Pass = 0,
+        Overlap = 1 << 0,
+        Solid = Overlap | (1 << 1)
+    }
+
     /// <summary>
     /// The layout grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
     /// 
@@ -42,6 +49,9 @@ namespace Reaper.Engine
 
         internal void Add(WorldObject worldObject)
         {
+            if (worldObject.Type == SpatialType.Pass)
+                return;
+
             foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
@@ -50,6 +60,9 @@ namespace Reaper.Engine
 
         internal void Remove(WorldObject worldObject)
         {
+            if (worldObject.Type == SpatialType.Pass)
+                return;
+
             foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
@@ -63,6 +76,15 @@ namespace Reaper.Engine
 
             Remove(worldObject);
             Add(worldObject);
+        }
+
+        internal void UpdateType(WorldObject worldObject, SpatialType previous)
+        {
+            if (previous != SpatialType.Pass) 
+                Remove(worldObject);
+
+            if (worldObject.Type != SpatialType.Pass) 
+                Add(worldObject);
         }
 
         public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
