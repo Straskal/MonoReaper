@@ -64,10 +64,10 @@ namespace Reaper.Objects.Player
         public override void Tick(GameTime gameTime)
         {
             if (_toggleFullscreenAction.WasPressed())
-                Owner.Layout.Game.ToggleFullscreen();
+                Game.ToggleFullscreen();
 
             if (_exitGameAction.WasPressed())
-                Owner.Layout.Game.Exit();
+                Game.Exit();
 
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
         }

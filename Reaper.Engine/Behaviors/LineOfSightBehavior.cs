@@ -5,28 +5,23 @@ namespace Reaper.Engine.Behaviors
 {
     public class LineOfSightBehavior : Behavior
     {
-        public LineOfSightBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public LineOfSightBehavior(WorldObject owner) : base(owner) { }
 
         public int Distance { get; set; } = 128;
 
-        public bool HasLOS(WorldObject worldObject) 
+        public bool HasLOS(WorldObject worldObject)
         {
-            bool mirrored = Owner.IsMirrored;
-            Rectangle bounds = Owner.Bounds;
-
             Rectangle ray = new Rectangle(
-                mirrored ? (int)Owner.Position.X - Distance : (int)Owner.Position.X,
-                bounds.Top,
+                Owner.IsMirrored ? (int)Owner.Position.X - Distance : (int)Owner.Position.X,
+                Owner.Bounds.Top,
                 Distance,
-                bounds.Height);
+                Owner.Bounds.Height);
 
             var hitsByDistance = Layout.Grid.QueryBounds(ray)
                 .Where(wo => wo != Owner)
                 .OrderBy(wo => Vector2.Distance(Owner.Position, wo.Position));
 
-            foreach (var hit in hitsByDistance) 
+            foreach (var hit in hitsByDistance)
             {
                 if (hit == worldObject)
                     return true;

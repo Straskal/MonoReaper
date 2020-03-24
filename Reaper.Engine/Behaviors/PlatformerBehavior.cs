@@ -80,7 +80,7 @@ namespace Reaper.Engine.Behaviors
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             SimulateMovement(elapsedTime);
-            SimilateJump(elapsedTime);
+            SimulateJump(elapsedTime);
             SimulateGravity(elapsedTime);
             ApplyVelocity(elapsedTime);
 
@@ -95,7 +95,7 @@ namespace Reaper.Engine.Behaviors
             _isOnGround = Layout.Grid.TestSolidOverlapOffset(Owner, 0, GroundBufferInPixels);
         }
 
-        private void SimilateJump(float elapsedTime)
+        private void SimulateJump(float elapsedTime)
         {
             if (_jumpRequested)
             {

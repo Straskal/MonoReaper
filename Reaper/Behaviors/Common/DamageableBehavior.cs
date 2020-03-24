@@ -13,7 +13,6 @@ namespace Reaper.Objects.Common
 
     public struct DamageResponse
     {
-
     }
 
     public class DamageableBehavior : Behavior
@@ -21,9 +20,7 @@ namespace Reaper.Objects.Common
         private TimerBehavior _timerBehavior;
         private Effect _damagedEffect;
 
-        public DamageableBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public DamageableBehavior(WorldObject owner) : base(owner) { }
 
         public event Func<Damage, DamageResponse> OnDamaged;
 

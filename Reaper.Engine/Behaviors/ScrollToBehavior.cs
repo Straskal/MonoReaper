@@ -15,6 +15,7 @@ namespace Reaper.Engine.Behaviors
 
         public override void PostTick(GameTime gameTime)
         {
+            // Subpixel rendering seems to be causing weird artifacts.
             Layout.View.Position = Vector2.SmoothStep(Layout.View.Position, Owner.Position, Smoothing);
         }
     }

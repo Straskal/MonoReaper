@@ -42,9 +42,7 @@ namespace Reaper.Engine
         {
             var worldObject = Objects.Create(definition, position);
             worldObject.UpdateBBox();
-
             Grid.Add(worldObject);
-
             return worldObject;
         }
 
@@ -68,9 +66,7 @@ namespace Reaper.Engine
         {
             View.BeginDraw();
             Objects.Draw(View);
-
             DebugTools.Draw(View.SpriteBatch, Objects.WorldObjects);
-
             View.EndDraw();
         }
 
