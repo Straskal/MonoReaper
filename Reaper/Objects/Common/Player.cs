@@ -2,7 +2,6 @@
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using Reaper.Objects.Common;
-using Reaper.Ogmo;
 
 namespace Reaper.Objects.Player
 {
@@ -12,14 +11,21 @@ namespace Reaper.Objects.Player
         {
             var playerDefinition = new WorldObjectDefinition();
 
-            playerDefinition.SetSize(24, 24);
-            playerDefinition.SetOrigin(new Point(11, 24));
+            playerDefinition.SetSize(16, 16);
+            playerDefinition.SetOrigin(new Point(8, 16));
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo));
+            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 350f});
             playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
             playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
             playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
-            playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]
+            playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
+
+            return playerDefinition;
+        }
+
+        private static SpriteSheetBehavior.Animation[] GetPlayerAnimations() 
+        {
+            return new[]
             {
                 new SpriteSheetBehavior.Animation
                 {
@@ -27,6 +33,7 @@ namespace Reaper.Objects.Player
                     ImageFilePath = "art/player/smallplayer",
                     SecPerFrame = 0.1f,
                     Loop = true,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(24, 0, 24, 24),
@@ -38,6 +45,7 @@ namespace Reaper.Objects.Player
                     ImageFilePath = "art/player/smallplayer",
                     SecPerFrame = 0.15f,
                     Loop = true,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 24, 24),
@@ -51,6 +59,7 @@ namespace Reaper.Objects.Player
                     Name = "Jump",
                     ImageFilePath = "art/player/smallplayer",
                     SecPerFrame = 0.2f,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(24, 0, 24, 24),
@@ -61,6 +70,7 @@ namespace Reaper.Objects.Player
                     Name = "Fall",
                     ImageFilePath = "art/player/smallplayer",
                     SecPerFrame = 0.2f,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(24, 0, 24, 24),
@@ -71,6 +81,7 @@ namespace Reaper.Objects.Player
                     Name = "attack_0",
                     ImageFilePath = "art/player/player_attack",
                     SecPerFrame = 0.05f,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 64, 32),
@@ -87,6 +98,7 @@ namespace Reaper.Objects.Player
                     Name = "attack_1",
                     ImageFilePath = "art/player/player_attack",
                     SecPerFrame = 0.05f,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(64, 64, 64, 32),
@@ -102,6 +114,7 @@ namespace Reaper.Objects.Player
                     Name = "attack_2",
                     ImageFilePath = "art/player/player_attack",
                     SecPerFrame = 0.05f,
+                    Origin = new Vector2(11, 24),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 64, 32),
@@ -114,9 +127,7 @@ namespace Reaper.Objects.Player
                         new SpriteSheetBehavior.Frame(0, 64, 64, 32),
                     }
                 },
-            }));
-
-            return playerDefinition;
+            };
         }
     }
 }
