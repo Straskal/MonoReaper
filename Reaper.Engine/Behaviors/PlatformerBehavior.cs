@@ -12,18 +12,17 @@ namespace Reaper.Engine.Behaviors
         private bool _isOnGround;
         private Vector2 _velocity;
 
-        public PlatformerBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public PlatformerBehavior(WorldObject owner) : base(owner) { }
 
-        public float Acceleration { get; set; } = 1500f;
-        public float MaxSpeed { get; set; } = 115f;
+        public float Acceleration { get; set; } = 1400f;
+        public float MaxSpeed { get; set; } = 300f;
         public float Drag { get; set; } = 0.8f;
-        public float MaxJumpTime { get; set; } = 0.5f;
-        public float JumpVelocity { get; set; } = -1200;
-        public float JumpControl { get; set; } = 0.14f;
-        public float GravityAcceleration { get; set; } = 1350f;
-        public float MaxFallSpeed { get; set; } = 400f;
+        public float AirDrag { get; set; } = 0.83f;
+        public float MaxJumpTime { get; set; } = 0.55f;
+        public float JumpVelocity { get; set; } = -1500;
+        public float JumpControl { get; set; } = 0.09f;
+        public float GravityAcceleration { get; set; } = 2000f;
+        public float MaxFallSpeed { get; set; } = 275f;
         public int GroundBufferInPixels { get; set; } = 1;
 
         public Vector2 Velocity 
@@ -81,7 +80,7 @@ namespace Reaper.Engine.Behaviors
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             SimulateMovement(elapsedTime);
-            SimilateJump(elapsedTime);
+            SimulateJump(elapsedTime);
             SimulateGravity(elapsedTime);
             ApplyVelocity(elapsedTime);
 
@@ -91,12 +90,12 @@ namespace Reaper.Engine.Behaviors
         private void SimulateMovement(float elapsedTime) 
         {
             _velocity.X += Acceleration * _movement * elapsedTime;
-            _velocity.X *= Drag;
+            _velocity.X *= IsOnGround() ? Drag : AirDrag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
-            _isOnGround = Owner.Layout.TestOverlapSolidOffset(Owner, 0, GroundBufferInPixels);
+            _isOnGround = Layout.Grid.TestSolidOverlapOffset(Owner, 0, GroundBufferInPixels);
         }
 
-        private void SimilateJump(float elapsedTime)
+        private void SimulateJump(float elapsedTime)
         {
             if (_jumpRequested)
             {
@@ -137,13 +136,11 @@ namespace Reaper.Engine.Behaviors
                 _velocity.X = 0f;
             }
 
-            if (Owner.MoveYAndCollide(_velocity.Y * elapsedTime, out var worldObject) && worldObject.Bounds.Bottom < Owner.Bounds.Top) 
+            if (Owner.MoveYAndCollide(_velocity.Y * elapsedTime, out var worldObject) && worldObject.Bounds.Bottom <= Owner.Bounds.Top) 
             {
                 _velocity.Y = 0f;
                 _jumpTime = 0f;
             }
-
-            Owner.UpdateBBox();
         }
 
         private void ResetInputValues()

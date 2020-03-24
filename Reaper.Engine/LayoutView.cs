@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// The layout view is essentially the camera.
+    /// </summary>
     public class LayoutView
     {
         private readonly GameWindow _window;
@@ -10,15 +13,16 @@ namespace Reaper.Engine
         private readonly GraphicsDevice _gpu;
         private readonly SpriteBatch _batch;
 
-        private Matrix _translationMat3 = Matrix.Identity;
-        private Matrix _rotationMat3 = Matrix.Identity;
-        private Matrix _scaleMat3 = Matrix.Identity;
-        private Matrix _resolutionTranslationMat3 = Matrix.Identity;
-        private Matrix _resolutionScaleMat3 = Matrix.Identity;
+        private Matrix _translationMatrix = Matrix.Identity;
+        private Matrix _rotationMatrix = Matrix.Identity;
+        private Matrix _scaleMatrix = Matrix.Identity;
+        private Matrix _resolutionTranslationMatrix = Matrix.Identity;
+        private Matrix _resolutionScaleMatrix = Matrix.Identity;
 
         private Vector3 _translation = Vector3.Zero;
         private Vector3 _scale = Vector3.Zero;
         private Vector3 _resolution = Vector3.Zero;
+        private Vector3 _resolutionScale = Vector3.Zero;
 
         private Vector2 _position;
         private Effect _currentEffect;
@@ -45,17 +49,13 @@ namespace Reaper.Engine
         public Vector2 Position 
         {
             get => _position;
-            set
-            {
-                var min = new Vector2(0 + Width * 0.5f, 0 + Height * 0.5f);
-                var max = new Vector2(_layout.Width - Width * 0.5f, _layout.Height - Height * 0.5f);
-
-                _position = Vector2.Clamp(value, min, max);
-            }
+            set => _position = value;
         }
 
-        public int WindowWidth { get; private set; }
-        public int WindowHeight { get; private set; }
+        public Vector2 OffsetPosition => ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
+
+        public int OffsetX { get; set; }
+        public int OffsetY { get; set; }
         public int Width { get; }
         public int Height { get; }
 
@@ -63,32 +63,36 @@ namespace Reaper.Engine
         {
             get
             {
-                _translation.X = -Position.X;
-                _translation.Y = -Position.Y;
+                // Offset the view by it's position.
+                _translation.X = -OffsetPosition.X;
+                _translation.Y = -OffsetPosition.Y;
 
-                Matrix.CreateTranslation(ref _translation, out _translationMat3);
-                Matrix.CreateRotationZ(Rotation, out _rotationMat3);
-
+                // Scale the view by it's zoom factor.
                 _scale.X = Zoom;
                 _scale.Y = Zoom;
-                _scale.Z = 1;
+                _scale.Z = 1f;
 
-                Matrix.CreateScale(ref _scale, out _scaleMat3);
-
+                // Center the view's position relative to it's resolution.
                 _resolution.X = Width * 0.5f;
                 _resolution.Y = Height * 0.5f;
                 _resolution.Z = 0;
 
-                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMat3);
+                // Scale the view to our virtual resolution.
+                _resolutionScale.X = (float)_window.ClientBounds.Width / Width;
+                _resolutionScale.Y = (float)_window.ClientBounds.Width / Width;
+                _resolutionScale.Z = 1f;
 
-                Vector3 resolutionScaleVector = new Vector3((float)WindowWidth / Width, (float)WindowWidth / Width, 1f);
-                Matrix.CreateScale(ref resolutionScaleVector, out _resolutionScaleMat3);
+                Matrix.CreateTranslation(ref _translation, out _translationMatrix);
+                Matrix.CreateRotationZ(Rotation, out _rotationMatrix);
+                Matrix.CreateScale(ref _scale, out _scaleMatrix);
+                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMatrix);
+                Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
 
-                return _translationMat3
-                    * _rotationMat3
-                    * _scaleMat3
-                    * _resolutionTranslationMat3
-                    * _resolutionScaleMat3;
+                return _translationMatrix
+                    * _rotationMatrix
+                    * _scaleMatrix
+                    * _resolutionTranslationMatrix
+                    * _resolutionScaleMatrix;
             }
         }
 
@@ -115,19 +119,19 @@ namespace Reaper.Engine
 
         public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null) 
         {
-            ChangeEffect(effect);
+            HandleEffectChange(effect);
 
             _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
-            ChangeEffect(effect);
+            HandleEffectChange(effect);
 
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        private void ChangeEffect(Effect effect) 
+        private void HandleEffectChange(Effect effect) 
         {
             if (_currentEffect != effect)
             {
@@ -150,12 +154,17 @@ namespace Reaper.Engine
 
         private void CreatePillarBoxes()
         {
-            WindowWidth = _window.ClientBounds.Width;
-            WindowHeight = _window.ClientBounds.Height;
-
             _gpu.Viewport = GetFullViewport();
             _gpu.Clear(Color.Black);
             _gpu.Viewport = GetLargestVirtualViewport();
+        }
+
+        private Vector2 ClampViewToLayout(Vector2 position)
+        {
+            var min = new Vector2(Width * 0.5f, Height * 0.5f);
+            var max = new Vector2(_layout.Width - Width * 0.5f, _layout.Height - Height * 0.5f);
+
+            return Vector2.Clamp(position, min, max);
         }
 
         private Viewport GetFullViewport()
@@ -164,27 +173,27 @@ namespace Reaper.Engine
             {
                 X = 0,
                 Y = 0,
-                Width = WindowWidth,
-                Height = WindowHeight
+                Width = _window.ClientBounds.Width,
+                Height = _window.ClientBounds.Height
             };
         }
 
         private Viewport GetLargestVirtualViewport()
         {
             var targetAspectRatio = Width / (float)Height;
-            var width = WindowWidth;
+            var width = _window.ClientBounds.Width;
             var height = (int)(width / targetAspectRatio + 0.5f);
 
-            if (height > WindowHeight)
+            if (height > _window.ClientBounds.Height)
             {
-                height = WindowHeight;
+                height = _window.ClientBounds.Height;
                 width = (int)(height * targetAspectRatio + .5f);
             }
 
             return new Viewport
             {
-                X = (WindowWidth / 2) - (width / 2),
-                Y = (WindowHeight / 2) - (height / 2),
+                X = (_window.ClientBounds.Width / 2) - (width / 2),
+                Y = (_window.ClientBounds.Height / 2) - (height / 2),
                 Width = width,
                 Height = height
             };

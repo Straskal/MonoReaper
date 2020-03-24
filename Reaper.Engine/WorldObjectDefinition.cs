@@ -11,6 +11,8 @@ namespace Reaper.Engine
     {
         private readonly List<Action<WorldObject>> _buildSteps = new List<Action<WorldObject>>();
 
+        public Guid Guid { get; } = Guid.NewGuid();
+
         public void SetSize(int width, int height) 
         {
             _buildSteps.Add(worldObject =>

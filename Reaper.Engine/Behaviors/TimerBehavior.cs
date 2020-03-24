@@ -16,9 +16,7 @@ namespace Reaper.Engine.Behaviors
 
         private float _currentTime;
 
-        public TimerBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public TimerBehavior(WorldObject owner) : base(owner) { }
 
         public void StartTimer(float seconds, Action onTimer) 
         {

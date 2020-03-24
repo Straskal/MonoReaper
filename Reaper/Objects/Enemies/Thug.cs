@@ -5,7 +5,7 @@ using Reaper.Objects.Common;
 
 namespace Reaper.Objects.Thug
 {
-    public static class ThugDefinition
+    public static class Thug
     {
         public static WorldObjectDefinition Method()
         {

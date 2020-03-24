@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using Reaper.Engine.Singletons;
 using Reaper.Engine.Tools;
 using System;
 
@@ -7,6 +7,7 @@ namespace Reaper.Engine
 {
     public interface IGame : IDisposable
     {
+        SingletonList Singletons { get; }
         Layout CurrentLayout { get; }
         int ViewportWidth { get; }
         int ViewportHeight { get; }
@@ -16,12 +17,12 @@ namespace Reaper.Engine
         void ChangeLayout(Layout layout);
         void ToggleFullscreen();
         void Run();
+        void Exit();
     }
 
     public class MainGame : Game, IGame
     {
         private readonly GraphicsDeviceManager _gpuManager;
-
         private Layout _nextLayout;
 
         internal MainGame(GameSettings gameSettings)
@@ -43,8 +44,12 @@ namespace Reaper.Engine
             _gpuManager.PreferredBackBufferWidth = ViewportWidth;
             _gpuManager.PreferredBackBufferHeight = ViewportHeight;
             _gpuManager.ApplyChanges();
+
+            Singletons = new SingletonList();
+            Singletons.Register(new Input());
         }
 
+        public SingletonList Singletons { get; }
         public Layout CurrentLayout { get; private set; }
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
@@ -89,11 +94,9 @@ namespace Reaper.Engine
         protected override void Update(GameTime gameTime)
         {
             HandleLayoutChange();
-            HandleInput();
 
             DebugTools.Tick();
             Singletons.Tick(gameTime);
-
             CurrentLayout.Tick(gameTime);
             CurrentLayout.PostTick(gameTime);
 
@@ -118,18 +121,6 @@ namespace Reaper.Engine
 
                 _nextLayout = null;
             }
-        }
-
-        // For testing purposes.
-        private void HandleInput() 
-        {
-            var keyboardState = Keyboard.GetState();
-
-            if (keyboardState.IsKeyDown(Keys.Escape))
-                Exit();
-
-            if (keyboardState.IsKeyDown(Keys.F))
-                ToggleFullscreen();
         }
     }
 }

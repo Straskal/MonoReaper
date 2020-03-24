@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Reaper.Engine
@@ -10,7 +10,7 @@ namespace Reaper.Engine
     /// <summary>
     /// A data structure that holds all world objects in a layout.
     /// </summary>
-    internal sealed class WorldObjectList
+    public sealed class WorldObjectList
     {
         private readonly Layout _layout;
         private readonly ContentManager _content;
@@ -28,16 +28,24 @@ namespace Reaper.Engine
             _toDestroy = new List<WorldObject>();
         }
 
+        public ReadOnlyCollection<WorldObject> WorldObjects => _worldObjects.AsReadOnly();
+
         /// <summary>
         /// Returns the first found behavior of the specified type or null if not found.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetWorldObjectOfType<T>() where T : Behavior
+        public T GetFirstBehaviorOfType<T>() where T : Behavior
         {
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
         }
 
+        /// <summary>
+        /// Creates a new world object with the given definition and position.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public WorldObject Create(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = new WorldObject(_layout)
@@ -62,16 +70,28 @@ namespace Reaper.Engine
 
         public void Tick(GameTime gameTime)
         {
-            var toSpawn = _toSpawn.ToArray();
-            var toDestroy = _toDestroy.ToArray();
+            var spawned = new List<WorldObject>();
 
-            _toSpawn.Clear();
-            _toDestroy.Clear();
+            while (_toSpawn.Any()) 
+            {
+                spawned.AddRange(_toSpawn);
 
-            InvokeLoad(toSpawn);
-            InvokeCreated(toSpawn);
-            InvokeStarted(toSpawn);
-            InvokeDestroyed(toDestroy);
+                var temp = _toSpawn.ToArray();
+                _toSpawn.Clear();
+
+                InvokeLoad(temp);
+                InvokeCreated(temp);
+            }
+
+            InvokeStarted(spawned);
+
+            while (_toDestroy.Any())
+            {
+                var temp = _toDestroy.ToArray();
+                _toDestroy.Clear();
+
+                InvokeDestroyed(temp);
+            }
 
             TickWorldObjects(gameTime);
             ZOrderSort();

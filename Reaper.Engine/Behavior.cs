@@ -15,6 +15,8 @@ namespace Reaper.Engine
         }
 
         public WorldObject Owner { get; }
+        public Layout Layout => Owner.Layout;
+        public IGame Game => Layout.Game;
 
         /// <summary>
         /// First method called on a behavior. This is a good place for initialization.

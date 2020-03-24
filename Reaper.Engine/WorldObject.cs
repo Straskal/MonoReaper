@@ -35,7 +35,7 @@ namespace Reaper.Engine
         internal bool MarkedForDestroy { get; private set; }
 
         /// <summary>
-        /// The world object's position. UpdateBBox() must be called after modifying this property.
+        /// The world object's pixel perfect position. UpdateBBox() must be called after modifying this property.
         /// </summary>
         public Vector2 Position
         {
@@ -43,9 +43,24 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
+        /// <summary>
+        /// The world object's sub pixel draw position.
+        /// </summary>
         public Vector2 DrawPosition
         {
             get => _position + _positionRemainder;
+        }
+
+        public int Width 
+        {
+            get => _bounds.Width;
+            set => _bounds.Width = value;
+        }
+
+        public int Height
+        {
+            get => _bounds.Height;
+            set => _bounds.Height = value;
         }
 
         public Point Origin 
@@ -65,9 +80,10 @@ namespace Reaper.Engine
             return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
         }
 
-        public IEnumerable<Behavior> GetBehaviors() 
+        public bool TryGetBehavior<T>(out T behavior) where T : Behavior
         {
-            return _behaviors;
+            behavior = _behaviors.FirstOrDefault(b => b is T) as T;
+            return behavior != null;
         }
 
         /// <summary>
@@ -92,7 +108,7 @@ namespace Reaper.Engine
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.TestOverlapSolidOffset(this, sign, 0, out var collision))
+                    if (Layout.Grid.TestSolidOverlapOffset(this, sign, 0, out var collision))
                     {
                         _positionRemainder.X = 0f;
 
@@ -102,6 +118,8 @@ namespace Reaper.Engine
 
                     _position.X += sign;
                     pixelsToMove -= sign;
+
+                    UpdateBBox();
                 }
             }
 
@@ -130,7 +148,7 @@ namespace Reaper.Engine
 
                 while (pixelsToMove != 0)
                 {
-                    if (Layout.TestOverlapSolidOffset(this, 0, sign, out var collision))
+                    if (Layout.Grid.TestSolidOverlapOffset(this, 0, sign, out var collision))
                     {
                         _positionRemainder.Y = 0f;
 
@@ -140,6 +158,8 @@ namespace Reaper.Engine
 
                     _position.Y += sign;
                     pixelsToMove -= sign;
+
+                    UpdateBBox();
                 }
             }
 
@@ -147,14 +167,14 @@ namespace Reaper.Engine
         }
 
         /// <summary>
-        /// Updates the world object's position in the layout's spatial grid.
+        /// Updates the world object's position in the layout's spatial grid. Must be called after directly modifying a world object's position.
         /// </summary>
         public void UpdateBBox() 
         {
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
             _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
 
-            Layout.UpdateGridCell(this);
+            Layout.Grid.Update(this);
         }
 
         /// <summary>
@@ -232,6 +252,9 @@ namespace Reaper.Engine
             PreviousBounds = Bounds;
         }
 
+        /// <summary>
+        /// Marks the object to be destroyed. Once this is set, it cannot be unset.
+        /// </summary>
         internal void MarkForDestroy() 
         {
             MarkedForDestroy = true;

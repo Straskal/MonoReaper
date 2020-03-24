@@ -73,6 +73,30 @@
 /processorParam:TextureFormat=Color
 /build:Art/Player/player_attack.png
 
+#begin Art/Player/smallplayer.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Player/smallplayer.png
+
+#begin Art/Tilesets/2015-02-26 [DB32](Generic Platformer)(Tileset).png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Tilesets/2015-02-26 [DB32](Generic Platformer)(Tileset).png
+
 #begin Art/Tilesets/4tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -127,6 +151,9 @@
 #begin Layouts/testlevel2.json
 /copy:Layouts/testlevel2.json
 
+#begin Layouts/testlevel3.json
+/copy:Layouts/testlevel3.json
+
 #begin Shaders/SolidColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -144,4 +171,16 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Jump8.wav
+
+#begin Sounds/Pickup_Coin.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Pickup_Coin.wav
+
+#begin Sounds/swing.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/swing.wav
 

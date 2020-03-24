@@ -2,6 +2,7 @@
 using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
+using Reaper.Engine.Singletons;
 
 namespace Reaper
 {
@@ -10,8 +11,6 @@ namespace Reaper
         [STAThread]
         static void Main(string[] args)
         {
-            Definitions.Register();
-
             var settings = new GameSettings 
             {
                 ViewportWidth = 320,
@@ -24,6 +23,9 @@ namespace Reaper
 
             using (var game = MainGameFactory.Create(settings))
             {
+                Definitions.Register();
+                InputBindings.Initialize(game.Singletons.Get<Input>());
+
                 game.LoadOgmoLayout(args[0]);
                 game.Run();
             }

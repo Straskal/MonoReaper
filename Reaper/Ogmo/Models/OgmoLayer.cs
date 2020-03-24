@@ -1,4 +1,6 @@
-﻿namespace Reaper.Ogmo.Models
+﻿using System.Collections.Generic;
+
+namespace Reaper.Ogmo.Models
 {
     public class OgmoLayer
     {
@@ -9,6 +11,6 @@
         public int GridCellsY { get; set; }
         public string Tileset { get; set; }
         public int[] Data { get; set; }
-        public OgmoEntity[] Entities { get; set; }
+        public List<OgmoEntity> Entities { get; set; }
     }
 }
