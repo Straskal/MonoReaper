@@ -35,7 +35,7 @@ namespace Reaper.Engine
         internal bool MarkedForDestroy { get; private set; }
 
         /// <summary>
-        /// The world object's position. UpdateBBox() must be called after modifying this property.
+        /// The world object's pixel perfect position. UpdateBBox() must be called after modifying this property.
         /// </summary>
         public Vector2 Position
         {
@@ -43,6 +43,9 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
+        /// <summary>
+        /// The world object's sub pixel draw position.
+        /// </summary>
         public Vector2 DrawPosition
         {
             get => _position + _positionRemainder;
@@ -81,11 +84,6 @@ namespace Reaper.Engine
         {
             behavior = _behaviors.FirstOrDefault(b => b is T) as T;
             return behavior != null;
-        }
-
-        public IEnumerable<Behavior> GetBehaviors() 
-        {
-            return _behaviors;
         }
 
         /// <summary>
@@ -169,7 +167,7 @@ namespace Reaper.Engine
         }
 
         /// <summary>
-        /// Updates the world object's position in the layout's spatial grid.
+        /// Updates the world object's position in the layout's spatial grid. Must be called after directly modifying a world object's position.
         /// </summary>
         public void UpdateBBox() 
         {
@@ -254,6 +252,9 @@ namespace Reaper.Engine
             PreviousBounds = Bounds;
         }
 
+        /// <summary>
+        /// Marks the object to be destroyed. Once this is set, it cannot be unset.
+        /// </summary>
         internal void MarkForDestroy() 
         {
             MarkedForDestroy = true;

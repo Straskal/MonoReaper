@@ -23,8 +23,8 @@ namespace Reaper.Ogmo
                 map = JsonConvert.DeserializeObject<OgmoMap>(sr.ReadToEnd());
 
             var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
-            layout.OffsetX = map.Values.OffsetX;
-            layout.OffsetY = map.Values.OffsetY;
+            layout.View.OffsetX = map.Values.OffsetX;
+            layout.View.OffsetY = map.Values.OffsetY;
 
             foreach (var layer in map.Layers)
             {
@@ -39,6 +39,7 @@ namespace Reaper.Ogmo
                         break;
 
                     case LayerNames.Background:
+                        layout.LoadSolidsLayer(layer, false);
                         break;
                 }
             }
@@ -81,10 +82,13 @@ namespace Reaper.Ogmo
             return entities.Count(e => e.Name == "player") > 1;
         }
 
-        private static void LoadSolidsLayer(this Layout layout, OgmoLayer layer)
+        private static void LoadSolidsLayer(this Layout layout, OgmoLayer layer, bool solid = true)
         {
             var tilemap = new WorldObjectDefinition();
-            tilemap.MakeSolid();
+
+            if (solid)
+                tilemap.MakeSolid();
+
             tilemap.AddBehavior(wo => new TilemapBehavior(wo, new TilemapBehavior.MapData
             {
                 CellSize = layer.GridCellHeight,
@@ -95,7 +99,7 @@ namespace Reaper.Ogmo
             }));
 
             var tilemapWorldObject = layout.Spawn(tilemap, Vector2.Zero);
-            tilemapWorldObject.ZOrder = -100;
+            tilemapWorldObject.ZOrder = solid ? -100 : -200;
         }
     }
 }

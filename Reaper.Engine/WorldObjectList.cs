@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Reaper.Engine
@@ -27,18 +28,24 @@ namespace Reaper.Engine
             _toDestroy = new List<WorldObject>();
         }
 
-        public List<WorldObject> WorldObjects => _worldObjects;
+        public ReadOnlyCollection<WorldObject> WorldObjects => _worldObjects.AsReadOnly();
 
         /// <summary>
         /// Returns the first found behavior of the specified type or null if not found.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetWorldObjectOfType<T>() where T : Behavior
+        public T GetWorldObjectAsBehavior<T>() where T : Behavior
         {
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
         }
 
+        /// <summary>
+        /// Creates a new world object with the given definition and position.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         public WorldObject Create(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = new WorldObject(_layout)

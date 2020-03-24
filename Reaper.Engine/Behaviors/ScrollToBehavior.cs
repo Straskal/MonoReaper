@@ -10,12 +10,12 @@ namespace Reaper.Engine.Behaviors
 
         public override void OnLayoutStarted()
         {
-            Layout.Position = Owner.Position;
+            Layout.View.Position = Owner.Position;
         }
 
         public override void PostTick(GameTime gameTime)
         {
-            Layout.Position = Vector2.SmoothStep(Layout.Position, Owner.Position, Smoothing);
+            Layout.View.Position = Vector2.SmoothStep(Layout.View.Position, Owner.Position, Smoothing);
         }
     }
 }

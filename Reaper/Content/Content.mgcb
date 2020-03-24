@@ -73,6 +73,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Player/player_attack.png
 
+#begin Art/Player/smallplayer.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Player/smallplayer.png
+
 #begin Art/Tilesets/2015-02-26 [DB32](Generic Platformer)(Tileset).png
 /importer:TextureImporter
 /processor:TextureProcessor

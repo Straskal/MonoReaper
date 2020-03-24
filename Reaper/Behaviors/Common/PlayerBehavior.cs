@@ -58,8 +58,6 @@ namespace Reaper.Objects.Player
             _toggleFullscreenAction = input.GetAction<Input.PressedAction>("toggleFullscreen");
             _exitGameAction = input.GetAction<Input.PressedAction>("exitGame");
 
-            Layout.Zoom = 0.8f;
-
             GoToIdle();
         }
 

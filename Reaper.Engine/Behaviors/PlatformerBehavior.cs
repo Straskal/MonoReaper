@@ -14,14 +14,15 @@ namespace Reaper.Engine.Behaviors
 
         public PlatformerBehavior(WorldObject owner) : base(owner) { }
 
-        public float Acceleration { get; set; } = 1500f;
-        public float MaxSpeed { get; set; } = 115f;
+        public float Acceleration { get; set; } = 1400f;
+        public float MaxSpeed { get; set; } = 300f;
         public float Drag { get; set; } = 0.8f;
+        public float AirDrag { get; set; } = 0.83f;
         public float MaxJumpTime { get; set; } = 0.55f;
-        public float JumpVelocity { get; set; } = -2100;
-        public float JumpControl { get; set; } = 0.07f;
-        public float GravityAcceleration { get; set; } = 1350f;
-        public float MaxFallSpeed { get; set; } = 400f;
+        public float JumpVelocity { get; set; } = -1500;
+        public float JumpControl { get; set; } = 0.09f;
+        public float GravityAcceleration { get; set; } = 2000f;
+        public float MaxFallSpeed { get; set; } = 275f;
         public int GroundBufferInPixels { get; set; } = 1;
 
         public Vector2 Velocity 
@@ -89,7 +90,7 @@ namespace Reaper.Engine.Behaviors
         private void SimulateMovement(float elapsedTime) 
         {
             _velocity.X += Acceleration * _movement * elapsedTime;
-            _velocity.X *= Drag;
+            _velocity.X *= IsOnGround() ? Drag : AirDrag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
             _isOnGround = Owner.Layout.TestOverlapSolidOffset(Owner, 0, GroundBufferInPixels);
         }
@@ -135,7 +136,7 @@ namespace Reaper.Engine.Behaviors
                 _velocity.X = 0f;
             }
 
-            if (Owner.MoveYAndCollide(_velocity.Y * elapsedTime, out var worldObject) && worldObject.Bounds.Bottom < Owner.Bounds.Top) 
+            if (Owner.MoveYAndCollide(_velocity.Y * elapsedTime, out var worldObject) && worldObject.Bounds.Bottom <= Owner.Bounds.Top) 
             {
                 _velocity.Y = 0f;
                 _jumpTime = 0f;

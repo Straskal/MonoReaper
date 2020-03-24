@@ -33,7 +33,7 @@ namespace Reaper.Objects.Thug
 
         public override void OnLayoutStarted()
         {
-            _player = Owner.Layout.GetWorldObjectOfType<PlayerBehavior>();
+            _player = Owner.Layout.GetWorldObjectAsBehavior<PlayerBehavior>();
 
             GoToPatrol();
         }

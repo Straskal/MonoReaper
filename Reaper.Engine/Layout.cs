@@ -15,7 +15,6 @@ namespace Reaper.Engine
     public sealed class Layout
     {
         private readonly ContentManager _content;
-        private readonly LayoutView _view;
         private readonly LayoutGrid _grid;
         private readonly WorldObjectList _worldObjectList;
 
@@ -26,38 +25,16 @@ namespace Reaper.Engine
             Height = height;
 
             _content = new ContentManager(game.Services, "Content");
-            _view = new LayoutView(game, this);
+            View = new LayoutView(game, this);
             _grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
             _worldObjectList = new WorldObjectList(this, _content);
         }
 
-        public int Width { get; }
-        public int Height { get; }
+        public LayoutView View { get; }
         public IGame Game { get; }
 
-        public Vector2 Position
-        {
-            get => _view.Position;
-            set => _view.Position = value;
-        }
-
-        public int OffsetX 
-        {
-            get => _view.OffsetX;
-            set => _view.OffsetX = value;
-        }
-
-        public int OffsetY
-        {
-            get => _view.OffsetY;
-            set => _view.OffsetY = value;
-        }
-
-        public float Zoom 
-        {
-            get => _view.Zoom;
-            set => _view.Zoom = value;
-        }
+        public int Width { get; }
+        public int Height { get; }
 
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
@@ -69,9 +46,9 @@ namespace Reaper.Engine
             return worldObject;
         }
 
-        public T GetWorldObjectOfType<T>() where T : Behavior
+        public T GetWorldObjectAsBehavior<T>() where T : Behavior
         {
-            return _worldObjectList.GetWorldObjectOfType<T>();
+            return _worldObjectList.GetWorldObjectAsBehavior<T>();
         }
 
         public bool TestOverlapSolidOffset(WorldObject worldObject, float xOffset, float yOffset) 
@@ -112,17 +89,17 @@ namespace Reaper.Engine
 
         internal void Draw()
         {
-            _view.BeginDraw();
-            _worldObjectList.Draw(_view);
+            View.BeginDraw();
+            _worldObjectList.Draw(View);
 
-            DebugTools.Draw(_view.SpriteBatch, _worldObjectList.WorldObjects);
+            DebugTools.Draw(View.SpriteBatch, _worldObjectList.WorldObjects);
 
-            _view.EndDraw();
+            View.EndDraw();
         }
 
         internal void Unload() 
         {
-            _view.Unload();
+            View.Unload();
             _content.Unload();
         }
     }
