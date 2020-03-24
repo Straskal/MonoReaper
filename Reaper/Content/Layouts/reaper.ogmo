@@ -20,15 +20,16 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "start scripts\\run_level.bat %level",
-  "entityTags": ["templates", "enemies", "common"],
+  "entityTags": ["templates", "common"],
   "layers": [
     {
-      "definition": "entity",
-      "name": "worldobjects",
-      "gridSize": {"x": 8, "y": 8},
-      "exportID": "15521523",
-      "requiredTags": [],
-      "excludedTags": []
+      "definition": "tile",
+      "name": "background",
+      "gridSize": {"x": 16, "y": 16},
+      "exportID": "15480928",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "4tiles"
     },
     {
       "definition": "tile",
@@ -40,54 +41,15 @@
       "defaultTileset": "4tiles"
     },
     {
-      "definition": "tile",
-      "name": "background",
-      "gridSize": {"x": 16, "y": 16},
-      "exportID": "15480928",
-      "exportMode": 0,
-      "arrayMode": 0,
-      "defaultTileset": "4tiles"
+      "definition": "entity",
+      "name": "worldobjects",
+      "gridSize": {"x": 8, "y": 8},
+      "exportID": "15521523",
+      "requiredTags": [],
+      "excludedTags": []
     }
   ],
   "entities": [
-    {
-      "exportID": "92578433",
-      "name": "spawnPoint",
-      "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 0, "y": 0},
-      "originAnchored": true,
-      "shape": {
-        "label": "Rectangle",
-        "points": [
-          {"x": -1, "y": -1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": 1}
-        ]
-      },
-      "color": "#00ff1e62",
-      "tileX": false,
-      "tileY": false,
-      "tileSize": {"x": 16, "y": 16},
-      "resizeableX": false,
-      "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
-      "canFlipX": false,
-      "canFlipY": false,
-      "canSetColor": false,
-      "hasNodes": false,
-      "nodeLimit": 0,
-      "nodeDisplay": 0,
-      "nodeGhost": true,
-      "tags": ["common"],
-      "values": [
-        {"name": "Name", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
-      ]
-    },
     {
       "exportID": "15498917",
       "name": "player",
@@ -167,46 +129,6 @@
         {"name": "Level", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true},
         {"name": "SpawnPoint", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
-    },
-    {
-      "exportID": "30241187",
-      "name": "thug",
-      "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 16, "y": 32},
-      "originAnchored": true,
-      "shape": {
-        "label": "Rectangle",
-        "points": [
-          {"x": -1, "y": -1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": 1}
-        ]
-      },
-      "color": "#ff0000ff",
-      "tileX": false,
-      "tileY": false,
-      "tileSize": {"x": 32, "y": 32},
-      "resizeableX": false,
-      "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
-      "canFlipX": true,
-      "canFlipY": false,
-      "canSetColor": false,
-      "hasNodes": false,
-      "nodeLimit": 0,
-      "nodeDisplay": 0,
-      "nodeGhost": true,
-      "tags": ["enemies"],
-      "values": [
-        {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
-      ],
-      "texture": "Previews/thug_preview.png",
-      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAjJJREFUWIXtV79L81AUPZFODnHUrT/g24tGcKsIIjh0leJgp+rgKA4dOmRwEP8AdXITO37DByKUZBO+Cu6CGuI/0M6F55A+fUnufS9JRRfPVF5u3zn33PtuXoBf/DCsr96w0TgS8veoauPxqqfl+DIBKjEF3z8juUqzkNbbrlh4GRvjRlUb8Olnc0XJG42jTOQA8HjVsziHCjlQb7sCBPmoauOgFV+7PoniuBLk7oGk7RRpEgdbfCPmKkGSvNU1k0twJSjcA62unTlWd0Iy9UCt4miPmKyzTlgYeOS61oFaxREqOdf1i7vzCAMPYeDFxADA8sWT1i1WgCnr82t6PQw8DILJB7mE090m48kScORh4MFeb2LhZTx14zMzlWCjnN6233HzTcLn16FFiaHKQBFmBVkCjhyYjtUp1Hqf7v+Nxan268AOCF0PON3tVNZSwM3dPXY213B80fx4phtEuXpAYnjyD0iIuLm7B4AUuWxIDqQykwAJygkVg2DCNp9EqgeykgORE7oMKfL/T5PY/in5qn3JxuJEDI1REfYe3lLJaSehKmZW7D28iUN7KbVe+GVUlHz1TylWlpmuZCac37oCAFYYcoBwINlUcijlRXL2U+QA4UC/41q47An1eD2/Dq16O8pGd82W733fP7OOy00xCCbYKJdYclIAJyIv5PTrG+JYhn7HteSfZfY6mL4LOBjrq5Jz9qvk3O2Xw7ccQx0yFXnsRROxVnEEdyrknU8XQ+Ed61vnUM5vJA0AAAAASUVORK5CYII="
     },
     {
       "exportID": "30520947",
