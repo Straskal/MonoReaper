@@ -145,14 +145,8 @@
 /processorParam:TextureFormat=Color
 /build:Art/Tilesets/test_tileset2.png
 
-#begin Layouts/testlevel.json
-/copy:Layouts/testlevel.json
-
-#begin Layouts/testlevel2.json
-/copy:Layouts/testlevel2.json
-
-#begin Layouts/testlevel3.json
-/copy:Layouts/testlevel3.json
+#begin Layouts/layout1.json
+/copy:Layouts/layout1.json
 
 #begin Shaders/SolidColor.fx
 /importer:EffectImporter

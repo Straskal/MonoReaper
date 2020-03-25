@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Reaper.Engine.Tools;
 using System;
-using System.Collections.Generic;
 
 namespace Reaper.Engine
 {
@@ -24,9 +23,7 @@ namespace Reaper.Engine
             Width = width;
             Height = height;
             View = new LayoutView(game, this);
-
-            // TODO: This conversion should probably be done by the grid.
-            Grid = new LayoutGrid(cellSize, (int)Math.Ceiling((double)width / cellSize), (int)Math.Ceiling((double)height / cellSize));
+            Grid = new LayoutGrid(cellSize, width, height);
             Objects = new WorldObjectList(this, _content);
         }
 

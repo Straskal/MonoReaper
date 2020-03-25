@@ -14,10 +14,10 @@ namespace Reaper.Engine
         private readonly List<Behavior> _behaviors;
 
         private SpatialType _type = SpatialType.Overlap;
-        private Vector2 _positionRemainder;
-        private Vector2 _position;
-        private Point _origin;
-        private Rectangle _bounds;
+        private Vector2 _positionRemainder = Vector2.Zero;
+        private Vector2 _position = Vector2.Zero;
+        private Point _origin = Point.Zero;
+        private Rectangle _bounds = Rectangle.Empty;
 
         internal WorldObject(Layout layout)
         {
@@ -29,13 +29,13 @@ namespace Reaper.Engine
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
-        public bool IsSolid => Type.HasFlag(SpatialType.Solid);
+        public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
         public int ZOrder { get; set; }
         public Layout Layout { get; }
 
         internal bool MarkedForDestroy { get; private set; }
 
-        public SpatialType Type
+        public SpatialType SpatialType
         {
             get => _type;
             set

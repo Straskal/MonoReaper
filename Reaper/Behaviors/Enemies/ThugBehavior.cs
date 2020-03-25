@@ -157,7 +157,7 @@ namespace Reaper.Objects.Thug
         {
             float reach = Owner.Bounds.Width * 0.5f + 1;
 
-            return Owner.Layout.Grid.TestSolidOverlapOffset(Owner, Owner.IsMirrored ? -reach : reach, 0);
+            return Owner.Layout.Grid.IsCollidingAtOffset(Owner, Owner.IsMirrored ? -reach : reach, 0);
         }
 
         private bool HasPlayerInSight()

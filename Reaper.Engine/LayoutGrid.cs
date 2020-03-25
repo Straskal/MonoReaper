@@ -5,15 +5,18 @@ using System.Linq;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// Defines the spatial behavior of a world object.
+    /// </summary>
     public enum SpatialType
     {
-        // Not returned from queries.
+        // Not returned from spatial queries.
         Pass = 0,
 
-        // Returned from general queries.
+        // Returned from general spatial queries.
         Overlap = 1 << 0,
 
-        // Returned from all queries.
+        // Returned from all spatial queries, including solid queries.
         Solid = Overlap | (1 << 1)
     }
 
@@ -39,9 +42,9 @@ namespace Reaper.Engine
         internal LayoutGrid(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
-            _width = width;
-            _height = height;
-            _cells = new Cell[width, height];
+            _width = (int)Math.Ceiling((double)width / cellSize);
+            _height = (int)Math.Ceiling((double)height / cellSize);
+            _cells = new Cell[_width, _height];
 
             for (int i = 0; i < _width; i++)
             {
@@ -54,7 +57,7 @@ namespace Reaper.Engine
 
         internal void Add(WorldObject worldObject)
         {
-            if (worldObject.Type == SpatialType.Pass)
+            if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
             foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
@@ -65,7 +68,7 @@ namespace Reaper.Engine
 
         internal void Remove(WorldObject worldObject)
         {
-            if (worldObject.Type == SpatialType.Pass)
+            if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
             foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
@@ -88,11 +91,11 @@ namespace Reaper.Engine
             if (previous != SpatialType.Pass) 
                 Remove(worldObject);
 
-            if (worldObject.Type != SpatialType.Pass) 
+            if (worldObject.SpatialType != SpatialType.Pass) 
                 Add(worldObject);
         }
 
-        public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset)
+        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset)
         {
             var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
             return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid);

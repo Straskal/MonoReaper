@@ -15,11 +15,11 @@ namespace Reaper.Engine.Singletons
             public GamePadState PreviousGamePadState { get; set; }
         }
 
-        public abstract class Action
+        public abstract class InputAction
         {
             protected readonly InputState inputState;
 
-            public Action(InputState state)
+            public InputAction(InputState state)
             {
                 inputState = state;
             }
@@ -28,7 +28,7 @@ namespace Reaper.Engine.Singletons
         /// <summary>
         /// For button presses
         /// </summary>
-        public class PressedAction : Action
+        public class PressedAction : InputAction
         {
             private readonly List<Keys> _keys;
 
@@ -72,7 +72,7 @@ namespace Reaper.Engine.Singletons
         /// <summary>
         /// For the given axes
         /// </summary>
-        public class AxisAction : Action
+        public class AxisAction : InputAction
         {
             public enum ThumbSticks
             {
@@ -90,9 +90,9 @@ namespace Reaper.Engine.Singletons
 
             public string Name { get; }
 
-            public void AddKeys(Keys left, Keys right) 
+            public void AddKeys(Keys x, Keys y) 
             {
-                _keys.Add(new Tuple<Keys, Keys>(left, right));
+                _keys.Add(new Tuple<Keys, Keys>(x, y));
             }
 
             public float GetAxis()
@@ -101,13 +101,13 @@ namespace Reaper.Engine.Singletons
 
                 for (int i = 0; i < _keys.Count; i++)
                 {
-                    var left = _keys[i].Item1;
-                    var right = _keys[i].Item2;
+                    var x = _keys[i].Item1;
+                    var y = _keys[i].Item2;
 
-                    if (inputState.KeyState.IsKeyDown(left))
+                    if (inputState.KeyState.IsKeyDown(x))
                         value += -1f;
 
-                    if (inputState.KeyState.IsKeyDown(right))
+                    if (inputState.KeyState.IsKeyDown(y))
                         value += 1f;
                 }
 
@@ -116,7 +116,7 @@ namespace Reaper.Engine.Singletons
         }
 
         private readonly InputState _state = new InputState();
-        private readonly Dictionary<string, Action> _actions = new Dictionary<string, Action>();
+        private readonly Dictionary<string, InputAction> _actions = new Dictionary<string, InputAction>();
 
         public override void Tick(GameTime gameTime)
         {
@@ -145,7 +145,7 @@ namespace Reaper.Engine.Singletons
             return action;
         }
 
-        public T GetAction<T>(string name) where T : Action
+        public T GetAction<T>(string name) where T : InputAction
         {
             return _actions[name] as T;
         }

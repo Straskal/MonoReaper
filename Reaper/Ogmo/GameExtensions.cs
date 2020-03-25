@@ -86,8 +86,7 @@ namespace Reaper.Ogmo
         {
             var tilemap = new WorldObjectDefinition();
 
-            if (solid)
-                tilemap.MakeSolid();
+            if (solid) tilemap.MakeSolid();
 
             tilemap.AddBehavior(wo => new TilemapBehavior(wo, new TilemapBehavior.MapData
             {
