@@ -1,9 +1,9 @@
 ﻿using Reaper.Engine;
 using System;
 using System.Collections.Generic;
-using Reaper.Objects.Player;
 using Reaper.Objects.Common;
-using Reaper.Objects.Thug;
+
+using ObjectDefinitions = Reaper.Objects.Constants;
 
 namespace Reaper.Objects
 {
@@ -32,10 +32,9 @@ namespace Reaper.Objects
         /// </summary>
         public static void Register() 
         {
-            _definitionFactories.Add("player", PlayerSpawnPoint.Method);
-            _definitionFactories.Add("playerInstance", Player.Player.Method);
-            _definitionFactories.Add("thug", Thug.Thug.Method);
-            _definitionFactories.Add("transition", value: LevelTransitionDefinition.Method);
+            _definitionFactories.Add(ObjectDefinitions.Player, PlayerSpawnPoint.Method);
+            _definitionFactories.Add(ObjectDefinitions.PlayerInstance, Player.Player.Method);
+            _definitionFactories.Add(ObjectDefinitions.LevelTransition, LevelTransitionDefinition.Method);
         }
     }
 }

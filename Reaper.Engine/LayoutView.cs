@@ -12,6 +12,7 @@ namespace Reaper.Engine
         private readonly Layout _layout;
         private readonly GraphicsDevice _gpu;
         private readonly SpriteBatch _batch;
+        private readonly Texture2D _texture;
 
         private Matrix _translationMatrix = Matrix.Identity;
         private Matrix _rotationMatrix = Matrix.Identity;
@@ -33,6 +34,8 @@ namespace Reaper.Engine
             _layout = layout;
             _gpu = game.GraphicsDevice;
             _batch = new SpriteBatch(_gpu);
+            _texture = new Texture2D(_gpu, 1, 1);
+            _texture.SetData(new[] { Color.White });
 
             Width = game.ViewportWidth;
             Height = game.ViewportHeight;
@@ -51,6 +54,9 @@ namespace Reaper.Engine
             get => _position;
             set => _position = value;
         }
+
+        public int Left => (int)(Position.X - Width * 0.5f);
+        public int Right => (int)(Position.X + Width * 0.5f);
 
         public Vector2 OffsetPosition => ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
 
@@ -96,6 +102,26 @@ namespace Reaper.Engine
             }
         }
 
+        /// <summary>
+        /// Converts coordinates in screen space to world space.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector2 ToWorld(Vector2 position) 
+        {
+            return Vector2.Transform(position, TransformationMatrix);
+        }
+
+        /// <summary>
+        /// Converts coordinates in world space to screen space.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector2 ToScreen(Vector2 position)
+        {
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
+        }
+
         internal void BeginDraw()
         {
             _currentEffect = null;
@@ -129,6 +155,11 @@ namespace Reaper.Engine
             HandleEffectChange(effect);
 
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+        }
+
+        public void DrawRectangle(Rectangle rectangle, Color color)
+        {
+            _batch.Draw(_texture, rectangle, null, color);
         }
 
         private void HandleEffectChange(Effect effect) 

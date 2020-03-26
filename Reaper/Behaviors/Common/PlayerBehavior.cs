@@ -5,6 +5,7 @@ using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using Reaper.Engine.Singletons;
 using Reaper.Objects.Common;
+using Reaper.Singletons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,6 +69,9 @@ namespace Reaper.Objects.Player
 
             if (_exitGameAction.WasPressed())
                 Game.Exit();
+
+            if (Game.Singletons.Get<Input>().GetAction<Input.PressedAction>("dialogue").WasPressed())
+                Game.Singletons.Get<Dialogue>().StartDialogue();
 
             _currentState.Invoke((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
@@ -201,9 +205,6 @@ namespace Reaper.Objects.Player
             }
             else if (_attackAction.WasPressed())
             {
-                _platformerBehavior.GravityAcceleration = 0;
-                _platformerBehavior.Velocity = Vector2.Zero;
-
                 GoToAttack();
             }
         }
@@ -242,9 +243,6 @@ namespace Reaper.Objects.Player
             }
             else if (_attackAction.WasPressed())
             {
-                _platformerBehavior.GravityAcceleration = 0;
-                _platformerBehavior.Velocity = Vector2.Zero;
-
                 GoToAttack();
             }
         }
@@ -253,7 +251,7 @@ namespace Reaper.Objects.Player
         {
             _hasCheckedForHits = false;
             _swingSound.Play();
-            _platformerBehavior.Freeze();
+            Freeze();
             _animationBehavior.PlayFromBeginning($"attack_{_currentAttackIndex}");
             _currentState = Attack;
         }
@@ -285,7 +283,7 @@ namespace Reaper.Objects.Player
             }
             else if (_animationBehavior.IsFinished)
             {
-                _platformerBehavior.Unfreeze();
+                Unfreeze();
                 _currentAttackIndex = 0;
 
                 GoToIdle();
@@ -315,6 +313,23 @@ namespace Reaper.Objects.Player
         private bool CanFollowupAttack() 
         {
             return _animationBehavior.CurrentFrame > 3 && _currentAttackIndex < (MAX_COSECUTIVE_ATTACKS - 1);
+        }
+
+        public float _prev;
+
+        private void Freeze()
+        {
+            _platformerBehavior.Velocity = Vector2.Zero;
+
+            if (_currentAttackIndex == 0) 
+                _prev = _platformerBehavior.GravityAcceleration;
+
+            _platformerBehavior.GravityAcceleration = 0f;
+        }
+
+        private void Unfreeze() 
+        {
+            _platformerBehavior.GravityAcceleration = _prev;
         }
     }
 }

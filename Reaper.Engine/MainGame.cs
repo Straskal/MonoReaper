@@ -9,6 +9,7 @@ namespace Reaper.Engine
     {
         SingletonList Singletons { get; }
         Layout CurrentLayout { get; }
+        GameWindow Window { get; }
         int ViewportWidth { get; }
         int ViewportHeight { get; }
         bool IsFullscreen { get; }
@@ -43,6 +44,7 @@ namespace Reaper.Engine
             _gpuManager.IsFullScreen = gameSettings.IsFullscreen;
             _gpuManager.PreferredBackBufferWidth = ViewportWidth;
             _gpuManager.PreferredBackBufferHeight = ViewportHeight;
+            _gpuManager.PreferMultiSampling = false;
             _gpuManager.ApplyChanges();
 
             Singletons = new SingletonList();

@@ -36,20 +36,6 @@ namespace Reaper.Engine.Behaviors
             _movement = movement;
         }
 
-        public void Freeze() 
-        {
-            _velocity.X = 0;
-            _velocity.Y = 0;
-            _jumpTime = 0;
-
-            GravityAcceleration = 0f;
-        }
-
-        public void Unfreeze()
-        {
-            GravityAcceleration = 1350f;
-        }
-
         public void Jump()
         {
             _jumpRequested = true;

@@ -21,6 +21,9 @@ namespace Reaper
 
             var exitGameAction = input.NewPressedAction("exitGame");
             exitGameAction.AddKey(Keys.Escape);
+
+            var dialogue = input.NewPressedAction("dialogue");
+            dialogue.AddKey(Keys.B);
         }
     }
 }

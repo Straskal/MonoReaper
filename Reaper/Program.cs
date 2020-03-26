@@ -3,6 +3,7 @@ using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
 using Reaper.Engine.Singletons;
+using Reaper.Singletons;
 
 namespace Reaper
 {
@@ -11,10 +12,10 @@ namespace Reaper
         [STAThread]
         static void Main(string[] args)
         {
-            var settings = new GameSettings 
+            var settings = new GameSettings
             {
-                ViewportWidth = 320,
-                ViewportHeight = 180,
+                ViewportWidth = 640,
+                ViewportHeight = 360,
                 IsFullscreen = false,
                 IsResizable = true,
                 IsBordered = true,
@@ -25,6 +26,7 @@ namespace Reaper
             {
                 Definitions.Register();
                 InputBindings.Initialize(game.Singletons.Get<Input>());
+                //game.Singletons.Register(new Dialogue(game));
 
                 game.LoadOgmoLayout(args[0]);
                 game.Run();

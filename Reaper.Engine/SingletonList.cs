@@ -25,5 +25,13 @@ namespace Reaper.Engine
                 singleton.Tick(gameTime);
             }
         }
+
+        internal void Draw(LayoutView view)
+        {
+            foreach (var singleton in _singletons.Values)
+            {
+                singleton.Draw(view);
+            }
+        }
     }
 }

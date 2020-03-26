@@ -63,6 +63,7 @@ namespace Reaper.Engine
         {
             View.BeginDraw();
             Objects.Draw(View);
+            Game.Singletons.Draw(View);
             DebugTools.Draw(View.SpriteBatch, Objects.WorldObjects);
             View.EndDraw();
         }
