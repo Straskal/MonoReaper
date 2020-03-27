@@ -56,14 +56,6 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
-        /// <summary>
-        /// The world object's sub pixel draw position.
-        /// </summary>
-        public Vector2 DrawPosition
-        {
-            get => _position;
-        }
-
         public int Width
         {
             get => _bounds.Width;

@@ -3,6 +3,11 @@ using System.Linq;
 
 namespace Reaper.Engine.Behaviors
 {
+    /// <summary>
+    /// The LOS is basically a rectangle raycast that is blocked by solids.
+    /// 
+    /// Can be used for enemy lines of sight.
+    /// </summary>
     public class LineOfSightBehavior : Behavior
     {
         public LineOfSightBehavior(WorldObject owner) : base(owner) { }

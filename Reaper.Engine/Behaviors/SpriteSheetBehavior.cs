@@ -110,10 +110,10 @@ namespace Reaper.Engine.Behaviors
             Frame frame = CurrentAnimation.Frames[CurrentFrame];
 
             float xPosition = Owner.IsMirrored
-                ? Owner.DrawPosition.X - (frame.Source.Width - CurrentAnimation.Origin.X)
-                : Owner.DrawPosition.X - CurrentAnimation.Origin.X;
+                ? Owner.Position.X - (frame.Source.Width - CurrentAnimation.Origin.X)
+                : Owner.Position.X - CurrentAnimation.Origin.X;
 
-            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.DrawPosition.Y - CurrentAnimation.Origin.Y), Color.White, Owner.IsMirrored, Effect);
+            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color.White, Owner.IsMirrored, Effect);
         }
     }
 }

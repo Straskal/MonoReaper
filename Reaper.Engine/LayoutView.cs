@@ -53,12 +53,11 @@ namespace Reaper.Engine
         public Vector2 Position 
         {
             get => _position;
-            set => _position = value;
+            set => _position = new Vector2((int)value.X, (int)value.Y);
         }
 
         public int Left => (int)(Position.X - Width * 0.5f);
         public int Right => (int)(Position.X + Width * 0.5f);
-
         public Vector2 OffsetPosition => ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
 
         public int OffsetX { get; set; }
@@ -71,8 +70,8 @@ namespace Reaper.Engine
             get
             {
                 // Offset the view by it's position.
-                _translation.X = (int)-OffsetPosition.X;
-                _translation.Y = (int)-OffsetPosition.Y;
+                _translation.X = (int)Math.Floor(-OffsetPosition.X);
+                _translation.Y = (int)Math.Floor(-OffsetPosition.Y);
 
                 // Scale the view by it's zoom factor.
                 _scale.X = Zoom;
@@ -155,6 +154,7 @@ namespace Reaper.Engine
         {
             HandleEffectChange(effect);
 
+            // Round to integer before rendering, else we get ugly sub-pixel artifacts.
             position.X = (int)Math.Floor(position.X);
             position.Y = (int)Math.Floor(position.Y);
 
