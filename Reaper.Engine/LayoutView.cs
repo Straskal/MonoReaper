@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Reaper.Engine
 {
@@ -70,8 +71,8 @@ namespace Reaper.Engine
             get
             {
                 // Offset the view by it's position.
-                _translation.X = -OffsetPosition.X;
-                _translation.Y = -OffsetPosition.Y;
+                _translation.X = (int)-OffsetPosition.X;
+                _translation.Y = (int)-OffsetPosition.Y;
 
                 // Scale the view by it's zoom factor.
                 _scale.X = Zoom;
@@ -153,6 +154,9 @@ namespace Reaper.Engine
         public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
+
+            position.X = (int)Math.Floor(position.X);
+            position.Y = (int)Math.Floor(position.Y);
 
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }

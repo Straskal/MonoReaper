@@ -61,7 +61,7 @@ namespace Reaper.Engine
         /// </summary>
         public Vector2 DrawPosition
         {
-            get => _position + _positionRemainder;
+            get => _position;
         }
 
         public int Width

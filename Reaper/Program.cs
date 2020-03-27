@@ -3,7 +3,6 @@ using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
 using Reaper.Engine.Singletons;
-using Reaper.Singletons;
 
 namespace Reaper
 {
@@ -18,8 +17,7 @@ namespace Reaper
                 ViewportHeight = 360,
                 IsFullscreen = false,
                 IsResizable = true,
-                IsBordered = true,
-                IsVsyncEnabled = true
+                IsBordered = true
             };
 
             using (var game = MainGameFactory.Create(settings))

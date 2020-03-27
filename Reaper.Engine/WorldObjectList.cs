@@ -54,8 +54,9 @@ namespace Reaper.Engine
             };
 
             definition.Build(worldObject);
-            _toSpawn.Add(worldObject);
+            worldObject.UpdateBBox();
 
+            _toSpawn.Add(worldObject);
             return worldObject;
         }
 

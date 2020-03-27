@@ -14,7 +14,7 @@ namespace Reaper.Objects.Player
             playerDefinition.SetSize(16, 16);
             playerDefinition.SetOrigin(new Point(8, 16));
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 350f});
+            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 350f, GroundBufferInPixels = 2 });
             playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
             playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
             playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
@@ -62,7 +62,7 @@ namespace Reaper.Objects.Player
                     Origin = new Vector2(11, 24),
                     Frames = new []
                     {
-                        new SpriteSheetBehavior.Frame(24, 0, 24, 24),
+                        new SpriteSheetBehavior.Frame(0, 0, 24, 24),
                     }
                 },
                  new SpriteSheetBehavior.Animation
@@ -73,7 +73,7 @@ namespace Reaper.Objects.Player
                     Origin = new Vector2(11, 24),
                     Frames = new []
                     {
-                        new SpriteSheetBehavior.Frame(24, 0, 24, 24),
+                        new SpriteSheetBehavior.Frame(0, 0, 24, 24),
                     }
                 },
                 new SpriteSheetBehavior.Animation

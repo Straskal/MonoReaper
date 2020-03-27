@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Reaper.Engine.Tools;
-using System;
 
 namespace Reaper.Engine
 {
@@ -38,7 +37,6 @@ namespace Reaper.Engine
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = Objects.Create(definition, position);
-            worldObject.UpdateBBox();
             Grid.Add(worldObject);
             return worldObject;
         }

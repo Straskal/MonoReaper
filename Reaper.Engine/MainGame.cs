@@ -24,6 +24,7 @@ namespace Reaper.Engine
     public class MainGame : Game, IGame
     {
         private readonly GraphicsDeviceManager _gpuManager;
+
         private Layout _nextLayout;
 
         internal MainGame(GameSettings gameSettings)
@@ -31,7 +32,7 @@ namespace Reaper.Engine
             _gpuManager = new GraphicsDeviceManager(this)
             {
                 HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = gameSettings.IsVsyncEnabled,
+                SynchronizeWithVerticalRetrace = true,
             };
 
             Content.RootDirectory = "Content";

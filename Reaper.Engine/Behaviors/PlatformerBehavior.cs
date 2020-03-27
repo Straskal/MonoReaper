@@ -17,7 +17,6 @@ namespace Reaper.Engine.Behaviors
         public float Acceleration { get; set; } = 1400f;
         public float MaxSpeed { get; set; } = 300f;
         public float Drag { get; set; } = 0.8f;
-        public float AirDrag { get; set; } = 0.83f;
         public float MaxJumpTime { get; set; } = 0.55f;
         public float JumpVelocity { get; set; } = -1500;
         public float JumpControl { get; set; } = 0.09f;
@@ -76,7 +75,7 @@ namespace Reaper.Engine.Behaviors
         private void SimulateMovement(float elapsedTime) 
         {
             _velocity.X += Acceleration * _movement * elapsedTime;
-            _velocity.X *= IsOnGround() ? Drag : AirDrag;
+            _velocity.X *= Drag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
             _isOnGround = Layout.Grid.IsCollidingAtOffset(Owner, 0f, GroundBufferInPixels);
         }

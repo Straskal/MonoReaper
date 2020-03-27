@@ -7,6 +7,5 @@
         public bool IsFullscreen { get; set; }
         public bool IsResizable { get; set; }
         public bool IsBordered { get; set; }
-        public bool IsVsyncEnabled { get; set; }
     }
 }

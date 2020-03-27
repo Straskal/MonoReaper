@@ -17,7 +17,7 @@ namespace Reaper.Engine.Behaviors
         {
             // Subpixel rendering seems to be causing weird artifacts.
             Layout.View.Position = Vector2.SmoothStep(Layout.View.Position, Owner.Position, Smoothing);
-            //Layout.View.Position = new Vector2((int)Layout.View.Position.X, (int)Layout.View.Position.Y);
+            Layout.View.Position = new Vector2((int)Layout.View.Position.X, (int)Layout.View.Position.Y);
         }
     }
 }

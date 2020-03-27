@@ -113,7 +113,7 @@ namespace Reaper.Engine.Behaviors
                 ? Owner.DrawPosition.X - (frame.Source.Width - CurrentAnimation.Origin.X)
                 : Owner.DrawPosition.X - CurrentAnimation.Origin.X;
 
-            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color.White, Owner.IsMirrored, Effect);
+            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.DrawPosition.Y - CurrentAnimation.Origin.Y), Color.White, Owner.IsMirrored, Effect);
         }
     }
 }

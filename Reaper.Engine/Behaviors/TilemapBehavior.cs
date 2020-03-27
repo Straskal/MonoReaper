@@ -63,7 +63,7 @@ namespace Reaper.Engine.Behaviors
 
             foreach (var tile in GetTileInfo()) 
             {
-                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Destination.X, tile.Destination.Y)));
+                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
             }
         }
 
@@ -71,20 +71,21 @@ namespace Reaper.Engine.Behaviors
         {
             foreach (var tile in GetTileInfo())
             {
-                view.Draw(Data.Texture, tile.Source, tile.Destination, Color.White, false);
+                view.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
             }
         }
 
         private struct TileInfo 
         {
             public Rectangle Source;
-            public Rectangle Destination;
+            public Vector2 Position;
         }
 
         private IEnumerable<TileInfo> GetTileInfo()
         {
-            int currentX = 0;
-            int currentY = 0;
+            int numHorizontalCells = Data.Texture.Width / Data.CellSize;
+            float currentX = Owner.Position.X;
+            float currentY = Owner.Position.Y;
 
             for (int j = 0; j < Data.Tiles.Length; j++)
             {
@@ -94,19 +95,18 @@ namespace Reaper.Engine.Behaviors
                     currentY++;
                 }
 
-                int cx = currentX++;
+                float cx = currentX++;
 
                 if (Data.Tiles[j] == -1)
                     continue;
 
-                int numHorizontalCells = Data.Texture.Width / Data.CellSize;
                 int row = (int)Math.Floor((double)(Data.Tiles[j] / numHorizontalCells));
                 int col = (int)Math.Floor((double)(Data.Tiles[j] % numHorizontalCells));
 
                 yield return new TileInfo
                 {
                     Source = new Rectangle(col * Data.CellSize, row * Data.CellSize, Data.CellSize, Data.CellSize),
-                    Destination = new Rectangle(cx * Data.CellSize, currentY * Data.CellSize, Data.CellSize, Data.CellSize)
+                    Position = new Vector2(cx * Data.CellSize, currentY * Data.CellSize)
                 };
             }
         }
