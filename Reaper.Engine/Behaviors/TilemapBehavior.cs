@@ -6,6 +6,25 @@ using System.Collections.Generic;
 
 namespace Reaper.Engine.Behaviors
 {
+    /// <summary>
+    /// The tilemap behavior draws the given data.
+    /// If this behavior's owner is solid, then it will create an invisible solid for each tile.
+    /// 
+    /// POSSIBLE IMPROVEMENTS:
+    /// 
+    /// The tilemap does not handle movement at the moment. If we do need to support the movement of solid tilemaps, then
+    /// well have to move every single collider object as well.
+    /// 
+    /// If tilemaps need to be destroyed, then all collider objects will have to be destroyed as well.
+    /// 
+    /// If a tilemap is disabled, it will have to disable all colliders as well.
+    /// 
+    /// Parallaxing support will have to be added to tilemaps, or just to world objects in general.
+    /// 
+    /// The invisible solid objects could definitely be improved. We could just create larger solid areas instead of smaller individual ones.
+    /// This would involve doing some calculations to find out which tiles are neighbors.
+    /// 
+    /// </summary>
     public class TilemapBehavior : Behavior
     {
         public class MapData
@@ -20,27 +39,6 @@ namespace Reaper.Engine.Behaviors
 
         private readonly List<WorldObject> _colliders;
 
-        /// <summary>
-        /// The tilemap behavior draws the given data.
-        /// If this behavior's owner is solid, then it will create an invisible solid for each tile.
-        /// 
-        /// POSSIBLE IMPROVEMENTS:
-        /// 
-        /// The tilemap does not handle movement at the moment. If we do need to support the movement of solid tilemaps, then
-        /// well have to move every single collider object as well.
-        /// 
-        /// If tilemaps need to be destroyed, then all collider objects will have to be destroyed as well.
-        /// 
-        /// If a tilemap is disabled, it will have to disable all colliders as well.
-        /// 
-        /// Parallaxing support will have to be added to tilemaps, or just to world objects in general.
-        /// 
-        /// The invisible solid objects could definitely be improved. We could just create larger solid areas instead of smaller individual ones.
-        /// This would involve doing some calculations to find out which tiles are neighbors.
-        /// 
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="data"></param>
         public TilemapBehavior(WorldObject owner, MapData data) : base(owner)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));

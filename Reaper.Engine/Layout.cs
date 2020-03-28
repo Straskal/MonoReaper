@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Tools;
 
 namespace Reaper.Engine
 {
@@ -57,12 +56,15 @@ namespace Reaper.Engine
             Objects.PostTick(gameTime);
         }
 
-        internal void Draw()
+        internal void Draw(bool debug)
         {
             View.BeginDraw();
             Objects.Draw(View);
             Game.Singletons.Draw(View);
-            DebugTools.Draw(View.SpriteBatch, Objects.WorldObjects);
+
+            if (debug)
+                Objects.DebugDraw(View);
+
             View.EndDraw();
         }
 

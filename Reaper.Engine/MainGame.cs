@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Reaper.Engine.Singletons;
-using Reaper.Engine.Tools;
 using System;
 
 namespace Reaper.Engine
@@ -24,17 +25,13 @@ namespace Reaper.Engine
     public class MainGame : Game, IGame
     {
         private readonly GraphicsDeviceManager _gpuManager;
+        private readonly Input.PressedAction _toggleDebug;
 
         private Layout _nextLayout;
+        private bool _isDebugging;
 
         internal MainGame(GameSettings gameSettings)
         {
-            _gpuManager = new GraphicsDeviceManager(this)
-            {
-                HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = true,
-            };
-
             Content.RootDirectory = "Content";
             Window.AllowUserResizing = gameSettings.IsResizable;
             Window.IsBorderless = !gameSettings.IsBordered;
@@ -42,14 +39,25 @@ namespace Reaper.Engine
             ViewportWidth = gameSettings.ViewportWidth;
             ViewportHeight = gameSettings.ViewportHeight;
 
-            _gpuManager.IsFullScreen = gameSettings.IsFullscreen;
-            _gpuManager.PreferredBackBufferWidth = ViewportWidth;
-            _gpuManager.PreferredBackBufferHeight = ViewportHeight;
-            _gpuManager.PreferMultiSampling = false;
-            _gpuManager.ApplyChanges();
+            var input = new Input();
+            _toggleDebug = input.NewPressedAction("toggleDebug");
+            _toggleDebug.AddKey(Keys.OemTilde);
 
             Singletons = new SingletonList();
-            Singletons.Register(new Input());
+            Singletons.Register(input);
+
+            _gpuManager = new GraphicsDeviceManager(this)
+            {
+                IsFullScreen = gameSettings.IsFullscreen,
+                PreferredBackBufferWidth = ViewportWidth,
+                PreferredBackBufferHeight = ViewportHeight,
+                HardwareModeSwitch = false,
+                SynchronizeWithVerticalRetrace = true,
+                PreferMultiSampling = false,
+                GraphicsProfile = GraphicsProfile.HiDef
+            };
+
+            _gpuManager.ApplyChanges();
         }
 
         public SingletonList Singletons { get; }
@@ -84,11 +92,6 @@ namespace Reaper.Engine
             _gpuManager.ToggleFullScreen();
         }
 
-        protected override void LoadContent()
-        {
-            DebugTools.Initialize(_gpuManager.GraphicsDevice);
-        }
-
         protected override void UnloadContent()
         {
             CurrentLayout.Unload();
@@ -96,9 +99,9 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
+            HandleDebugToggle();
             HandleLayoutChange();
 
-            DebugTools.Tick();
             Singletons.Tick(gameTime);
             CurrentLayout.Tick(gameTime);
             CurrentLayout.PostTick(gameTime);
@@ -108,7 +111,7 @@ namespace Reaper.Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            CurrentLayout.Draw();
+            CurrentLayout.Draw(_isDebugging);
             
             base.Draw(gameTime);
         }
@@ -124,6 +127,12 @@ namespace Reaper.Engine
 
                 _nextLayout = null;
             }
+        }
+
+        private void HandleDebugToggle() 
+        {
+            if (_toggleDebug.WasPressed())
+                _isDebugging = !_isDebugging;
         }
     }
 }

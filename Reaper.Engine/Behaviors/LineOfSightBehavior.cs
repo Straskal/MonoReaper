@@ -37,5 +37,21 @@ namespace Reaper.Engine.Behaviors
 
             return false;
         }
+
+        public override void DebugDraw(LayoutView view)
+        {
+            var wo = Owner;
+            var bounds = wo.Bounds;
+            var mirrored = wo.IsMirrored;
+            var distance = Distance;
+
+            var ray = new Rectangle(
+                mirrored ? (int)wo.Position.X - distance : (int)wo.Position.X,
+                bounds.Top,
+                distance,
+                bounds.Height);
+
+            view.DrawRectangle(ray, new Color(0, 50, 0, 50));
+        }
     }
 }

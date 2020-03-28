@@ -37,6 +37,9 @@ namespace Reaper.Objects.Player
         private Input.PressedAction _toggleFullscreenAction;
         private Input.PressedAction _exitGameAction;
 
+        private WorldObject _poof;
+        private SpriteSheetBehavior _poofAnimation;
+
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
         public override void Load(ContentManager contentManager)
@@ -60,6 +63,35 @@ namespace Reaper.Objects.Player
             _exitGameAction = input.GetAction<Input.PressedAction>("exitGame");
 
             GoToIdle();
+        }
+
+        public override void OnLayoutStarted()
+        {
+            var poofDefinition = new WorldObjectDefinition();
+            poofDefinition.SetSize(16, 16);
+            poofDefinition.SetOrigin(new Point(8, 16));
+
+            poofDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[] 
+            {
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "poof",
+                    ImageFilePath = "art/player/poof",
+                    SecPerFrame = 0.1f,
+                    Loop = false,
+                    Origin = new Vector2(8, 16),
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(0, 0, 16, 16),
+                        new SpriteSheetBehavior.Frame(16, 0, 16, 16),
+                        new SpriteSheetBehavior.Frame(32, 0, 16, 16),
+                        new SpriteSheetBehavior.Frame(0, 0, 0, 0),
+                    }
+                },
+            }));
+
+            _poof = Layout.Spawn(poofDefinition, Vector2.Zero);
+            _poofAnimation = _poof.GetBehavior<SpriteSheetBehavior>();
         }
 
         public override void Tick(GameTime gameTime)
@@ -178,6 +210,9 @@ namespace Reaper.Objects.Player
             _platformerBehavior.Jump();
             _animationBehavior.Play("Jump");
             _currentState = Jump;
+            _poof.Position = Owner.Position + new Vector2(Owner.IsMirrored ? 14f : -14f, 0f);
+            _poof.IsMirrored = Owner.IsMirrored;
+            _poofAnimation.Play("poof");
         }
 
         private void Jump(float elapesedTime)
@@ -232,6 +267,10 @@ namespace Reaper.Objects.Player
 
             if (_platformerBehavior.IsOnGround())
             {
+                _poof.Position = Owner.Position + new Vector2(Owner.IsMirrored ? 14f : -14f, 0f);
+                _poof.IsMirrored = Owner.IsMirrored;
+                _poofAnimation.Play("poof");
+
                 if (_platformerBehavior.IsMoving())
                 {
                     GoToMove();

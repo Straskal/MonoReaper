@@ -115,6 +115,14 @@ namespace Reaper.Engine
             }
         }
 
+        public void DebugDraw(LayoutView view)
+        {
+            foreach (var worldObject in _worldObjects)
+            {
+                worldObject.DebugDraw(view);
+            }
+        }
+
         private void InvokeLoad(IEnumerable<WorldObject> worldObjects) 
         {
             foreach (var worldObject in worldObjects)

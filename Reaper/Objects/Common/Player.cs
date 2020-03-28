@@ -14,7 +14,7 @@ namespace Reaper.Objects.Player
             playerDefinition.SetSize(16, 16);
             playerDefinition.SetOrigin(new Point(8, 16));
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo) { MaxSpeed = 350f, GroundBufferInPixels = 2 });
+            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo));
             playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
             playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
             playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
