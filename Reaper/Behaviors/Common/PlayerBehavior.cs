@@ -174,7 +174,7 @@ namespace Reaper.Objects.Player
 
         private void GoToJump()
         {
-            _jumpSound.Play(0.7f, 0f, 0f);
+            _jumpSound.Play(0.02f, -0.7f, 0f);
             _platformerBehavior.Jump();
             _animationBehavior.Play("Jump");
             _currentState = Jump;
