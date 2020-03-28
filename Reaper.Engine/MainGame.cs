@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Reaper.Engine.Singletons;
-using Reaper.Engine.Tools;
 using System;
 
 namespace Reaper.Engine
@@ -23,35 +24,39 @@ namespace Reaper.Engine
 
     public class MainGame : Game, IGame
     {
-        private readonly GraphicsDeviceManager _gpuManager;
+        private GraphicsDeviceManager _gpuManager;
+
         private Layout _nextLayout;
+
+        // Debugging helper
+        private Input.PressedAction _toggleDebug;
+        private bool _isDebugging;
 
         internal MainGame(GameSettings gameSettings)
         {
-            _gpuManager = new GraphicsDeviceManager(this)
-            {
-                HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = gameSettings.IsVsyncEnabled,
-            };
-
             Content.RootDirectory = "Content";
-            Window.AllowUserResizing = gameSettings.IsResizable;
-            Window.IsBorderless = !gameSettings.IsBordered;
-
             ViewportWidth = gameSettings.ViewportWidth;
             ViewportHeight = gameSettings.ViewportHeight;
+            Window.AllowUserResizing = false;
+            Window.IsBorderless = false;
 
-            _gpuManager.IsFullScreen = gameSettings.IsFullscreen;
-            _gpuManager.PreferredBackBufferWidth = ViewportWidth;
-            _gpuManager.PreferredBackBufferHeight = ViewportHeight;
-            _gpuManager.PreferMultiSampling = false;
+            InitializeSingletons(); 
+            
+            _gpuManager = new GraphicsDeviceManager(this)
+            {
+                IsFullScreen = gameSettings.IsFullscreen,
+                PreferredBackBufferWidth = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
+                PreferredBackBufferHeight = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
+                HardwareModeSwitch = false,
+                SynchronizeWithVerticalRetrace = true,
+                PreferMultiSampling = false,
+                GraphicsProfile = GraphicsProfile.HiDef
+            };
+
             _gpuManager.ApplyChanges();
-
-            Singletons = new SingletonList();
-            Singletons.Register(new Input());
         }
 
-        public SingletonList Singletons { get; }
+        public SingletonList Singletons { get; private set; }
         public Layout CurrentLayout { get; private set; }
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
@@ -81,11 +86,19 @@ namespace Reaper.Engine
         public void ToggleFullscreen()
         {
             _gpuManager.ToggleFullScreen();
-        }
 
-        protected override void LoadContent()
-        {
-            DebugTools.Initialize(_gpuManager.GraphicsDevice);
+            if (_gpuManager.IsFullScreen)
+            {
+                _gpuManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                _gpuManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                _gpuManager.PreferredBackBufferWidth = ViewportWidth;
+                _gpuManager.PreferredBackBufferHeight = ViewportHeight;
+            }
+
+            _gpuManager.ApplyChanges();
         }
 
         protected override void UnloadContent()
@@ -95,9 +108,9 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
+            HandleDebugToggle();
             HandleLayoutChange();
 
-            DebugTools.Tick();
             Singletons.Tick(gameTime);
             CurrentLayout.Tick(gameTime);
             CurrentLayout.PostTick(gameTime);
@@ -107,9 +120,19 @@ namespace Reaper.Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            CurrentLayout.Draw();
+            CurrentLayout.Draw(_isDebugging);
             
             base.Draw(gameTime);
+        }
+
+        private void InitializeSingletons() 
+        {
+            var input = new Input();
+            _toggleDebug = input.NewPressedAction("toggleDebug");
+            _toggleDebug.AddKey(Keys.OemTilde);
+
+            Singletons = new SingletonList();
+            Singletons.Register(input);
         }
 
         private void HandleLayoutChange() 
@@ -123,6 +146,12 @@ namespace Reaper.Engine
 
                 _nextLayout = null;
             }
+        }
+
+        private void HandleDebugToggle() 
+        {
+            if (_toggleDebug.WasPressed())
+                _isDebugging = !_isDebugging;
         }
     }
 }

@@ -54,8 +54,9 @@ namespace Reaper.Engine
             };
 
             definition.Build(worldObject);
-            _toSpawn.Add(worldObject);
+            worldObject.UpdateBBox();
 
+            _toSpawn.Add(worldObject);
             return worldObject;
         }
 
@@ -111,6 +112,14 @@ namespace Reaper.Engine
             foreach (var worldObject in _worldObjects)
             {
                 worldObject.Draw(view);
+            }
+        }
+
+        public void DebugDraw(LayoutView view)
+        {
+            foreach (var worldObject in _worldObjects)
+            {
+                worldObject.DebugDraw(view);
             }
         }
 

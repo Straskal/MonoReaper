@@ -14,7 +14,6 @@ namespace Reaper.Engine
         private readonly List<Behavior> _behaviors;
 
         private SpatialType _type = SpatialType.Overlap;
-        private Vector2 _positionRemainder = Vector2.Zero;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
         private Rectangle _bounds = Rectangle.Empty;
@@ -54,14 +53,6 @@ namespace Reaper.Engine
         {
             get => _position;
             set => _position = value;
-        }
-
-        /// <summary>
-        /// The world object's sub pixel draw position.
-        /// </summary>
-        public Vector2 DrawPosition
-        {
-            get => _position + _positionRemainder;
         }
 
         public int Width
@@ -109,22 +100,16 @@ namespace Reaper.Engine
         {
             worldObject = null;
 
-            _positionRemainder.X += amount;
-
-            int pixelsToMove = (int)Math.Round(_positionRemainder.X);
+            int pixelsToMove = (int)Math.Round(amount);
 
             if (pixelsToMove != 0)
             {
-                _positionRemainder.X -= pixelsToMove;
-
                 int sign = Math.Sign(pixelsToMove);
 
                 while (pixelsToMove != 0)
                 {
                     if (Layout.Grid.TestSolidOverlapOffset(this, sign, 0, out var collision))
                     {
-                        _positionRemainder.X = 0f;
-
                         worldObject = collision;
                         return true;
                     }
@@ -149,22 +134,16 @@ namespace Reaper.Engine
         {
             worldObject = null;
 
-            _positionRemainder.Y += amount;
-
-            int pixelsToMove = (int)Math.Round(_positionRemainder.Y);
+            int pixelsToMove = (int)Math.Round(amount);
 
             if (pixelsToMove != 0)
             {
-                _positionRemainder.Y -= pixelsToMove;
-
                 int sign = Math.Sign(pixelsToMove);
 
                 while (pixelsToMove != 0)
                 {
                     if (Layout.Grid.TestSolidOverlapOffset(this, 0, sign, out var collision))
                     {
-                        _positionRemainder.Y = 0f;
-
                         worldObject = collision;
                         return true;
                     }
@@ -248,6 +227,38 @@ namespace Reaper.Engine
             foreach (var behavior in _behaviors)
             {
                 behavior.Draw(view);
+            }
+        }
+
+        internal void DebugDraw(LayoutView view)
+        {
+            var destination = new Rectangle(
+              (int)(Position.X - Origin.X),
+              (int)(Position.Y - Origin.Y),
+              Bounds.Width,
+              Bounds.Height);
+
+            const float opacity = 0.3f;
+            Color color;
+
+            switch (SpatialType) 
+            {
+                case SpatialType.Pass:
+                    color = Color.Pink * opacity;
+                    break;
+                case SpatialType.Overlap:
+                    color = Color.Blue * opacity;
+                    break;
+                default:
+                    color = Color.Red * opacity;
+                    break;
+            }
+
+            view.DrawRectangle(destination, color);
+
+            foreach (var behavior in _behaviors)
+            {
+                behavior.DebugDraw(view);
             }
         }
 

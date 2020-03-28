@@ -2,6 +2,9 @@
 
 namespace Reaper.Engine.Behaviors
 {
+    /// <summary>
+    /// The layout will follow whichever world object has the scroll-to behavior.
+    /// </summary>
     public class ScrollToBehavior : Behavior
     {
         public ScrollToBehavior(WorldObject owner) : base(owner) { }
@@ -15,9 +18,7 @@ namespace Reaper.Engine.Behaviors
 
         public override void PostTick(GameTime gameTime)
         {
-            // Subpixel rendering seems to be causing weird artifacts.
             Layout.View.Position = Vector2.SmoothStep(Layout.View.Position, Owner.Position, Smoothing);
-            //Layout.View.Position = new Vector2((int)Layout.View.Position.X, (int)Layout.View.Position.Y);
         }
     }
 }

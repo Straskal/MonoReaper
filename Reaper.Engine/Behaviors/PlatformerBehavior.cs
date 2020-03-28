@@ -3,6 +3,9 @@ using System;
 
 namespace Reaper.Engine.Behaviors
 {
+    /// <summary>
+    /// Generic platforming behavior.
+    /// </summary>
     public class PlatformerBehavior : Behavior
     {
         private float _jumpTime;
@@ -14,14 +17,13 @@ namespace Reaper.Engine.Behaviors
 
         public PlatformerBehavior(WorldObject owner) : base(owner) { }
 
-        public float Acceleration { get; set; } = 1400f;
+        public float Acceleration { get; set; } = 1700f;
         public float MaxSpeed { get; set; } = 300f;
         public float Drag { get; set; } = 0.8f;
-        public float AirDrag { get; set; } = 0.83f;
         public float MaxJumpTime { get; set; } = 0.55f;
         public float JumpVelocity { get; set; } = -1500;
         public float JumpControl { get; set; } = 0.09f;
-        public float GravityAcceleration { get; set; } = 2000f;
+        public float GravityAcceleration { get; set; } = 2100f;
         public float MaxFallSpeed { get; set; } = 275f;
         public int GroundBufferInPixels { get; set; } = 1;
 
@@ -43,7 +45,7 @@ namespace Reaper.Engine.Behaviors
 
         public bool IsMoving() 
         {
-            return _velocity.X != 0f;
+            return Math.Abs(_velocity.X) > 0.1f;
         }
 
         public bool IsJumping() 
@@ -76,7 +78,7 @@ namespace Reaper.Engine.Behaviors
         private void SimulateMovement(float elapsedTime) 
         {
             _velocity.X += Acceleration * _movement * elapsedTime;
-            _velocity.X *= IsOnGround() ? Drag : AirDrag;
+            _velocity.X *= Drag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
             _isOnGround = Layout.Grid.IsCollidingAtOffset(Owner, 0f, GroundBufferInPixels);
         }

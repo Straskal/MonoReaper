@@ -8,6 +8,7 @@ namespace Reaper.Engine
     /// <summary>
     /// Defines the spatial behavior of a world object.
     /// </summary>
+    [Flags]
     public enum SpatialType
     {
         // Not returned from spatial queries.
@@ -103,7 +104,6 @@ namespace Reaper.Engine
 
         public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
-            overlappedWorldObject = null;
             var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
             overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
             return overlappedWorldObject != null;

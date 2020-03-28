@@ -53,6 +53,12 @@ namespace Reaper.Engine
         public virtual void Draw(LayoutView view) { }
 
         /// <summary>
+        /// Called only in debug mode.
+        /// </summary>
+        /// <param name="view"></param>
+        public virtual void DebugDraw(LayoutView view) { }
+
+        /// <summary>
         /// Called when the owner has been destroyed.
         /// </summary>
         public virtual void OnOwnerDestroyed() { }

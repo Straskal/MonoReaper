@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Tools;
-using System;
 
 namespace Reaper.Engine
 {
@@ -38,7 +36,6 @@ namespace Reaper.Engine
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = Objects.Create(definition, position);
-            worldObject.UpdateBBox();
             Grid.Add(worldObject);
             return worldObject;
         }
@@ -59,12 +56,15 @@ namespace Reaper.Engine
             Objects.PostTick(gameTime);
         }
 
-        internal void Draw()
+        internal void Draw(bool debug)
         {
             View.BeginDraw();
             Objects.Draw(View);
             Game.Singletons.Draw(View);
-            DebugTools.Draw(View.SpriteBatch, Objects.WorldObjects);
+
+            if (debug)
+                Objects.DebugDraw(View);
+
             View.EndDraw();
         }
 

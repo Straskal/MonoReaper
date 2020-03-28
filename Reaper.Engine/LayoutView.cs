@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Reaper.Engine
 {
@@ -26,6 +27,8 @@ namespace Reaper.Engine
         private Vector3 _resolutionScale = Vector3.Zero;
 
         private Vector2 _position;
+        private Vector2 _offsetPosition;
+
         private Effect _currentEffect;
 
         public LayoutView(MainGame game, Layout layout)
@@ -52,13 +55,15 @@ namespace Reaper.Engine
         public Vector2 Position 
         {
             get => _position;
-            set => _position = value;
+            set 
+            {
+                _position = value;
+                _offsetPosition = ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
+            }
         }
 
         public int Left => (int)(Position.X - Width * 0.5f);
         public int Right => (int)(Position.X + Width * 0.5f);
-
-        public Vector2 OffsetPosition => ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
 
         public int OffsetX { get; set; }
         public int OffsetY { get; set; }
@@ -70,8 +75,8 @@ namespace Reaper.Engine
             get
             {
                 // Offset the view by it's position.
-                _translation.X = -OffsetPosition.X;
-                _translation.Y = -OffsetPosition.Y;
+                _translation.X = (int)Math.Floor(-_offsetPosition.X);
+                _translation.Y = (int)Math.Floor(-_offsetPosition.Y);
 
                 // Scale the view by it's zoom factor.
                 _scale.X = Zoom;
@@ -153,6 +158,10 @@ namespace Reaper.Engine
         public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
+
+            // Round to integer before rendering, else we get ugly sub-pixel artifacts.
+            position.X = (int)Math.Floor(position.X);
+            position.Y = (int)Math.Floor(position.Y);
 
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
