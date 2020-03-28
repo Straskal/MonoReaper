@@ -5,7 +5,5 @@
         public int ViewportWidth { get; set; }
         public int ViewportHeight { get; set; }
         public bool IsFullscreen { get; set; }
-        public bool IsResizable { get; set; }
-        public bool IsBordered { get; set; }
     }
 }

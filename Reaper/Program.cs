@@ -15,9 +15,7 @@ namespace Reaper
             {
                 ViewportWidth = 640,
                 ViewportHeight = 360,
-                IsFullscreen = false,
-                IsResizable = true,
-                IsBordered = true
+                IsFullscreen = true,
             };
 
             using (var game = MainGameFactory.Create(settings))

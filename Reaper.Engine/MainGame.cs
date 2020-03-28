@@ -35,18 +35,18 @@ namespace Reaper.Engine
         internal MainGame(GameSettings gameSettings)
         {
             Content.RootDirectory = "Content";
-            Window.AllowUserResizing = gameSettings.IsResizable;
-            Window.IsBorderless = !gameSettings.IsBordered;
             ViewportWidth = gameSettings.ViewportWidth;
             ViewportHeight = gameSettings.ViewportHeight;
+            Window.AllowUserResizing = false;
+            Window.IsBorderless = false;
 
             InitializeSingletons(); 
             
             _gpuManager = new GraphicsDeviceManager(this)
             {
-                IsFullScreen = false,
-                PreferredBackBufferWidth = ViewportWidth,
-                PreferredBackBufferHeight = ViewportHeight,
+                IsFullScreen = gameSettings.IsFullscreen,
+                PreferredBackBufferWidth = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
+                PreferredBackBufferHeight = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
                 HardwareModeSwitch = false,
                 SynchronizeWithVerticalRetrace = true,
                 PreferMultiSampling = false,
