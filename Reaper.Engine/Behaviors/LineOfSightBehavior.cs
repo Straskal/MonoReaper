@@ -16,7 +16,7 @@ namespace Reaper.Engine.Behaviors
 
         public bool HasLOS(WorldObject worldObject)
         {
-            Rectangle ray = new Rectangle(
+            var ray = new Rectangle(
                 Owner.IsMirrored ? (int)Owner.Position.X - Distance : (int)Owner.Position.X,
                 Owner.Bounds.Top,
                 Distance,
@@ -28,9 +28,11 @@ namespace Reaper.Engine.Behaviors
 
             foreach (var hit in hitsByDistance)
             {
+                // We hit the object, we have a LOS to it.
                 if (hit == worldObject)
                     return true;
 
+                // Else we hit a solid, in which case, blocks our LOS to the target.
                 if (hit.IsSolid)
                     return false;
             }
@@ -40,16 +42,11 @@ namespace Reaper.Engine.Behaviors
 
         public override void DebugDraw(LayoutView view)
         {
-            var wo = Owner;
-            var bounds = wo.Bounds;
-            var mirrored = wo.IsMirrored;
-            var distance = Distance;
-
             var ray = new Rectangle(
-                mirrored ? (int)wo.Position.X - distance : (int)wo.Position.X,
-                bounds.Top,
-                distance,
-                bounds.Height);
+                Owner.IsMirrored ? (int)Owner.Position.X - Distance : (int)Owner.Position.X,
+                Owner.Bounds.Top,
+                Distance,
+                Owner.Bounds.Height);
 
             view.DrawRectangle(ray, new Color(0, 50, 0, 50));
         }
