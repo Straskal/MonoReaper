@@ -27,6 +27,8 @@ namespace Reaper.Engine
         private Vector3 _resolutionScale = Vector3.Zero;
 
         private Vector2 _position;
+        private Vector2 _offsetPosition;
+
         private Effect _currentEffect;
 
         public LayoutView(MainGame game, Layout layout)
@@ -53,12 +55,15 @@ namespace Reaper.Engine
         public Vector2 Position 
         {
             get => _position;
-            set => _position = new Vector2((int)value.X, (int)value.Y);
+            set 
+            {
+                _position = value;
+                _offsetPosition = ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
+            }
         }
 
         public int Left => (int)(Position.X - Width * 0.5f);
         public int Right => (int)(Position.X + Width * 0.5f);
-        public Vector2 OffsetPosition => ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
 
         public int OffsetX { get; set; }
         public int OffsetY { get; set; }
@@ -70,8 +75,8 @@ namespace Reaper.Engine
             get
             {
                 // Offset the view by it's position.
-                _translation.X = (int)Math.Floor(-OffsetPosition.X);
-                _translation.Y = (int)Math.Floor(-OffsetPosition.Y);
+                _translation.X = (int)Math.Floor(-_offsetPosition.X);
+                _translation.Y = (int)Math.Floor(-_offsetPosition.Y);
 
                 // Scale the view by it's zoom factor.
                 _scale.X = Zoom;

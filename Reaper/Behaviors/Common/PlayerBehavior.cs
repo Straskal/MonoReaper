@@ -70,6 +70,7 @@ namespace Reaper.Objects.Player
             var poofDefinition = new WorldObjectDefinition();
             poofDefinition.SetSize(16, 16);
             poofDefinition.SetOrigin(new Point(8, 16));
+            poofDefinition.MakeDecal();
 
             poofDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[] 
             {
@@ -212,7 +213,8 @@ namespace Reaper.Objects.Player
             _currentState = Jump;
             _poof.Position = Owner.Position + new Vector2(Owner.IsMirrored ? 14f : -14f, 0f);
             _poof.IsMirrored = Owner.IsMirrored;
-            _poofAnimation.Play("poof");
+            _poofAnimation.Color = Color.White * 0.8f;
+             _poofAnimation.Play("poof");
         }
 
         private void Jump(float elapesedTime)
@@ -269,6 +271,7 @@ namespace Reaper.Objects.Player
             {
                 _poof.Position = Owner.Position + new Vector2(Owner.IsMirrored ? 14f : -14f, 0f);
                 _poof.IsMirrored = Owner.IsMirrored;
+                _poofAnimation.Color = Color.White * 0.4f;
                 _poofAnimation.Play("poof");
 
                 if (_platformerBehavior.IsMoving())

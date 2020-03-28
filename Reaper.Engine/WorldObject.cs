@@ -238,7 +238,23 @@ namespace Reaper.Engine
               Bounds.Width,
               Bounds.Height);
 
-            view.DrawRectangle(destination, new Color(150, 0, 0, 50));
+            const float opacity = 0.3f;
+            Color color;
+
+            switch (SpatialType) 
+            {
+                case SpatialType.Pass:
+                    color = Color.Pink * opacity;
+                    break;
+                case SpatialType.Overlap:
+                    color = Color.Blue * opacity;
+                    break;
+                default:
+                    color = Color.Red * opacity;
+                    break;
+            }
+
+            view.DrawRectangle(destination, color);
 
             foreach (var behavior in _behaviors)
             {
