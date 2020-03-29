@@ -157,6 +157,21 @@
 /processorParam:TextureFormat=Color
 /build:Art/Tilesets/test_tileset2.png
 
+#begin Art/Tilesets/vary.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Tilesets/vary.png
+
+#begin Layouts/layout.json
+/copy:Layouts/layout.json
+
 #begin Layouts/layout1.json
 /copy:Layouts/layout1.json
 

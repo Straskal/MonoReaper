@@ -13,6 +13,7 @@ namespace Reaper.Engine.Behaviors
         private bool _jumpRequested;
         private bool _wasJumping;
         private bool _isOnGround;
+        private bool _canJump;
         private Vector2 _velocity;
 
         public PlatformerBehavior(WorldObject owner) : base(owner) { }
@@ -63,6 +64,11 @@ namespace Reaper.Engine.Behaviors
             return _isOnGround;
         }
 
+        public bool CanJump()
+        {
+            return _canJump;
+        }
+
         public override void Tick(GameTime gameTime)
         {
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -81,11 +87,12 @@ namespace Reaper.Engine.Behaviors
             _velocity.X *= Drag;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
             _isOnGround = Layout.Grid.IsCollidingAtOffset(Owner, 0f, GroundBufferInPixels);
+            _canJump = !Layout.Grid.IsCollidingAtOffset(Owner, 0f, -1f);
         }
 
         private void SimulateJump(float elapsedTime)
         {
-            if (_jumpRequested)
+            if (_jumpRequested && _canJump)
             {
                 if (!_wasJumping && _isOnGround) 
                 {

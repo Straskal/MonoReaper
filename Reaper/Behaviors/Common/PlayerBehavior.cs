@@ -156,7 +156,7 @@ namespace Reaper.Objects.Player
             {
                 GoToMove();
             }
-            else if (_jumpAction.WasPressed())
+            else if (_jumpAction.WasPressed() && _platformerBehavior.CanJump())
             {
                 GoToJump();
             }
@@ -195,7 +195,7 @@ namespace Reaper.Objects.Player
             {
                 GoToIdle();
             }
-            if (_jumpAction.WasPressed())
+            if (_jumpAction.WasPressed() && _platformerBehavior.CanJump())
             {
                 GoToJump();
             }

@@ -6,8 +6,9 @@ namespace Reaper.Engine
     /// <summary>
     /// Layouts can range from boss battles, levels, to menu screens.
     /// 
+    /// - Layouts have a view.
     /// - Layouts contain world objects.
-    /// - Layouts are mostly a pass through for their components (the view, spatial grid, and object lists, etc...).
+    /// - Layouts store world objects in a grid for spatial queries.
     /// </summary>
     public sealed class Layout
     {
@@ -15,7 +16,7 @@ namespace Reaper.Engine
 
         public Layout(MainGame game, int cellSize, int width, int height)
         {
-            _content = new ContentManager(game.Services, "Content");
+            _content = new ContentManager(game.Services, game.Content.RootDirectory);
 
             Game = game;
             Width = width;

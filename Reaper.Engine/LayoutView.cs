@@ -9,7 +9,6 @@ namespace Reaper.Engine
     /// </summary>
     public class LayoutView
     {
-        private readonly GameWindow _window;
         private readonly Layout _layout;
         private readonly GraphicsDevice _gpu;
         private readonly SpriteBatch _batch;
@@ -33,7 +32,6 @@ namespace Reaper.Engine
 
         public LayoutView(MainGame game, Layout layout)
         {
-            _window = game.Window;
             _layout = layout;
             _gpu = game.GraphicsDevice;
             _batch = new SpriteBatch(_gpu);
@@ -89,8 +87,8 @@ namespace Reaper.Engine
                 _resolution.Z = 0;
 
                 // Scale the view to our virtual resolution.
-                _resolutionScale.X = (float)_window.ClientBounds.Width / Width;
-                _resolutionScale.Y = (float)_window.ClientBounds.Width / Width;
+                _resolutionScale.X = (float)_gpu.PresentationParameters.BackBufferWidth / Width;
+                _resolutionScale.Y = (float)_gpu.PresentationParameters.BackBufferWidth / Width;
                 _resolutionScale.Z = 1f;
 
                 Matrix.CreateTranslation(ref _translation, out _translationMatrix);
@@ -213,27 +211,31 @@ namespace Reaper.Engine
             {
                 X = 0,
                 Y = 0,
-                Width = _window.ClientBounds.Width,
-                Height = _window.ClientBounds.Height
+                Width = _gpu.PresentationParameters.BackBufferWidth,
+                Height = _gpu.PresentationParameters.BackBufferHeight
             };
         }
 
         private Viewport GetLargestVirtualViewport()
         {
-            var targetAspectRatio = Width / (float)Height;
-            var width = _window.ClientBounds.Width;
-            var height = (int)(width / targetAspectRatio + 0.5f);
+            // Start off assuming letterbox.
+            float targetAspectRatio = Width / (float)Height;
+            int screenWidth = _gpu.PresentationParameters.BackBufferWidth;
+            int screenHeight = _gpu.PresentationParameters.BackBufferHeight;
+            int width = screenWidth;
+            int height = (int)(screenWidth / targetAspectRatio + 0.5f);
 
-            if (height > _window.ClientBounds.Height)
+            // Check if we need pillarbox instead.
+            if (height > screenHeight)
             {
-                height = _window.ClientBounds.Height;
+                height = screenHeight;
                 width = (int)(height * targetAspectRatio + .5f);
             }
 
             return new Viewport
             {
-                X = (_window.ClientBounds.Width / 2) - (width / 2),
-                Y = (_window.ClientBounds.Height / 2) - (height / 2),
+                X = screenWidth / 2 - width / 2,
+                Y = screenHeight / 2 - height / 2,
                 Width = width,
                 Height = height
             };
