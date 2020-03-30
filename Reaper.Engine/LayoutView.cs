@@ -129,7 +129,7 @@ namespace Reaper.Engine
         {
             _currentEffect = null;
 
-            CreatePillarBoxes();
+            CreateLetterBox();
             PrepareBatch();
         }
 
@@ -139,7 +139,7 @@ namespace Reaper.Engine
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
-                DepthStencilState.None,
+                DepthStencilState.Default,
                 RasterizerState.CullNone,
                 _currentEffect,
                 TransformationMatrix
@@ -190,7 +190,7 @@ namespace Reaper.Engine
             _batch.Dispose();
         }
 
-        private void CreatePillarBoxes()
+        private void CreateLetterBox()
         {
             _gpu.Viewport = GetFullViewport();
             _gpu.Clear(Color.Black);

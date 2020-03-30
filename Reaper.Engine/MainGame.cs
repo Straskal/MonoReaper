@@ -32,6 +32,8 @@ namespace Reaper.Engine
         private Input.PressedAction _toggleDebug;
         private bool _isDebugging;
 
+        private ImGui.ImGUIRenderer _imguiRenderer;
+
         internal MainGame(GameSettings gameSettings)
         {
             Content.RootDirectory = "Content";
@@ -39,6 +41,7 @@ namespace Reaper.Engine
             ViewportHeight = gameSettings.ViewportHeight;
             Window.AllowUserResizing = false;
             Window.IsBorderless = false;
+            IsMouseVisible = true;
 
             InitializeSingletons(); 
             
@@ -47,8 +50,8 @@ namespace Reaper.Engine
                 IsFullScreen = gameSettings.IsFullscreen,
                 PreferredBackBufferWidth = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
                 PreferredBackBufferHeight = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
-                HardwareModeSwitch = false,
                 SynchronizeWithVerticalRetrace = true,
+                HardwareModeSwitch = false,
                 PreferMultiSampling = false,
                 GraphicsProfile = GraphicsProfile.HiDef
             };
@@ -101,9 +104,19 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
+        protected override void Initialize()
+        {
+            _imguiRenderer = new ImGui.ImGUIRenderer(this).Initialize().RebuildFontAtlas();
+
+            base.Initialize();
+        }
+
         protected override void UnloadContent()
         {
             CurrentLayout.Unload();
+            Content.Unload();
+
+            base.UnloadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -121,8 +134,16 @@ namespace Reaper.Engine
         protected override void Draw(GameTime gameTime)
         {
             CurrentLayout.Draw(_isDebugging);
-            
+
+            _imguiRenderer.BeginLayout(gameTime);
+
+            ImGuiNET.ImGui.Begin("Test window");
+            ImGuiNET.ImGui.Button("fuck!");
+            ImGuiNET.ImGui.End();
+
             base.Draw(gameTime);
+
+            _imguiRenderer.EndLayout();
         }
 
         private void InitializeSingletons() 
