@@ -73,7 +73,7 @@ namespace Reaper.Ogmo
                 worldObject.IsMirrored = entity.FlippedX;
                 worldObject.ZOrder = entity?.Values.DrawOrder ?? 0;
 
-                Loaders.Load(definition.Guid, worldObject, entity);
+                Loaders.Load(definition.Name, worldObject, entity);
             }
         }
 
@@ -84,11 +84,11 @@ namespace Reaper.Ogmo
 
         private static void LoadSolidsLayer(this Layout layout, OgmoLayer layer, bool solid = true)
         {
-            var tilemap = new WorldObjectDefinition();
+            var tilemap = new WorldObjectType();
 
-            if (solid) tilemap.MakeSolid();
+            if (solid) tilemap.SpatialType = SpatialType.Solid;
 
-            tilemap.AddBehavior(wo => new TilemapBehavior(wo, new TilemapBehavior.MapData
+            tilemap.Behaviors.Add(new TilemapBehavior(new TilemapBehavior.MapData
             {
                 CellSize = layer.GridCellHeight,
                 CellsX = layer.GridCellsX,

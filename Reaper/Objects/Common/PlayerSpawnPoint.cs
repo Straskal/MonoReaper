@@ -5,9 +5,9 @@ namespace Reaper.Objects.Common
 {
     public static class PlayerSpawnPoint
     {
-        public static WorldObjectDefinition Method() 
+        public static WorldObjectType Method() 
         {
-            var playerSpawnPoint = new WorldObjectDefinition();
+            var playerSpawnPoint = new WorldObjectType() { Name = "PlayerSpawn", SpatialType = SpatialType.Pass };
 
             playerSpawnPoint.LoadFromOgmo((wo, oe) => 
             {

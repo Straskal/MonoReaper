@@ -7,16 +7,16 @@ namespace Reaper.Ogmo
 {
     public static class Loaders
     {
-        private static readonly Dictionary<Guid, Action<WorldObject, OgmoEntity>> _loaders = new Dictionary<Guid, Action<WorldObject, OgmoEntity>>();
+        private static readonly Dictionary<string, Action<WorldObject, OgmoEntity>> _loaders = new Dictionary<string, Action<WorldObject, OgmoEntity>>();
 
-        public static void Register(Guid guid, Action<WorldObject, OgmoEntity> loader)
+        public static void Register(string name, Action<WorldObject, OgmoEntity> loader)
         {
-            _loaders.Add(guid, loader);
+            _loaders.Add(name, loader);
         }
 
-        public static void Load(Guid guid, WorldObject worldObject, OgmoEntity ogmoEntity) 
+        public static void Load(string name, WorldObject worldObject, OgmoEntity ogmoEntity) 
         {
-            if (_loaders.TryGetValue(guid, out var loader)) 
+            if (_loaders.TryGetValue(name, out var loader)) 
             {
                 loader.Invoke(worldObject, ogmoEntity);
             }

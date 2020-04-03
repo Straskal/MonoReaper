@@ -34,9 +34,9 @@ namespace Reaper.Engine
         public int Width { get; }
         public int Height { get; }
 
-        public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
+        public WorldObject Spawn(WorldObjectType woType, Vector2 position)
         {
-            var worldObject = Objects.Create(definition, position);
+            var worldObject = Objects.Create(woType, position);
             Grid.Add(worldObject);
             return worldObject;
         }
@@ -49,6 +49,7 @@ namespace Reaper.Engine
 
         internal void Tick(GameTime gameTime)
         {
+            Objects.SyncLists();
             Objects.Tick(gameTime);
         }
 
@@ -57,15 +58,11 @@ namespace Reaper.Engine
             Objects.PostTick(gameTime);
         }
 
-        internal void Draw(bool debug)
+        internal void Draw()
         {
             View.BeginDraw();
             Objects.Draw(View);
             Game.Singletons.Draw(View);
-
-            if (debug)
-                Objects.DebugDraw(View);
-
             View.EndDraw();
         }
 

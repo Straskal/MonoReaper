@@ -16,7 +16,7 @@ namespace Reaper.Engine.Behaviors
         private bool _canJump;
         private Vector2 _velocity;
 
-        public PlatformerBehavior(WorldObject owner) : base(owner) { }
+        public PlatformerBehavior() { }
 
         public float Acceleration { get; set; } = 1700f;
         public float MaxSpeed { get; set; } = 300f;

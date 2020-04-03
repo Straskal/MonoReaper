@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using System;
 
 namespace Reaper.Engine
 {
@@ -9,12 +8,7 @@ namespace Reaper.Engine
     /// </summary>
     public abstract class Behavior
     {
-        public Behavior(WorldObject owner) 
-        {
-            Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        }
-
-        public WorldObject Owner { get; }
+        public WorldObject Owner { get; internal set; }
         public Layout Layout => Owner.Layout;
         public IGame Game => Layout.Game;
 

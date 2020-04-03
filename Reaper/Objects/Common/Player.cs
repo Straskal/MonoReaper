@@ -7,18 +7,23 @@ namespace Reaper.Objects.Player
 {
     public static class Player
     {
-        public static WorldObjectDefinition Method()
+        public static WorldObjectType Method()
         {
-            var playerDefinition = new WorldObjectDefinition();
+            var playerDefinition = new WorldObjectType
+            {
+                Name = "Player",
+                Width = 16,
+                Height = 16,
+                Origin = new Point(8, 16),
+                SpatialType = SpatialType.Overlap
+            };
 
-            playerDefinition.SetSize(16, 16);
-            playerDefinition.SetOrigin(new Point(8, 16));
-            playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new PlatformerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new TimerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
-            playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
-            playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
+            playerDefinition.Behaviors.Add(new PlayerBehavior());
+            playerDefinition.Behaviors.Add(new PlatformerBehavior());
+            playerDefinition.Behaviors.Add(new TimerBehavior());
+            playerDefinition.Behaviors.Add(new DamageableBehavior());
+            playerDefinition.Behaviors.Add(new ScrollToBehavior());
+            playerDefinition.Behaviors.Add(new SpriteSheetBehavior(GetPlayerAnimations()));
 
             return playerDefinition;
         }

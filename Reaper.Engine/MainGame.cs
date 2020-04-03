@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Reaper.Engine.Singletons;
 using System;
 
@@ -17,6 +16,7 @@ namespace Reaper.Engine
 
         Layout GetEmptyLayout(int v, int width, int height);
         void ChangeLayout(Layout layout);
+        void ChangeState(MainGameState state);
         void ToggleFullscreen();
         void Run();
         void Exit();
@@ -24,15 +24,11 @@ namespace Reaper.Engine
 
     public class MainGame : Game, IGame
     {
-        private GraphicsDeviceManager _gpuManager;
+        private readonly GraphicsDeviceManager _gpuManager;
 
+        private MainGameState _currentState;
+        private MainGameState _nextState;
         private Layout _nextLayout;
-
-        // Debugging helper
-        private Input.PressedAction _toggleDebug;
-        private bool _isDebugging;
-
-        private ImGui.ImGUIRenderer _imguiRenderer;
 
         internal MainGame(GameSettings gameSettings)
         {
@@ -41,7 +37,6 @@ namespace Reaper.Engine
             ViewportHeight = gameSettings.ViewportHeight;
             Window.AllowUserResizing = false;
             Window.IsBorderless = false;
-            IsMouseVisible = true;
 
             InitializeSingletons(); 
             
@@ -104,10 +99,14 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
+        public void ChangeState(MainGameState state) 
+        {
+            _nextState = state;
+            _nextState.Game = this;
+        }
+
         protected override void Initialize()
         {
-            _imguiRenderer = new ImGui.ImGUIRenderer(this).Initialize().RebuildFontAtlas();
-
             base.Initialize();
         }
 
@@ -121,39 +120,37 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
-            HandleDebugToggle();
             HandleLayoutChange();
-
-            Singletons.Tick(gameTime);
-            CurrentLayout.Tick(gameTime);
-            CurrentLayout.PostTick(gameTime);
+            HandleStateChange();
+            TickCurrentState(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            CurrentLayout.Draw(_isDebugging);
-
-            _imguiRenderer.BeginLayout(gameTime);
-
-            ImGuiNET.ImGui.Begin("Test window");
-            ImGuiNET.ImGui.Button("fuck!");
-            ImGuiNET.ImGui.End();
+            DrawCurrentState(gameTime);
 
             base.Draw(gameTime);
-
-            _imguiRenderer.EndLayout();
         }
 
         private void InitializeSingletons() 
         {
-            var input = new Input();
-            _toggleDebug = input.NewPressedAction("toggleDebug");
-            _toggleDebug.AddKey(Keys.OemTilde);
-
             Singletons = new SingletonList();
-            Singletons.Register(input);
+            Singletons.Register(new Input());
+        }
+
+        private void HandleStateChange()
+        {
+            if (_nextState != null)
+            {
+                if (_currentState != null)
+                    _nextState.End();
+
+                _currentState = _nextState;
+                _currentState.Start();
+                _nextState = null;
+            }
         }
 
         private void HandleLayoutChange() 
@@ -164,15 +161,18 @@ namespace Reaper.Engine
                     CurrentLayout.Unload();
 
                 CurrentLayout = _nextLayout;
-
                 _nextLayout = null;
             }
         }
 
-        private void HandleDebugToggle() 
+        private void TickCurrentState(GameTime gameTime) 
         {
-            if (_toggleDebug.WasPressed())
-                _isDebugging = !_isDebugging;
+            _currentState.Tick(gameTime);
+        }
+
+        private void DrawCurrentState(GameTime gameTime)
+        {
+            _currentState.Draw(gameTime);
         }
     }
 }

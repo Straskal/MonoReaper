@@ -7,8 +7,6 @@ namespace Reaper.Engine.Behaviors
     /// </summary>
     public class ScrollToBehavior : Behavior
     {
-        public ScrollToBehavior(WorldObject owner) : base(owner) { }
-
         public float Smoothing { get; set; } = 0.3f;
 
         public override void OnLayoutStarted()

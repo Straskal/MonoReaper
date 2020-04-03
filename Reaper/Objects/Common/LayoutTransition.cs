@@ -8,11 +8,15 @@ namespace Reaper.Objects.Common
 {
     public static class LevelTransitionDefinition
     {
-        public static WorldObjectDefinition Method()
+        public static WorldObjectType Method()
         {
-            var def = new WorldObjectDefinition();
+            var def = new WorldObjectType 
+            {
+                Name = "LevelTransition"
+            };
 
-            def.AddBehavior(wo => new LevelTransitionBehavior(wo));
+            def.Behaviors.Add(new LevelTransitionBehavior());
+
             def.LoadFromOgmo((wo, oe) =>
             {
                 if (string.IsNullOrWhiteSpace(oe.Values.Level))
@@ -32,8 +36,6 @@ namespace Reaper.Objects.Common
     public class LevelTransitionBehavior : Behavior
     {
         private WorldObject _player;
-
-        public LevelTransitionBehavior(WorldObject owner) : base(owner) { }
 
         public string Level { get; set; }
         public string SpawnPoint { get; set; }

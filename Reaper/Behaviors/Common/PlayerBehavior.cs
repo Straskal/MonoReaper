@@ -40,8 +40,6 @@ namespace Reaper.Objects.Player
         private WorldObject _poof;
         private SpriteSheetBehavior _poofAnimation;
 
-        public PlayerBehavior(WorldObject owner) : base(owner) { }
-
         public override void Load(ContentManager contentManager)
         {
             _jumpSound = contentManager.Load<SoundEffect>("sounds/jump8");
@@ -67,12 +65,15 @@ namespace Reaper.Objects.Player
 
         public override void OnLayoutStarted()
         {
-            var poofDefinition = new WorldObjectDefinition();
-            poofDefinition.SetSize(16, 16);
-            poofDefinition.SetOrigin(new Point(8, 16));
-            poofDefinition.MakeDecal();
+            var poofDefinition = new WorldObjectType 
+            {
+                Name = "Poof",
+                Width = 16,
+                Height = 16,
+                SpatialType = SpatialType.Pass
+            };
 
-            poofDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[] 
+            poofDefinition.Behaviors.Add(new SpriteSheetBehavior(new[]
             {
                 new SpriteSheetBehavior.Animation
                 {

@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Reaper.Editor\Reaper.Editor.csproj" />
     <ProjectReference Include="..\Reaper.Engine\Reaper.Engine.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Reaper.Engine
@@ -11,20 +10,18 @@ namespace Reaper.Engine
     /// </summary>
     public sealed class WorldObject
     {
-        private readonly List<Behavior> _behaviors;
-
-        private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
-        private Point _origin = Point.Zero;
         private Rectangle _bounds = Rectangle.Empty;
 
-        internal WorldObject(Layout layout)
+        internal WorldObject(WorldObjectType woType, Layout layout)
         {
+            Type = woType ?? throw new ArgumentNullException(nameof(woType));
             Layout = layout ?? throw new ArgumentNullException(nameof(layout));
 
-            _behaviors = new List<Behavior>();
+            InitializeBehaviors();
         }
 
+        public string Name => Type.Name;
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
         public bool IsMirrored { get; set; }
@@ -32,15 +29,16 @@ namespace Reaper.Engine
         public int ZOrder { get; set; }
         public Layout Layout { get; }
 
+        internal WorldObjectType Type { get; }
         internal bool MarkedForDestroy { get; private set; }
 
         public SpatialType SpatialType
         {
-            get => _type;
+            get => Type.SpatialType;
             set
             {
-                var previous = _type;
-                _type = value;
+                var previous = Type.SpatialType;
+                Type.SpatialType = value;
 
                 Layout.Grid.UpdateType(this, previous);
             }
@@ -57,36 +55,52 @@ namespace Reaper.Engine
 
         public int Width
         {
-            get => _bounds.Width;
-            set => _bounds.Width = value;
+            get => Type.Width;
+            set => Type.Width = value;
         }
 
         public int Height
         {
-            get => _bounds.Height;
-            set => _bounds.Height = value;
+            get => Type.Height;
+            set => Type.Height = value;
         }
 
         public Point Origin
         {
-            get => _origin;
-            set => _origin = value;
+            get => Type.Origin;
+            set => Type.Origin = value;
         }
 
-        public Rectangle Bounds
+        public Rectangle Bounds 
         {
             get => _bounds;
             set => _bounds = value;
         }
 
+        public void AddBehavior<T>() where T : Behavior, new() 
+        {
+            AddBehavior(typeof(T));
+        }
+
+        public void AddBehavior(Type type)
+        {
+            var behavior = (Behavior)Activator.CreateInstance(type);
+            //behavior.Load(Layout.Content);
+            behavior.Owner = this;
+            behavior.OnOwnerCreated();
+            behavior.OnLayoutStarted();
+
+            Type.Behaviors.Add(behavior);
+        }
+
         public T GetBehavior<T>() where T : Behavior
         {
-            return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
+            return Type.Behaviors.FirstOrDefault(behavior => behavior is T) as T;
         }
 
         public bool TryGetBehavior<T>(out T behavior) where T : Behavior
         {
-            behavior = _behaviors.FirstOrDefault(b => b is T) as T;
+            behavior = Type.Behaviors.FirstOrDefault(b => b is T) as T;
             return behavior != null;
         }
 
@@ -165,6 +179,8 @@ namespace Reaper.Engine
         {
             _bounds.X = (int)Math.Round(Position.X - Origin.X);
             _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
+            _bounds.Width = Width;
+            _bounds.Height = Height;
 
             Layout.Grid.Update(this);
         }
@@ -179,12 +195,12 @@ namespace Reaper.Engine
 
         internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
-            _behaviors.Add(createFunc?.Invoke(this));
+            Type.Behaviors.Add(createFunc?.Invoke(this));
         }
 
         internal void Load(ContentManager contentManager)
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.Load(contentManager);
             }
@@ -192,7 +208,7 @@ namespace Reaper.Engine
 
         internal void OnCreated()
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.OnOwnerCreated();
             }
@@ -200,7 +216,7 @@ namespace Reaper.Engine
 
         internal void OnLayoutStarted()
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.OnLayoutStarted();
             }
@@ -208,7 +224,7 @@ namespace Reaper.Engine
 
         internal void Tick(GameTime gameTime)
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.Tick(gameTime);
             }
@@ -216,7 +232,7 @@ namespace Reaper.Engine
 
         internal void PostTick(GameTime gameTime)
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.PostTick(gameTime);
             }
@@ -224,7 +240,7 @@ namespace Reaper.Engine
 
         internal void Draw(LayoutView view)
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.Draw(view);
             }
@@ -256,7 +272,7 @@ namespace Reaper.Engine
 
             view.DrawRectangle(destination, color);
 
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.DebugDraw(view);
             }
@@ -264,7 +280,7 @@ namespace Reaper.Engine
 
         internal void OnDestroyed()
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in Type.Behaviors)
             {
                 behavior.OnOwnerDestroyed();
             }
@@ -282,6 +298,14 @@ namespace Reaper.Engine
         internal void MarkForDestroy()
         {
             MarkedForDestroy = true;
+        }
+
+        private void InitializeBehaviors() 
+        {
+            foreach (var behavior in Type.Behaviors) 
+            {
+                behavior.Owner = this;
+            }
         }
     }
 }

@@ -10,12 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reaper.Engine.ImGui\Reaper.Engine.ImGui.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>Reaper.Editor</_Parameter1>
-    </AssemblyAttribute>
+    <ProjectReference Include="..\Reaper.Engine\Reaper.Engine.csproj" />
   </ItemGroup>
 
 </Project>

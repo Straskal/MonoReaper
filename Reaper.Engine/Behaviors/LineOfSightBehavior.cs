@@ -10,8 +10,6 @@ namespace Reaper.Engine.Behaviors
     /// </summary>
     public class LineOfSightBehavior : Behavior
     {
-        public LineOfSightBehavior(WorldObject owner) : base(owner) { }
-
         public int Distance { get; set; } = 128;
 
         public bool HasLOS(WorldObject worldObject)

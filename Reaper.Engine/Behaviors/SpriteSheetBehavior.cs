@@ -37,7 +37,7 @@ namespace Reaper.Engine.Behaviors
         private float _lastFrameTime;
         private float _time;
 
-        public SpriteSheetBehavior(WorldObject owner, Animation[] animations) : base(owner)
+        public SpriteSheetBehavior(Animation[] animations)
         {
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }

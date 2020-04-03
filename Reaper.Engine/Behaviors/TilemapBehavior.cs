@@ -39,7 +39,7 @@ namespace Reaper.Engine.Behaviors
 
         private readonly List<WorldObject> _colliders;
 
-        public TilemapBehavior(WorldObject owner, MapData data) : base(owner)
+        public TilemapBehavior(MapData data)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
 
@@ -55,13 +55,17 @@ namespace Reaper.Engine.Behaviors
             if (!Owner.IsSolid)
                 return;
 
-            var tileDefinition = new WorldObjectDefinition();
-            tileDefinition.SetSize(Data.CellSize, Data.CellSize);
-            tileDefinition.MakeSolid();
-
-            foreach (var tile in GetTileInfo()) 
+            var tileType = new WorldObjectType 
             {
-                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
+                Name = "Tile",
+                Width = Data.CellSize,
+                Height = Data.CellSize,
+                SpatialType = SpatialType.Solid
+            };
+
+            foreach (var tile in GetTileInfo())
+            {
+                _colliders.Add(Owner.Layout.Spawn(tileType, new Vector2(tile.Position.X, tile.Position.Y)));
             }
         }
 

@@ -3,6 +3,7 @@ using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
 using Reaper.Engine.Singletons;
+using Reaper.Editor;
 
 namespace Reaper
 {
@@ -15,7 +16,7 @@ namespace Reaper
             {
                 ViewportWidth = 640,
                 ViewportHeight = 360,
-                IsFullscreen = true,
+                IsFullscreen = false,
             };
 
             using (var game = MainGameFactory.Create(settings))
@@ -24,7 +25,9 @@ namespace Reaper
                 InputBindings.Initialize(game.Singletons.Get<Input>());
                 //game.Singletons.Register(new Dialogue(game));
 
-                game.LoadOgmoLayout(args[0]);
+                //game.ChangeState(new EditorState());
+                game.ChangeState(new MainGameState());
+                game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.Run();
             }
         }

@@ -40,24 +40,12 @@ namespace Reaper.Engine
             return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
         }
 
-        /// <summary>
-        /// Creates a new world object with the given definition and position.
-        /// </summary>
-        /// <param name="definition"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        public WorldObject Create(WorldObjectDefinition definition, Vector2 position)
+        public WorldObject Create(WorldObjectType woType, Vector2 position)
         {
-            var worldObject = new WorldObject(_layout)
-            {
-                Position = position
-            };
-
-            definition.Build(worldObject);
-            worldObject.UpdateBBox();
-
-            _toSpawn.Add(worldObject);
-            return worldObject;
+            var wo = new WorldObject(woType, _layout) { Position = position };
+            wo.UpdateBBox();
+            _toSpawn.Add(wo);
+            return wo;
         }
 
         public void DestroyObject(WorldObject worldObject)
@@ -69,11 +57,11 @@ namespace Reaper.Engine
             }
         }
 
-        public void Tick(GameTime gameTime)
+        public void SyncLists() 
         {
             var spawned = new List<WorldObject>();
 
-            while (_toSpawn.Any()) 
+            while (_toSpawn.Any())
             {
                 spawned.AddRange(_toSpawn);
 
@@ -93,7 +81,10 @@ namespace Reaper.Engine
 
                 InvokeDestroyed(temp);
             }
+        }
 
+        public void Tick(GameTime gameTime)
+        {
             TickWorldObjects(gameTime);
             ZOrderSort();
             SyncPreviousFrameData();

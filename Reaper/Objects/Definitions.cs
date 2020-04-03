@@ -14,10 +14,10 @@ namespace Reaper.Objects
     /// </summary>
     public static class Definitions
     {
-        private static readonly Dictionary<string, Func<WorldObjectDefinition>> _definitionFactories = new Dictionary<string, Func<WorldObjectDefinition>>();
-        private static readonly Dictionary<string, WorldObjectDefinition> _definitions = new Dictionary<string, WorldObjectDefinition>();
+        private static readonly Dictionary<string, Func<WorldObjectType>> _definitionFactories = new Dictionary<string, Func<WorldObjectType>>();
+        private static readonly Dictionary<string, WorldObjectType> _definitions = new Dictionary<string, WorldObjectType>();
 
-        public static WorldObjectDefinition Get(string name)
+        public static WorldObjectType Get(string name)
         {
             if (!_definitions.ContainsKey(name))
             {
