@@ -47,9 +47,13 @@ namespace Reaper.Engine
             Objects.DestroyObject(worldObject);
         }
 
-        internal void Tick(GameTime gameTime)
+        internal void SyncFrame()
         {
             Objects.SyncLists();
+        }
+
+        internal void Tick(GameTime gameTime)
+        {
             Objects.Tick(gameTime);
         }
 
@@ -63,6 +67,13 @@ namespace Reaper.Engine
             View.BeginDraw();
             Objects.Draw(View);
             Game.Singletons.Draw(View);
+            View.EndDraw();
+        }
+
+        internal void DebugDraw() 
+        {
+            View.BeginDraw();
+            Objects.DebugDraw(View);
             View.EndDraw();
         }
 

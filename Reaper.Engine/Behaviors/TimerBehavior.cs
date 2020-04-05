@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
+    [DataContract]
     public class TimerBehavior : Behavior
     {
         private struct Instance 

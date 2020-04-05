@@ -9,9 +9,11 @@ using Reaper.Singletons;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Reaper.Objects.Player
 {
+    [DataContract]
     public class PlayerBehavior : Behavior
     {
         private const int MAX_COSECUTIVE_ATTACKS = 3;

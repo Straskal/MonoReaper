@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
@@ -25,6 +26,7 @@ namespace Reaper.Engine.Behaviors
     /// This would involve doing some calculations to find out which tiles are neighbors.
     /// 
     /// </summary>
+    [DataContract]
     public class TilemapBehavior : Behavior
     {
         public class MapData

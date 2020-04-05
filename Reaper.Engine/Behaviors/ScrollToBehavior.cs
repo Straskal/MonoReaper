@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
     /// <summary>
     /// The layout will follow whichever world object has the scroll-to behavior.
     /// </summary>
+    [DataContract]
     public class ScrollToBehavior : Behavior
     {
         public float Smoothing { get; set; } = 0.3f;

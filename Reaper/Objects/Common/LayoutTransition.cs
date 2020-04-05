@@ -3,6 +3,7 @@ using Reaper.Engine;
 using Reaper.Objects.Player;
 using Reaper.Ogmo;
 using System;
+using System.Runtime.Serialization;
 
 namespace Reaper.Objects.Common
 {
@@ -32,7 +33,7 @@ namespace Reaper.Objects.Common
             return def;
         }
     }
-
+    [DataContract]
     public class LevelTransitionBehavior : Behavior
     {
         private WorldObject _player;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
@@ -8,6 +9,7 @@ namespace Reaper.Engine.Behaviors
     /// 
     /// Can be used for enemy lines of sight.
     /// </summary>
+    [DataContract]
     public class LineOfSightBehavior : Behavior
     {
         public int Distance { get; set; } = 128;

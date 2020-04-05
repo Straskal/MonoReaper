@@ -49,6 +49,7 @@ namespace Reaper.Engine
         public SpriteBatch SpriteBatch => _batch;
         public float Zoom { get; set; }
         public float Rotation { get; set; }
+        public bool ClampToLayout { get; set; } = true;
 
         public Vector2 Position 
         {
@@ -56,7 +57,9 @@ namespace Reaper.Engine
             set 
             {
                 _position = value;
-                _offsetPosition = ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
+                _offsetPosition = ClampToLayout 
+                    ? ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY))
+                    : _position;
             }
         }
 

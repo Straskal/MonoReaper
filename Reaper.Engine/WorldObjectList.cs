@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Reaper.Engine
@@ -27,8 +26,6 @@ namespace Reaper.Engine
             _toSpawn = new List<WorldObject>();
             _toDestroy = new List<WorldObject>();
         }
-
-        public ReadOnlyCollection<WorldObject> WorldObjects => _worldObjects.AsReadOnly();
 
         /// <summary>
         /// Returns the first found behavior of the specified type or null if not found.

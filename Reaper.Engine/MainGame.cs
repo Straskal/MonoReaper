@@ -24,11 +24,10 @@ namespace Reaper.Engine
 
     public class MainGame : Game, IGame
     {
-        private readonly GraphicsDeviceManager _gpuManager;
-
         private MainGameState _currentState;
         private MainGameState _nextState;
         private Layout _nextLayout;
+        private bool _isResizing;
 
         internal MainGame(GameSettings gameSettings)
         {
@@ -37,10 +36,11 @@ namespace Reaper.Engine
             ViewportHeight = gameSettings.ViewportHeight;
             Window.AllowUserResizing = false;
             Window.IsBorderless = false;
+            Window.ClientSizeChanged += OnSizeChanged;
 
             InitializeSingletons(); 
             
-            _gpuManager = new GraphicsDeviceManager(this)
+            GpuManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = gameSettings.IsFullscreen,
                 PreferredBackBufferWidth = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
@@ -51,14 +51,18 @@ namespace Reaper.Engine
                 GraphicsProfile = GraphicsProfile.HiDef
             };
 
-            _gpuManager.ApplyChanges();
+            GpuManager.ApplyChanges();
+
+            ChangeLayout(new Layout(this, 256, 0, 0));
         }
 
+        public GraphicsDeviceManager GpuManager { get; }
         public SingletonList Singletons { get; private set; }
         public Layout CurrentLayout { get; private set; }
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
-        public bool IsFullscreen => _gpuManager.IsFullScreen;
+        public bool IsFullscreen => GpuManager.IsFullScreen;
+        public bool IsPaused { get; set; }
 
         /// <summary>
         /// Returns an empty layout to be filled with world objects.
@@ -83,20 +87,20 @@ namespace Reaper.Engine
 
         public void ToggleFullscreen()
         {
-            _gpuManager.ToggleFullScreen();
+            GpuManager.ToggleFullScreen();
 
-            if (_gpuManager.IsFullScreen)
+            if (GpuManager.IsFullScreen)
             {
-                _gpuManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                _gpuManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                GpuManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                GpuManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             }
             else
             {
-                _gpuManager.PreferredBackBufferWidth = ViewportWidth;
-                _gpuManager.PreferredBackBufferHeight = ViewportHeight;
+                GpuManager.PreferredBackBufferWidth = ViewportWidth;
+                GpuManager.PreferredBackBufferHeight = ViewportHeight;
             }
 
-            _gpuManager.ApplyChanges();
+            GpuManager.ApplyChanges();
         }
 
         public void ChangeState(MainGameState state) 
@@ -114,15 +118,21 @@ namespace Reaper.Engine
         {
             CurrentLayout.Unload();
             Content.Unload();
+            Window.ClientSizeChanged -= OnSizeChanged;
 
             base.UnloadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            HandleLayoutChange();
-            HandleStateChange();
-            TickCurrentState(gameTime);
+            // NOTE: Should have some sort HandleInput() callback that get's called even when paused.
+
+            if (!IsPaused) 
+            {
+                HandleLayoutChange();
+                HandleStateChange();
+                TickCurrentState(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -173,6 +183,18 @@ namespace Reaper.Engine
         private void DrawCurrentState(GameTime gameTime)
         {
             _currentState.Draw(gameTime);
+        }
+
+        private void OnSizeChanged(object sender, EventArgs args)
+        {
+            _isResizing = !_isResizing;
+
+            if (_isResizing)
+            {
+                GpuManager.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                GpuManager.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                GpuManager.ApplyChanges();
+            }
         }
     }
 }

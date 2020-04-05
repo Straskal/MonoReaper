@@ -3,7 +3,7 @@ using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
 using Reaper.Engine.Singletons;
-using Reaper.Editor;
+using Reaper.Engine.Editor;
 
 namespace Reaper
 {
@@ -23,11 +23,9 @@ namespace Reaper
             {
                 Definitions.Register();
                 InputBindings.Initialize(game.Singletons.Get<Input>());
-                //game.Singletons.Register(new Dialogue(game));
 
-                //game.ChangeState(new EditorState());
-                game.ChangeState(new MainGameState());
-                game.LoadOgmoLayout("content/layouts/layout1.json");
+                game.ChangeState(new EditorState());
+                //game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.Run();
             }
         }

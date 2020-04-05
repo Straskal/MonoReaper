@@ -3,12 +3,14 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
     /// <summary>
     /// A behavior for sprite sheet animations.
     /// </summary>
+    [DataContract]
     public class SpriteSheetBehavior : Behavior
     {
         public struct Frame

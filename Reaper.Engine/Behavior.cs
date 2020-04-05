@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine
 {
     /// <summary>
     /// Behaviors define the actions of a world object.
     /// </summary>
+    [DataContract]
     public abstract class Behavior
     {
         public WorldObject Owner { get; internal set; }

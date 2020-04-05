@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Reaper.Engine;
 using Reaper.Engine.Behaviors;
 using System;
+using System.Runtime.Serialization;
 
 namespace Reaper.Objects.Common
 {
@@ -14,7 +15,7 @@ namespace Reaper.Objects.Common
     public struct DamageResponse
     {
     }
-
+    [DataContract]
     public class DamageableBehavior : Behavior
     {
         private TimerBehavior _timerBehavior;

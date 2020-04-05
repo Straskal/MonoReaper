@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Runtime.Serialization;
 
 namespace Reaper.Engine.Behaviors
 {
     /// <summary>
     /// Generic platforming behavior.
     /// </summary>
+    [DataContract]
     public class PlatformerBehavior : Behavior
     {
         private float _jumpTime;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 
 namespace Reaper.Engine
 {
@@ -10,8 +9,9 @@ namespace Reaper.Engine
         public virtual void Start() { }
         public virtual void End() { }
 
-        public virtual void Tick(GameTime gameTime) 
+        public virtual void Tick(GameTime gameTime)
         {
+            Game.CurrentLayout.SyncFrame();
             Game.Singletons.Tick(gameTime);
             Game.CurrentLayout.Tick(gameTime);
             Game.CurrentLayout.PostTick(gameTime);
