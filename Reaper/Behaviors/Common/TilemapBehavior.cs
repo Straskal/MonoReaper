@@ -1,10 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Engine.Behaviors
+namespace Reaper.Behaviors.Common
 {
     /// <summary>
     /// The tilemap behavior draws the given data.
@@ -51,7 +52,10 @@ namespace Reaper.Engine.Behaviors
         public override void Load(ContentManager contentManager)
         {
             Data.Texture = contentManager.Load<Texture2D>(Data.TilesetFilePath);
+        }
 
+        public override void OnLayoutStarted()
+        {
             if (!Owner.IsSolid)
                 return;
 
@@ -59,7 +63,7 @@ namespace Reaper.Engine.Behaviors
             tileDefinition.SetSize(Data.CellSize, Data.CellSize);
             tileDefinition.MakeSolid();
 
-            foreach (var tile in GetTileInfo()) 
+            foreach (var tile in GetTileInfo())
             {
                 _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
             }

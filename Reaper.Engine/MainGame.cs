@@ -24,7 +24,7 @@ namespace Reaper.Engine
 
     public class MainGame : Game, IGame
     {
-        private GraphicsDeviceManager _gpuManager;
+        private readonly GraphicsDeviceManager _gpuManager;
 
         private Layout _nextLayout;
 
@@ -103,7 +103,7 @@ namespace Reaper.Engine
 
         protected override void UnloadContent()
         {
-            CurrentLayout.Unload();
+            CurrentLayout.End();
         }
 
         protected override void Update(GameTime gameTime)
@@ -140,9 +140,12 @@ namespace Reaper.Engine
             if (_nextLayout != null)
             {
                 if (CurrentLayout != null)
-                    CurrentLayout.Unload();
+                    CurrentLayout.End();
 
                 CurrentLayout = _nextLayout;
+
+                if (CurrentLayout != null)
+                    CurrentLayout.Start();
 
                 _nextLayout = null;
             }

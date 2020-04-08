@@ -15,15 +15,12 @@ namespace Reaper.Engine
 
         public void SetSize(int width, int height) 
         {
-            _buildSteps.Add(worldObject =>
-            {
-                worldObject.Bounds = new Rectangle(0, 0, width, height);
-            });
+            _buildSteps.Add(worldObject => worldObject.Bounds = new Rectangle(0, 0, width, height));
         }
 
-        public void SetOrigin(Point origin)
+        public void SetOrigin(int x, int y)
         {
-            _buildSteps.Add(worldObject => worldObject.Origin = origin);
+            _buildSteps.Add(worldObject => worldObject.Origin = new Point(x, y));
         }
 
         public void MakeSolid() 
@@ -41,12 +38,12 @@ namespace Reaper.Engine
             _buildSteps.Add(worldObject => worldObject.AddBehavior(createFunc));
         }
 
-        internal void Build(WorldObject worldObject) 
+        internal void Apply(WorldObject worldObject) 
         {
             foreach (var step in _buildSteps)
-            {
                 step.Invoke(worldObject);
-            }
+
+            worldObject.UpdateBBox();
         }
     }
 }

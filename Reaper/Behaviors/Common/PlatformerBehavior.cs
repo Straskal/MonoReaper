@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using System;
 
-namespace Reaper.Engine.Behaviors
+namespace Reaper.Behaviors.Common
 {
     /// <summary>
     /// Generic platforming behavior.

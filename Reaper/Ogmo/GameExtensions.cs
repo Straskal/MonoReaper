@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Reaper.Behaviors.Common;
 using Reaper.Engine;
-using Reaper.Engine.Behaviors;
 using Reaper.Objects;
 using Reaper.Ogmo.Models;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using System.Linq;
 
 using AssetPaths = Reaper.Constants.AssetPaths;
 using LayerNames = Reaper.Constants.Layers;
+using ObjectDefinitions = Reaper.Objects.Constants;
 
 namespace Reaper.Ogmo
 {
@@ -55,12 +56,12 @@ namespace Reaper.Ogmo
                 // If there are many spawn points and no default was given, just choose the first one.
                 if (string.IsNullOrEmpty(spawnPoint)) 
                 {
-                    var firstSpawnPoint = entities.First(e => e.Name == "player");
-                    entities.RemoveAll(e => e.Name == "player" && e != firstSpawnPoint);
+                    var firstSpawnPoint = entities.First(e => e.Name == ObjectDefinitions.Player);
+                    entities.RemoveAll(e => e.Name == ObjectDefinitions.Player && e != firstSpawnPoint);
                 }
                 else 
                 {
-                    entities.RemoveAll(e => e.Name == "player" && spawnPoint != e.Values.SpawnPointName);
+                    entities.RemoveAll(e => e.Name == ObjectDefinitions.Player && spawnPoint != e.Values.SpawnPointName);
                 }
             }
 
@@ -71,7 +72,7 @@ namespace Reaper.Ogmo
 
                 // Default properties for every world object.
                 worldObject.IsMirrored = entity.FlippedX;
-                worldObject.ZOrder = entity?.Values.DrawOrder ?? 0;
+                worldObject.ZOrder = entity?.Values?.DrawOrder ?? 0;
 
                 Loaders.Load(definition.Guid, worldObject, entity);
             }

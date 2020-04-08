@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Reaper.Engine;
-using Reaper.Engine.Behaviors;
 using System;
 
-namespace Reaper.Objects.Common
+namespace Reaper.Behaviors.Common
 {
     public struct Damage
     {

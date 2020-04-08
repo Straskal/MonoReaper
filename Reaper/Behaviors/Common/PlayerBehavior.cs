@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Reaper.Engine;
-using Reaper.Engine.Behaviors;
 using Reaper.Engine.Singletons;
 using Reaper.Objects.Common;
 using Reaper.Singletons;
@@ -10,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Reaper.Objects.Player
+namespace Reaper.Behaviors.Common
 {
     public class PlayerBehavior : Behavior
     {
@@ -69,7 +68,7 @@ namespace Reaper.Objects.Player
         {
             var poofDefinition = new WorldObjectDefinition();
             poofDefinition.SetSize(16, 16);
-            poofDefinition.SetOrigin(new Point(8, 16));
+            poofDefinition.SetOrigin(8, 16);
             poofDefinition.MakeDecal();
 
             poofDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, new[] 

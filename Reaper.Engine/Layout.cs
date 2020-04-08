@@ -30,7 +30,6 @@ namespace Reaper.Engine
         public LayoutGrid Grid { get; }
         public WorldObjectList Objects { get; }
         public IGame Game { get; }
-
         public int Width { get; }
         public int Height { get; }
 
@@ -47,14 +46,21 @@ namespace Reaper.Engine
             Objects.DestroyObject(worldObject);
         }
 
+        internal void Start() 
+        {
+            Objects.Start();
+        }
+
         internal void Tick(GameTime gameTime)
         {
+            Objects.FrameStart();
             Objects.Tick(gameTime);
         }
 
         internal void PostTick(GameTime gameTime)
         {
             Objects.PostTick(gameTime);
+            Objects.FrameEnd();
         }
 
         internal void Draw(bool debug)
@@ -69,7 +75,7 @@ namespace Reaper.Engine
             View.EndDraw();
         }
 
-        internal void Unload() 
+        internal void End() 
         {
             View.Unload();
             _content.Unload();

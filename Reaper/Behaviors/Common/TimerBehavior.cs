@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Engine.Behaviors
+namespace Reaper.Behaviors.Common
 {
     public class TimerBehavior : Behavior
     {

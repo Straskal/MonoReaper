@@ -22,9 +22,7 @@ namespace Reaper
             {
                 Definitions.Register();
                 InputBindings.Initialize(game.Singletons.Get<Input>());
-                //game.Singletons.Register(new Dialogue(game));
-
-                game.LoadOgmoLayout(args[0]);
+                game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.Run();
             }
         }

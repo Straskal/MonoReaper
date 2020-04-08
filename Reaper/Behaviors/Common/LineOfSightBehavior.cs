@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using System.Linq;
 
-namespace Reaper.Engine.Behaviors
+namespace Reaper.Behaviors.Common
 {
     /// <summary>
     /// The LOS is basically a rectangle raycast that is blocked by solids.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 
-namespace Reaper.Engine.Behaviors
+namespace Reaper.Behaviors.Common
 {
     /// <summary>
     /// The layout will follow whichever world object has the scroll-to behavior.
