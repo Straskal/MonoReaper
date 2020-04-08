@@ -1,22 +1,22 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Reaper.Engine;
-using Reaper.Engine.Singletons;
+using Reaper.Singletons;
 
 namespace Reaper.Behaviors.Common
 {
     public class OverworldPlayerBehavior : Behavior
     {
         private SpriteSheetBehavior _spriteSheetBehavior;
-        private Input.AxisAction _horizontalAction;
-        private Input.AxisAction _verticalAction;
+        private InputManager.AxisAction _horizontalAction;
+        private InputManager.AxisAction _verticalAction;
 
         public OverworldPlayerBehavior(WorldObject owner) : base(owner) { }
 
         public override void OnOwnerCreated()
         {
             _spriteSheetBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
-            var input = Game.Singletons.Get<Input>();
+            var input = Game.Singletons.Get<InputManager>();
             _horizontalAction = input.NewAxisAction("horizontal");
             _verticalAction = input.NewAxisAction("vertical");
             _horizontalAction.AddKeys(Keys.A, Keys.D);

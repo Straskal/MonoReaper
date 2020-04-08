@@ -13,6 +13,11 @@ namespace Reaper.Engine
 
         public Guid Guid { get; } = Guid.NewGuid();
 
+        public void WithTags(params string[] tags) 
+        {
+            _buildSteps.Add(worldObject => worldObject.Tags = tags);
+        }
+
         public void SetSize(int width, int height) 
         {
             _buildSteps.Add(worldObject => worldObject.Bounds = new Rectangle(0, 0, width, height));

@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Engine.Singletons
+namespace Reaper.Singletons
 {
-    public sealed class Input : Singleton
+    public sealed class InputManager : Singleton
     {
         public class InputState
         {
@@ -122,7 +123,6 @@ namespace Reaper.Engine.Singletons
         {
             _state.PreviousKeyState = _state.KeyState;
             _state.PreviousGamePadState = _state.GamePadState;
-
             _state.KeyState = Keyboard.GetState();
             _state.GamePadState = GamePad.GetState(0);
         }

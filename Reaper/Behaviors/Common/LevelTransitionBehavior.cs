@@ -15,7 +15,7 @@ namespace Reaper.Behaviors.Common
 
         public override void OnLayoutStarted()
         {
-            _player = Owner.Layout.Objects.GetFirstBehaviorOfType<PlayerBehavior>().Owner;
+            _player = Owner.Layout.Objects.GetFirstWithTag("player");
         }
 
         public override void Tick(GameTime gameTime)

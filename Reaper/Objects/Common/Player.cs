@@ -9,6 +9,7 @@ namespace Reaper.Objects.Common
         public static WorldObjectDefinition Method()
         {
             var playerDefinition = new WorldObjectDefinition();
+            playerDefinition.WithTags("player");
             playerDefinition.SetSize(32, 32);
             playerDefinition.SetOrigin(16, 32);
             playerDefinition.AddBehavior(wo => new OverworldPlayerBehavior(wo));

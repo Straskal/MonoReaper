@@ -27,6 +27,7 @@ namespace Reaper.Engine
 
         public Vector2 PreviousPosition { get; private set; }
         public Rectangle PreviousBounds { get; private set; }
+        public string[] Tags { get; set; }
         public bool IsMirrored { get; set; }
         public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
         public int ZOrder { get; set; }

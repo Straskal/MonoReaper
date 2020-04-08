@@ -2,7 +2,7 @@
 using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
-using Reaper.Engine.Singletons;
+using Reaper.Singletons;
 
 namespace Reaper
 {
@@ -21,7 +21,8 @@ namespace Reaper
             using (var game = MainGameFactory.Create(settings))
             {
                 Definitions.Register();
-                InputBindings.Initialize(game.Singletons.Get<Input>());
+                game.Singletons.Register(new InputManager());
+                InputBindings.Initialize(game.Singletons.Get<InputManager>());
                 game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.Run();
             }

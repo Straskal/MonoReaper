@@ -29,14 +29,9 @@ namespace Reaper.Engine
             _started = false;
         }
 
-        /// <summary>
-        /// Returns the first found behavior of the specified type or null if not found.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetFirstBehaviorOfType<T>() where T : Behavior
+        public WorldObject GetFirstWithTag(string tag) 
         {
-            return _worldObjects.FirstOrDefault(wo => wo.GetBehavior<T>() != null)?.GetBehavior<T>();
+            return _worldObjects.FirstOrDefault(wo => wo.Tags.Contains(tag));
         }
 
         /// <summary>

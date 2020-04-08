@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Reaper.Engine.Singletons;
 using System;
 
 namespace Reaper.Engine
@@ -18,6 +17,7 @@ namespace Reaper.Engine
         Layout GetEmptyLayout(int v, int width, int height);
         void ChangeLayout(Layout layout);
         void ToggleFullscreen();
+        void ToggleDebug();
         void Run();
         void Exit();
     }
@@ -29,7 +29,6 @@ namespace Reaper.Engine
         private Layout _nextLayout;
 
         // Debugging helper
-        private Input.PressedAction _toggleDebug;
         private bool _isDebugging;
 
         internal MainGame(GameSettings gameSettings)
@@ -39,9 +38,8 @@ namespace Reaper.Engine
             ViewportHeight = gameSettings.ViewportHeight;
             Window.AllowUserResizing = false;
             Window.IsBorderless = false;
+            Singletons = new SingletonList();
 
-            InitializeSingletons(); 
-            
             _gpuManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = gameSettings.IsFullscreen,
@@ -101,6 +99,11 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
+        public void ToggleDebug()
+        {
+            _isDebugging = !_isDebugging;
+        }
+
         protected override void UnloadContent()
         {
             CurrentLayout.End();
@@ -108,7 +111,6 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
-            HandleDebugToggle();
             HandleLayoutChange();
 
             Singletons.Tick(gameTime);
@@ -125,16 +127,6 @@ namespace Reaper.Engine
             base.Draw(gameTime);
         }
 
-        private void InitializeSingletons() 
-        {
-            var input = new Input();
-            _toggleDebug = input.NewPressedAction("toggleDebug");
-            _toggleDebug.AddKey(Keys.OemTilde);
-
-            Singletons = new SingletonList();
-            Singletons.Register(input);
-        }
-
         private void HandleLayoutChange() 
         {
             if (_nextLayout != null)
@@ -149,12 +141,6 @@ namespace Reaper.Engine
 
                 _nextLayout = null;
             }
-        }
-
-        private void HandleDebugToggle() 
-        {
-            if (_toggleDebug.WasPressed())
-                _isDebugging = !_isDebugging;
         }
     }
 }
