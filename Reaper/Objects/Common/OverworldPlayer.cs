@@ -4,9 +4,15 @@ using Reaper.Engine;
 
 namespace Reaper.Objects.Common
 {
-    public static class Player
+    [Definition]
+    public static class OverworldPlayer
     {
-        public static WorldObjectDefinition Method()
+        static OverworldPlayer() 
+        {
+            Definitions.Register("overworld_player", Definition);
+        }
+
+        public static WorldObjectDefinition Definition() 
         {
             var playerDefinition = new WorldObjectDefinition();
             playerDefinition.WithTags("player");
