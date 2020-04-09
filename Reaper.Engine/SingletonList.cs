@@ -35,7 +35,11 @@ namespace Reaper.Engine
         internal void Draw(Renderer renderer, bool isDebugging)
         {
             foreach (var singleton in _singletons.Values)
-                singleton.Draw(renderer, isDebugging);
+                singleton.Draw(renderer);
+
+            if (isDebugging)
+                foreach (var singleton in _singletons.Values)
+                    singleton.DebugDraw(renderer);
         }
     }
 }
