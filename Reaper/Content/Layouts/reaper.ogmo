@@ -20,7 +20,7 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "start scripts\\debug_level.bat %level",
-  "entityTags": ["templates", "common"],
+  "entityTags": ["common"],
   "layers": [
     {
       "definition": "entity",
@@ -50,47 +50,6 @@
     }
   ],
   "entities": [
-    {
-      "exportID": "15498917",
-      "name": "player",
-      "limit": -1,
-      "size": {"x": 16, "y": 16},
-      "origin": {"x": 8, "y": 16},
-      "originAnchored": true,
-      "shape": {
-        "label": "Rectangle",
-        "points": [
-          {"x": -1, "y": -1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": 1}
-        ]
-      },
-      "color": "#ff0000ff",
-      "tileX": false,
-      "tileY": false,
-      "tileSize": {"x": 24, "y": 24},
-      "resizeableX": false,
-      "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
-      "canFlipX": true,
-      "canFlipY": false,
-      "canSetColor": false,
-      "hasNodes": false,
-      "nodeLimit": 0,
-      "nodeDisplay": 0,
-      "nodeGhost": true,
-      "tags": ["common"],
-      "values": [
-        {"name": "DrawOrder", "definition": "Integer", "defaults": 1, "bounded": false, "min": 0, "max": 100},
-        {"name": "SpawnPointName", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
-      ],
-      "texture": "previews/smallplayer-export.png",
-      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAPZJREFUOI1jZMACmBgZ/mMTZ2BgYPj3n4ERmc+IroCJkeG/s7oNAwMDA8OzN+8YGBgYGKREhBievXnHICUixLD35hEUQxixaYZpRNaMzEc2hAWbM2Ga1vXYYPWGZuIROBurATBDRJVNcMjOQrgam/SUCi1c5mIArAbgtplIAxgYGBhWzo4jygCMWNCLb0JR8OjsFRT+hyursEcjNs3IYF+yBAMDAwODiF0aigE4vUAswBmN6MBp7gus4mS5ADmvYARiioUhQQPmnDiPmZSZGBn+94ZawxUVrz4KZyOLMzAwMDCcQDCxhkHx6qMoIV28+ihK9kaWAwD9t0vkf+8ZjgAAAABJRU5ErkJggg=="
-    },
     {
       "exportID": "48795505",
       "name": "transition",
@@ -128,44 +87,6 @@
       "values": [
         {"name": "Level", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true},
         {"name": "SpawnPoint", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
-      ]
-    },
-    {
-      "exportID": "30520947",
-      "name": "baseEntity",
-      "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 0, "y": 0},
-      "originAnchored": true,
-      "shape": {
-        "label": "Rectangle",
-        "points": [
-          {"x": -1, "y": -1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": -1},
-          {"x": -1, "y": 1},
-          {"x": 1, "y": 1}
-        ]
-      },
-      "color": "#1a00ffff",
-      "tileX": false,
-      "tileY": false,
-      "tileSize": {"x": 16, "y": 16},
-      "resizeableX": false,
-      "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
-      "canFlipX": true,
-      "canFlipY": false,
-      "canSetColor": false,
-      "hasNodes": false,
-      "nodeLimit": 0,
-      "nodeDisplay": 0,
-      "nodeGhost": true,
-      "tags": ["templates"],
-      "values": [
-        {"name": "DrawOrder", "definition": "Integer", "defaults": 0, "bounded": true, "min": 0, "max": 1000}
       ]
     },
     {

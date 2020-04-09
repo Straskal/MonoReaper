@@ -87,9 +87,9 @@ namespace Reaper.Engine
             Add(worldObject);
         }
 
-        internal void UpdateType(WorldObject worldObject, SpatialType previous)
+        internal void UpdateType(WorldObject worldObject)
         {
-            if (previous != SpatialType.Pass) 
+            if (worldObject.PreviousSpatialType != SpatialType.Pass) 
                 Remove(worldObject);
 
             if (worldObject.SpatialType != SpatialType.Pass) 
@@ -102,7 +102,7 @@ namespace Reaper.Engine
             return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid);
         }
 
-        public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
             overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
@@ -116,13 +116,10 @@ namespace Reaper.Engine
 
         private Rectangle GetOffsetBounds(WorldObject worldObject, float xOffset, float yOffset) 
         {
-            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-
-            return new Rectangle(
-                (int)Math.Round(testedPosition.X - worldObject.Origin.X),
-                (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
-                worldObject.Bounds.Width,
-                worldObject.Bounds.Height);
+            var bounds = worldObject.Bounds;
+            bounds.X += (int)Math.Round(xOffset);
+            bounds.Y += (int)Math.Round(yOffset);
+            return bounds;
         }
 
         private IEnumerable<WorldObject> QueryCells(Rectangle bounds) 
@@ -154,7 +151,6 @@ namespace Reaper.Engine
         {
             column = (int)(position.X / _cellSize);
             row = (int)(position.Y / _cellSize);
-
             return column < _cells.GetLength(0) && row < _cells.GetLength(1);
         }
     }

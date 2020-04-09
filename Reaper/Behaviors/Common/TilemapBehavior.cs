@@ -69,11 +69,11 @@ namespace Reaper.Behaviors.Common
             }
         }
 
-        public override void Draw(LayoutView view)
+        public override void Draw(Renderer renderer)
         {
             foreach (var tile in GetTileInfo())
             {
-                view.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
+                renderer.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
             }
         }
 

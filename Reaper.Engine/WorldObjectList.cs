@@ -55,7 +55,7 @@ namespace Reaper.Engine
             return worldObject;
         }
 
-        public void DestroyObject(WorldObject worldObject)
+        internal void DestroyObject(WorldObject worldObject)
         {
             worldObject.MarkForDestroy();
         }
@@ -93,16 +93,16 @@ namespace Reaper.Engine
             SyncPreviousFrameData(_worldObjects);
         }
 
-        internal void Draw(LayoutView view)
+        internal void Draw(Renderer renderer)
         {
             foreach (var worldObject in _worldObjects)
-                worldObject.Draw(view);
+                worldObject.Draw(renderer);
         }
 
-        internal void DebugDraw(LayoutView view)
+        internal void DebugDraw(Renderer renderer)
         {
             foreach (var worldObject in _worldObjects)
-                worldObject.DebugDraw(view);
+                worldObject.DebugDraw(renderer);
         }
 
         private void InvokeLoadOnAll(IEnumerable<WorldObject> worldObjects)

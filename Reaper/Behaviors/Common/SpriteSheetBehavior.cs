@@ -107,7 +107,7 @@ namespace Reaper.Behaviors.Common
             }
         }
 
-        public override void Draw(LayoutView view)
+        public override void Draw(Renderer renderer)
         {
             Frame frame = CurrentAnimation.Frames[CurrentFrame];
 
@@ -115,7 +115,7 @@ namespace Reaper.Behaviors.Common
                 ? Owner.Position.X - (frame.Source.Width - CurrentAnimation.Origin.X)
                 : Owner.Position.X - CurrentAnimation.Origin.X;
 
-            view.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color, Owner.IsMirrored, Effect);
+            renderer.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color, Owner.IsMirrored, Effect);
         }
     }
 }

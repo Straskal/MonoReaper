@@ -23,6 +23,6 @@ namespace Reaper.Engine
         /// <param name="gameTime"></param>
         public virtual void Tick(GameTime gameTime) { }
 
-        public virtual void Draw(LayoutView view) { }
+        public virtual void Draw(Renderer renderer, bool isDebugging) { }
     }
 }

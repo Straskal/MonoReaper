@@ -63,21 +63,14 @@ namespace Reaper.Engine
             Objects.FrameEnd();
         }
 
-        internal void Draw(bool debug)
+        internal void Draw(Renderer renderer, bool debug)
         {
-            View.BeginDraw();
-            Objects.Draw(View);
-            Game.Singletons.Draw(View);
-
-            if (debug)
-                Objects.DebugDraw(View);
-
-            View.EndDraw();
+            Objects.Draw(renderer);
+            if (debug) Objects.DebugDraw(renderer);
         }
 
         internal void End() 
         {
-            View.Unload();
             _content.Unload();
         }
     }
