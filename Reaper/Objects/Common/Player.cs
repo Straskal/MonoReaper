@@ -24,7 +24,7 @@ namespace Reaper.Objects.Common
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "walk",
-                    ImageFilePath = "art/tilesets/peasant",
+                    ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.5f,
                     Loop = true,
                     Origin = new Vector2(16, 32),
@@ -37,7 +37,7 @@ namespace Reaper.Objects.Common
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "idle",
-                    ImageFilePath = "art/tilesets/peasant",
+                    ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.1f,
                     Loop = true,
                     Origin = new Vector2(16, 32),
