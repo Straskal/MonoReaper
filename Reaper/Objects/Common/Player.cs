@@ -13,7 +13,6 @@ namespace Reaper.Objects.Common
             playerDefinition.SetSize(32, 32);
             playerDefinition.SetOrigin(16, 32);
             playerDefinition.AddBehavior(wo => new OverworldPlayerBehavior(wo));
-            playerDefinition.AddBehavior(wo => new ScrollToBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
             return playerDefinition;
         }
