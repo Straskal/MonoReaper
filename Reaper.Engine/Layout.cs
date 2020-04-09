@@ -29,7 +29,7 @@ namespace Reaper.Engine
         public LayoutView View { get; }
         public LayoutGrid Grid { get; }
         public WorldObjectList Objects { get; }
-        public IGame Game { get; }
+        public MainGame Game { get; }
         public int Width { get; }
         public int Height { get; }
 

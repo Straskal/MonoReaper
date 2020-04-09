@@ -91,7 +91,7 @@ namespace Reaper.Singletons
 
             public string Name { get; }
 
-            public void AddKeys(Keys x, Keys y) 
+            public void AddKeys(Keys x, Keys y)
             {
                 _keys.Add(new Tuple<Keys, Keys>(x, y));
             }
@@ -118,6 +118,8 @@ namespace Reaper.Singletons
 
         private readonly InputState _state = new InputState();
         private readonly Dictionary<string, InputAction> _actions = new Dictionary<string, InputAction>();
+
+        public InputManager(MainGame game) : base(game) { }
 
         public override void Tick(GameTime gameTime)
         {

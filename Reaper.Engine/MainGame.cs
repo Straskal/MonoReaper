@@ -1,28 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace Reaper.Engine
 {
-    public interface IGame : IDisposable
-    {
-        SingletonList Singletons { get; }
-        Layout CurrentLayout { get; }
-        GameWindow Window { get; }
-        int ViewportWidth { get; }
-        int ViewportHeight { get; }
-        bool IsFullscreen { get; }
-
-        Layout GetEmptyLayout(int v, int width, int height);
-        void ChangeLayout(Layout layout);
-        void ToggleFullscreen();
-        void ToggleDebug();
-        void Run();
-        void Exit();
-    }
-
-    public class MainGame : Game, IGame
+    public class MainGame : Game
     {
         private readonly GraphicsDeviceManager _gpuManager;
 
@@ -31,7 +12,7 @@ namespace Reaper.Engine
         // Debugging helper
         private bool _isDebugging;
 
-        internal MainGame(GameSettings gameSettings)
+        public MainGame(GameSettings gameSettings)
         {
             Content.RootDirectory = "Content";
             ViewportWidth = gameSettings.ViewportWidth;

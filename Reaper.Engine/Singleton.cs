@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Reaper.Engine
 {
@@ -9,6 +10,13 @@ namespace Reaper.Engine
     /// </summary>
     public abstract class Singleton
     {
+        public Singleton(MainGame game) 
+        {
+            Game = game ?? throw new ArgumentNullException(nameof(game));
+        }
+
+        public MainGame Game { get; }
+
         /// <summary>
         /// Called once per frame, before behaviors.
         /// </summary>
@@ -16,7 +24,5 @@ namespace Reaper.Engine
         public virtual void Tick(GameTime gameTime) { }
 
         public virtual void Draw(LayoutView view) { }
-
-        public virtual void DrawGUI(LayoutView view) { }
     }
 }

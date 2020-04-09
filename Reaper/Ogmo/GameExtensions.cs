@@ -16,7 +16,7 @@ namespace Reaper.Ogmo
 {
     public static class GameExtensions
     {
-        public static void LoadOgmoLayout(this IGame game, string filename, string spawnPoint = null)
+        public static void LoadOgmoLayout(this MainGame game, string filename, string spawnPoint = null)
         {
             OgmoMap map;
 

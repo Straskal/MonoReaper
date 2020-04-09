@@ -18,10 +18,11 @@ namespace Reaper
                 IsFullscreen = true,
             };
 
-            using (var game = MainGameFactory.Create(settings))
+            using (var game = new MainGame(settings))
             {
                 Definitions.Register();
-                game.Singletons.Register(new InputManager());
+                game.Singletons.Register(new InputManager(game));
+                game.Singletons.Register(new GlobalInputHandler(game));
                 InputBindings.Initialize(game.Singletons.Get<InputManager>());
                 game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.Run();
