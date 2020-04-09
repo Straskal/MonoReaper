@@ -19,15 +19,12 @@ namespace Reaper.Engine
         private Matrix _scaleMatrix = Matrix.Identity;
         private Matrix _resolutionTranslationMatrix = Matrix.Identity;
         private Matrix _resolutionScaleMatrix = Matrix.Identity;
-
         private Vector3 _translation = Vector3.Zero;
         private Vector3 _scale = Vector3.Zero;
         private Vector3 _resolution = Vector3.Zero;
         private Vector3 _resolutionScale = Vector3.Zero;
-
         private Vector2 _position;
         private Vector2 _offsetPosition;
-
         private Effect _currentEffect;
 
         public LayoutView(MainGame game, Layout layout)
@@ -40,7 +37,6 @@ namespace Reaper.Engine
 
             Width = game.ViewportWidth;
             Height = game.ViewportHeight;
-
             Zoom = 1f;
             Rotation = 0.0f;
             Position = new Vector2(Width * 0.5f, Height * 0.5f);
@@ -55,8 +51,8 @@ namespace Reaper.Engine
             get => _position;
             set 
             {
-                _position = value;
-                _offsetPosition = ClampViewToLayout(_position + new Vector2(OffsetX, OffsetY));
+                _position = ClampViewToLayout(value);
+                _offsetPosition = _position + new Vector2(OffsetX, OffsetY);
             }
         }
 
@@ -129,7 +125,7 @@ namespace Reaper.Engine
         {
             _currentEffect = null;
 
-            CreatePillarBoxes();
+            CreateBlackBars();
             PrepareBatch();
         }
 
@@ -190,19 +186,42 @@ namespace Reaper.Engine
             _batch.Dispose();
         }
 
-        private void CreatePillarBoxes()
+        private Vector2 ClampViewToLayout(Vector2 position)
+        {
+            float xMin, xMax, yMin, yMax;
+
+            if (Width >= _layout.Width) 
+            {
+                xMin = _layout.Width * 0.5f;
+                xMax = _layout.Width * 0.5f;
+            }
+            else 
+            {
+                xMin = Width * 0.5f;
+                xMax = _layout.Width - Width * 0.5f;
+            }
+
+            if (Height >= _layout.Height)
+            {
+                yMin = _layout.Height * 0.5f;
+                yMax = _layout.Height * 0.5f;
+            }
+            else
+            {
+                yMin = Width * 0.5f;
+                yMax = _layout.Height - Height * 0.5f;
+            }
+
+            var min = new Vector2(xMin, yMin);
+            var max = new Vector2(xMax, yMax);
+            return Vector2.Clamp(position, min, max);
+        }
+
+        private void CreateBlackBars()
         {
             _gpu.Viewport = GetFullViewport();
             _gpu.Clear(Color.Black);
             _gpu.Viewport = GetLargestVirtualViewport();
-        }
-
-        private Vector2 ClampViewToLayout(Vector2 position)
-        {
-            var min = new Vector2(Width * 0.5f, Height * 0.5f);
-            var max = new Vector2(_layout.Width - Width * 0.5f, _layout.Height - Height * 0.5f);
-
-            return Vector2.Clamp(position, min, max);
         }
 
         private Viewport GetFullViewport()
