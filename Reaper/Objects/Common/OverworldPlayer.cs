@@ -16,8 +16,8 @@ namespace Reaper.Objects.Common
         {
             var playerDefinition = new WorldObjectDefinition();
             playerDefinition.SetTags("player");
-            playerDefinition.SetSize(32, 32);
-            playerDefinition.SetOrigin(16, 16);
+            playerDefinition.SetSize(24, 32);
+            playerDefinition.SetOrigin(12, 16);
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
             return playerDefinition;
@@ -33,6 +33,7 @@ namespace Reaper.Objects.Common
                     ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.1f,
                     Loop = true,
+                    Origin = new Point(16, 16),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 32, 32),
@@ -44,6 +45,7 @@ namespace Reaper.Objects.Common
                     ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.5f,
                     Loop = true,
+                    Origin = new Point(16, 16),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(32, 0, 32, 32),

@@ -13,6 +13,12 @@ namespace Reaper
             var vertical = input.NewAxisAction("vertical");
             vertical.AddKeys(Keys.W, Keys.S);
 
+            var attackHorizontal = input.NewAxisAction("attackHorizontal");
+            attackHorizontal.AddKeys(Keys.Left, Keys.Right);
+
+            var attackVertical = input.NewAxisAction("attackVertical");
+            attackVertical.AddKeys(Keys.Up, Keys.Down);
+
             var attack = input.NewPressedAction("attack");
             attack.AddKey(Keys.Left);
 

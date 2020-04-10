@@ -52,10 +52,6 @@ namespace Reaper.Engine
         {
             HandleEffectChange(effect);
 
-            // Round to integer before rendering, else we get ugly sub-pixel artifacts.
-            position.X = (int)Math.Floor(position.X);
-            position.Y = (int)Math.Floor(position.Y);
-
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 

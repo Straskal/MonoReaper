@@ -47,9 +47,6 @@ namespace Reaper.Engine
             }
         }
 
-        /// <summary>
-        /// The world object's pixel perfect position. UpdateBBox() must be called after modifying this property.
-        /// </summary>
         public Vector2 Position
         {
             get => _position;
@@ -91,6 +88,25 @@ namespace Reaper.Engine
             return behavior != null;
         }
 
+        public void SetX(float x) 
+        {
+            _position.X = x;
+            UpdateBBox();
+        }
+
+        public void SetY(float y)
+        {
+            _position.Y = y;
+            UpdateBBox();
+        }
+
+        public void Move(float x, float y) 
+        {
+            _position.X += x;
+            _position.Y += y;
+            UpdateBBox();
+        }
+
         /// <summary>
         /// Move the object on the x axis and perform stepped overlap checks at pixel perfect positions.
         /// </summary>
@@ -121,6 +137,7 @@ namespace Reaper.Engine
 
         /// <summary>
         /// Move the object on the y axis and perform stepped overlap checks at pixel perfect positions.
+        /// Returns each overlap in the stepped movement.
         /// </summary>
         /// <param name="amount"></param>
         /// <param name="worldObject"></param>
@@ -149,6 +166,7 @@ namespace Reaper.Engine
 
         /// <summary>
         /// Move the object on the x axis and perform stepped collision checks at pixel perfect positions.
+        /// Returns each overlap in the stepped movement.
         /// </summary>
         /// <param name="amount"></param>
         /// <param name="worldObject"></param>

@@ -19,7 +19,7 @@ namespace Reaper
             {
                 ViewportWidth = 640,
                 ViewportHeight = 360,
-                IsFullscreen = true,
+                IsFullscreen = false,
             };
 
             using (var game = new MainGame(settings))

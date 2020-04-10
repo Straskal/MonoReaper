@@ -26,8 +26,8 @@ namespace Reaper.Engine
 
         public LayoutView(MainGame game, Layout layout)
         {
-            _layout = layout;
             _gpu = game.GraphicsDevice;
+            _layout = layout;
 
             Width = game.ViewportWidth;
             Height = game.ViewportHeight;

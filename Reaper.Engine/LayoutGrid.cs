@@ -102,6 +102,12 @@ namespace Reaper.Engine
             return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid);
         }
 
+        public bool IsColliding(WorldObject worldObject, out WorldObject overlappedWorldObject)
+        {
+            overlappedWorldObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
+            return overlappedWorldObject != null;
+        }
+
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
