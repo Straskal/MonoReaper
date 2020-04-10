@@ -15,21 +15,24 @@ namespace Reaper.Behaviors.Common
         {
             foreach (var overlap in Owner.MoveXAndOverlap(Direction.X * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds)) 
             {
-                if (overlap.Tags.Contains("enemy") || overlap.IsSolid)
-                {
-                    overlap.Destroy();
-                    Owner.Destroy();
-                }
+                CheckOverlap(overlap);
             }
 
             foreach (var overlap in Owner.MoveYAndOverlap(Direction.Y * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds))
             {
-                if (overlap.Tags.Contains("enemy") || overlap.IsSolid)
-                {
-                    overlap.Destroy();
-                    Owner.Destroy();
-                }
+                CheckOverlap(overlap);
             }
+        }
+
+        private void CheckOverlap(WorldObject overlap) 
+        {
+            if (overlap.Tags.Contains("enemy"))
+            {
+                overlap.Destroy();
+                Owner.Destroy();
+            }
+            else if (overlap.IsSolid)
+                Owner.Destroy();
         }
     }
 }
