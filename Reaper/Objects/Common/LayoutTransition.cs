@@ -10,7 +10,7 @@ namespace Reaper.Objects.Common
     {
         static LevelTransitionDefinition()
         {
-            Definitions.Register("transition", Definition);
+            Definitions.Register(typeof(LevelTransitionDefinition), Definition);
         }
 
         public static WorldObjectDefinition Definition()

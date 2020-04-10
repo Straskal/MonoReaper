@@ -8,7 +8,7 @@ namespace Reaper.Objects.Common
     {
         static OverworldPlayerSpawnPoint()
         {
-            Definitions.Register("overworld_player_spawn", Definition);
+            Definitions.Register(typeof(OverworldPlayerSpawnPoint), Definition);
         }
 
         public static WorldObjectDefinition Definition() 

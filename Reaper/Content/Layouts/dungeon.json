@@ -1,0 +1,52 @@
+{
+  "ogmoVersion": "3.3.0",
+  "width": 448,
+  "height": 256,
+  "offsetX": 0,
+  "offsetY": 0,
+  "values": {"SpatialCellSize": 256, "EntrySpawnPoint": "", "OffsetX": 0, "OffsetY": 0},
+  "layers": [
+    {
+      "name": "worldobjects",
+      "_eid": "15521523",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 16,
+      "gridCellHeight": 16,
+      "gridCellsX": 28,
+      "gridCellsY": 16,
+      "entities": [
+        {"name": "OverworldPlayerSpawnPoint", "id": 0, "_eid": "29682872", "x": 144, "y": 112, "originX": 16, "originY": 32},
+        {"name": "Blob", "id": 1, "_eid": "48314842", "x": 336, "y": 96, "originX": 16, "originY": 16}
+      ]
+    },
+    {
+      "name": "solids",
+      "_eid": "27966601",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 14,
+      "gridCellsY": 8,
+      "tileset": "dungeon",
+      "data": [7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 6, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 4, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 5],
+      "exportMode": 0,
+      "arrayMode": 0
+    },
+    {
+      "name": "background",
+      "_eid": "15480928",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 14,
+      "gridCellsY": 8,
+      "tileset": "dungeon",
+      "data": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1],
+      "exportMode": 0,
+      "arrayMode": 0
+    }
+  ]
+}

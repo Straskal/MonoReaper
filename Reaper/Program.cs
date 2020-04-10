@@ -27,7 +27,7 @@ namespace Reaper
                 game.Singletons.Register(new InputManager(game));
                 game.Singletons.Register(new GlobalInputHandler(game));
                 InputBindings.Initialize(game.Singletons.Get<InputManager>());
-                game.LoadOgmoLayout(args[0]);
+                game.LoadOgmoLayout("content/layouts/dungeon.json");
                 game.Run();
             }
         }

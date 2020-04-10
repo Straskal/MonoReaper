@@ -13,7 +13,7 @@ namespace Reaper.Engine
 
         public Guid Guid { get; } = Guid.NewGuid();
 
-        public void WithTags(params string[] tags) 
+        public void SetTags(params string[] tags) 
         {
             _buildSteps.Add(worldObject => worldObject.Tags = tags);
         }
@@ -48,7 +48,7 @@ namespace Reaper.Engine
             foreach (var step in _buildSteps)
                 step.Invoke(worldObject);
 
-            worldObject.UpdateBBox();
+            worldObject.InternalUpdateBBox();
         }
     }
 }

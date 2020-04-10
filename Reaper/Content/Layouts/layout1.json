@@ -16,7 +16,7 @@
       "gridCellsX": 20,
       "gridCellsY": 16,
       "entities": [
-        {"name": "overworld_player_spawn", "id": 0, "_eid": "29682872", "x": 144, "y": 64, "originX": 16, "originY": 32}
+        {"name": "OverworldPlayerSpawnPoint", "id": 0, "_eid": "29682872", "x": 144, "y": 64, "originX": 16, "originY": 32}
       ]
     },
     {

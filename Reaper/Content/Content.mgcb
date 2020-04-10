@@ -13,6 +13,30 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Art/Enemies/blob.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Enemies/blob.png
+
+#begin Art/Player/fireball.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Player/fireball.png
+
 #begin Art/Player/peasant.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -25,6 +49,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Player/peasant.png
 
+#begin Art/Tilesets/dungeon.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Tilesets/dungeon.png
+
 #begin Art/Tilesets/tilemap.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -36,6 +72,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Tilesets/tilemap.png
+
+#begin Layouts/dungeon.json
+/copy:Layouts/dungeon.json
+
+#begin Layouts/layout1.json
+/copy:Layouts/layout1.json
 
 #begin Shaders/SolidColor.fx
 /importer:EffectImporter

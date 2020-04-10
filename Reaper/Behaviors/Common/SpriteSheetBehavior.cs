@@ -30,7 +30,7 @@ namespace Reaper.Behaviors.Common
             public Frame[] Frames { get; set; }
             public float SecPerFrame { get; set; }
             public bool Loop { get; set; }
-            public Vector2 Origin { get; set; }
+            public Point? Origin { get; set; }
         }
 
         private readonly Animation[] _animations;
@@ -51,7 +51,7 @@ namespace Reaper.Behaviors.Common
 
         public override void Load(ContentManager contentManager)
         {
-            foreach (var animation in _animations) 
+            foreach (var animation in _animations)
             {
                 animation.Image = contentManager.Load<Texture2D>(animation.ImageFilePath);
             }
@@ -82,20 +82,18 @@ namespace Reaper.Behaviors.Common
                 return;
 
             var elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             _time += elapsedTime;
 
             if (_time - _lastFrameTime > CurrentAnimation.SecPerFrame)
             {
                 CurrentFrame++;
-
                 if (CurrentFrame == CurrentAnimation.Frames.Length)
                 {
-                    if (CurrentAnimation.Loop) 
+                    if (CurrentAnimation.Loop)
                     {
                         CurrentFrame = 0;
                     }
-                    else 
+                    else
                     {
                         CurrentFrame--;
                         IsFinished = true;
@@ -110,12 +108,9 @@ namespace Reaper.Behaviors.Common
         public override void Draw(Renderer renderer)
         {
             Frame frame = CurrentAnimation.Frames[CurrentFrame];
-
-            float xPosition = Owner.IsMirrored
-                ? Owner.Position.X - (frame.Source.Width - CurrentAnimation.Origin.X)
-                : Owner.Position.X - CurrentAnimation.Origin.X;
-
-            renderer.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - CurrentAnimation.Origin.Y), Color, Owner.IsMirrored, Effect);
+            Point origin = CurrentAnimation.Origin ?? Owner.Origin;
+            float xPosition = Owner.IsMirrored ? Owner.Position.X - (frame.Source.Width - origin.X) : Owner.Position.X - origin.X;
+            renderer.Draw(CurrentAnimation.Image, frame.Source, new Vector2(xPosition, Owner.Position.Y - origin.Y), Color, Owner.IsMirrored, Effect);
         }
     }
 }

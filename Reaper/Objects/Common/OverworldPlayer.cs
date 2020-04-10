@@ -9,16 +9,16 @@ namespace Reaper.Objects.Common
     {
         static OverworldPlayer() 
         {
-            Definitions.Register("overworld_player", Definition);
+            Definitions.Register(typeof(OverworldPlayer), Definition);
         }
 
         public static WorldObjectDefinition Definition() 
         {
             var playerDefinition = new WorldObjectDefinition();
-            playerDefinition.WithTags("player");
+            playerDefinition.SetTags("player");
             playerDefinition.SetSize(32, 32);
-            playerDefinition.SetOrigin(16, 32);
-            playerDefinition.AddBehavior(wo => new OverworldPlayerBehavior(wo));
+            playerDefinition.SetOrigin(16, 16);
+            playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
             return playerDefinition;
         }
@@ -29,27 +29,25 @@ namespace Reaper.Objects.Common
             {
                 new SpriteSheetBehavior.Animation
                 {
-                    Name = "walk",
-                    ImageFilePath = "art/player/peasant",
-                    SecPerFrame = 0.5f,
-                    Loop = true,
-                    Origin = new Vector2(16, 32),
-                    Frames = new []
-                    {
-                        new SpriteSheetBehavior.Frame(32, 0, 32, 32),
-                        new SpriteSheetBehavior.Frame(64, 0, 32, 32),
-                    }
-                },
-                new SpriteSheetBehavior.Animation
-                {
                     Name = "idle",
                     ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.1f,
                     Loop = true,
-                    Origin = new Vector2(16, 32),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 32, 32),
+                    }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "walk",
+                    ImageFilePath = "art/player/peasant",
+                    SecPerFrame = 0.5f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new SpriteSheetBehavior.Frame(32, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(64, 0, 32, 32),
                     }
                 },
             };

@@ -17,10 +17,8 @@ namespace Reaper.Behaviors.Common
         {
             _spriteSheetBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
             var input = Game.Singletons.Get<InputManager>();
-            _horizontalAction = input.NewAxisAction("horizontal");
-            _verticalAction = input.NewAxisAction("vertical");
-            _horizontalAction.AddKeys(Keys.A, Keys.D);
-            _verticalAction.AddKeys(Keys.W, Keys.S);
+            _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
+            _verticalAction = input.GetAction<InputManager.AxisAction>("vertical");
         }
 
         public override void Tick(GameTime gameTime)

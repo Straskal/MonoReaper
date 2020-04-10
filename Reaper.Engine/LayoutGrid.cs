@@ -109,6 +109,13 @@ namespace Reaper.Engine
             return overlappedWorldObject != null;
         }
 
+        public bool IsOverlappingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        {
+            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
+            overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject);
+            return overlappedWorldObject != null;
+        }
+
         public IEnumerable<WorldObject> QueryBounds(Rectangle bounds)
         {
             return QueryCells(bounds).Where(other => other.Bounds.Intersects(bounds));

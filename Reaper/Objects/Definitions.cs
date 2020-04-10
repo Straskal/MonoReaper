@@ -1,4 +1,5 @@
-﻿using Reaper.Engine;
+﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
@@ -24,9 +25,14 @@ namespace Reaper.Objects
             return _definitions[name];
         }
 
-        public static void Register(string name, Func<WorldObjectDefinition> factory)
+        public static void Register(Type type, Func<WorldObjectDefinition> factory)
         {
-            _definitionFactories.Add(name, factory);
+            _definitionFactories.Add(type.Name, factory);
+        }
+
+        public static WorldObject Spawn<T>(this Layout layout, Vector2 position) 
+        {
+            return layout.Spawn(Get(typeof(T).Name), position);
         }
     }
 }

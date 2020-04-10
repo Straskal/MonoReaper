@@ -25,7 +25,7 @@ namespace Reaper.Engine
             _behaviors = new List<Behavior>();
         }
 
-        public string[] Tags { get; set; }
+        public string[] Tags { get; set; } = new string[0];
         public bool IsMirrored { get; set; }
         public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
         public int ZOrder { get; set; }
@@ -89,6 +89,62 @@ namespace Reaper.Engine
         {
             behavior = _behaviors.FirstOrDefault(b => b is T) as T;
             return behavior != null;
+        }
+
+        /// <summary>
+        /// Move the object on the x axis and perform stepped overlap checks at pixel perfect positions.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="worldObject"></param>
+        /// <returns></returns>
+        public IEnumerable<WorldObject> MoveXAndOverlap(float amount)
+        {
+            int pixelsToMove = (int)Math.Round(amount);
+
+            if (pixelsToMove != 0)
+            {
+                int sign = Math.Sign(pixelsToMove);
+                while (pixelsToMove != 0)
+                {
+                    if (MarkedForDestroy)
+                        break;
+
+                    if (Layout.Grid.IsOverlappingAtOffset(this, sign, 0, out var collision))
+                        yield return collision;
+
+                    _position.X += sign;
+                    pixelsToMove -= sign;
+                    UpdateBBox();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move the object on the y axis and perform stepped overlap checks at pixel perfect positions.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="worldObject"></param>
+        /// <returns></returns>
+        public IEnumerable<WorldObject> MoveYAndOverlap(float amount)
+        {
+            int pixelsToMove = (int)Math.Round(amount);
+
+            if (pixelsToMove != 0)
+            {
+                int sign = Math.Sign(pixelsToMove);
+                while (pixelsToMove != 0)
+                {
+                    if (MarkedForDestroy)
+                        break;
+
+                    if (Layout.Grid.IsOverlappingAtOffset(this, sign, 0, out var collision))
+                        yield return collision;
+
+                    _position.Y += sign;
+                    pixelsToMove -= sign;
+                    UpdateBBox();
+                }
+            }
         }
 
         /// <summary>
@@ -158,8 +214,10 @@ namespace Reaper.Engine
         /// </summary>
         public void UpdateBBox()
         {
-            _bounds.X = (int)Math.Round(Position.X - Origin.X);
-            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
+            if (MarkedForDestroy)
+                return;
+
+            InternalUpdateBBox();
             Layout.Grid.Update(this);
         }
 
@@ -169,6 +227,12 @@ namespace Reaper.Engine
         public void Destroy()
         {
             Layout.Destroy(this);
+        }
+
+        public void InternalUpdateBBox()
+        {
+            _bounds.X = (int)Math.Round(Position.X - Origin.X);
+            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
         }
 
         internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
