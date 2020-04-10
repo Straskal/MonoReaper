@@ -34,8 +34,8 @@ namespace Reaper.Engine
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullNone,
+                DepthStencilState.Default,
+                RasterizerState.CullCounterClockwise,
                 _currentEffect,
                 _game.CurrentLayout.View.TransformationMatrix
             );

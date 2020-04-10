@@ -19,14 +19,12 @@ namespace Reaper.Engine
         private readonly List<WorldObject> _worldObjects;
 
         private WorldObject[] _worldObjectsThisFrame;
-        private bool _started;
 
         public WorldObjectList(Layout layout, ContentManager content)
         {
             _layout = layout ?? throw new ArgumentNullException(nameof(layout));
             _content = content ?? throw new ArgumentNullException(nameof(content));
             _worldObjects = new List<WorldObject>();
-            _started = false;
         }
 
         public WorldObject GetFirstWithTag(string tag) 
@@ -46,7 +44,9 @@ namespace Reaper.Engine
             definition.Apply(worldObject);
             _worldObjects.Add(worldObject);
 
-            if (_started)
+            // If the layout has already started, then just completely start and load newly spawned objects.
+            // This way, behaviors that spawn objects can immediately access all properties of the spawned object.
+            if (_layout.Started)
             {
                 worldObject.Load(_content);
                 worldObject.OnCreated();
@@ -62,7 +62,8 @@ namespace Reaper.Engine
 
         internal void Start()
         {
-            _started = true;
+            // When we start the layout, we create a copy of all of the initial objects 
+            // so we can safely iterate over it while other objects are being spawned into _worldObjects.
             var wosInLayoutStart = _worldObjects.ToArray();
             InvokeLoadOnAll(wosInLayoutStart);
             InvokeCreatedOnAll(wosInLayoutStart);
@@ -71,6 +72,8 @@ namespace Reaper.Engine
 
         internal void FrameStart() 
         {
+            // This is the same concept as the Start() copy.
+            // We use a copy of the world object list so we can iterate while new objects are spawned into _worldObjects.
             _worldObjectsThisFrame = _worldObjects.ToArray();
         }
 
@@ -86,11 +89,12 @@ namespace Reaper.Engine
                 wo.PostTick(gameTime);
         }
 
-        internal void FrameEnd() 
+        internal void FrameEnd()
         {
+            // Handling destroyed objects is deferred until the end of the frame, unlike spawning.
             HandleDestroyedWorldObjects(_worldObjects);
             SortByZOrder(_worldObjects);
-            SyncPreviousFrameData(_worldObjects);
+            UpdatePreviousFrameData(_worldObjects);
         }
 
         internal void Draw(Renderer renderer)
@@ -122,6 +126,7 @@ namespace Reaper.Engine
             foreach (var worldObject in worldObjects)
                 worldObject.OnLayoutStarted();
         }
+        
         private void HandleDestroyedWorldObjects(List<WorldObject> worldObjects) 
         {
             worldObjects.RemoveAll(wo =>
@@ -140,10 +145,10 @@ namespace Reaper.Engine
             worldObjects.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
         }
 
-        private void SyncPreviousFrameData(IEnumerable<WorldObject> worldObjects)
+        private void UpdatePreviousFrameData(IEnumerable<WorldObject> worldObjects)
         {
             foreach (var worldObject in worldObjects)
-                worldObject.UpdatePreviousPosition();
+                worldObject.UpdatePreviousFrameData();
         }
     }
 }

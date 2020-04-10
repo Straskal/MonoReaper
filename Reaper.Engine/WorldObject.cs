@@ -306,7 +306,7 @@ namespace Reaper.Engine
                 behavior.OnOwnerDestroyed();
         }
 
-        internal void UpdatePreviousPosition()
+        internal void UpdatePreviousFrameData()
         {
             PreviousPosition = Position;
             PreviousBounds = Bounds;
