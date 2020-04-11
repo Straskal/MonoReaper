@@ -1,0 +1,51 @@
+﻿using Microsoft.Xna.Framework;
+using System;
+
+namespace Reaper.Engine
+{
+    public struct AABB
+    {
+        public float X;
+        public float Y;
+        public float Width;
+        public float Height;
+
+        public float Left => X;
+        public float Right => X + Width;
+        public float Top => Y;
+        public float Bottom => Y + Height;
+
+        public bool Intersects(AABB aabb2)
+        {
+            return !(aabb2.Left > Right || aabb2.Right < Left || aabb2.Top > Bottom || aabb2.Bottom < Top);
+        }
+
+        public Vector2 GetIntersectionDepth(AABB aabb2)
+        {
+            // Calculate half sizes.
+            float halfWidthA = Width / 2f;
+            float halfHeightA = Height / 2f;
+            float halfWidthB = aabb2.Width / 2f;
+            float halfHeightB = aabb2.Height / 2f;
+
+            // Calculate centers.
+            Vector2 centerA = new Vector2(Left + halfWidthA, Top + halfHeightA);
+            Vector2 centerB = new Vector2(aabb2.Left + halfWidthB, aabb2.Top + halfHeightB);
+
+            // Calculate current and minimum-non-intersecting distances between centers.
+            float distanceX = centerA.X - centerB.X;
+            float distanceY = centerA.Y - centerB.Y;
+            float minDistanceX = halfWidthA + halfWidthB;
+            float minDistanceY = halfHeightA + halfHeightB;
+
+            // If we are not intersecting at all, return (0, 0).
+            if (Math.Abs(distanceX) >= minDistanceX || Math.Abs(distanceY) >= minDistanceY)
+                return Vector2.Zero;
+
+            // Calculate and return intersection depths.
+            float depthX = distanceX > 0 ? minDistanceX - distanceX : -minDistanceX - distanceX;
+            float depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
+            return new Vector2(depthX, depthY);
+        }
+    }
+}

@@ -36,7 +36,7 @@ namespace Reaper.Behaviors.Common
         public override void Tick(GameTime gameTime)
         {
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
+            Vector2 movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
 
             if (movement != Vector2.Zero)
             {
@@ -47,22 +47,14 @@ namespace Reaper.Behaviors.Common
 
                 movement *= Speed * elapsedTime;
 
-                if (Layout.Grid.IsCollidingAtOffset(Owner, movement.X, 0f, out var overlapX))
+                if (Layout.Grid.IsCollidingAtOffsetOk(Owner, movement.X, 0f, out var overlapX))
                 {
-                    Owner.SetX(Direction.X > 0f ? overlapX.Bounds.Left - (Owner.Bounds.Width / 2) : overlapX.Bounds.Right + (Owner.Bounds.Width / 2));
-                    movement.X = 0;
-
-                    if (movement.Y != 0f)
-                        movement.Y = Math.Sign(movement.Y) * Speed * elapsedTime;
+                    movement.X += overlapX.Depth.X;
                 }
 
-                if (Layout.Grid.IsCollidingAtOffset(Owner, 0f, movement.Y, out var overlapY)) 
+                if (Layout.Grid.IsCollidingAtOffsetOk(Owner, 0f, movement.Y, out var overlapY))
                 {
-                    Owner.SetY(Direction.Y > 0f ? overlapY.Bounds.Top - (Owner.Bounds.Height / 2) : overlapY.Bounds.Bottom + (Owner.Bounds.Height / 2));
-                    movement.Y = 0;
-
-                    if (movement.X != 0f)
-                        movement.X = Math.Sign(movement.X) * Speed * elapsedTime;
+                    movement.Y += overlapY.Depth.Y;
                 }
 
                 Owner.Move(movement.X, movement.Y);
@@ -72,9 +64,9 @@ namespace Reaper.Behaviors.Common
 
             var attackDirection = new Vector2(_attackHorizontalAction.GetAxis(), _attackVerticalAction.GetAxis());
 
-            if (attackDirection != Vector2.Zero) 
+            if (attackDirection != Vector2.Zero)
             {
-                if (gameTime.TotalGameTime.TotalSeconds > _attackTime) 
+                if (gameTime.TotalGameTime.TotalSeconds > _attackTime)
                 {
                     var proj = Layout.Spawn(Projectile.Definition(), Owner.Position);
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;

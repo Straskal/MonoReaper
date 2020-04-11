@@ -53,6 +53,9 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
+        public float Left => Position.X - Origin.X;
+        public float Top => Position.Y - Origin.Y;
+
         public int Width
         {
             get => _bounds.Width;
@@ -91,13 +94,11 @@ namespace Reaper.Engine
         public void SetX(float x) 
         {
             _position.X = x;
-            UpdateBBox();
         }
 
         public void SetY(float y)
         {
             _position.Y = y;
-            UpdateBBox();
         }
 
         public void Move(float x, float y) 

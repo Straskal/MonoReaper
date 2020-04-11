@@ -21,6 +21,12 @@ namespace Reaper.Engine
         Solid = Overlap | (1 << 1)
     }
 
+    public struct Overlap 
+    {
+        public Vector2 Depth;
+        public WorldObject Other;
+    }
+
     /// <summary>
     /// The layout grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
     /// 
@@ -115,11 +121,33 @@ namespace Reaper.Engine
             return overlappedWorldObject != null;
         }
 
+        public bool IsCollidingAtOffsetOk(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
+        {
+            overlap = new Overlap();
+            worldObject.Position += new Vector2(xOffset, yOffset);
+            var overlappedObject = QueryBounds(worldObject).FirstOrDefault(other => other != worldObject && other.IsSolid);
+
+            if (overlappedObject != null)
+            {
+                overlap.Depth = worldObject.GetIntersectionDepth(overlappedObject);
+                overlap.Other = overlappedObject;
+                worldObject.Position -= new Vector2(xOffset, yOffset);
+                return true;
+            }
+            worldObject.Position -= new Vector2(xOffset, yOffset);
+            return false;
+        }
+
         public bool IsOverlappingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
         {
             var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
             overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject);
             return overlappedWorldObject != null;
+        }
+
+        public IEnumerable<WorldObject> QueryBounds(WorldObject bounds)
+        {
+            return QueryCells(bounds.Bounds).Where(other => bounds.GetIntersectionDepth(other) != Vector2.Zero);
         }
 
         public IEnumerable<WorldObject> QueryBounds(Rectangle bounds)
