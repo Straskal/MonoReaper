@@ -43,7 +43,6 @@ namespace Reaper.Behaviors.Common
         public TilemapBehavior(WorldObject owner, MapData data) : base(owner)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
-
             _colliders = new List<WorldObject>();
         }
 
@@ -65,15 +64,15 @@ namespace Reaper.Behaviors.Common
 
             foreach (var tile in GetTileInfo())
             {
-                _colliders.Add(Owner.Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
+                _colliders.Add(Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
             }
         }
 
-        public override void Draw(LayoutView view)
+        public override void Draw(Renderer renderer)
         {
             foreach (var tile in GetTileInfo())
             {
-                view.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
+                renderer.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
             }
         }
 

@@ -49,18 +49,23 @@ namespace Reaper.Engine
         /// <summary>
         /// Called once per frame.
         /// </summary>
-        /// <param name="view"></param>
-        public virtual void Draw(LayoutView view) { }
+        /// <param name="renderer"></param>
+        public virtual void Draw(Renderer renderer) { }
 
         /// <summary>
         /// Called only in debug mode.
         /// </summary>
-        /// <param name="view"></param>
-        public virtual void DebugDraw(LayoutView view) { }
+        /// <param name="renderer"></param>
+        public virtual void DebugDraw(Renderer renderer) { }
 
         /// <summary>
         /// Called when the owner has been destroyed.
         /// </summary>
         public virtual void OnOwnerDestroyed() { }
+
+        /// <summary>
+        /// Called when the layout has ended.
+        /// </summary>
+        public virtual void OnLayoutEnded() { }
     }
 }

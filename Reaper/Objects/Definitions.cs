@@ -1,9 +1,7 @@
-﻿using Reaper.Engine;
+﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 using System;
 using System.Collections.Generic;
-using Reaper.Objects.Common;
-
-using ObjectDefinitions = Reaper.Objects.Constants;
 
 namespace Reaper.Objects
 {
@@ -27,14 +25,14 @@ namespace Reaper.Objects
             return _definitions[name];
         }
 
-        /// <summary>
-        /// The main method for adding a new definition to the game.
-        /// </summary>
-        public static void Register() 
+        public static void Register(Type type, Func<WorldObjectDefinition> factory)
         {
-            _definitionFactories.Add(ObjectDefinitions.Player, PlayerSpawnPoint.Method);
-            _definitionFactories.Add(ObjectDefinitions.PlayerInstance, Player.Method);
-            _definitionFactories.Add(ObjectDefinitions.LevelTransition, LevelTransitionDefinition.Method);
+            _definitionFactories.Add(type.Name, factory);
+        }
+
+        public static WorldObject Spawn<T>(this Layout layout, Vector2 position) 
+        {
+            return layout.Spawn(Get(typeof(T).Name), position);
         }
     }
 }

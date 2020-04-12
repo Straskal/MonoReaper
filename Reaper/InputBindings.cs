@@ -7,11 +7,17 @@ namespace Reaper
     {
         public static void Initialize(InputManager input) 
         {
-            var move = input.NewAxisAction("move");
-            move.AddKeys(Keys.A, Keys.D);
+            var horizontal = input.NewAxisAction("horizontal");
+            horizontal.AddKeys(Keys.A, Keys.D);
 
-            var jump = input.NewPressedAction("jump");
-            jump.AddKey(Keys.Space);
+            var vertical = input.NewAxisAction("vertical");
+            vertical.AddKeys(Keys.W, Keys.S);
+
+            var attackHorizontal = input.NewAxisAction("attackHorizontal");
+            attackHorizontal.AddKeys(Keys.Left, Keys.Right);
+
+            var attackVertical = input.NewAxisAction("attackVertical");
+            attackVertical.AddKeys(Keys.Up, Keys.Down);
 
             var attack = input.NewPressedAction("attack");
             attack.AddKey(Keys.Left);
@@ -24,9 +30,6 @@ namespace Reaper
 
             var exitGameAction = input.NewPressedAction("exitGame");
             exitGameAction.AddKey(Keys.Escape);
-
-            var dialogue = input.NewPressedAction("dialogue");
-            dialogue.AddKey(Keys.B);
         }
     }
 }

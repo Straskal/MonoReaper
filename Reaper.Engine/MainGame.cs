@@ -6,6 +6,7 @@ namespace Reaper.Engine
     public class MainGame : Game
     {
         private readonly GraphicsDeviceManager _gpuManager;
+        private readonly Renderer _renderer;
 
         private Layout _nextLayout;
 
@@ -33,6 +34,7 @@ namespace Reaper.Engine
             };
 
             _gpuManager.ApplyChanges();
+            _renderer = new Renderer(this);
         }
 
         public SingletonList Singletons { get; private set; }
@@ -40,18 +42,6 @@ namespace Reaper.Engine
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
         public bool IsFullscreen => _gpuManager.IsFullScreen;
-
-        /// <summary>
-        /// Returns an empty layout to be filled with world objects.
-        /// </summary>
-        /// <param name="cellSize"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
-        public Layout GetEmptyLayout(int cellSize, int width, int height)
-        {
-            return new Layout(this, cellSize, width, height);
-        }
 
         /// <summary>
         /// Set the new running layout of the game.
@@ -88,6 +78,7 @@ namespace Reaper.Engine
         protected override void UnloadContent()
         {
             CurrentLayout.End();
+            _renderer.Unload();
         }
 
         protected override void Update(GameTime gameTime)
@@ -103,7 +94,10 @@ namespace Reaper.Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            CurrentLayout.Draw(_isDebugging);
+            _renderer.BeginDraw();
+            CurrentLayout.Draw(_renderer, _isDebugging);
+            Singletons.Draw(_renderer, _isDebugging);
+            _renderer.EndDraw();
             
             base.Draw(gameTime);
         }

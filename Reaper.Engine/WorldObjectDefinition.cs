@@ -13,14 +13,14 @@ namespace Reaper.Engine
 
         public Guid Guid { get; } = Guid.NewGuid();
 
-        public void WithTags(params string[] tags) 
+        public void SetTags(params string[] tags) 
         {
             _buildSteps.Add(worldObject => worldObject.Tags = tags);
         }
 
         public void SetSize(int width, int height) 
         {
-            _buildSteps.Add(worldObject => worldObject.Bounds = new Rectangle(0, 0, width, height));
+            _buildSteps.Add(worldObject => worldObject.Bounds = new WorldObjectBounds(0f, 0f, width, height));
         }
 
         public void SetOrigin(int x, int y)
@@ -48,7 +48,7 @@ namespace Reaper.Engine
             foreach (var step in _buildSteps)
                 step.Invoke(worldObject);
 
-            worldObject.UpdateBBox();
+            worldObject.InternalUpdateBBox();
         }
     }
 }

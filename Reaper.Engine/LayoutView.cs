@@ -11,8 +11,6 @@ namespace Reaper.Engine
     {
         private readonly Layout _layout;
         private readonly GraphicsDevice _gpu;
-        private readonly SpriteBatch _batch;
-        private readonly Texture2D _texture;
 
         private Matrix _translationMatrix = Matrix.Identity;
         private Matrix _rotationMatrix = Matrix.Identity;
@@ -25,15 +23,11 @@ namespace Reaper.Engine
         private Vector3 _resolutionScale = Vector3.Zero;
         private Vector2 _position;
         private Vector2 _offsetPosition;
-        private Effect _currentEffect;
 
         public LayoutView(MainGame game, Layout layout)
         {
-            _layout = layout;
             _gpu = game.GraphicsDevice;
-            _batch = new SpriteBatch(_gpu);
-            _texture = new Texture2D(_gpu, 1, 1);
-            _texture.SetData(new[] { Color.White });
+            _layout = layout;
 
             Width = game.ViewportWidth;
             Height = game.ViewportHeight;
@@ -42,7 +36,6 @@ namespace Reaper.Engine
             Position = new Vector2(Width * 0.5f, Height * 0.5f);
         }
 
-        public SpriteBatch SpriteBatch => _batch;
         public float Zoom { get; set; }
         public float Rotation { get; set; }
 
@@ -121,71 +114,6 @@ namespace Reaper.Engine
             return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
         }
 
-        internal void BeginDraw()
-        {
-            _currentEffect = null;
-
-            CreateBlackBars();
-            PrepareBatch();
-        }
-
-        private void PrepareBatch() 
-        {
-            _batch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullNone,
-                _currentEffect,
-                TransformationMatrix
-            );
-        }
-
-        public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null) 
-        {
-            HandleEffectChange(effect);
-
-            _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
-        }
-
-        public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
-        {
-            HandleEffectChange(effect);
-
-            // Round to integer before rendering, else we get ugly sub-pixel artifacts.
-            position.X = (int)Math.Floor(position.X);
-            position.Y = (int)Math.Floor(position.Y);
-
-            _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
-        }
-
-        public void DrawRectangle(Rectangle rectangle, Color color)
-        {
-            _batch.Draw(_texture, rectangle, null, color);
-        }
-
-        private void HandleEffectChange(Effect effect) 
-        {
-            if (_currentEffect != effect)
-            {
-                _currentEffect = effect;
-
-                EndDraw();
-                PrepareBatch();
-            }
-        }
-
-        internal void EndDraw() 
-        {
-            _batch.End();
-        }
-
-        internal void Unload() 
-        {
-            _batch.Dispose();
-        }
-
         private Vector2 ClampViewToLayout(Vector2 position)
         {
             float xMin, xMax, yMin, yMax;
@@ -215,49 +143,6 @@ namespace Reaper.Engine
             var min = new Vector2(xMin, yMin);
             var max = new Vector2(xMax, yMax);
             return Vector2.Clamp(position, min, max);
-        }
-
-        private void CreateBlackBars()
-        {
-            _gpu.Viewport = GetFullViewport();
-            _gpu.Clear(Color.Black);
-            _gpu.Viewport = GetLargestVirtualViewport();
-        }
-
-        private Viewport GetFullViewport()
-        {
-            return new Viewport
-            {
-                X = 0,
-                Y = 0,
-                Width = _gpu.PresentationParameters.BackBufferWidth,
-                Height = _gpu.PresentationParameters.BackBufferHeight
-            };
-        }
-
-        private Viewport GetLargestVirtualViewport()
-        {
-            // Start off assuming letterbox.
-            float targetAspectRatio = Width / (float)Height;
-            int screenWidth = _gpu.PresentationParameters.BackBufferWidth;
-            int screenHeight = _gpu.PresentationParameters.BackBufferHeight;
-            int width = screenWidth;
-            int height = (int)(screenWidth / targetAspectRatio + 0.5f);
-
-            // Check if we need pillarbox instead.
-            if (height > screenHeight)
-            {
-                height = screenHeight;
-                width = (int)(height * targetAspectRatio + .5f);
-            }
-
-            return new Viewport
-            {
-                X = screenWidth / 2 - width / 2,
-                Y = screenHeight / 2 - height / 2,
-                Width = width,
-                Height = height
-            };
         }
     }
 }

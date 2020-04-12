@@ -3,6 +3,8 @@ using Reaper.Engine;
 using System;
 using Reaper.Ogmo;
 using Reaper.Singletons;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Reaper
 {
@@ -11,21 +13,31 @@ namespace Reaper
         [STAThread]
         static void Main(string[] args)
         {
+            InvokeStaticDefinitionCtors();
+
             var settings = new GameSettings
             {
                 ViewportWidth = 640,
                 ViewportHeight = 360,
-                IsFullscreen = true,
+                IsFullscreen = false,
             };
 
             using (var game = new MainGame(settings))
             {
-                Definitions.Register();
                 game.Singletons.Register(new InputManager(game));
                 game.Singletons.Register(new GlobalInputHandler(game));
                 InputBindings.Initialize(game.Singletons.Get<InputManager>());
-                game.LoadOgmoLayout(args[0]);
+                game.LoadOgmoLayout("content/layouts/dungeon.json");
                 game.Run();
+            }
+        }
+
+        private static void InvokeStaticDefinitionCtors() 
+        {
+            var definitionClasses = typeof(Program).Assembly.GetTypes().Where(type => type.GetCustomAttributes(typeof(DefinitionAttribute), true).Length > 0);
+            foreach (var definitionClass in definitionClasses)
+            {
+                RuntimeHelpers.RunClassConstructor(definitionClass.TypeHandle);
             }
         }
     }

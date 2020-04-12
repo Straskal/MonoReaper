@@ -21,6 +21,12 @@ namespace Reaper.Engine
         Solid = Overlap | (1 << 1)
     }
 
+    public struct Overlap 
+    {
+        public Vector2 Depth;
+        public WorldObject Other;
+    }
+
     /// <summary>
     /// The layout grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
     /// 
@@ -87,55 +93,61 @@ namespace Reaper.Engine
             Add(worldObject);
         }
 
-        internal void UpdateType(WorldObject worldObject, SpatialType previous)
+        internal void UpdateType(WorldObject worldObject)
         {
-            if (previous != SpatialType.Pass) 
+            if (worldObject.PreviousSpatialType != SpatialType.Pass) 
                 Remove(worldObject);
 
             if (worldObject.SpatialType != SpatialType.Pass) 
                 Add(worldObject);
         }
 
-        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset)
+        public bool IsOverlapping(WorldObject worldObject, out Overlap overlap)
         {
-            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
-            return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid);
+            overlap = new Overlap();
+            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject);
+
+            if (overlappedObject != null)
+            {
+                overlap.Depth = worldObject.Bounds.GetIntersectionDepth(overlappedObject.Bounds);
+                overlap.Other = overlappedObject;
+                return true;
+            }
+            return false;
         }
 
-        public bool TestSolidOverlapOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
+        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
-            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
-            overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
-            return overlappedWorldObject != null;
+            overlap = new Overlap();
+            var bounds = worldObject.Bounds;
+            bounds.Offset(xOffset, yOffset);
+            var overlappedObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
+
+            if (overlappedObject != null)
+            {
+                overlap.Depth = bounds.GetIntersectionDepth(overlappedObject.Bounds);
+                overlap.Other = overlappedObject;
+                return true;
+            }
+            return false;
         }
 
-        public IEnumerable<WorldObject> QueryBounds(Rectangle bounds)
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds)
         {
-            return QueryCells(bounds).Where(other => other.Bounds.Intersects(bounds));
+            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()));
         }
 
-        private Rectangle GetOffsetBounds(WorldObject worldObject, float xOffset, float yOffset) 
-        {
-            var testedPosition = worldObject.Position + new Vector2(xOffset, yOffset);
-
-            return new Rectangle(
-                (int)Math.Round(testedPosition.X - worldObject.Origin.X),
-                (int)Math.Round(testedPosition.Y - worldObject.Origin.Y),
-                worldObject.Bounds.Width,
-                worldObject.Bounds.Height);
-        }
-
-        private IEnumerable<WorldObject> QueryCells(Rectangle bounds) 
+        private IEnumerable<WorldObject> QueryCells(WorldObjectBounds bounds) 
         {
             return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
         }
 
-        private IEnumerable<Point> GetOccupyingCells(Rectangle bounds) 
+        private IEnumerable<Point> GetOccupyingCells(WorldObjectBounds bounds) 
         {
             return GetBoundPointCells(bounds).Distinct();
         }
 
-        private IEnumerable<Point> GetBoundPointCells(Rectangle bounds) 
+        private IEnumerable<Point> GetBoundPointCells(WorldObjectBounds bounds) 
         {
             if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
                 yield return new Point(topLeftCol, topLeftRow);
@@ -154,7 +166,6 @@ namespace Reaper.Engine
         {
             column = (int)(position.X / _cellSize);
             row = (int)(position.Y / _cellSize);
-
             return column < _cells.GetLength(0) && row < _cells.GetLength(1);
         }
     }

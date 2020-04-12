@@ -32,10 +32,16 @@ namespace Reaper.Engine
                 singleton.Tick(gameTime);
         }
 
-        internal void Draw(LayoutView view)
+        internal void Draw(Renderer renderer, bool isDebugging)
         {
             foreach (var singleton in _singletons.Values)
-                singleton.Draw(view);
+                singleton.Draw(renderer);
+
+            if (isDebugging)
+            {
+                foreach (var singleton in _singletons.Values)
+                    singleton.DebugDraw(renderer);
+            }
         }
     }
 }

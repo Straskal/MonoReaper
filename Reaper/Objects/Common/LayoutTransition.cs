@@ -5,12 +5,17 @@ using System;
 
 namespace Reaper.Objects.Common
 {
+    [Definition]
     public static class LevelTransitionDefinition
     {
-        public static WorldObjectDefinition Method()
+        static LevelTransitionDefinition()
+        {
+            Definitions.Register(typeof(LevelTransitionDefinition), Definition);
+        }
+
+        public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();
-
             def.AddBehavior(wo => new LevelTransitionBehavior(wo));
             def.LoadFromOgmo((wo, oe) =>
             {
@@ -23,7 +28,6 @@ namespace Reaper.Objects.Common
                 wo.GetBehavior<LevelTransitionBehavior>().Level = oe.Values.Level;
                 wo.GetBehavior<LevelTransitionBehavior>().SpawnPoint = oe.Values.SpawnPoint;
             });
-
             return def;
         }
     }

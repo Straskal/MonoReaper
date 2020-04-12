@@ -15,15 +15,13 @@ namespace Reaper.Behaviors.Common
 
         public override void OnLayoutStarted()
         {
-            _player = Owner.Layout.Objects.GetFirstWithTag("player");
+            _player = Layout.Objects.GetFirstWithTag("player");
         }
 
         public override void Tick(GameTime gameTime)
         {
             if (Owner.Bounds.Intersects(_player.Bounds))
-            {
-                Owner.Layout.Game.LoadOgmoLayout(Level, SpawnPoint);
-            }
+                Game.LoadOgmoLayout(Level, SpawnPoint);
         }
     }
 }

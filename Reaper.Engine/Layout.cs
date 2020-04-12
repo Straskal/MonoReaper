@@ -18,6 +18,7 @@ namespace Reaper.Engine
         {
             _content = new ContentManager(game.Services, game.Content.RootDirectory);
 
+            Started = false;
             Game = game;
             Width = width;
             Height = height;
@@ -26,6 +27,7 @@ namespace Reaper.Engine
             Objects = new WorldObjectList(this, _content);
         }
 
+        public bool Started { get; private set; }
         public LayoutView View { get; }
         public LayoutGrid Grid { get; }
         public WorldObjectList Objects { get; }
@@ -48,6 +50,7 @@ namespace Reaper.Engine
 
         internal void Start() 
         {
+            Started = true;
             Objects.Start();
         }
 
@@ -63,21 +66,14 @@ namespace Reaper.Engine
             Objects.FrameEnd();
         }
 
-        internal void Draw(bool debug)
+        internal void Draw(Renderer renderer, bool debug)
         {
-            View.BeginDraw();
-            Objects.Draw(View);
-            Game.Singletons.Draw(View);
-
-            if (debug)
-                Objects.DebugDraw(View);
-
-            View.EndDraw();
+            Objects.Draw(renderer);
+            if (debug) Objects.DebugDraw(renderer);
         }
 
         internal void End() 
         {
-            View.Unload();
             _content.Unload();
         }
     }

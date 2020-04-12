@@ -17,12 +17,8 @@ namespace Reaper.Engine
 
         public MainGame Game { get; }
 
-        /// <summary>
-        /// Called once per frame, before behaviors.
-        /// </summary>
-        /// <param name="gameTime"></param>
         public virtual void Tick(GameTime gameTime) { }
-
-        public virtual void Draw(LayoutView view) { }
+        public virtual void Draw(Renderer renderer) { }
+        public virtual void DebugDraw(Renderer renderer) { }
     }
 }

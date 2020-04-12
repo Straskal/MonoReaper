@@ -16,7 +16,7 @@ namespace Reaper.Engine
         private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
-        private Rectangle _bounds = Rectangle.Empty;
+        private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
 
         internal WorldObject(Layout layout)
         {
@@ -25,13 +25,15 @@ namespace Reaper.Engine
             _behaviors = new List<Behavior>();
         }
 
-        public Vector2 PreviousPosition { get; private set; }
-        public Rectangle PreviousBounds { get; private set; }
-        public string[] Tags { get; set; }
+        public string[] Tags { get; set; } = new string[0];
         public bool IsMirrored { get; set; }
         public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
         public int ZOrder { get; set; }
         public Layout Layout { get; }
+
+        public Vector2 PreviousPosition { get; private set; }
+        public WorldObjectBounds PreviousBounds { get; private set; }
+        public SpatialType PreviousSpatialType { get; private set; }
 
         internal bool MarkedForDestroy { get; private set; }
 
@@ -40,29 +42,24 @@ namespace Reaper.Engine
             get => _type;
             set
             {
-                var previous = _type;
                 _type = value;
-
-                Layout.Grid.UpdateType(this, previous);
+                Layout.Grid.UpdateType(this);
             }
         }
 
-        /// <summary>
-        /// The world object's pixel perfect position. UpdateBBox() must be called after modifying this property.
-        /// </summary>
         public Vector2 Position
         {
             get => _position;
             set => _position = value;
         }
 
-        public int Width
+        public float Width
         {
             get => _bounds.Width;
             set => _bounds.Width = value;
         }
 
-        public int Height
+        public float Height
         {
             get => _bounds.Height;
             set => _bounds.Height = value;
@@ -74,7 +71,7 @@ namespace Reaper.Engine
             set => _origin = value;
         }
 
-        public Rectangle Bounds
+        public WorldObjectBounds Bounds
         {
             get => _bounds;
             set => _bounds = value;
@@ -91,72 +88,27 @@ namespace Reaper.Engine
             return behavior != null;
         }
 
-        /// <summary>
-        /// Move the object on the x axis and perform stepped collision checks at pixel perfect positions.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public bool MoveXAndCollide(float amount, out WorldObject worldObject)
+        public void SetX(float x) 
         {
-            worldObject = null;
-
-            int pixelsToMove = (int)Math.Round(amount);
-
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-
-                while (pixelsToMove != 0)
-                {
-                    if (Layout.Grid.TestSolidOverlapOffset(this, sign, 0, out var collision))
-                    {
-                        worldObject = collision;
-                        return true;
-                    }
-
-                    _position.X += sign;
-                    pixelsToMove -= sign;
-
-                    UpdateBBox();
-                }
-            }
-
-            return false;
+            _position.X = x;
         }
 
-        /// <summary>
-        /// Move the object on the y axis and perform stepped collision checks at pixel perfect positions.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public bool MoveYAndCollide(float amount, out WorldObject worldObject)
+        public void SetY(float y)
         {
-            worldObject = null;
+            _position.Y = y;
+        }
 
-            int pixelsToMove = (int)Math.Round(amount);
+        public void Move(float x, float y) 
+        {
+            _position.X += x;
+            _position.Y += y;
+            UpdateBBox();
+        }
 
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-
-                while (pixelsToMove != 0)
-                {
-                    if (Layout.Grid.TestSolidOverlapOffset(this, 0, sign, out var collision))
-                    {
-                        worldObject = collision;
-                        return true;
-                    }
-
-                    _position.Y += sign;
-                    pixelsToMove -= sign;
-
-                    UpdateBBox();
-                }
-            }
-
-            return false;
+        public void Move(Vector2 direction)
+        {
+            _position += direction;
+            UpdateBBox();
         }
 
         /// <summary>
@@ -164,9 +116,10 @@ namespace Reaper.Engine
         /// </summary>
         public void UpdateBBox()
         {
-            _bounds.X = (int)Math.Round(Position.X - Origin.X);
-            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
+            if (MarkedForDestroy)
+                return;
 
+            InternalUpdateBBox();
             Layout.Grid.Update(this);
         }
 
@@ -178,6 +131,12 @@ namespace Reaper.Engine
             Layout.Destroy(this);
         }
 
+        public void InternalUpdateBBox()
+        {
+            _bounds.X = Position.X - Origin.X;
+            _bounds.Y = Position.Y - Origin.Y;
+        }
+
         internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
             _behaviors.Add(createFunc?.Invoke(this));
@@ -186,59 +145,41 @@ namespace Reaper.Engine
         internal void Load(ContentManager contentManager)
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.Load(contentManager);
-            }
         }
 
         internal void OnCreated()
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.OnOwnerCreated();
-            }
         }
 
         internal void OnLayoutStarted()
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.OnLayoutStarted();
-            }
         }
 
         internal void Tick(GameTime gameTime)
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.Tick(gameTime);
-            }
         }
 
         internal void PostTick(GameTime gameTime)
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.PostTick(gameTime);
-            }
         }
 
-        internal void Draw(LayoutView view)
+        internal void Draw(Renderer renderer)
         {
             foreach (var behavior in _behaviors)
-            {
-                behavior.Draw(view);
-            }
+                behavior.Draw(renderer);
         }
 
-        internal void DebugDraw(LayoutView view)
+        internal void DebugDraw(Renderer renderer)
         {
-            var destination = new Rectangle(
-              (int)(Position.X - Origin.X),
-              (int)(Position.Y - Origin.Y),
-              Bounds.Width,
-              Bounds.Height);
-
             const float opacity = 0.3f;
             Color color;
 
@@ -255,26 +196,23 @@ namespace Reaper.Engine
                     break;
             }
 
-            view.DrawRectangle(destination, color);
+            renderer.DrawRectangle(Bounds.ToRectangle(), color);
 
             foreach (var behavior in _behaviors)
-            {
-                behavior.DebugDraw(view);
-            }
+                behavior.DebugDraw(renderer);
         }
 
         internal void OnDestroyed()
         {
             foreach (var behavior in _behaviors)
-            {
                 behavior.OnOwnerDestroyed();
-            }
         }
 
-        internal void UpdatePreviousPosition()
+        internal void UpdatePreviousFrameData()
         {
             PreviousPosition = Position;
             PreviousBounds = Bounds;
+            PreviousSpatialType = SpatialType;
         }
 
         /// <summary>

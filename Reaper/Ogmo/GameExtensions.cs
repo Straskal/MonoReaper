@@ -10,7 +10,6 @@ using System.Linq;
 
 using AssetPaths = Reaper.Constants.AssetPaths;
 using LayerNames = Reaper.Constants.Layers;
-using ObjectDefinitions = Reaper.Objects.Constants;
 
 namespace Reaper.Ogmo
 {
@@ -23,7 +22,7 @@ namespace Reaper.Ogmo
             using (var sr = new StreamReader(filename))
                 map = JsonConvert.DeserializeObject<OgmoMap>(sr.ReadToEnd());
 
-            var layout = game.GetEmptyLayout(map.Values.SpatialCellSize, map.Width, map.Height);
+            var layout = new Layout(game, map.Values.SpatialCellSize, map.Width, map.Height);
             layout.View.OffsetX = map.Values.OffsetX;
             layout.View.OffsetY = map.Values.OffsetY;
 
@@ -56,12 +55,12 @@ namespace Reaper.Ogmo
                 // If there are many spawn points and no default was given, just choose the first one.
                 if (string.IsNullOrEmpty(spawnPoint)) 
                 {
-                    var firstSpawnPoint = entities.First(e => e.Name == ObjectDefinitions.Player);
-                    entities.RemoveAll(e => e.Name == ObjectDefinitions.Player && e != firstSpawnPoint);
+                    var firstSpawnPoint = entities.First(e => e.Name == "overworld_player_spawn");
+                    entities.RemoveAll(e => e.Name == "overworld_player_spawn" && e != firstSpawnPoint);
                 }
                 else 
                 {
-                    entities.RemoveAll(e => e.Name == ObjectDefinitions.Player && spawnPoint != e.Values.SpawnPointName);
+                    entities.RemoveAll(e => e.Name == "overworld_player_spawn" && spawnPoint != e.Values.SpawnPointName);
                 }
             }
 
