@@ -26,6 +26,12 @@ namespace Reaper.Engine
             throw new ArgumentException($"{typeof(T)} is not a registered singleton.");
         }
 
+        internal void HandleInput(GameTime gameTime) 
+        {
+            foreach (var singleton in _singletons.Values)
+                singleton.HandleInput(gameTime);
+        }
+
         internal void Tick(GameTime gameTime)
         {
             foreach (var singleton in _singletons.Values) 

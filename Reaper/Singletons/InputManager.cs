@@ -121,7 +121,7 @@ namespace Reaper.Singletons
 
         public InputManager(MainGame game) : base(game) { }
 
-        public override void Tick(GameTime gameTime)
+        public override void HandleInput(GameTime gameTime)
         {
             _state.PreviousKeyState = _state.KeyState;
             _state.PreviousGamePadState = _state.GamePadState;

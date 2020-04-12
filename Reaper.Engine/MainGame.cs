@@ -9,6 +9,7 @@ namespace Reaper.Engine
         private readonly Renderer _renderer;
 
         private Layout _nextLayout;
+        private bool _paused;
 
         // Debugging helper
         private bool _isDebugging;
@@ -70,6 +71,11 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
+        public void TogglePaused() 
+        {
+            _paused = !_paused;
+        }
+
         public void ToggleDebug()
         {
             _isDebugging = !_isDebugging;
@@ -83,11 +89,16 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
-            HandleLayoutChange();
+            Singletons.HandleInput(gameTime);
 
-            Singletons.Tick(gameTime);
-            CurrentLayout.Tick(gameTime);
-            CurrentLayout.PostTick(gameTime);
+            if (!_paused) 
+            {
+                HandleLayoutChange();
+
+                Singletons.Tick(gameTime);
+                CurrentLayout.Tick(gameTime);
+                CurrentLayout.PostTick(gameTime);
+            }
 
             base.Update(gameTime);
         }

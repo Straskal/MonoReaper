@@ -7,13 +7,16 @@ namespace Reaper.Singletons
     {
         public GlobalInputHandler(MainGame game) : base(game) { }
 
-        public override void Tick(GameTime gameTime)
+        public override void HandleInput(GameTime gameTime)
         {
             var inputManager = Game.Singletons.Get<InputManager>();
             var toggleFullscreen = inputManager.GetAction<InputManager.PressedAction>("toggleFullscreen");
+            var togglePaused = inputManager.GetAction<InputManager.PressedAction>("togglePaused");
             var toggleDebug = inputManager.GetAction<InputManager.PressedAction>("toggleDebug");
             var exitGame = inputManager.GetAction<InputManager.PressedAction>("exitGame");
+
             if (toggleFullscreen.WasPressed()) Game.ToggleFullscreen();
+            if (togglePaused.WasPressed()) Game.TogglePaused();
             if (toggleDebug.WasPressed()) Game.ToggleDebug();
             if (exitGame.WasPressed()) Game.Exit();
         }

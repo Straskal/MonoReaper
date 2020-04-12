@@ -2,24 +2,24 @@
 using Reaper.Engine;
 using Reaper.Objects.Common;
 using Reaper.Singletons;
-using System;
 
 namespace Reaper.Behaviors.Common
 {
     public class PlayerBehavior : Behavior
     {
+        private const float ATTACK_TIME_BUFFER = 0.5f;
+
         private SpriteSheetBehavior _spriteSheetBehavior;
         private InputManager.AxisAction _horizontalAction;
         private InputManager.AxisAction _verticalAction;
         private InputManager.AxisAction _attackHorizontalAction;
         private InputManager.AxisAction _attackVerticalAction;
 
-        private const float _attackTimer = 0.5f;
-        private float _attackTime;
+        private float _attackTimer;
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
-        public Vector2 Direction { get; private set; } = Reaper.Direction.Down;
+        public Vector2 Direction { get; private set; } = new Vector2(0, 1f);
         public float Speed { get; set; } = 100f;
 
         public override void OnOwnerCreated()
@@ -39,30 +39,29 @@ namespace Reaper.Behaviors.Common
             Vector2 movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
 
             if (movement != Vector2.Zero)
-            {
                 Direction = movement;
 
-                if (movement.LengthSquared() > 0f)
-                    movement.Normalize();
+            if (movement.LengthSquared() > 0f)
+                movement.Normalize();
 
-                movement *= Speed * elapsedTime;
-
-                Owner.MoveAndCollide(movement, out var _);
-            }
-
+            Owner.MoveAndCollide(movement * Speed * elapsedTime, out var _);
+            CheckAttack(gameTime);
             _spriteSheetBehavior.Play(movement == Vector2.Zero ? "idle" : "walk");
+        }
 
+        public void CheckAttack(GameTime gameTime) 
+        {
             var attackDirection = new Vector2(_attackHorizontalAction.GetAxis(), _attackVerticalAction.GetAxis());
 
             if (attackDirection != Vector2.Zero)
             {
-                if (gameTime.TotalGameTime.TotalSeconds > _attackTime)
+                if (gameTime.TotalGameTime.TotalSeconds > _attackTimer)
                 {
                     var proj = Layout.Spawn(Projectile.Definition(), Owner.Position);
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
                     proj.GetBehavior<ProjectileBehavior>().Speed = 150f;
 
-                    _attackTime = (float)gameTime.TotalGameTime.TotalSeconds + _attackTimer;
+                    _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
                 }
             }
         }

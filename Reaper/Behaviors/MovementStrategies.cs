@@ -8,8 +8,11 @@ namespace Reaper.Behaviors
         public static bool MoveAndCollide(this WorldObject worldObject, Vector2 direction, out Overlap overlap)
         {
             overlap = new Overlap();
-            bool result = false;
 
+            if (direction == Vector2.Zero)
+                return false;
+
+            bool result = false;
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, direction.X, 0f, out var overlapX))
             {
                 direction.X += overlapX.Depth.X;

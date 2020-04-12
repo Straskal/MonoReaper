@@ -17,6 +17,7 @@ namespace Reaper.Engine
 
         public MainGame Game { get; }
 
+        public virtual void HandleInput(GameTime gameTime) { }
         public virtual void Tick(GameTime gameTime) { }
         public virtual void Draw(Renderer renderer) { }
         public virtual void DebugDraw(Renderer renderer) { }

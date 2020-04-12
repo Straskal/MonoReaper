@@ -7,29 +7,14 @@ namespace Reaper
     {
         public static void Initialize(InputManager input) 
         {
-            var horizontal = input.NewAxisAction("horizontal");
-            horizontal.AddKeys(Keys.A, Keys.D);
-
-            var vertical = input.NewAxisAction("vertical");
-            vertical.AddKeys(Keys.W, Keys.S);
-
-            var attackHorizontal = input.NewAxisAction("attackHorizontal");
-            attackHorizontal.AddKeys(Keys.Left, Keys.Right);
-
-            var attackVertical = input.NewAxisAction("attackVertical");
-            attackVertical.AddKeys(Keys.Up, Keys.Down);
-
-            var attack = input.NewPressedAction("attack");
-            attack.AddKey(Keys.Left);
-
-            var toggleFullscreen = input.NewPressedAction("toggleFullscreen");
-            toggleFullscreen.AddKey(Keys.F);
-
-            var toggleDebug = input.NewPressedAction("toggleDebug");
-            toggleDebug.AddKey(Keys.OemTilde);
-
-            var exitGameAction = input.NewPressedAction("exitGame");
-            exitGameAction.AddKey(Keys.Escape);
+            input.NewAxisAction("horizontal").AddKeys(Keys.A, Keys.D);
+            input.NewAxisAction("vertical").AddKeys(Keys.W, Keys.S);
+            input.NewAxisAction("attackHorizontal").AddKeys(Keys.Left, Keys.Right);
+            input.NewAxisAction("attackVertical").AddKeys(Keys.Up, Keys.Down);
+            input.NewPressedAction("toggleFullscreen").AddKey(Keys.F);
+            input.NewPressedAction("togglePaused").AddKey(Keys.P);
+            input.NewPressedAction("toggleDebug").AddKey(Keys.OemTilde);
+            input.NewPressedAction("exitGame").AddKey(Keys.Escape);
         }
     }
 }
