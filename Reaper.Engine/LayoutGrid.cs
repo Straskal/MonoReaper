@@ -67,7 +67,7 @@ namespace Reaper.Engine
             if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
-            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
+            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds.ToRectangle()))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
             }
@@ -78,7 +78,7 @@ namespace Reaper.Engine
             if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
-            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
+            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds.ToRectangle()))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
             }
@@ -102,26 +102,7 @@ namespace Reaper.Engine
                 Add(worldObject);
         }
 
-        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset)
-        {
-            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
-            return QueryBounds(bounds).Any(other => other != worldObject && other.IsSolid);
-        }
-
-        public bool IsColliding(WorldObject worldObject, out WorldObject overlappedWorldObject)
-        {
-            overlappedWorldObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
-            return overlappedWorldObject != null;
-        }
-
-        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
-        {
-            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
-            overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
-            return overlappedWorldObject != null;
-        }
-
-        public bool IsCollidingAtOffsetOk(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
+        public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();
             worldObject.Position += new Vector2(xOffset, yOffset);
@@ -138,29 +119,9 @@ namespace Reaper.Engine
             return false;
         }
 
-        public bool IsOverlappingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out WorldObject overlappedWorldObject)
-        {
-            var bounds = GetOffsetBounds(worldObject, xOffset, yOffset);
-            overlappedWorldObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject);
-            return overlappedWorldObject != null;
-        }
-
         public IEnumerable<WorldObject> QueryBounds(WorldObject bounds)
         {
-            return QueryCells(bounds.Bounds).Where(other => bounds.GetIntersectionDepth(other) != Vector2.Zero);
-        }
-
-        public IEnumerable<WorldObject> QueryBounds(Rectangle bounds)
-        {
-            return QueryCells(bounds).Where(other => other.Bounds.Intersects(bounds));
-        }
-
-        private Rectangle GetOffsetBounds(WorldObject worldObject, float xOffset, float yOffset) 
-        {
-            var bounds = worldObject.Bounds;
-            bounds.X += (int)Math.Round(xOffset);
-            bounds.Y += (int)Math.Round(yOffset);
-            return bounds;
+            return QueryCells(bounds.Bounds.ToRectangle()).Where(other => bounds.GetIntersectionDepth(other) != Vector2.Zero);
         }
 
         private IEnumerable<WorldObject> QueryCells(Rectangle bounds) 

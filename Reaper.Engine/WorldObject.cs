@@ -16,7 +16,7 @@ namespace Reaper.Engine
         private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
-        private Rectangle _bounds = Rectangle.Empty;
+        private AABB _bounds = AABB.Empty;
 
         internal WorldObject(Layout layout)
         {
@@ -32,7 +32,7 @@ namespace Reaper.Engine
         public Layout Layout { get; }
 
         public Vector2 PreviousPosition { get; private set; }
-        public Rectangle PreviousBounds { get; private set; }
+        public AABB PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
 
         internal bool MarkedForDestroy { get; private set; }
@@ -74,7 +74,7 @@ namespace Reaper.Engine
             set => _origin = value;
         }
 
-        public Rectangle Bounds
+        public AABB Bounds
         {
             get => _bounds;
             set => _bounds = value;
@@ -106,126 +106,6 @@ namespace Reaper.Engine
             _position.X += x;
             _position.Y += y;
             UpdateBBox();
-        }
-
-        /// <summary>
-        /// Move the object on the x axis and perform stepped overlap checks at pixel perfect positions.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public IEnumerable<WorldObject> MoveXAndOverlap(float amount)
-        {
-            int pixelsToMove = (int)Math.Round(amount);
-
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-                while (pixelsToMove != 0)
-                {
-                    if (MarkedForDestroy)
-                        break;
-
-                    if (Layout.Grid.IsOverlappingAtOffset(this, sign, 0, out var collision))
-                        yield return collision;
-
-                    _position.X += sign;
-                    pixelsToMove -= sign;
-                    UpdateBBox();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Move the object on the y axis and perform stepped overlap checks at pixel perfect positions.
-        /// Returns each overlap in the stepped movement.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public IEnumerable<WorldObject> MoveYAndOverlap(float amount)
-        {
-            int pixelsToMove = (int)Math.Round(amount);
-
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-                while (pixelsToMove != 0)
-                {
-                    if (MarkedForDestroy)
-                        break;
-
-                    if (Layout.Grid.IsOverlappingAtOffset(this, sign, 0, out var collision))
-                        yield return collision;
-
-                    _position.Y += sign;
-                    pixelsToMove -= sign;
-                    UpdateBBox();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Move the object on the x axis and perform stepped collision checks at pixel perfect positions.
-        /// Returns each overlap in the stepped movement.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public bool MoveXAndCollide(float amount, out WorldObject worldObject)
-        {
-            worldObject = null;
-            int pixelsToMove = (int)Math.Round(amount);
-
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-
-                while (pixelsToMove != 0)
-                {
-                    if (Layout.Grid.IsCollidingAtOffset(this, sign, 0, out var collision))
-                    {
-                        worldObject = collision;
-                        return true;
-                    }
-
-                    _position.X += sign;
-                    pixelsToMove -= sign;
-                    UpdateBBox();
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Move the object on the y axis and perform stepped collision checks at pixel perfect positions.
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <param name="worldObject"></param>
-        /// <returns></returns>
-        public bool MoveYAndCollide(float amount, out WorldObject worldObject)
-        {
-            worldObject = null;
-            int pixelsToMove = (int)Math.Round(amount);
-
-            if (pixelsToMove != 0)
-            {
-                int sign = Math.Sign(pixelsToMove);
-
-                while (pixelsToMove != 0)
-                {
-                    if (Layout.Grid.IsCollidingAtOffset(this, 0, sign, out var collision))
-                    {
-                        worldObject = collision;
-                        return true;
-                    }
-
-                    _position.Y += sign;
-                    pixelsToMove -= sign;
-                    UpdateBBox();
-                }
-            }
-            return false;
         }
 
         /// <summary>
@@ -313,7 +193,7 @@ namespace Reaper.Engine
                     break;
             }
 
-            renderer.DrawRectangle(Bounds, color);
+            renderer.DrawRectangle(Bounds.ToRectangle(), color);
 
             foreach (var behavior in _behaviors)
                 behavior.DebugDraw(renderer);

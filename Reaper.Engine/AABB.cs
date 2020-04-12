@@ -5,15 +5,36 @@ namespace Reaper.Engine
 {
     public struct AABB
     {
+        public AABB(float x, float y, int width, int height) 
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+        }
+
         public float X;
         public float Y;
-        public float Width;
-        public float Height;
+        public int Width;
+        public int Height;
 
         public float Left => X;
         public float Right => X + Width;
         public float Top => Y;
         public float Bottom => Y + Height;
+
+        public static AABB Empty => new AABB();
+
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle((int)X, (int)Y, Width, Height);
+        }
+
+        public void Offset(float x, float y) 
+        {
+            X += x;
+            Y += y;
+        }
 
         public bool Intersects(AABB aabb2)
         {

@@ -14,7 +14,7 @@ namespace Reaper.Behaviors.Common
         private InputManager.AxisAction _attackHorizontalAction;
         private InputManager.AxisAction _attackVerticalAction;
 
-        private float _attackTimer = 0.5f;
+        private const float _attackTimer = 0.5f;
         private float _attackTime;
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
@@ -47,12 +47,12 @@ namespace Reaper.Behaviors.Common
 
                 movement *= Speed * elapsedTime;
 
-                if (Layout.Grid.IsCollidingAtOffsetOk(Owner, movement.X, 0f, out var overlapX))
+                if (Layout.Grid.IsCollidingAtOffset(Owner, movement.X, 0f, out var overlapX))
                 {
                     movement.X += overlapX.Depth.X;
                 }
 
-                if (Layout.Grid.IsCollidingAtOffsetOk(Owner, 0f, movement.Y, out var overlapY))
+                if (Layout.Grid.IsCollidingAtOffset(Owner, 0f, movement.Y, out var overlapY))
                 {
                     movement.Y += overlapY.Depth.Y;
                 }
