@@ -102,6 +102,20 @@ namespace Reaper.Engine
                 Add(worldObject);
         }
 
+        public bool IsOverlapping(WorldObject worldObject, out Overlap overlap)
+        {
+            overlap = new Overlap();
+            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject);
+
+            if (overlappedObject != null)
+            {
+                overlap.Depth = worldObject.Bounds.GetIntersectionDepth(overlappedObject.Bounds);
+                overlap.Other = overlappedObject;
+                return true;
+            }
+            return false;
+        }
+
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();

@@ -53,13 +53,13 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
-        public int Width
+        public float Width
         {
             get => _bounds.Width;
             set => _bounds.Width = value;
         }
 
-        public int Height
+        public float Height
         {
             get => _bounds.Height;
             set => _bounds.Height = value;
@@ -102,6 +102,12 @@ namespace Reaper.Engine
         {
             _position.X += x;
             _position.Y += y;
+            UpdateBBox();
+        }
+
+        public void Move(Vector2 direction)
+        {
+            _position += direction;
             UpdateBBox();
         }
 

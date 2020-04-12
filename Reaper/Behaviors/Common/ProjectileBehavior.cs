@@ -13,16 +13,21 @@ namespace Reaper.Behaviors.Common
 
         public override void Tick(GameTime gameTime)
         {
+            if (Direction.Length() > 1f)
+                Direction.Normalize();
+
+            if (Owner.MoveAndOverlap(Direction * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, out var overlap)) 
+                CheckOverlap(overlap);
         }
 
-        private void CheckOverlap(WorldObject overlap) 
+        private void CheckOverlap(Overlap overlap) 
         {
-            if (overlap.Tags.Contains("enemy"))
+            if (overlap.Other.Tags.Contains("enemy"))
             {
-                overlap.Destroy();
+                overlap.Other.Destroy();
                 Owner.Destroy();
             }
-            else if (overlap.IsSolid)
+            else if (overlap.Other.IsSolid)
                 Owner.Destroy();
         }
     }

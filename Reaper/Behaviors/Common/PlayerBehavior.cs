@@ -47,17 +47,7 @@ namespace Reaper.Behaviors.Common
 
                 movement *= Speed * elapsedTime;
 
-                if (Layout.Grid.IsCollidingAtOffset(Owner, movement.X, 0f, out var overlapX))
-                {
-                    movement.X += overlapX.Depth.X;
-                }
-
-                if (Layout.Grid.IsCollidingAtOffset(Owner, 0f, movement.Y, out var overlapY))
-                {
-                    movement.Y += overlapY.Depth.Y;
-                }
-
-                Owner.Move(movement.X, movement.Y);
+                Owner.MoveAndCollide(movement, out var _);
             }
 
             _spriteSheetBehavior.Play(movement == Vector2.Zero ? "idle" : "walk");
@@ -70,7 +60,7 @@ namespace Reaper.Behaviors.Common
                 {
                     var proj = Layout.Spawn(Projectile.Definition(), Owner.Position);
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
-                    proj.GetBehavior<ProjectileBehavior>().Speed = 200f;
+                    proj.GetBehavior<ProjectileBehavior>().Speed = 150f;
 
                     _attackTime = (float)gameTime.TotalGameTime.TotalSeconds + _attackTimer;
                 }
