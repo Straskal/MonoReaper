@@ -52,7 +52,7 @@
   "entities": [
     {
       "exportID": "48795505",
-      "name": "LevelTransition",
+      "name": "LayoutTransition",
       "limit": -1,
       "size": {"x": 16, "y": 16},
       "origin": {"x": 0, "y": 0},
@@ -123,7 +123,9 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": ["common"],
-      "values": []
+      "values": [
+        {"name": "SpawnPointName", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+      ]
     },
     {
       "exportID": "48314842",

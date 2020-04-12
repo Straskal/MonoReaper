@@ -4,7 +4,7 @@
   "height": 256,
   "offsetX": 0,
   "offsetY": 0,
-  "values": {"SpatialCellSize": 256, "EntrySpawnPoint": "Default", "OffsetX": 0, "OffsetY": 0},
+  "values": {"SpatialCellSize": 256, "EntrySpawnPoint": "", "OffsetX": 0, "OffsetY": 0},
   "layers": [
     {
       "name": "worldobjects",
@@ -20,56 +20,46 @@
           "name": "OverworldPlayerSpawnPoint",
           "id": 0,
           "_eid": "29682872",
-          "x": 112,
-          "y": 96,
+          "x": 48,
+          "y": 128,
           "originX": 16,
           "originY": 32,
-          "values": {"SpawnPointName": "Default"}
+          "values": {"SpawnPointName": "left"}
         },
         {"name": "Blob", "id": 1, "_eid": "48314842", "x": 336, "y": 96, "originX": 16, "originY": 16},
         {
           "name": "LayoutTransition",
           "id": 2,
           "_eid": "48795505",
-          "x": 448,
+          "x": -16,
           "y": 96,
           "width": 16,
           "height": 64,
           "originX": 0,
           "originY": 0,
-          "values": {"Level": "dungeon2.json", "SpawnPoint": "left"}
+          "values": {"Level": "dungeon.json", "SpawnPoint": "right"}
         },
         {
           "name": "LayoutTransition",
           "id": 3,
           "_eid": "48795505",
           "x": 192,
-          "y": 256,
+          "y": -16,
           "width": 32,
           "height": 16,
           "originX": 0,
           "originY": 0,
-          "values": {"Level": "dungeon2.json", "SpawnPoint": "top"}
+          "values": {"Level": "dungeon.json", "SpawnPoint": "bottom"}
         },
         {
           "name": "OverworldPlayerSpawnPoint",
           "id": 4,
           "_eid": "29682872",
           "x": 208,
-          "y": 208,
+          "y": 48,
           "originX": 16,
           "originY": 16,
-          "values": {"SpawnPointName": "bottom"}
-        },
-        {
-          "name": "OverworldPlayerSpawnPoint",
-          "id": 5,
-          "_eid": "29682872",
-          "x": 416,
-          "y": 128,
-          "originX": 16,
-          "originY": 16,
-          "values": {"SpawnPointName": "right"}
+          "values": {"SpawnPointName": "top"}
         }
       ]
     },
@@ -83,7 +73,7 @@
       "gridCellsX": 14,
       "gridCellsY": 8,
       "tileset": "dungeon",
-      "data": [7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 6, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 4, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 5],
+      "data": [7, 3, 3, 3, 3, 3, -1, 3, 3, 3, 3, 3, 3, 6, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5],
       "exportMode": 0,
       "arrayMode": 0
     },
@@ -97,7 +87,7 @@
       "gridCellsX": 14,
       "gridCellsY": 8,
       "tileset": "dungeon",
-      "data": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1],
+      "data": [-1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       "exportMode": 0,
       "arrayMode": 0
     }

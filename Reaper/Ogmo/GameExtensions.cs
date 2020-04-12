@@ -55,12 +55,12 @@ namespace Reaper.Ogmo
                 // If there are many spawn points and no default was given, just choose the first one.
                 if (string.IsNullOrEmpty(spawnPoint)) 
                 {
-                    var firstSpawnPoint = entities.First(e => e.Name == "overworld_player_spawn");
-                    entities.RemoveAll(e => e.Name == "overworld_player_spawn" && e != firstSpawnPoint);
+                    var firstSpawnPoint = entities.First(e => e.Name == "OverworldPlayerSpawnPoint");
+                    entities.RemoveAll(e => e.Name == "OverworldPlayerSpawnPoint" && e != firstSpawnPoint);
                 }
                 else 
                 {
-                    entities.RemoveAll(e => e.Name == "overworld_player_spawn" && spawnPoint != e.Values.SpawnPointName);
+                    entities.RemoveAll(e => e.Name == "OverworldPlayerSpawnPoint" && spawnPoint != e.Values.SpawnPointName);
                 }
             }
 
@@ -78,7 +78,7 @@ namespace Reaper.Ogmo
 
         private static bool HasManySpawnPoints(List<OgmoEntity> entities) 
         {
-            return entities.Count(e => e.Name == "player") > 1;
+            return entities.Count(e => e.Name == "OverworldPlayerSpawnPoint") > 1;
         }
 
         private static void LoadSolidsLayer(this Layout layout, OgmoLayer layer, bool solid = true)

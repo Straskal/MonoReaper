@@ -6,11 +6,11 @@ using System;
 namespace Reaper.Objects.Common
 {
     [Definition]
-    public static class LevelTransitionDefinition
+    public static class LayoutTransition
     {
-        static LevelTransitionDefinition()
+        static LayoutTransition()
         {
-            Definitions.Register(typeof(LevelTransitionDefinition), Definition);
+            Definitions.Register(typeof(LayoutTransition), Definition);
         }
 
         public static WorldObjectDefinition Definition()
