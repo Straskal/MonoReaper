@@ -1,4 +1,5 @@
 ﻿using Reaper.Behaviors.Common;
+using Reaper.Behaviors.Enemies;
 using Reaper.Engine;
 
 namespace Reaper.Objects.Enemies
@@ -17,6 +18,7 @@ namespace Reaper.Objects.Enemies
             def.SetTags("enemy");
             def.SetSize(16, 16);
             def.SetOrigin(8, 8);
+            def.AddBehavior(wo => new BlobBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetBlobAnimations()));
             return def;
         }

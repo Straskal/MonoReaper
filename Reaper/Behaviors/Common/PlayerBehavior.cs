@@ -57,7 +57,8 @@ namespace Reaper.Behaviors.Common
             {
                 if (gameTime.TotalGameTime.TotalSeconds > _attackTimer)
                 {
-                    var proj = Layout.Spawn(Projectile.Definition(), Owner.Position);
+                    var proj = Layout.Spawn(Projectile.Definition(), Owner.GetPoint("projectileSpawn"));
+                    proj.ZOrder = Owner.ZOrder + 1;
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
                     proj.GetBehavior<ProjectileBehavior>().Speed = 150f;
 

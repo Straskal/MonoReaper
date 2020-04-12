@@ -18,6 +18,11 @@ namespace Reaper.Engine
             _buildSteps.Add(worldObject => worldObject.Tags = tags);
         }
 
+        public void AddPoint(string name, int x, int y)
+        {
+            _buildSteps.Add(worldObject => worldObject.AddPoint(name, x, y));
+        }
+
         public void SetSize(int width, int height) 
         {
             _buildSteps.Add(worldObject => worldObject.Bounds = new WorldObjectBounds(0f, 0f, width, height));

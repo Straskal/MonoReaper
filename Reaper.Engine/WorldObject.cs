@@ -17,6 +17,7 @@ namespace Reaper.Engine
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
         private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
+        private Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
 
         internal WorldObject(Layout layout)
         {
@@ -75,6 +76,19 @@ namespace Reaper.Engine
         {
             get => _bounds;
             set => _bounds = value;
+        }
+
+        public void AddPoint(string name, float x, float y) 
+        {
+            _points.Add(name, new Vector2(x, y));
+        }
+
+        public Vector2 GetPoint(string name) 
+        {
+            if (!_points.TryGetValue(name, out var point))
+                throw new ArgumentException($"World object does not have point {point}");
+
+            return new Vector2(_bounds.Left, _bounds.Top) + point;
         }
 
         public T GetBehavior<T>() where T : Behavior
