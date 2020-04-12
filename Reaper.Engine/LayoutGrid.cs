@@ -105,36 +105,35 @@ namespace Reaper.Engine
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();
-            worldObject.Position += new Vector2(xOffset, yOffset);
-            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
+            var bounds = worldObject.Bounds;
+            bounds.Offset(xOffset, yOffset);
+            var overlappedObject = QueryBounds(bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
 
             if (overlappedObject != null)
             {
-                overlap.Depth = worldObject.GetIntersectionDepth(overlappedObject);
+                overlap.Depth = bounds.GetIntersectionDepth(overlappedObject.Bounds);
                 overlap.Other = overlappedObject;
-                worldObject.Position -= new Vector2(xOffset, yOffset);
                 return true;
             }
-            worldObject.Position -= new Vector2(xOffset, yOffset);
             return false;
         }
 
-        public IEnumerable<WorldObject> QueryBounds(AABB bounds)
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds)
         {
-            return QueryCells(bounds).Where(other => bounds.Intersects(other.Bounds));
+            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()));
         }
 
-        private IEnumerable<WorldObject> QueryCells(AABB bounds) 
+        private IEnumerable<WorldObject> QueryCells(WorldObjectBounds bounds) 
         {
             return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
         }
 
-        private IEnumerable<Point> GetOccupyingCells(AABB bounds) 
+        private IEnumerable<Point> GetOccupyingCells(WorldObjectBounds bounds) 
         {
             return GetBoundPointCells(bounds).Distinct();
         }
 
-        private IEnumerable<Point> GetBoundPointCells(AABB bounds) 
+        private IEnumerable<Point> GetBoundPointCells(WorldObjectBounds bounds) 
         {
             if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
                 yield return new Point(topLeftCol, topLeftRow);

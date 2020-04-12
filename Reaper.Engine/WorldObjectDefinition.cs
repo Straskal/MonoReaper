@@ -20,7 +20,7 @@ namespace Reaper.Engine
 
         public void SetSize(int width, int height) 
         {
-            _buildSteps.Add(worldObject => worldObject.Bounds = new AABB(0f, 0f, width, height));
+            _buildSteps.Add(worldObject => worldObject.Bounds = new WorldObjectBounds(0f, 0f, width, height));
         }
 
         public void SetOrigin(int x, int y)

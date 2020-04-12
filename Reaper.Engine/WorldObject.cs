@@ -16,7 +16,7 @@ namespace Reaper.Engine
         private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
-        private AABB _bounds = AABB.Empty;
+        private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
 
         internal WorldObject(Layout layout)
         {
@@ -32,7 +32,7 @@ namespace Reaper.Engine
         public Layout Layout { get; }
 
         public Vector2 PreviousPosition { get; private set; }
-        public AABB PreviousBounds { get; private set; }
+        public WorldObjectBounds PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
 
         internal bool MarkedForDestroy { get; private set; }
@@ -53,9 +53,6 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
-        public float Left => Position.X - Origin.X;
-        public float Top => Position.Y - Origin.Y;
-
         public int Width
         {
             get => _bounds.Width;
@@ -74,7 +71,7 @@ namespace Reaper.Engine
             set => _origin = value;
         }
 
-        public AABB Bounds
+        public WorldObjectBounds Bounds
         {
             get => _bounds;
             set => _bounds = value;
@@ -130,8 +127,8 @@ namespace Reaper.Engine
 
         public void InternalUpdateBBox()
         {
-            _bounds.X = (int)Math.Round(Position.X - Origin.X);
-            _bounds.Y = (int)Math.Round(Position.Y - Origin.Y);
+            _bounds.X = Position.X - Origin.X;
+            _bounds.Y = Position.Y - Origin.Y;
         }
 
         internal void AddBehavior(Func<WorldObject, Behavior> createFunc)

@@ -3,9 +3,9 @@ using System;
 
 namespace Reaper.Engine
 {
-    public struct AABB
+    public struct WorldObjectBounds
     {
-        public AABB(float x, float y, int width, int height) 
+        public WorldObjectBounds(float x, float y, int width, int height) 
         {
             X = x;
             Y = y;
@@ -23,7 +23,7 @@ namespace Reaper.Engine
         public float Top => Y;
         public float Bottom => Y + Height;
 
-        public static AABB Empty => new AABB();
+        public static WorldObjectBounds Empty => new WorldObjectBounds();
 
         public Rectangle ToRectangle()
         {
@@ -36,12 +36,12 @@ namespace Reaper.Engine
             Y += y;
         }
 
-        public bool Intersects(AABB aabb2)
+        public bool Intersects(WorldObjectBounds aabb2)
         {
             return !(aabb2.Left > Right || aabb2.Right < Left || aabb2.Top > Bottom || aabb2.Bottom < Top);
         }
 
-        public Vector2 GetIntersectionDepth(AABB aabb2)
+        public Vector2 GetIntersectionDepth(WorldObjectBounds aabb2)
         {
             // Calculate half sizes.
             float halfWidthA = Width / 2f;
