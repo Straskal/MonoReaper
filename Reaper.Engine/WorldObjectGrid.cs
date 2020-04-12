@@ -52,7 +52,7 @@ namespace Reaper.Engine
     }
 
     /// <summary>
-    /// The layout grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
+    /// The grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
     /// 
     /// The layout is broken out into a grid, representing world space. When querying for objects, we only query the cells that the world object is in.
     /// Every world object has bounds. Bounds have 4 points: top left, top right, bottom left, bottom right.

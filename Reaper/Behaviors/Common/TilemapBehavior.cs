@@ -63,7 +63,7 @@ namespace Reaper.Behaviors.Common
 
             foreach (var tile in GetTileInfo())
             {
-                Owner.AddColliders(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
+                Owner.AddBounds(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
             }
         }
 
