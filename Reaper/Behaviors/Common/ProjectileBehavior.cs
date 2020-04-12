@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
-using System.Linq;
 
 namespace Reaper.Behaviors.Common
 {
@@ -22,9 +21,9 @@ namespace Reaper.Behaviors.Common
 
         private void CheckOverlap(Overlap overlap) 
         {
-            if (overlap.Other.Tags.Contains("enemy"))
+            if (overlap.Other.TryGetBehavior<IDamageable>(out var behavior))
             {
-                overlap.Other.Destroy();
+                behavior.Damage(1);
                 Owner.Destroy();
             }
             else if (overlap.Other.IsSolid)

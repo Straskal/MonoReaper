@@ -11,13 +11,21 @@ namespace Reaper.Engine
     /// </summary>
     public sealed class WorldObject
     {
+        struct Timer
+        {
+            public string Name;
+            public float Time;
+            public Action TimerCallback;
+        }
+
         private readonly List<Behavior> _behaviors;
 
         private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
         private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
-        private Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        private readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        private readonly List<Timer> _timers = new List<Timer>();
 
         internal WorldObject(Layout layout)
         {
@@ -78,12 +86,12 @@ namespace Reaper.Engine
             set => _bounds = value;
         }
 
-        public void AddPoint(string name, float x, float y) 
+        public void AddPoint(string name, float x, float y)
         {
             _points.Add(name, new Vector2(x, y));
         }
 
-        public Vector2 GetPoint(string name) 
+        public Vector2 GetPoint(string name)
         {
             if (!_points.TryGetValue(name, out var point))
                 throw new ArgumentException($"World object does not have point {point}");
@@ -91,18 +99,18 @@ namespace Reaper.Engine
             return new Vector2(_bounds.Left, _bounds.Top) + point;
         }
 
-        public T GetBehavior<T>() where T : Behavior
+        public T GetBehavior<T>() where T : class
         {
             return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
         }
 
-        public bool TryGetBehavior<T>(out T behavior) where T : Behavior
+        public bool TryGetBehavior<T>(out T behavior) where T : class
         {
             behavior = _behaviors.FirstOrDefault(b => b is T) as T;
             return behavior != null;
         }
 
-        public void SetX(float x) 
+        public void SetX(float x)
         {
             _position.X = x;
         }
@@ -112,7 +120,7 @@ namespace Reaper.Engine
             _position.Y = y;
         }
 
-        public void Move(float x, float y) 
+        public void Move(float x, float y)
         {
             _position.X += x;
             _position.Y += y;
@@ -123,6 +131,11 @@ namespace Reaper.Engine
         {
             _position += direction;
             UpdateBBox();
+        }
+
+        public void StartTimer(string name, float time, Action timerCallback)
+        {
+            _timers.Add(new Timer { Name = name, Time = Layout.Game.TotalTime + time, TimerCallback = timerCallback });
         }
 
         /// <summary>
@@ -151,7 +164,7 @@ namespace Reaper.Engine
             _bounds.Y = Position.Y - Origin.Y;
         }
 
-        public void AddBounds(float x, float y, int width, int height) 
+        public void AddBounds(float x, float y, int width, int height)
         {
             Layout.Grid.Add(this, new WorldObjectBounds(x, y, width, height));
         }
@@ -181,6 +194,8 @@ namespace Reaper.Engine
 
         internal void Tick(GameTime gameTime)
         {
+            TickTimers((float)gameTime.TotalGameTime.TotalSeconds);
+
             foreach (var behavior in _behaviors)
                 behavior.Tick(gameTime);
         }
@@ -222,6 +237,19 @@ namespace Reaper.Engine
         internal void MarkForDestroy()
         {
             MarkedForDestroy = true;
+        }
+
+        private void TickTimers(float time)
+        {
+            _timers.RemoveAll(timer => 
+            {
+                if (time > timer.Time)
+                {
+                    timer.TimerCallback?.Invoke();
+                    return true;
+                }
+                return false;
+            });
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Reaper.Engine
         public Layout CurrentLayout { get; private set; }
         public int ViewportWidth { get; }
         public int ViewportHeight { get; }
-        public bool IsFullscreen => _gpuManager.IsFullScreen;
+        public float TotalTime { get; private set; }
 
         /// <summary>
         /// Set the new running layout of the game.
@@ -89,6 +89,8 @@ namespace Reaper.Engine
 
         protected override void Update(GameTime gameTime)
         {
+            TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
+
             Singletons.HandleInput(gameTime);
 
             if (!_paused) 
