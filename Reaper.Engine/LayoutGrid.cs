@@ -67,7 +67,7 @@ namespace Reaper.Engine
             if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
-            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds.ToRectangle()))
+            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
             }
@@ -78,7 +78,7 @@ namespace Reaper.Engine
             if (worldObject.SpatialType == SpatialType.Pass)
                 return;
 
-            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds.ToRectangle()))
+            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
             {
                 _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
             }
@@ -106,7 +106,7 @@ namespace Reaper.Engine
         {
             overlap = new Overlap();
             worldObject.Position += new Vector2(xOffset, yOffset);
-            var overlappedObject = QueryBounds(worldObject).FirstOrDefault(other => other != worldObject && other.IsSolid);
+            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
 
             if (overlappedObject != null)
             {
@@ -119,22 +119,22 @@ namespace Reaper.Engine
             return false;
         }
 
-        public IEnumerable<WorldObject> QueryBounds(WorldObject bounds)
+        public IEnumerable<WorldObject> QueryBounds(AABB bounds)
         {
-            return QueryCells(bounds.Bounds.ToRectangle()).Where(other => bounds.GetIntersectionDepth(other) != Vector2.Zero);
+            return QueryCells(bounds).Where(other => bounds.Intersects(other.Bounds));
         }
 
-        private IEnumerable<WorldObject> QueryCells(Rectangle bounds) 
+        private IEnumerable<WorldObject> QueryCells(AABB bounds) 
         {
             return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
         }
 
-        private IEnumerable<Point> GetOccupyingCells(Rectangle bounds) 
+        private IEnumerable<Point> GetOccupyingCells(AABB bounds) 
         {
             return GetBoundPointCells(bounds).Distinct();
         }
 
-        private IEnumerable<Point> GetBoundPointCells(Rectangle bounds) 
+        private IEnumerable<Point> GetBoundPointCells(AABB bounds) 
         {
             if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
                 yield return new Point(topLeftCol, topLeftRow);
