@@ -71,7 +71,6 @@ namespace Reaper.Ogmo
 
                 // Default properties for every world object.
                 worldObject.IsMirrored = entity.FlippedX;
-                worldObject.ZOrder = entity?.Values?.DrawOrder ?? 0;
 
                 Loaders.Load(definition.Guid, worldObject, entity);
             }

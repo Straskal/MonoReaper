@@ -23,13 +23,13 @@ namespace Reaper.Engine
             Width = width;
             Height = height;
             View = new LayoutView(game, this);
-            Grid = new LayoutGrid(cellSize, width, height);
+            Grid = new WorldObjectGrid(cellSize, width, height);
             Objects = new WorldObjectList(this, _content);
         }
 
         public bool Started { get; private set; }
         public LayoutView View { get; }
-        public LayoutGrid Grid { get; }
+        public WorldObjectGrid Grid { get; }
         public WorldObjectList Objects { get; }
         public MainGame Game { get; }
         public int Width { get; }
@@ -69,7 +69,12 @@ namespace Reaper.Engine
         internal void Draw(Renderer renderer, bool debug)
         {
             Objects.Draw(renderer);
-            if (debug) Objects.DebugDraw(renderer);
+
+            if (debug) 
+            {
+                Grid.DebugDraw(renderer);
+                Objects.DebugDraw(renderer);
+            }
         }
 
         internal void End() 

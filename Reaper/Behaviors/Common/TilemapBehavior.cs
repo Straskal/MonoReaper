@@ -25,6 +25,8 @@ namespace Reaper.Behaviors.Common
     /// The invisible solid objects could definitely be improved. We could just create larger solid areas instead of smaller individual ones.
     /// This would involve doing some calculations to find out which tiles are neighbors.
     /// 
+    /// It's kind of annoying that all of the tiles are world objects.
+    /// 
     /// </summary>
     public class TilemapBehavior : Behavior
     {
@@ -38,12 +40,9 @@ namespace Reaper.Behaviors.Common
             public Texture2D Texture { get; set; }
         }
 
-        private readonly List<WorldObject> _colliders;
-
         public TilemapBehavior(WorldObject owner, MapData data) : base(owner)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
-            _colliders = new List<WorldObject>();
         }
 
         public MapData Data { get; }
@@ -64,7 +63,7 @@ namespace Reaper.Behaviors.Common
 
             foreach (var tile in GetTileInfo())
             {
-                _colliders.Add(Layout.Spawn(tileDefinition, new Vector2(tile.Position.X, tile.Position.Y)));
+                Owner.AddColliders(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
             }
         }
 

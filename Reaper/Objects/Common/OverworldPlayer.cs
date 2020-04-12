@@ -18,6 +18,7 @@ namespace Reaper.Objects.Common
             playerDefinition.SetTags("player");
             playerDefinition.SetSize(24, 32);
             playerDefinition.SetOrigin(12, 16);
+            playerDefinition.SetZOrder(10);
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
             return playerDefinition;

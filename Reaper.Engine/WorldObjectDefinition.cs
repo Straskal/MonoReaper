@@ -28,6 +28,11 @@ namespace Reaper.Engine
             _buildSteps.Add(worldObject => worldObject.Origin = new Point(x, y));
         }
 
+        public void SetZOrder(int order) 
+        {
+            _buildSteps.Add(worldObject => worldObject.ZOrder = order);
+        }
+
         public void MakeSolid() 
         {
             _buildSteps.Add(worldObject => worldObject.SpatialType = SpatialType.Solid);

@@ -137,6 +137,11 @@ namespace Reaper.Engine
             _bounds.Y = Position.Y - Origin.Y;
         }
 
+        public void AddColliders(float x, float y, int width, int height) 
+        {
+            Layout.Grid.Add(this, new WorldObjectBounds(x, y, width, height));
+        }
+
         internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
             _behaviors.Add(createFunc?.Invoke(this));
@@ -180,24 +185,6 @@ namespace Reaper.Engine
 
         internal void DebugDraw(Renderer renderer)
         {
-            const float opacity = 0.3f;
-            Color color;
-
-            switch (SpatialType) 
-            {
-                case SpatialType.Pass:
-                    color = Color.Pink * opacity;
-                    break;
-                case SpatialType.Overlap:
-                    color = Color.Blue * opacity;
-                    break;
-                default:
-                    color = Color.Red * opacity;
-                    break;
-            }
-
-            renderer.DrawRectangle(Bounds.ToRectangle(), color);
-
             foreach (var behavior in _behaviors)
                 behavior.DebugDraw(renderer);
         }
