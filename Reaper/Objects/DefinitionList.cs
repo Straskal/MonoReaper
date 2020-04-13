@@ -3,14 +3,14 @@ using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Objects
+namespace Reaper
 {
     /// <summary>
     /// Contains all of the game's world object definitions.
     /// 
     /// The factory methods and instances are stored seperately so we can free up the lists on every layout change.
     /// </summary>
-    public static class Definitions
+    public static class DefinitionList
     {
         private static readonly Dictionary<string, Func<WorldObjectDefinition>> _definitionFactories = new Dictionary<string, Func<WorldObjectDefinition>>();
         private static readonly Dictionary<string, WorldObjectDefinition> _definitions = new Dictionary<string, WorldObjectDefinition>();

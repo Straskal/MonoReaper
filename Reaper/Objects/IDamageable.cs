@@ -1,4 +1,4 @@
-﻿namespace Reaper.Behaviors
+﻿namespace Reaper
 {
     public interface IDamageable
     {

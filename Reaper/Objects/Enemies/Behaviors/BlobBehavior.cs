@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Reaper.Behaviors.Common;
+using Reaper;
 using Reaper.Engine;
 
-namespace Reaper.Behaviors.Enemies
+namespace Reaper
 {
     public class BlobBehavior : Behavior, IDamageable
     {
@@ -33,7 +33,7 @@ namespace Reaper.Behaviors.Enemies
 
         public override void Tick(GameTime gameTime)
         {
-            if (Owner.MoveAndCollide(Direction * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, out var overlap))
+            if (Owner.MoveAndCollide(Direction * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, out var _))
             {
                 Direction *= new Vector2(0, -1f);
             }    

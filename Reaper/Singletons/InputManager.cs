@@ -4,7 +4,7 @@ using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Singletons
+namespace Reaper
 {
     public sealed class InputManager : Singleton
     {

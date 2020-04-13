@@ -5,7 +5,7 @@ using Reaper.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Behaviors.Common
+namespace Reaper
 {
     /// <summary>
     /// The tilemap behavior draws the given data.

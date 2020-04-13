@@ -5,7 +5,7 @@ using Reaper.Engine;
 using System;
 using System.Linq;
 
-namespace Reaper.Behaviors.Common
+namespace Reaper
 {
     /// <summary>
     /// A behavior for sprite sheet animations.

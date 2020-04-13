@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Behaviors.Common;
+using Reaper;
 using Reaper.Engine;
 
-namespace Reaper.Objects.Common
+namespace Reaper
 {
     [Definition]
     public static class OverworldPlayer
     {
         static OverworldPlayer() 
         {
-            Definitions.Register(typeof(OverworldPlayer), Definition);
+            DefinitionList.Register(typeof(OverworldPlayer), Definition);
         }
 
         public static WorldObjectDefinition Definition() 

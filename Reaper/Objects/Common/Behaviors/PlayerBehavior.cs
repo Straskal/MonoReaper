@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
-using Reaper.Objects.Common;
-using Reaper.Singletons;
+using Reaper;
+using Reaper;
 
-namespace Reaper.Behaviors.Common
+namespace Reaper
 {
     public class PlayerBehavior : Behavior
     {

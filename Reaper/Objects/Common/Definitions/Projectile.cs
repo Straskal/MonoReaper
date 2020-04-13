@@ -1,7 +1,7 @@
-﻿using Reaper.Behaviors.Common;
+﻿using Reaper;
 using Reaper.Engine;
 
-namespace Reaper.Objects.Common
+namespace Reaper
 {
     public static class Projectile
     {

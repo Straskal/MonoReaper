@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Behaviors.Common;
+using Reaper;
 using Reaper.Engine;
 
-namespace Reaper.Objects.Common
+namespace Reaper
 {
     [Definition]
     public static class Key
     {
         static Key()
         {
-            Definitions.Register(typeof(Key), Definition);
+            DefinitionList.Register(typeof(Key), Definition);
         }
 
         public static WorldObjectDefinition Definition() 

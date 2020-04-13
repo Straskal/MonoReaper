@@ -1,16 +1,16 @@
-﻿using Reaper.Behaviors.Common;
+﻿using Reaper;
 using Reaper.Engine;
-using Reaper.Ogmo;
+using Reaper;
 using System;
 
-namespace Reaper.Objects.Common
+namespace Reaper
 {
     [Definition]
     public static class LayoutTransition
     {
         static LayoutTransition()
         {
-            Definitions.Register(typeof(LayoutTransition), Definition);
+            DefinitionList.Register(typeof(LayoutTransition), Definition);
         }
 
         public static WorldObjectDefinition Definition()

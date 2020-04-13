@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
-using Reaper.Singletons;
+using Reaper;
 
 namespace Reaper
 {

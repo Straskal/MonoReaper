@@ -1,8 +1,8 @@
 ﻿using Reaper.Engine;
-using Reaper.Ogmo.Models;
+using Reaper;
 using System;
 
-namespace Reaper.Ogmo
+namespace Reaper
 {
     public static class DefinitionExtensions
     {

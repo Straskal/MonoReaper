@@ -1,16 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Behaviors.Common;
-using Reaper.Behaviors.Enemies;
 using Reaper.Engine;
 
-namespace Reaper.Objects.Enemies
+namespace Reaper
 {
     [Definition]
     public static class Blob
     {
         static Blob()
         {
-            Definitions.Register(typeof(Blob), Definition);
+            DefinitionList.Register(typeof(Blob), Definition);
         }
 
         public static WorldObjectDefinition Definition()

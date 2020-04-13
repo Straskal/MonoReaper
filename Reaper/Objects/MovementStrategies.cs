@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 
-namespace Reaper.Behaviors
+namespace Reaper
 {
     public static class MovementStrategies
     {

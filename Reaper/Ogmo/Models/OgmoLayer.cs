@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Reaper.Ogmo.Models
+namespace Reaper
 {
     public class OgmoLayer
     {

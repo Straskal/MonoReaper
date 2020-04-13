@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Reaper.Behaviors.Common;
+using Reaper;
 using Reaper.Engine;
-using Reaper.Objects;
-using Reaper.Ogmo.Models;
+using Reaper;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,7 @@ using System.Linq;
 using AssetPaths = Reaper.Constants.AssetPaths;
 using LayerNames = Reaper.Constants.Layers;
 
-namespace Reaper.Ogmo
+namespace Reaper
 {
     public static class GameExtensions
     {
@@ -66,7 +65,7 @@ namespace Reaper.Ogmo
 
             foreach (var entity in entities)
             {
-                var definition = Definitions.Get(entity.Name);
+                var definition = DefinitionList.Get(entity.Name);
                 var worldObject = layout.Spawn(definition, new Vector2(entity.X, entity.Y));
 
                 // Default properties for every world object.

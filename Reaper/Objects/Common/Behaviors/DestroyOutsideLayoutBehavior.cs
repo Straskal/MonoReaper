@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 
-namespace Reaper.Behaviors.Common
+namespace Reaper
 {
     public class DestroyOutsideLayoutBehavior : Behavior
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
-using Reaper.Ogmo;
+using Reaper;
 
-namespace Reaper.Behaviors.Common
+namespace Reaper
 {
     public class LevelTransitionBehavior : Behavior
     {

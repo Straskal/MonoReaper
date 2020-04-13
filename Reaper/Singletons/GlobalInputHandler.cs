@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
 
-namespace Reaper.Singletons
+namespace Reaper
 {
     public class GlobalInputHandler : Singleton
     {
