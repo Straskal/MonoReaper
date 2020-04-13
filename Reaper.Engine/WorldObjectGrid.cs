@@ -132,7 +132,7 @@ namespace Reaper.Engine
 
         internal void Remove(WorldObject worldObject)
         {
-            if (worldObject.SpatialType == SpatialType.Pass)
+            if (worldObject.PreviousSpatialType == SpatialType.Pass)
                 return;
 
             foreach (var cellPos in GetOccupyingCells(worldObject.PreviousBounds))

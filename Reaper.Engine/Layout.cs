@@ -38,13 +38,11 @@ namespace Reaper.Engine
         public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
         {
             var worldObject = Objects.Create(definition, position);
-            Grid.Add(worldObject);
             return worldObject;
         }
 
         public void Destroy(WorldObject worldObject)
         {
-            Grid.Remove(worldObject);
             Objects.DestroyObject(worldObject);
         }
 

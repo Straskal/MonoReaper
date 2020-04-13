@@ -49,7 +49,7 @@ namespace Reaper.Behaviors.Common
             _spriteSheetBehavior.Play(movement == Vector2.Zero ? "idle" : "walk");
         }
 
-        public void CheckAttack(GameTime gameTime) 
+        private void CheckAttack(GameTime gameTime) 
         {
             var attackDirection = new Vector2(_attackHorizontalAction.GetAxis(), _attackVerticalAction.GetAxis());
 

@@ -15,7 +15,7 @@ namespace Reaper.Behaviors.Common
 
         public override void OnLayoutStarted()
         {
-            _player = Layout.Objects.GetFirstWithTag("player");
+            _player = Layout.Objects.FindFirstWithTag("player");
         }
 
         public override void Tick(GameTime gameTime)

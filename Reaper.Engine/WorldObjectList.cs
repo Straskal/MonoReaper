@@ -27,9 +27,14 @@ namespace Reaper.Engine
             _worldObjects = new List<WorldObject>();
         }
 
-        public WorldObject GetFirstWithTag(string tag) 
+        public WorldObject FindFirstWithTag(string tag) 
         {
             return _worldObjects.FirstOrDefault(wo => wo.Tags.Contains(tag));
+        }
+
+        public IEnumerable<WorldObject> FindWithTag(string tag)
+        {
+            return _worldObjects.Where(wo => wo.Tags.Contains(tag));
         }
 
         /// <summary>
@@ -43,6 +48,7 @@ namespace Reaper.Engine
             var worldObject = new WorldObject(_layout) { Position = position };
             definition.Apply(worldObject);
             _worldObjects.Add(worldObject);
+            _layout.Grid.Add(worldObject);
 
             // If the layout has already started, then just completely start and load newly spawned objects.
             // This way, behaviors that spawn objects can immediately access all properties of the spawned object.
@@ -58,6 +64,7 @@ namespace Reaper.Engine
         internal void DestroyObject(WorldObject worldObject)
         {
             worldObject.MarkForDestroy();
+            _layout.Grid.Remove(worldObject);
         }
 
         internal void Start()
@@ -131,7 +138,7 @@ namespace Reaper.Engine
         {
             worldObjects.RemoveAll(wo =>
             {
-                if (wo.MarkedForDestroy)
+                if (wo.Destroyed)
                 {
                     wo.OnDestroyed();
                     return true;

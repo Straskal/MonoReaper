@@ -43,8 +43,7 @@ namespace Reaper.Engine
         public Vector2 PreviousPosition { get; private set; }
         public WorldObjectBounds PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
-
-        internal bool MarkedForDestroy { get; private set; }
+        public bool Destroyed { get; private set; }
 
         public SpatialType SpatialType
         {
@@ -143,7 +142,7 @@ namespace Reaper.Engine
         /// </summary>
         public void UpdateBBox()
         {
-            if (MarkedForDestroy)
+            if (Destroyed)
                 return;
 
             InternalUpdateBBox();
@@ -182,6 +181,10 @@ namespace Reaper.Engine
 
         internal void OnCreated()
         {
+            PreviousPosition = Position;
+            PreviousBounds = Bounds;
+            PreviousSpatialType = SpatialType;
+
             foreach (var behavior in _behaviors)
                 behavior.OnOwnerCreated();
         }
@@ -236,7 +239,7 @@ namespace Reaper.Engine
         /// </summary>
         internal void MarkForDestroy()
         {
-            MarkedForDestroy = true;
+            Destroyed = true;
         }
 
         private void TickTimers(float time)
