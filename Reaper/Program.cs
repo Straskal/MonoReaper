@@ -1,7 +1,6 @@
 ﻿using Reaper.Engine;
 using System;
 using Reaper;
-using Reaper;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -26,8 +25,8 @@ namespace Reaper
                 game.Singletons.Register(new InputManager(game));
                 game.Singletons.Register(new GlobalInputHandler(game));
                 InputBindings.Initialize(game.Singletons.Get<InputManager>());
-                game.LoadOgmoLayout("content/layouts/dungeon.json");
-                //game.LoadOgmoLayout(args[0]);
+                //game.LoadOgmoLayout("content/layouts/dungeon.json");
+                game.LoadOgmoLayout(args[0]);
                 game.Run();
             }
         }

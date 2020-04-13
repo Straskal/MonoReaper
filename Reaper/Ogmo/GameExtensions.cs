@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Reaper;
 using Reaper.Engine;
-using Reaper;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

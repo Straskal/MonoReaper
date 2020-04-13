@@ -15,6 +15,7 @@ namespace Reaper
 
         public KeyBehavior(WorldObject owner) : base(owner) { }
 
+        public string Door { get; set; }
         public float Speed { get; set; } = 50f;
 
         public override void OnLayoutStarted()
@@ -57,6 +58,10 @@ namespace Reaper
         {
             if (Owner.Bounds.Intersects(_player.Bounds))
             {
+                foreach (var door in Layout.Objects.FindWithTag("door")) 
+                {
+                    door.Destroy();
+                }
                 Owner.Destroy();
             }
         }

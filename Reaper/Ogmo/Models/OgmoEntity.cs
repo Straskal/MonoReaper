@@ -6,6 +6,8 @@
         public string Level { get; set; }
         public string SpawnPointName { get; set; }
         public string SpawnPoint { get; set; }
+        public string Door { get; set; }
+        public string Id { get; set; }
     }
     
     public class OgmoEntity

@@ -68,7 +68,7 @@
           {"x": 1, "y": 1}
         ]
       },
-      "color": "#ff0000ff",
+      "color": "#be00ffff",
       "tileX": false,
       "tileY": false,
       "tileSize": {"x": 16, "y": 16},
@@ -197,7 +197,47 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": ["common"],
-      "values": []
+      "values": [
+        {"name": "Door", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+      ]
+    },
+    {
+      "exportID": "73963553",
+      "name": "Door",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 16, "y": 16},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#8c6543ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["common"],
+      "values": [
+        {"name": "Id", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+      ]
     }
   ],
   "tilesets": [

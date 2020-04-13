@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Reaper.Engine;
-using Reaper;
-using Reaper;
 
 namespace Reaper
 {

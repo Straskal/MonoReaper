@@ -1,30 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper;
 using Reaper.Engine;
-
-namespace Reaper
+namespace Reaper.Objects.Common.Definitions
 {
     [Definition]
-    public static class Key
+    public static class Door
     {
-        static Key()
+        static Door()
         {
-            DefinitionList.Register(typeof(Key), Definition);
+            DefinitionList.Register(typeof(Door), Definition);
         }
 
-        public static WorldObjectDefinition Definition() 
+        public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();
+            def.SetTags("door");
             def.SetSize(32, 32);
             def.SetOrigin(16, 16);
             def.SetZOrder(5);
-            def.MakeDecal();
-            def.AddBehavior(wo => new KeyBehavior(wo));
+            def.MakeSolid();
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetAnimations()));
-            def.LoadFromOgmo((wo, oe) =>
-            {
-                wo.GetBehavior<KeyBehavior>().Door = oe.Values.Door;
-            });
             return def;
         }
 
@@ -35,7 +29,7 @@ namespace Reaper
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "idle",
-                    ImageFilePath = "art/common/key",
+                    ImageFilePath = "art/common/door",
                     Origin = new Point(16, 16),
                     Frames = new []
                     {

@@ -1,6 +1,5 @@
 ﻿using Reaper;
 using Reaper.Engine;
-using Reaper;
 using System;
 
 namespace Reaper
