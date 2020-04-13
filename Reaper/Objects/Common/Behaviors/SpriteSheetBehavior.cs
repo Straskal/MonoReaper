@@ -64,9 +64,14 @@ namespace Reaper
             if (name.Equals(CurrentAnimation?.Name, StringComparison.OrdinalIgnoreCase) && !IsFinished)
                 return;
 
-            CurrentAnimation = _animations.Single(anim => anim.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            CurrentFrame = 0;
-            IsFinished = false;
+            var anim = _animations.SingleOrDefault(anima => anima.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (anim != null) 
+            {
+                CurrentAnimation = anim;
+                CurrentFrame = 0;
+                IsFinished = false;
+            }
         }
 
         public void PlayFromBeginning(string name)

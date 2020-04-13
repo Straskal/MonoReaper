@@ -17,6 +17,7 @@ namespace Reaper
         private InputManager.AxisAction _attackVerticalAction;
 
         private float _attackTimer;
+        private bool _isMoving;
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
@@ -43,8 +44,9 @@ namespace Reaper
         {
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector2 movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
+            _isMoving = movement != Vector2.Zero;
 
-            if (movement != Vector2.Zero)
+            if (_isMoving)
                 Direction = movement;
 
             if (movement.LengthSquared() > 0f)
@@ -52,7 +54,6 @@ namespace Reaper
 
             Owner.MoveAndCollide(movement * Speed * elapsedTime, out var _);
             CheckAttack(gameTime);
-            _spriteSheetBehavior.Play(movement == Vector2.Zero ? "idle" : "walk");
         }
 
         private void CheckAttack(GameTime gameTime) 
@@ -72,6 +73,36 @@ namespace Reaper
                     _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
                 }
             }
+
+            string animName = _isMoving ? "walk_" : "idle_";
+
+            if (attackDirection == Vector2.Zero)
+            {
+                animName += "down";
+                Owner.IsMirrored = false;
+            }
+            else if (attackDirection == new Vector2(-1f, 0f))
+            {
+                animName += "right";
+                Owner.IsMirrored = true;
+            }
+            else if (attackDirection == new Vector2(1f, 0f))
+            {
+                animName += "right";
+                Owner.IsMirrored = false;
+            }
+            else if (attackDirection == new Vector2(0f, -1f))
+            {
+                animName += "up";
+                Owner.IsMirrored = false;
+            }
+            else if (attackDirection == new Vector2(0f, 1f))
+            {
+                animName += "down";
+                Owner.IsMirrored = false;
+            }
+
+            _spriteSheetBehavior.Play(animName);
         }
     }
 }
