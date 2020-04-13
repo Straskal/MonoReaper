@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Reaper.Engine;
 
 namespace Reaper
@@ -8,6 +10,7 @@ namespace Reaper
         private const float ATTACK_TIME_BUFFER = 0.5f;
 
         private SpriteSheetBehavior _spriteSheetBehavior;
+        private SoundEffect _fireSound;
         private InputManager.AxisAction _horizontalAction;
         private InputManager.AxisAction _verticalAction;
         private InputManager.AxisAction _attackHorizontalAction;
@@ -19,6 +22,11 @@ namespace Reaper
 
         public Vector2 Direction { get; private set; } = new Vector2(0, 1f);
         public float Speed { get; set; } = 100f;
+
+        public override void Load(ContentManager contentManager)
+        {
+            _fireSound = contentManager.Load<SoundEffect>("audio/fireball_shoot");
+        }
 
         public override void OnOwnerCreated()
         {
@@ -60,6 +68,7 @@ namespace Reaper
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
                     proj.GetBehavior<ProjectileBehavior>().Speed = 200f;
 
+                    _fireSound.Play();
                     _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
                 }
             }

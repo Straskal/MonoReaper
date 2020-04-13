@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Reaper.Engine;
 using System;
 using System.Collections.Generic;
@@ -12,11 +14,17 @@ namespace Reaper
         private List<WorldObject> _enemies;
         private Action<GameTime> _currentAction;
         private Vector2 _targetPosition;
+        private SoundEffect _pickupSound;
 
         public KeyBehavior(WorldObject owner) : base(owner) { }
 
         public string Door { get; set; }
         public float Speed { get; set; } = 50f;
+
+        public override void Load(ContentManager contentManager)
+        {
+            _pickupSound = contentManager.Load<SoundEffect>("audio/pickup_key");
+        }
 
         public override void OnLayoutStarted()
         {
@@ -62,6 +70,7 @@ namespace Reaper
                 {
                     door.Destroy();
                 }
+                _pickupSound.Play();
                 Owner.Destroy();
             }
         }

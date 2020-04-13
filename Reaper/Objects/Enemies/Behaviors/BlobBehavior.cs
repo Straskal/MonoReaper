@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Reaper;
@@ -9,6 +10,7 @@ namespace Reaper
     public class BlobBehavior : Behavior, IDamageable
     {
         private Effect _effect;
+        private SoundEffect _hitSound;
 
         public BlobBehavior(WorldObject owner) : base(owner) { }
 
@@ -19,6 +21,7 @@ namespace Reaper
         public override void Load(ContentManager contentManager)
         {
             _effect = contentManager.Load<Effect>("Shaders/SolidColor");
+            _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
         }
 
         public void Damage(int amount)
@@ -27,6 +30,7 @@ namespace Reaper
             if (Health <= 0)
                 Owner.Destroy();
 
+            _hitSound.Play();
             Owner.GetBehavior<SpriteSheetBehavior>().Effect = _effect;
             Owner.StartTimer("damaged", 0.1f, () => Owner.GetBehavior<SpriteSheetBehavior>().Effect = null);
         }

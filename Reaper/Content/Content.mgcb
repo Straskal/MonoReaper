@@ -97,6 +97,54 @@
 /processorParam:TextureFormat=Color
 /build:Art/Tilesets/tilemap.png
 
+#begin Audio/fireball_shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/fireball_shoot.wav
+
+#begin Audio/fireball_shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/fireball_shoot.wav
+
+#begin Audio/fireball_shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/fireball_shoot.wav
+
+#begin Audio/hit_hurt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/hit_hurt.wav
+
+#begin Audio/hit_hurt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/hit_hurt.wav
+
+#begin Audio/hit_hurt.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/hit_hurt.wav
+
+#begin Audio/pickup_key.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/pickup_key.wav
+
+#begin Audio/pickup_key.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/pickup_key.wav
+
 #begin Layouts/dungeon.json
 /copy:Layouts/dungeon.json
 
