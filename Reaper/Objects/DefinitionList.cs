@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Reaper.Engine;
-using System;
+﻿using Reaper.Engine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Reaper
 {
@@ -10,29 +9,29 @@ namespace Reaper
     /// 
     /// The factory methods and instances are stored seperately so we can free up the lists on every layout change.
     /// </summary>
-    public static class DefinitionList
+    public class DefinitionList
     {
-        private static readonly Dictionary<string, Func<WorldObjectDefinition>> _definitionFactories = new Dictionary<string, Func<WorldObjectDefinition>>();
-        private static readonly Dictionary<string, WorldObjectDefinition> _definitions = new Dictionary<string, WorldObjectDefinition>();
+        private readonly Dictionary<string, WorldObjectDefinition> _definitions = new Dictionary<string, WorldObjectDefinition>();
 
-        public static WorldObjectDefinition Get(string name)
+        public static DefinitionList GetDefinitions() 
         {
-            if (!_definitions.ContainsKey(name))
+            var definitionList = new DefinitionList();
+
+            var definitionMethods = typeof(DefinitionList).Assembly.GetTypes()
+                .SelectMany(type => type.GetMethods())
+                .Where(m => m.GetCustomAttributes(typeof(DefinitionAttribute), false).Length > 0);
+
+            foreach (var method in definitionMethods) 
             {
-                _definitions.Add(name, _definitionFactories[name].Invoke());
+                definitionList._definitions.Add(method.DeclaringType.Name, (WorldObjectDefinition)method.Invoke(null, null));
             }
 
+            return definitionList;
+        }
+
+        public WorldObjectDefinition Get(string name) 
+        {
             return _definitions[name];
-        }
-
-        public static void Register(Type type, Func<WorldObjectDefinition> factory)
-        {
-            _definitionFactories.Add(type.Name, factory);
-        }
-
-        public static WorldObject Spawn<T>(this Layout layout, Vector2 position) 
-        {
-            return layout.Spawn(Get(typeof(T).Name), position);
         }
     }
 }

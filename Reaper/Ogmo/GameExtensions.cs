@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Reaper;
 using Reaper.Engine;
 using System.Collections.Generic;
 using System.IO;
@@ -62,9 +61,11 @@ namespace Reaper
                 }
             }
 
+            var definitions = DefinitionList.GetDefinitions();
+
             foreach (var entity in entities)
             {
-                var definition = DefinitionList.Get(entity.Name);
+                var definition = definitions.Get(entity.Name);
                 var worldObject = layout.Spawn(definition, new Vector2(entity.X, entity.Y));
 
                 // Default properties for every world object.

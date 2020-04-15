@@ -1,16 +1,10 @@
 ﻿using Reaper.Engine;
-using Reaper;
 
 namespace Reaper
 {
-    [Definition]
     public static class OverworldPlayerSpawnPoint
     {
-        static OverworldPlayerSpawnPoint()
-        {
-            DefinitionList.Register(typeof(OverworldPlayerSpawnPoint), Definition);
-        }
-
+        [Definition]
         public static WorldObjectDefinition Definition() 
         {
             var playerSpawnPoint = new WorldObjectDefinition();

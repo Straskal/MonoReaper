@@ -37,6 +37,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Common/key.png
 
+#begin Art/Common/spikes.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Common/spikes.png
+
 #begin Art/Enemies/blob.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -103,41 +115,11 @@
 /processorParam:Quality=Best
 /build:Audio/fireball_shoot.wav
 
-#begin Audio/fireball_shoot.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/fireball_shoot.wav
-
-#begin Audio/fireball_shoot.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/fireball_shoot.wav
-
 #begin Audio/hit_hurt.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/hit_hurt.wav
-
-#begin Audio/hit_hurt.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/hit_hurt.wav
-
-#begin Audio/hit_hurt.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/hit_hurt.wav
-
-#begin Audio/pickup_key.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/pickup_key.wav
 
 #begin Audio/pickup_key.wav
 /importer:WavImporter
@@ -147,9 +129,6 @@
 
 #begin Layouts/dungeon.json
 /copy:Layouts/dungeon.json
-
-#begin Layouts/layout1.json
-/copy:Layouts/layout1.json
 
 #begin Shaders/SolidColor.fx
 /importer:EffectImporter

@@ -1,17 +1,11 @@
-﻿using Reaper;
-using Reaper.Engine;
+﻿using Reaper.Engine;
 using System;
 
 namespace Reaper
 {
-    [Definition]
     public static class LayoutTransition
     {
-        static LayoutTransition()
-        {
-            DefinitionList.Register(typeof(LayoutTransition), Definition);
-        }
-
+        [Definition]
         public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();

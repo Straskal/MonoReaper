@@ -54,6 +54,7 @@ namespace Reaper
 
             Owner.MoveAndCollide(movement * Speed * elapsedTime, out var _);
             CheckAttack(gameTime);
+            _spriteSheetBehavior.Play(_isMoving ? "walk" : "idle");
         }
 
         private void CheckAttack(GameTime gameTime) 
@@ -64,6 +65,9 @@ namespace Reaper
             {
                 if (gameTime.TotalGameTime.TotalSeconds > _attackTimer)
                 {
+                    if (attackDirection.Length() > 1f)
+                        attackDirection.Normalize();
+
                     var proj = Layout.Spawn(Projectile.Definition(), Owner.GetPoint("projectileSpawn"));
                     proj.ZOrder = Owner.ZOrder + 1;
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
@@ -73,36 +77,6 @@ namespace Reaper
                     _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
                 }
             }
-
-            string animName = _isMoving ? "walk_" : "idle_";
-
-            if (attackDirection == Vector2.Zero)
-            {
-                animName += "down";
-                Owner.IsMirrored = false;
-            }
-            else if (attackDirection == new Vector2(-1f, 0f))
-            {
-                animName += "right";
-                Owner.IsMirrored = true;
-            }
-            else if (attackDirection == new Vector2(1f, 0f))
-            {
-                animName += "right";
-                Owner.IsMirrored = false;
-            }
-            else if (attackDirection == new Vector2(0f, -1f))
-            {
-                animName += "up";
-                Owner.IsMirrored = false;
-            }
-            else if (attackDirection == new Vector2(0f, 1f))
-            {
-                animName += "down";
-                Owner.IsMirrored = false;
-            }
-
-            _spriteSheetBehavior.Play(animName);
         }
     }
 }

@@ -3,14 +3,9 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    [Definition]
     public static class Blob
     {
-        static Blob()
-        {
-            DefinitionList.Register(typeof(Blob), Definition);
-        }
-
+        [Definition]
         public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();

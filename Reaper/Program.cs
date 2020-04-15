@@ -1,7 +1,5 @@
 ﻿using Reaper.Engine;
 using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Reaper
 {
@@ -10,8 +8,6 @@ namespace Reaper
         [STAThread]
         static void Main(string[] args)
         {
-            InvokeStaticDefinitionCtors();
-
             var settings = new GameSettings
             {
                 ViewportWidth = 640,
@@ -27,15 +23,6 @@ namespace Reaper
                 //game.LoadOgmoLayout("content/layouts/dungeon.json");
                 game.LoadOgmoLayout(args[0]);
                 game.Run();
-            }
-        }
-
-        private static void InvokeStaticDefinitionCtors() 
-        {
-            var definitionClasses = typeof(Program).Assembly.GetTypes().Where(type => type.GetCustomAttributes(typeof(DefinitionAttribute), true).Length > 0);
-            foreach (var definitionClass in definitionClasses)
-            {
-                RuntimeHelpers.RunClassConstructor(definitionClass.TypeHandle);
             }
         }
     }

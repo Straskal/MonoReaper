@@ -1,5 +1,4 @@
-﻿using Reaper;
-using Reaper.Engine;
+﻿using Reaper.Engine;
 
 namespace Reaper
 {
