@@ -5,7 +5,7 @@ namespace Reaper
 {
     public static class LayoutTransition
     {
-        [Definition]
+        [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();

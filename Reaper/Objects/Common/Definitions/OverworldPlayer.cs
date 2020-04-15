@@ -5,7 +5,7 @@ namespace Reaper
 {
     public static class OverworldPlayer
     {
-        [Definition]
+        [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition()
         {
             var playerDefinition = new WorldObjectDefinition();

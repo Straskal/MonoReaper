@@ -9,7 +9,6 @@ namespace Reaper
             var def = new WorldObjectDefinition();
             def.SetSize(8, 8);
             def.SetOrigin(4, 4);
-            def.SetTags("playerProjectile");
             def.AddBehavior(wo => new DestroyOutsideLayoutBehavior(wo));
             def.AddBehavior(wo => new ProjectileBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, new[]

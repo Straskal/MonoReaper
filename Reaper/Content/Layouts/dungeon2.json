@@ -60,7 +60,9 @@
           "originX": 16,
           "originY": 16,
           "values": {"SpawnPointName": "top"}
-        }
+        },
+        {"name": "Shooter", "id": 5, "_eid": "96693540", "x": 400, "y": 48, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 6, "_eid": "96693540", "x": 48, "y": 208, "originX": 16, "originY": 16}
       ]
     },
     {

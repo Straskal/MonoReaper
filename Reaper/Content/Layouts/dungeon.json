@@ -26,7 +26,7 @@
           "originY": 32,
           "values": {"SpawnPointName": "Default"}
         },
-        {"name": "Blob", "id": 1, "_eid": "48314842", "x": 304, "y": 112, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 1, "_eid": "48314842", "x": 256, "y": 112, "originX": 16, "originY": 16},
         {
           "name": "LayoutTransition",
           "id": 2,
@@ -71,7 +71,7 @@
           "originY": 16,
           "values": {"SpawnPointName": "right"}
         },
-        {"name": "Blob", "id": 6, "_eid": "48314842", "x": 80, "y": 144, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 6, "_eid": "48314842", "x": 112, "y": 144, "originX": 16, "originY": 16},
         {"name": "Blob", "id": 7, "_eid": "48314842", "x": 208, "y": 64, "originX": 16, "originY": 16},
         {
           "name": "Key",
@@ -108,7 +108,9 @@
         {"name": "Spikes", "id": 13, "_eid": "80837030", "x": 352, "y": 112, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 14, "_eid": "80837030", "x": 352, "y": 80, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 17, "_eid": "80837030", "x": 352, "y": 48, "originX": 16, "originY": 16},
-        {"name": "Spikes", "id": 18, "_eid": "80837030", "x": 352, "y": 208, "originX": 16, "originY": 16}
+        {"name": "Spikes", "id": 18, "_eid": "80837030", "x": 352, "y": 208, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 19, "_eid": "96693540", "x": 48, "y": 48, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 20, "_eid": "96693540", "x": 320, "y": 192, "originX": 16, "originY": 16}
       ]
     },
     {

@@ -39,5 +39,11 @@ namespace Reaper
             worldObject.Move(direction);
             return worldObject.Layout.Grid.IsOverlapping(worldObject, out overlap);
         }
+
+        public static bool MoveAndOverlap(this WorldObject worldObject, Vector2 direction, string[] ignoreTags, out Overlap overlap)
+        {
+            worldObject.Move(direction);
+            return worldObject.Layout.Grid.IsOverlapping(worldObject, ignoreTags, out overlap);
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace Reaper
 
             var definitionMethods = typeof(DefinitionList).Assembly.GetTypes()
                 .SelectMany(type => type.GetMethods())
-                .Where(m => m.GetCustomAttributes(typeof(DefinitionAttribute), false).Length > 0);
+                .Where(m => m.GetCustomAttributes(typeof(RequiredByLayoutLoadAttribute), false).Length > 0);
 
             foreach (var method in definitionMethods) 
             {

@@ -18,14 +18,14 @@ namespace Reaper.Engine
             public Action TimerCallback;
         }
 
+        private readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        private readonly List<Timer> _timers = new List<Timer>();
         private readonly List<Behavior> _behaviors;
 
         private SpatialType _type = SpatialType.Overlap;
         private Vector2 _position = Vector2.Zero;
         private Point _origin = Point.Zero;
         private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
-        private readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
-        private readonly List<Timer> _timers = new List<Timer>();
 
         internal WorldObject(Layout layout)
         {

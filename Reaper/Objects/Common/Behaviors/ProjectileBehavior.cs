@@ -9,13 +9,14 @@ namespace Reaper
 
         public Vector2 Direction { get; set; }
         public float Speed { get; set; }
+        public string[] IgnoreTags { get; set; } = new string[0];
 
         public override void Tick(GameTime gameTime)
         {
             if (Direction.Length() > 1f)
                 Direction.Normalize();
 
-            if (Owner.MoveAndOverlap(Direction * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, out var overlap)) 
+            if (Owner.MoveAndOverlap(Direction * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds, IgnoreTags, out var overlap)) 
                 CheckOverlap(overlap);
         }
 

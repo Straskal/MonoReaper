@@ -4,7 +4,7 @@ namespace Reaper
 {
     public static class OverworldPlayerSpawnPoint
     {
-        [Definition]
+        [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition() 
         {
             var playerSpawnPoint = new WorldObjectDefinition();

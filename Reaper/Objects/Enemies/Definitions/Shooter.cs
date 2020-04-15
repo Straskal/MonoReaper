@@ -3,29 +3,31 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    public static class Door
+    public static class Shooter
     {
         [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition()
         {
             var def = new WorldObjectDefinition();
-            def.SetTags("door");
+            def.SetTags("enemy");
             def.SetSize(32, 32);
             def.SetOrigin(16, 16);
-            def.SetZOrder(5);
-            def.MakeSolid();
-            def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetAnimations()));
+            def.AddPoint("projectileSpawn", 16, 16);
+            def.AddBehavior(wo => new ShooterBehavior(wo));
+            def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetBlobAnimations()));
             return def;
         }
 
-        private static SpriteSheetBehavior.Animation[] GetAnimations()
+        private static SpriteSheetBehavior.Animation[] GetBlobAnimations()
         {
             return new[]
             {
                 new SpriteSheetBehavior.Animation
                 {
-                    Name = "idle",
-                    ImageFilePath = "art/common/door",
+                    Name = "blob",
+                    ImageFilePath = "art/enemies/shooter",
+                    SecPerFrame = 0.5f,
+                    Loop = true,
                     Origin = new Point(16, 16),
                     Frames = new []
                     {

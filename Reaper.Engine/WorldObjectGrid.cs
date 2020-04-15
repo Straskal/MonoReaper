@@ -184,6 +184,21 @@ namespace Reaper.Engine
             return false;
         }
 
+        public bool IsOverlapping(WorldObject worldObject, string[] ignoreTags, out Overlap overlap)
+        {
+            overlap = new Overlap();
+            var overlappedObject = QueryBounds(worldObject.Bounds)
+                .FirstOrDefault(other => other.WorldObject != worldObject && !ignoreTags.Any(tag => other.WorldObject.Tags.Contains(tag)));
+
+            if (overlappedObject != null)
+            {
+                overlap.Depth = worldObject.Bounds.GetIntersectionDepth(overlappedObject.Bounds);
+                overlap.Other = overlappedObject.WorldObject;
+                return true;
+            }
+            return false;
+        }
+
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();
