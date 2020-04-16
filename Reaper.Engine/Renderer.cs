@@ -47,19 +47,18 @@ namespace Reaper.Engine
         public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-
             _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-
             _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public void DrawRectangle(Rectangle rectangle, Color color)
         {
+            HandleEffectChange(null);
             _batch.Draw(_texture, rectangle, null, color);
         }
 
