@@ -57,10 +57,6 @@ namespace Reaper
             if (!Owner.IsSolid)
                 return;
 
-            var tileDefinition = new WorldObjectDefinition();
-            tileDefinition.SetSize(Data.CellSize, Data.CellSize);
-            tileDefinition.MakeSolid();
-
             foreach (var tile in GetTileInfo())
             {
                 Owner.AddBounds(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
