@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// The list of all of the game's singletons.
+    /// </summary>
     public class SingletonList
     {
         public Dictionary<Type, Singleton> _singletons = new Dictionary<Type, Singleton>();

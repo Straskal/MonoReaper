@@ -11,14 +11,15 @@ namespace Reaper.Engine
     /// </summary>
     public sealed class WorldObject
     {
-        struct Timer
+        // Should probably break the timer out into another class. Singletons could benefit from this as well.
+        private struct Timer
         {
             public string Name;
             public float Time;
             public Action TimerCallback;
         }
 
-        private readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        private readonly Dictionary<string, WorldObjectPoint> _points = new Dictionary<string, WorldObjectPoint>();
         private readonly List<Timer> _timers = new List<Timer>();
         private readonly List<Behavior> _behaviors;
 
@@ -87,15 +88,15 @@ namespace Reaper.Engine
 
         public void AddPoint(string name, float x, float y)
         {
-            _points.Add(name, new Vector2(x, y));
+            _points.Add(name, new WorldObjectPoint(this, x, y));
         }
 
-        public Vector2 GetPoint(string name)
+        public WorldObjectPoint GetPoint(string name)
         {
             if (!_points.TryGetValue(name, out var point))
-                throw new ArgumentException($"World object does not have point {point}");
+                throw new ArgumentException($"World object does not have point {name}");
 
-            return new Vector2(_bounds.Left, _bounds.Top) + point;
+            return point;
         }
 
         public T GetBehavior<T>() where T : class
@@ -154,7 +155,7 @@ namespace Reaper.Engine
         /// </summary>
         public void Destroy()
         {
-            Layout.Destroy(this);
+            Layout.Objects.Destroy(this);
         }
 
         public void InternalUpdateBBox()

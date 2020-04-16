@@ -8,7 +8,7 @@ namespace Reaper.Engine
     /// 
     /// - Layouts have a view.
     /// - Layouts contain world objects.
-    /// - Layouts store world objects in a grid for spatial queries.
+    /// - Layouts have a grid representation of world space for object queries.
     /// </summary>
     public sealed class Layout
     {
@@ -28,23 +28,36 @@ namespace Reaper.Engine
         }
 
         public bool Started { get; private set; }
+
+        /// <summary>
+        /// The layout's view, which is essentially the camera.
+        /// </summary>
         public LayoutView View { get; }
+
+        /// <summary>
+        /// The grid representation of world space. The grid is used for spatial and overlap queries.
+        /// </summary>
         public WorldObjectGrid Grid { get; }
+
+        /// <summary>
+        /// All of the world objects in the layout.
+        /// </summary>
         public WorldObjectList Objects { get; }
+
+        /// <summary>
+        /// The game...
+        /// </summary>
         public MainGame Game { get; }
+
+        /// <summary>
+        /// The width of the layout in pixels.
+        /// </summary>
         public int Width { get; }
+
+        /// <summary>
+        /// The height of the layout in pixels.
+        /// </summary>
         public int Height { get; }
-
-        public WorldObject Spawn(WorldObjectDefinition definition, Vector2 position)
-        {
-            var worldObject = Objects.Create(definition, position);
-            return worldObject;
-        }
-
-        public void Destroy(WorldObject worldObject)
-        {
-            Objects.DestroyObject(worldObject);
-        }
 
         internal void Start() 
         {

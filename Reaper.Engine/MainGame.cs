@@ -46,6 +46,8 @@ namespace Reaper.Engine
 
         /// <summary>
         /// Set the new running layout of the game.
+        /// Layouts can be created using their constructor.
+        /// This allows the game code to load layouts any way they like.
         /// </summary>
         /// <param name="layout"></param>
         public void ChangeLayout(Layout layout) 
@@ -53,6 +55,9 @@ namespace Reaper.Engine
             _nextLayout = layout;
         }
 
+        /// <summary>
+        /// Toggle the game's fullscreen on and off.
+        /// </summary>
         public void ToggleFullscreen()
         {
             _gpuManager.ToggleFullScreen();
@@ -71,11 +76,17 @@ namespace Reaper.Engine
             _gpuManager.ApplyChanges();
         }
 
+        /// <summary>
+        /// Toggle paused for the entire game. When the game is paused, the only callback received by singletons and behaviors is HandleInput().
+        /// </summary>
         public void TogglePaused() 
         {
             _paused = !_paused;
         }
 
+        /// <summary>
+        /// Toggle the game's debug tools on and off.
+        /// </summary>
         public void ToggleDebug()
         {
             _isDebugging = !_isDebugging;

@@ -12,8 +12,8 @@ namespace Reaper
 
         private float _timer;
         private WorldObject _player;
+        private WorldObjectPoint _projectileSpawnPoint;
 
-        private Effect _effect;
         private SoundEffect _hitSound;
 
         public ShooterBehavior(WorldObject owner) : base(owner) { }
@@ -22,13 +22,13 @@ namespace Reaper
 
         public override void Load(ContentManager contentManager)
         {
-            _effect = contentManager.Load<Effect>("Shaders/SolidColor");
             _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
         }
 
         public override void OnOwnerCreated()
         {
             Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
+            _projectileSpawnPoint = Owner.GetPoint("projectileSpawn");
         }
 
         public override void OnLayoutStarted()
@@ -43,7 +43,7 @@ namespace Reaper
                 var direction = Owner.Position - _player.Position;
                 direction.Normalize();
 
-                var proj = Layout.Spawn(Projectile.Definition(), Owner.GetPoint("projectileSpawn"));
+                var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
                 proj.ZOrder = Owner.ZOrder + 1;
                 proj.GetBehavior<ProjectileBehavior>().Direction = -direction;
                 proj.GetBehavior<ProjectileBehavior>().Speed = 150f;

@@ -16,6 +16,8 @@ namespace Reaper
         private InputManager.AxisAction _attackHorizontalAction;
         private InputManager.AxisAction _attackVerticalAction;
 
+        private WorldObjectPoint _projectileSpawnPoint;
+
         private float _attackTimer;
         private bool _isMoving;
 
@@ -34,6 +36,7 @@ namespace Reaper
         {
             _spriteSheetBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
             Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
+            _projectileSpawnPoint = Owner.GetPoint("projectileSpawn");
 
             var input = Game.Singletons.Get<InputManager>();
             _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
@@ -70,7 +73,7 @@ namespace Reaper
                     if (attackDirection.Length() > 1f)
                         attackDirection.Normalize();
 
-                    var proj = Layout.Spawn(Projectile.Definition(), Owner.GetPoint("projectileSpawn"));
+                    var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
                     proj.ZOrder = Owner.ZOrder + 1;
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
                     proj.GetBehavior<ProjectileBehavior>().Speed = 200f;

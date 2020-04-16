@@ -3,6 +3,9 @@ using System;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// The bounding box of a world object.
+    /// </summary>
     public struct WorldObjectBounds
     {
         public WorldObjectBounds(float x, float y, int width, int height) 

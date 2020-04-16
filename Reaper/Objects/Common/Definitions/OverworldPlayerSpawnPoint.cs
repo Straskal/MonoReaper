@@ -11,7 +11,7 @@ namespace Reaper
             playerSpawnPoint.LoadFromOgmo((wo, oe) => 
             {
                 var layout = wo.Layout;
-                var playerInstance = layout.Spawn(OverworldPlayer.Definition(), wo.Position);
+                var playerInstance = layout.Objects.Create(OverworldPlayer.Definition(), wo.Position);
                 playerInstance.IsMirrored = wo.IsMirrored;
                 wo.Destroy();
             });

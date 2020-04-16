@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Reaper.Engine
 {
     /// <summary>
-    /// Definitions track the steps necessary to build a certain type of world object.
+    /// Definitions track the steps necessary to build a certain type of world object and are required when spawning new objects.
     /// </summary>
     public sealed class WorldObjectDefinition
     {

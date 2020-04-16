@@ -4,6 +4,9 @@ using System;
 
 namespace Reaper.Engine
 {
+    /// <summary>
+    /// The game's renderer. Should only be used when it is passed through Draw(...) methods.
+    /// </summary>
     public class Renderer
     {
         private readonly MainGame _game;

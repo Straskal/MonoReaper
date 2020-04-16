@@ -14,8 +14,19 @@ namespace Reaper.Engine
             Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         }
 
+        /// <summary>
+        /// The world object that this behavior belongs to.
+        /// </summary>
         public WorldObject Owner { get; }
+
+        /// <summary>
+        /// The layout that the behavior is active in.
+        /// </summary>
         public Layout Layout => Owner.Layout;
+
+        /// <summary>
+        /// The game...
+        /// </summary>
         public MainGame Game => Layout.Game;
 
         /// <summary>

@@ -66,7 +66,7 @@ namespace Reaper
             foreach (var entity in entities)
             {
                 var definition = definitions.Get(entity.Name);
-                var worldObject = layout.Spawn(definition, new Vector2(entity.X, entity.Y));
+                var worldObject = layout.Objects.Create(definition, new Vector2(entity.X, entity.Y));
 
                 // Default properties for every world object.
                 worldObject.IsMirrored = entity.FlippedX;
@@ -95,7 +95,7 @@ namespace Reaper
                 Tiles = layer.Data
             }));
 
-            var tilemapWorldObject = layout.Spawn(tilemap, Vector2.Zero);
+            var tilemapWorldObject = layout.Objects.Create(tilemap, Vector2.Zero);
             tilemapWorldObject.ZOrder = solid ? -100 : -200;
         }
     }

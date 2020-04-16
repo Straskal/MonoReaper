@@ -114,6 +114,11 @@ namespace Reaper.Engine
             return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
         }
 
+        /// <summary>
+        /// Clamps the view to the inside of the layout. If the layout is smaller than the view, then the view is centered.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private Vector2 ClampViewToLayout(Vector2 position)
         {
             float xMin, xMax, yMin, yMax;
