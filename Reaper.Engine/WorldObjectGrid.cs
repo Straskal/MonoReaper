@@ -217,6 +217,7 @@ namespace Reaper.Engine
 
         public GridObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
+            // Removing ToRectangle() does not give us accurate overlaps.
             return QueryCells(bounds).Where(other => 
                 bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()) 
                     && !ignoreTags.Any(tag => other.WorldObject.Tags.Contains(tag))).ToArray();
@@ -224,6 +225,7 @@ namespace Reaper.Engine
 
         public GridObject[] QueryBounds(WorldObjectBounds bounds)
         {
+            // Removing ToRectangle() does not give us accurate overlaps.
             return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle())).ToArray();
         }
 
