@@ -63,11 +63,10 @@ namespace Reaper.Engine
 
         public void Destroy(WorldObject worldObject)
         {
-            if (worldObject.Destroyed)
+            if (worldObject.IsDestroyed)
                 return;
 
             worldObject.MarkForDestroy();
-            _layout.Grid.Remove(worldObject);
         }
 
         internal void Start()
@@ -141,9 +140,10 @@ namespace Reaper.Engine
         {
             worldObjects.RemoveAll(wo =>
             {
-                if (wo.Destroyed)
+                if (wo.IsDestroyed)
                 {
                     wo.OnDestroyed();
+                    _layout.Grid.Remove(wo);
                     return true;
                 }
                 return false;

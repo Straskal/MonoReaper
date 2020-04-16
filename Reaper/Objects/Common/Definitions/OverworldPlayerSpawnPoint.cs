@@ -8,10 +8,11 @@ namespace Reaper
         public static WorldObjectDefinition Definition() 
         {
             var playerSpawnPoint = new WorldObjectDefinition();
+            playerSpawnPoint.SetTags("spawnPoint");
+            playerSpawnPoint.MakeDecal();
             playerSpawnPoint.LoadFromOgmo((wo, oe) => 
             {
-                var layout = wo.Layout;
-                var playerInstance = layout.Objects.Create(OverworldPlayer.Definition(), wo.Position);
+                var playerInstance = wo.Layout.Objects.Create(OverworldPlayer.Definition(), wo.Position);
                 playerInstance.IsMirrored = wo.IsMirrored;
                 wo.Destroy();
             });

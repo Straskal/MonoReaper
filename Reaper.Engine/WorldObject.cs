@@ -44,16 +44,12 @@ namespace Reaper.Engine
         public Vector2 PreviousPosition { get; private set; }
         public WorldObjectBounds PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
-        public bool Destroyed { get; private set; }
+        public bool IsDestroyed { get; private set; }
 
         public SpatialType SpatialType
         {
             get => _type;
-            set
-            {
-                _type = value;
-                Layout.Grid.UpdateType(this);
-            }
+            set => _type = value;
         }
 
         public Vector2 Position
@@ -143,7 +139,7 @@ namespace Reaper.Engine
         /// </summary>
         public void UpdateBBox()
         {
-            if (Destroyed)
+            if (IsDestroyed)
                 return;
 
             InternalUpdateBBox();
@@ -240,7 +236,7 @@ namespace Reaper.Engine
         /// </summary>
         internal void MarkForDestroy()
         {
-            Destroyed = true;
+            IsDestroyed = true;
         }
 
         private void TickTimers(float time)

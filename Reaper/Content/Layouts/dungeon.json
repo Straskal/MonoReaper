@@ -4,7 +4,7 @@
   "height": 256,
   "offsetX": 0,
   "offsetY": 0,
-  "values": {"SpatialCellSize": 256, "EntrySpawnPoint": "Default", "OffsetX": 0, "OffsetY": 0},
+  "values": {"SpatialCellSize": 256, "EntrySpawnPoint": "", "OffsetX": 0, "OffsetY": 0},
   "layers": [
     {
       "name": "worldobjects",
@@ -16,17 +16,6 @@
       "gridCellsX": 28,
       "gridCellsY": 16,
       "entities": [
-        {
-          "name": "OverworldPlayerSpawnPoint",
-          "id": 0,
-          "_eid": "29682872",
-          "x": 112,
-          "y": 96,
-          "originX": 16,
-          "originY": 32,
-          "values": {"SpawnPointName": "Default"}
-        },
-        {"name": "Blob", "id": 1, "_eid": "48314842", "x": 256, "y": 112, "originX": 16, "originY": 16},
         {
           "name": "LayoutTransition",
           "id": 2,
@@ -106,7 +95,12 @@
         {"name": "Spikes", "id": 13, "_eid": "80837030", "x": 352, "y": 112, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 14, "_eid": "80837030", "x": 352, "y": 80, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 17, "_eid": "80837030", "x": 352, "y": 48, "originX": 16, "originY": 16},
-        {"name": "Spikes", "id": 18, "_eid": "80837030", "x": 352, "y": 208, "originX": 16, "originY": 16}
+        {"name": "Spikes", "id": 18, "_eid": "80837030", "x": 352, "y": 208, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 19, "_eid": "96693540", "x": 320, "y": 208, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 20, "_eid": "96693540", "x": 48, "y": 48, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 21, "_eid": "48314842", "x": 272, "y": 128, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 22, "_eid": "48314842", "x": 112, "y": 80, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 23, "_eid": "48314842", "x": 208, "y": 48, "originX": 16, "originY": 16}
       ]
     },
     {

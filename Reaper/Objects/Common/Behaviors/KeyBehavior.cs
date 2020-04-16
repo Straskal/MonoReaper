@@ -31,10 +31,7 @@ namespace Reaper
             _player = Layout.Objects.FindFirstWithTag("player");
             _enemies = Layout.Objects.FindWithTag("enemy").ToList();
             _targetPosition = Owner.Position;
-
-            Owner.SpatialType = SpatialType.Pass;
             Owner.SetY(-Owner.Height * 2);
-
             _currentAction = CheckEnemyCount;
         }
 
@@ -45,7 +42,7 @@ namespace Reaper
 
         private void CheckEnemyCount(GameTime gameTime) 
         {
-            _enemies.RemoveAll(wo => wo.Destroyed);
+            _enemies.RemoveAll(wo => wo.IsDestroyed);
 
             if (!_enemies.Any())
             {

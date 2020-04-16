@@ -157,16 +157,10 @@ namespace Reaper.Engine
             if (worldObject.Position == worldObject.PreviousPosition)
                 return;
 
-            Remove(worldObject);
-            Add(worldObject);
-        }
-
-        internal void UpdateType(WorldObject worldObject)
-        {
-            if (worldObject.PreviousSpatialType != SpatialType.Pass) 
+            if (worldObject.PreviousSpatialType != SpatialType.Pass)
                 Remove(worldObject);
 
-            if (worldObject.SpatialType != SpatialType.Pass) 
+            if (worldObject.SpatialType != SpatialType.Pass)
                 Add(worldObject);
         }
 
