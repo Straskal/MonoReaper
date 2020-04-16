@@ -100,10 +100,14 @@ namespace Reaper.Engine
 
         internal void FrameEnd()
         {
+            // Update previous frame data before processing destroyed objects. We need updated bounds and previous bounds.
+            UpdatePreviousFrameData(_worldObjects);
+
             // Handling destroyed objects is deferred until the end of the frame, unlike spawning.
             HandleDestroyedWorldObjects(_worldObjects);
+
+            // Sort last. Might want to consider only sorting when our list changes. This is just easier for now...
             SortByZOrder(_worldObjects);
-            UpdatePreviousFrameData(_worldObjects);
         }
 
         internal void Draw(Renderer renderer)

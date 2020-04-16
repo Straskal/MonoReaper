@@ -1,4 +1,5 @@
-﻿using Reaper.Engine;
+﻿using Microsoft.Xna.Framework;
+using Reaper.Engine;
 
 namespace Reaper
 {
@@ -17,6 +18,7 @@ namespace Reaper
                 {
                     Name = "idle",
                     ImageFilePath = "art/player/fireball",
+                    Origin = new Point(4, 4),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 8, 8),
