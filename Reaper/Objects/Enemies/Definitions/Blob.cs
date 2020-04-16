@@ -12,6 +12,7 @@ namespace Reaper
             def.SetTags("enemy");
             def.SetSize(32, 32);
             def.SetOrigin(16, 16);
+            def.AddBehavior(wo => new DamageableBehavior(wo));
             def.AddBehavior(wo => new BlobBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetBlobAnimations()));
             return def;

@@ -6,7 +6,7 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    public class ShooterBehavior : Behavior, IDamageable
+    public class ShooterBehavior : Behavior
     {
         private const float ATTACK_TIME_BUFFER = 2f;
 
@@ -16,9 +16,7 @@ namespace Reaper
         private Effect _effect;
         private SoundEffect _hitSound;
 
-        public ShooterBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public ShooterBehavior(WorldObject owner) : base(owner) { }
 
         public int Health { get; private set; } = 3;
 
@@ -28,15 +26,9 @@ namespace Reaper
             _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
         }
 
-        public void Damage(int amount)
+        public override void OnOwnerCreated()
         {
-            Health -= amount;
-            if (Health <= 0)
-                Owner.Destroy();
-
-            _hitSound.Play();
-            Owner.GetBehavior<SpriteSheetBehavior>().Effect = _effect;
-            Owner.StartTimer("damaged", 0.1f, () => Owner.GetBehavior<SpriteSheetBehavior>().Effect = null);
+            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
         }
 
         public override void OnLayoutStarted()
@@ -59,6 +51,15 @@ namespace Reaper
 
                 _timer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
             }
+        }
+
+        public void OnDamaged(DamageableBehavior.DamageInfo info)
+        {
+            Health -= info.Amount;
+            if (Health <= 0)
+                Owner.Destroy();
+
+            _hitSound.Play();
         }
     }
 }

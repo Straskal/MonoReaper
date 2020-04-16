@@ -15,6 +15,7 @@ namespace Reaper
             playerDefinition.AddPoint("projectileSpawn", 12, 16);
             playerDefinition.SetZOrder(10);
             playerDefinition.AddBehavior(wo => new PlayerBehavior(wo));
+            playerDefinition.AddBehavior(wo => new DamageableBehavior(wo));
             playerDefinition.AddBehavior(wo => new SpriteSheetBehavior(wo, GetPlayerAnimations()));
             return playerDefinition;
         }

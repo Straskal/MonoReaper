@@ -6,9 +6,8 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    public class BlobBehavior : Behavior, IDamageable
+    public class BlobBehavior : Behavior
     {
-        private Effect _effect;
         private SoundEffect _hitSound;
 
         public BlobBehavior(WorldObject owner) : base(owner) { }
@@ -19,19 +18,21 @@ namespace Reaper
 
         public override void Load(ContentManager contentManager)
         {
-            _effect = contentManager.Load<Effect>("Shaders/SolidColor");
             _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
         }
 
-        public void Damage(int amount)
+        public override void OnOwnerCreated()
         {
-            Health -= amount;
+            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
+        }
+
+        public void OnDamaged(DamageableBehavior.DamageInfo info)
+        {
+            Health -= info.Amount;
             if (Health <= 0)
                 Owner.Destroy();
 
             _hitSound.Play();
-            Owner.GetBehavior<SpriteSheetBehavior>().Effect = _effect;
-            Owner.StartTimer("damaged", 0.1f, () => Owner.GetBehavior<SpriteSheetBehavior>().Effect = null);
         }
 
         public override void Tick(GameTime gameTime)

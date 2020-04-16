@@ -21,6 +21,7 @@ namespace Reaper
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
+        public int Health { get; private set; } = 5;
         public Vector2 Direction { get; private set; } = new Vector2(0, 1f);
         public float Speed { get; set; } = 100f;
 
@@ -32,6 +33,7 @@ namespace Reaper
         public override void OnOwnerCreated()
         {
             _spriteSheetBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
+            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
 
             var input = Game.Singletons.Get<InputManager>();
             _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
@@ -72,11 +74,19 @@ namespace Reaper
                     proj.ZOrder = Owner.ZOrder + 1;
                     proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
                     proj.GetBehavior<ProjectileBehavior>().Speed = 200f;
+                    proj.GetBehavior<ProjectileBehavior>().IgnoreTags = new[] { "player" };
 
                     _fireSound.Play();
                     _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
                 }
             }
+        }
+
+        private void OnDamaged(DamageableBehavior.DamageInfo info)
+        {
+            Health -= info.Amount;
+            if (Health <= 0)
+                Owner.Destroy();
         }
     }
 }

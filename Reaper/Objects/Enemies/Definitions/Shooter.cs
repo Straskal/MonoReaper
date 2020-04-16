@@ -13,6 +13,7 @@ namespace Reaper
             def.SetSize(32, 32);
             def.SetOrigin(16, 16);
             def.AddPoint("projectileSpawn", 16, 16);
+            def.AddBehavior(wo => new DamageableBehavior(wo));
             def.AddBehavior(wo => new ShooterBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetBlobAnimations()));
             return def;
