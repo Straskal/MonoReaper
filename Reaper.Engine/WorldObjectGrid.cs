@@ -215,9 +215,16 @@ namespace Reaper.Engine
             return false;
         }
 
-        public IEnumerable<GridObject> QueryBounds(WorldObjectBounds bounds)
+        public GridObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
-            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()));
+            return QueryCells(bounds).Where(other => 
+                bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()) 
+                    && !ignoreTags.Any(tag => other.WorldObject.Tags.Contains(tag))).ToArray();
+        }
+
+        public GridObject[] QueryBounds(WorldObjectBounds bounds)
+        {
+            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle())).ToArray();
         }
 
         internal void DebugDraw(Renderer renderer) 

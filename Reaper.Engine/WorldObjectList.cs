@@ -63,6 +63,9 @@ namespace Reaper.Engine
 
         public void Destroy(WorldObject worldObject)
         {
+            if (worldObject.Destroyed)
+                return;
+
             worldObject.MarkForDestroy();
             _layout.Grid.Remove(worldObject);
         }

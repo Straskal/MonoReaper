@@ -47,13 +47,13 @@ namespace Reaper
 
         public void Up(GameTime gameTime)
         {
-            var overlaps = Layout.Grid.QueryBounds(Owner.Bounds);
+            var overlaps = Layout.Grid.QueryBounds(Owner.Bounds, ignoreTags: "spikes");
 
             foreach (var overlap in overlaps) 
             {
-                if (overlap.WorldObject.TryGetBehavior<IDamageable>(out var damageable))
+                if (overlap.WorldObject.TryGetBehavior<DamageableBehavior>(out var damageable))
                 {
-                    damageable.Damage(1);
+                    damageable.Damage(new DamageableBehavior.DamageInfo { Amount = 1 });
                 }
             }
 

@@ -11,6 +11,7 @@ namespace Reaper
             var def = new WorldObjectDefinition();
             def.SetSize(32, 32);
             def.SetOrigin(16, 16);
+            def.SetTags("spikes");
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetAnimations()));
             def.AddBehavior(wo => new SpikeBehavior(wo));
             return def;
