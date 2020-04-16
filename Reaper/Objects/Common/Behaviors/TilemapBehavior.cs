@@ -57,7 +57,7 @@ namespace Reaper
             if (!Owner.IsSolid)
                 return;
 
-            foreach (var tile in GetTileInfo())
+            foreach (var tile in GetTileInfos())
             {
                 Owner.AddBounds(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
             }
@@ -65,7 +65,7 @@ namespace Reaper
 
         public override void Draw(Renderer renderer)
         {
-            foreach (var tile in GetTileInfo())
+            foreach (var tile in GetTileInfos())
             {
                 renderer.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
             }
@@ -77,7 +77,7 @@ namespace Reaper
             public Vector2 Position;
         }
 
-        private IEnumerable<TileInfo> GetTileInfo()
+        private IEnumerable<TileInfo> GetTileInfos()
         {
             int numHorizontalCells = Data.Texture.Width / Data.CellSize;
             float currentX = Owner.Position.X;
