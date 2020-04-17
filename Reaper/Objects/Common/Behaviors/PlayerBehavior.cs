@@ -34,10 +34,9 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            _spriteSheetBehavior = Owner.GetBehavior<SpriteSheetBehavior>();
-            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
-            _projectileSpawnPoint = Owner.GetPoint("projectileSpawn");
-
+            _spriteSheetBehavior = Owner.Behaviors.Get<SpriteSheetBehavior>();
+            Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
+            _projectileSpawnPoint = Owner.Points.Get("projectileSpawn");
             var input = Game.Singletons.Get<InputManager>();
             _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
             _verticalAction = input.GetAction<InputManager.AxisAction>("vertical");
@@ -75,9 +74,9 @@ namespace Reaper
 
                     var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
                     proj.ZOrder = Owner.ZOrder + 1;
-                    proj.GetBehavior<ProjectileBehavior>().Direction = attackDirection;
-                    proj.GetBehavior<ProjectileBehavior>().Speed = 200f;
-                    proj.GetBehavior<ProjectileBehavior>().IgnoreTags = new[] { "player" };
+                    proj.Behaviors.Get<ProjectileBehavior>().Direction = attackDirection;
+                    proj.Behaviors.Get<ProjectileBehavior>().Speed = 200f;
+                    proj.Behaviors.Get<ProjectileBehavior>().IgnoreTags = new[] { "player" };
 
                     _fireSound.Play();
                     _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
@@ -88,6 +87,7 @@ namespace Reaper
         private void OnDamaged(DamageableBehavior.DamageInfo info)
         {
             Health -= info.Amount;
+
             if (Health <= 0)
                 Owner.Destroy();
         }

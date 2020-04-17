@@ -32,24 +32,32 @@ namespace Reaper.Engine
         internal void HandleInput(GameTime gameTime) 
         {
             foreach (var singleton in _singletons.Values)
+            {
                 singleton.HandleInput(gameTime);
+            }
         }
 
         internal void Tick(GameTime gameTime)
         {
-            foreach (var singleton in _singletons.Values) 
+            foreach (var singleton in _singletons.Values)
+            {
                 singleton.Tick(gameTime);
+            }
         }
 
         internal void Draw(Renderer renderer, bool isDebugging)
         {
             foreach (var singleton in _singletons.Values)
+            {
                 singleton.Draw(renderer);
+            }
 
             if (isDebugging)
             {
                 foreach (var singleton in _singletons.Values)
+                {
                     singleton.DebugDraw(renderer);
+                }
             }
         }
     }

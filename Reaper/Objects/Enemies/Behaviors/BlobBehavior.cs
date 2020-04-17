@@ -22,7 +22,7 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
+            Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
         }
 
         public void OnDamaged(DamageableBehavior.DamageInfo info)

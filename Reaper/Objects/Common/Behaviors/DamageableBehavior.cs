@@ -28,14 +28,14 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            _spriteSheet = Owner.GetBehavior<SpriteSheetBehavior>();
+            _spriteSheet = Owner.Behaviors.Get<SpriteSheetBehavior>();
         }
 
         public void Damage(DamageInfo info)
         {
             OnDamaged?.Invoke(info);
             _spriteSheet.Effect = _effect;
-            Owner.StartTimer("damaged", 0.1f, () => _spriteSheet.Effect = null);
+            Owner.Timers.Start("damaged", 0.1f, () => _spriteSheet.Effect = null);
         }
     }
 }

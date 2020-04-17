@@ -27,8 +27,8 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            Owner.GetBehavior<DamageableBehavior>().OnDamaged += OnDamaged;
-            _projectileSpawnPoint = Owner.GetPoint("projectileSpawn");
+            Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
+            _projectileSpawnPoint = Owner.Points.Get("projectileSpawn");
         }
 
         public override void OnLayoutStarted()
@@ -45,9 +45,9 @@ namespace Reaper
 
                 var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
                 proj.ZOrder = Owner.ZOrder + 1;
-                proj.GetBehavior<ProjectileBehavior>().Direction = direction;
-                proj.GetBehavior<ProjectileBehavior>().Speed = 150f;
-                proj.GetBehavior<ProjectileBehavior>().IgnoreTags = new[] { "enemy" };
+                proj.Behaviors.Get<ProjectileBehavior>().Direction = direction;
+                proj.Behaviors.Get<ProjectileBehavior>().Speed = 150f;
+                proj.Behaviors.Get<ProjectileBehavior>().IgnoreTags = new[] { "enemy" };
 
                 _timer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
             }

@@ -17,7 +17,7 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            _spriteSheet = Owner.GetBehavior<SpriteSheetBehavior>();
+            _spriteSheet = Owner.Behaviors.Get<SpriteSheetBehavior>();
         }
 
         public override void Tick(GameTime gameTime)
@@ -51,7 +51,7 @@ namespace Reaper
 
             foreach (var overlap in overlaps) 
             {
-                if (overlap.WorldObject.TryGetBehavior<DamageableBehavior>(out var damageable))
+                if (overlap.WorldObject.Behaviors.TryGet<DamageableBehavior>(out var damageable))
                 {
                     damageable.Damage(new DamageableBehavior.DamageInfo { Amount = 1 });
                 }

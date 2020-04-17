@@ -22,7 +22,7 @@ namespace Reaper
 
         private void CheckOverlap(Overlap overlap) 
         {
-            if (overlap.Other.TryGetBehavior<DamageableBehavior>(out var behavior))
+            if (overlap.Other.Behaviors.TryGet<DamageableBehavior>(out var behavior))
             {
                 behavior.Damage(new DamageableBehavior.DamageInfo { Amount = 1 });
                 Owner.Destroy();

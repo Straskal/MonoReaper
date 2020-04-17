@@ -4,9 +4,10 @@ using System;
 namespace Reaper.Engine
 {
     /// <summary>
-    /// A point on a world object is basically just metadata. Points are useful if you need to spawn objects at a certain position.
+    /// A point on a world object is basically just metadata about a position relative to the world object.
+    /// Example use: A player object could have a point called "projectileSpawn".
     /// </summary>
-    public class WorldObjectPoint
+    public sealed class WorldObjectPoint
     {
         private readonly WorldObject _worldObject;
         private readonly Vector2 _value;

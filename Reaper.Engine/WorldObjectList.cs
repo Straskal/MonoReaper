@@ -7,10 +7,7 @@ using System.Linq;
 namespace Reaper.Engine
 {
     /// <summary>
-    /// A data structure that holds all world objects in a layout.
-    /// 
-    /// Object creation is immediate. The moment an object is created, you can immediately access its properties.
-    /// Object destruction is deferred to the end of the frame.
+    /// The world object list contains all world objects for a layout and is used for world object queries.
     /// </summary>
     public sealed class WorldObjectList
     {
@@ -27,16 +24,6 @@ namespace Reaper.Engine
             _worldObjects = new List<WorldObject>();
         }
 
-        public WorldObject FindFirstWithTag(string tag) 
-        {
-            return _worldObjects.FirstOrDefault(wo => wo.Tags.Contains(tag));
-        }
-
-        public IEnumerable<WorldObject> FindWithTag(string tag)
-        {
-            return _worldObjects.Where(wo => wo.Tags.Contains(tag));
-        }
-
         /// <summary>
         /// Creates a new world object with the given definition and position.
         /// </summary>
@@ -47,6 +34,7 @@ namespace Reaper.Engine
         {
             var worldObject = new WorldObject(_layout) { Position = position };
             definition.Apply(worldObject);
+
             _worldObjects.Add(worldObject);
             _layout.Grid.Add(worldObject);
 
@@ -58,15 +46,23 @@ namespace Reaper.Engine
                 worldObject.OnCreated();
                 worldObject.OnLayoutStarted();
             }
+
             return worldObject;
         }
 
         public void Destroy(WorldObject worldObject)
         {
-            if (worldObject.IsDestroyed)
-                return;
-
             worldObject.MarkForDestroy();
+        }
+
+        public WorldObject FindFirstWithTag(string tag)
+        {
+            return _worldObjects.FirstOrDefault(wo => wo.Tags.Contains(tag));
+        }
+
+        public IEnumerable<WorldObject> FindWithTag(string tag)
+        {
+            return _worldObjects.Where(wo => wo.Tags.Contains(tag));
         }
 
         internal void Start()
@@ -74,6 +70,7 @@ namespace Reaper.Engine
             // When we start the layout, we create a copy of all of the initial objects 
             // so we can safely iterate over it while other objects are being spawned into _worldObjects.
             var wosInLayoutStart = _worldObjects.ToArray();
+
             InvokeLoadOnAll(wosInLayoutStart);
             InvokeCreatedOnAll(wosInLayoutStart);
             InvokeLayoutStartedOnAll(wosInLayoutStart);
@@ -81,21 +78,23 @@ namespace Reaper.Engine
 
         internal void FrameStart() 
         {
-            // This is the same concept as the Start() copy.
-            // We use a copy of the world object list so we can iterate while new objects are spawned into _worldObjects.
-            _worldObjectsThisFrame = _worldObjects.ToArray();
+            RefreshCurrentList();
         }
 
         internal void Tick(GameTime gameTime)
         {
             foreach (var wo in _worldObjectsThisFrame)
+            {
                 wo.Tick(gameTime);
+            }
         }
 
         internal void PostTick(GameTime gameTime)
         {
             foreach (var wo in _worldObjectsThisFrame)
+            {
                 wo.PostTick(gameTime);
+            }
         }
 
         internal void FrameEnd()
@@ -113,31 +112,47 @@ namespace Reaper.Engine
         internal void Draw(Renderer renderer)
         {
             foreach (var worldObject in _worldObjects)
+            {
                 worldObject.Draw(renderer);
+            }
         }
 
         internal void DebugDraw(Renderer renderer)
         {
             foreach (var worldObject in _worldObjects)
+            {
                 worldObject.DebugDraw(renderer);
+            }
+        }
+
+        private void RefreshCurrentList() 
+        {
+            // We use a copy of the world object list so we can iterate while new objects are spawned into _worldObjects.
+            _worldObjectsThisFrame = _worldObjects.ToArray();
         }
 
         private void InvokeLoadOnAll(IEnumerable<WorldObject> worldObjects)
         {
             foreach (var worldObject in worldObjects)
+            {
                 worldObject.Load(_content);
+            }
         }
 
         private void InvokeCreatedOnAll(IEnumerable<WorldObject> worldObjects)
         {
             foreach (var worldObject in worldObjects)
+            {
                 worldObject.OnCreated();
+            }
         }
 
         private void InvokeLayoutStartedOnAll(IEnumerable<WorldObject> worldObjects)
         {
             foreach (var worldObject in worldObjects)
+            {
                 worldObject.OnLayoutStarted();
+            }
         }
         
         private void HandleDestroyedWorldObjects(List<WorldObject> worldObjects) 
@@ -162,7 +177,9 @@ namespace Reaper.Engine
         private void UpdatePreviousFrameData(IEnumerable<WorldObject> worldObjects)
         {
             foreach (var worldObject in worldObjects)
+            {
                 worldObject.UpdatePreviousFrameData();
+            }
         }
     }
 }

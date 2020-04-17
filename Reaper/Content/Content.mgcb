@@ -150,3 +150,6 @@
 
 #begin Layouts/dungeon2.json
 /copy:Layouts/dungeon2.json
+
+#begin Layouts/dungeon3.json
+/copy:Layouts/dungeon3.json

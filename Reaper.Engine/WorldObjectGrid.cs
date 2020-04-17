@@ -31,7 +31,7 @@ namespace Reaper.Engine
     }
 
     /// <summary>
-    /// A LayoutGrid entity.
+    /// A grid entity.
     /// </summary>
     public class GridObject
     {

@@ -18,8 +18,8 @@ namespace Reaper
                 wo.Width = oe.Width;
                 wo.Height = oe.Height;
 
-                wo.GetBehavior<LevelTransitionBehavior>().Level = oe.Values.Level;
-                wo.GetBehavior<LevelTransitionBehavior>().SpawnPoint = oe.Values.SpawnPoint;
+                wo.Behaviors.Get<LevelTransitionBehavior>().Level = oe.Values.Level;
+                wo.Behaviors.Get<LevelTransitionBehavior>().SpawnPoint = oe.Values.SpawnPoint;
             });
             return def;
         }

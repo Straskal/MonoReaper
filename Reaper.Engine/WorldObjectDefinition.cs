@@ -20,7 +20,7 @@ namespace Reaper.Engine
 
         public void AddPoint(string name, int x, int y)
         {
-            _buildSteps.Add(worldObject => worldObject.AddPoint(name, x, y));
+            _buildSteps.Add(worldObject => worldObject.Points.Add(name, x, y));
         }
 
         public void SetSize(int width, int height) 
@@ -50,13 +50,15 @@ namespace Reaper.Engine
 
         public void AddBehavior(Func<WorldObject, Behavior> createFunc)
         {
-            _buildSteps.Add(worldObject => worldObject.AddBehavior(createFunc));
+            _buildSteps.Add(worldObject => worldObject.Behaviors.Add(createFunc));
         }
 
         internal void Apply(WorldObject worldObject) 
         {
             foreach (var step in _buildSteps)
+            {
                 step.Invoke(worldObject);
+            }
 
             worldObject.InternalUpdateBBox();
         }

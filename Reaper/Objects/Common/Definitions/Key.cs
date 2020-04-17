@@ -15,7 +15,7 @@ namespace Reaper
             def.MakeDecal();
             def.AddBehavior(wo => new KeyBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetAnimations()));
-            def.LoadFromOgmo((wo, oe) => wo.GetBehavior<KeyBehavior>().Door = oe.Values.Door);
+            def.LoadFromOgmo((wo, oe) => wo.Behaviors.Get<KeyBehavior>().Door = oe.Values.Door);
             return def;
         }
 

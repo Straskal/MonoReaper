@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Reaper.Engine
 {
@@ -11,51 +9,50 @@ namespace Reaper.Engine
     /// </summary>
     public sealed class WorldObject
     {
-        // Should probably break the timer out into another class. Singletons could benefit from this as well.
-        private struct Timer
-        {
-            public string Name;
-            public float Time;
-            public Action TimerCallback;
-        }
-
-        private readonly Dictionary<string, WorldObjectPoint> _points = new Dictionary<string, WorldObjectPoint>();
-        private readonly List<Timer> _timers = new List<Timer>();
-        private readonly List<Behavior> _behaviors;
-
-        private SpatialType _type = SpatialType.Overlap;
-        private Vector2 _position = Vector2.Zero;
-        private Point _origin = Point.Zero;
-        private WorldObjectBounds _bounds = WorldObjectBounds.Empty;
-
         internal WorldObject(Layout layout)
         {
             Layout = layout ?? throw new ArgumentNullException(nameof(layout));
-
-            _behaviors = new List<Behavior>();
+            Behaviors = new BehaviorList(this);
+            Points = new WorldObjectPointList(this);
+            Timers = new TimerList(Layout.Game);
+            Tags = Array.Empty<string>();
+            SpatialType = SpatialType.Overlap;
         }
 
-        public string[] Tags { get; set; } = new string[0];
-        public bool IsMirrored { get; set; }
-        public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
-        public int ZOrder { get; set; }
         public Layout Layout { get; }
+        public BehaviorList Behaviors { get; }
+        public WorldObjectPointList Points { get; }
+        public TimerList Timers { get; }
+        public string[] Tags { get; set; }
+        public bool IsMirrored { get; set; }
+        public SpatialType SpatialType { get; set; }
+        public int ZOrder { get; set; }
+        public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
 
         public Vector2 PreviousPosition { get; private set; }
         public WorldObjectBounds PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
         public bool IsDestroyed { get; private set; }
 
-        public SpatialType SpatialType
-        {
-            get => _type;
-            set => _type = value;
-        }
-
+        private Vector2 _position;
         public Vector2 Position
         {
             get => _position;
             set => _position = value;
+        }
+
+        private Point _origin;
+        public Point Origin
+        {
+            get => _origin;
+            set => _origin = value;
+        }
+
+        private WorldObjectBounds _bounds;
+        public WorldObjectBounds Bounds
+        {
+            get => _bounds;
+            set => _bounds = value;
         }
 
         public float Width
@@ -68,42 +65,6 @@ namespace Reaper.Engine
         {
             get => _bounds.Height;
             set => _bounds.Height = value;
-        }
-
-        public Point Origin
-        {
-            get => _origin;
-            set => _origin = value;
-        }
-
-        public WorldObjectBounds Bounds
-        {
-            get => _bounds;
-            set => _bounds = value;
-        }
-
-        public void AddPoint(string name, float x, float y)
-        {
-            _points.Add(name, new WorldObjectPoint(this, x, y));
-        }
-
-        public WorldObjectPoint GetPoint(string name)
-        {
-            if (!_points.TryGetValue(name, out var point))
-                throw new ArgumentException($"World object does not have point {name}");
-
-            return point;
-        }
-
-        public T GetBehavior<T>() where T : class
-        {
-            return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
-        }
-
-        public bool TryGetBehavior<T>(out T behavior) where T : class
-        {
-            behavior = _behaviors.FirstOrDefault(b => b is T) as T;
-            return behavior != null;
         }
 
         public void SetX(float x)
@@ -127,11 +88,6 @@ namespace Reaper.Engine
         {
             _position += direction;
             UpdateBBox();
-        }
-
-        public void StartTimer(string name, float time, Action timerCallback)
-        {
-            _timers.Add(new Timer { Name = name, Time = Layout.Game.TotalTime + time, TimerCallback = timerCallback });
         }
 
         /// <summary>
@@ -165,15 +121,9 @@ namespace Reaper.Engine
             Layout.Grid.Add(this, new WorldObjectBounds(x, y, width, height));
         }
 
-        internal void AddBehavior(Func<WorldObject, Behavior> createFunc)
-        {
-            _behaviors.Add(createFunc?.Invoke(this));
-        }
-
         internal void Load(ContentManager contentManager)
         {
-            foreach (var behavior in _behaviors)
-                behavior.Load(contentManager);
+            Behaviors.Load(contentManager);
         }
 
         internal void OnCreated()
@@ -181,47 +131,38 @@ namespace Reaper.Engine
             PreviousPosition = Position;
             PreviousBounds = Bounds;
             PreviousSpatialType = SpatialType;
-
-            foreach (var behavior in _behaviors)
-                behavior.OnOwnerCreated();
+            Behaviors.OnCreated();
         }
 
         internal void OnLayoutStarted()
         {
-            foreach (var behavior in _behaviors)
-                behavior.OnLayoutStarted();
+            Behaviors.OnLayoutStarted();
         }
 
         internal void Tick(GameTime gameTime)
         {
-            TickTimers((float)gameTime.TotalGameTime.TotalSeconds);
-
-            foreach (var behavior in _behaviors)
-                behavior.Tick(gameTime);
+            Timers.Tick();
+            Behaviors.Tick(gameTime);
         }
 
         internal void PostTick(GameTime gameTime)
         {
-            foreach (var behavior in _behaviors)
-                behavior.PostTick(gameTime);
+            Behaviors.PostTick(gameTime);
         }
 
         internal void Draw(Renderer renderer)
         {
-            foreach (var behavior in _behaviors)
-                behavior.Draw(renderer);
+            Behaviors.Draw(renderer);
         }
 
         internal void DebugDraw(Renderer renderer)
         {
-            foreach (var behavior in _behaviors)
-                behavior.DebugDraw(renderer);
+            Behaviors.DebugDraw(renderer);
         }
 
         internal void OnDestroyed()
         {
-            foreach (var behavior in _behaviors)
-                behavior.OnOwnerDestroyed();
+            Behaviors.OnDestroyed();
         }
 
         internal void UpdatePreviousFrameData()
@@ -236,20 +177,10 @@ namespace Reaper.Engine
         /// </summary>
         internal void MarkForDestroy()
         {
-            IsDestroyed = true;
-        }
+            if (IsDestroyed)
+                throw new InvalidOperationException("Attempting to destroy world object that has already been destroyed.");
 
-        private void TickTimers(float time)
-        {
-            _timers.RemoveAll(timer => 
-            {
-                if (time > timer.Time)
-                {
-                    timer.TimerCallback?.Invoke();
-                    return true;
-                }
-                return false;
-            });
+            IsDestroyed = true;
         }
     }
 }
