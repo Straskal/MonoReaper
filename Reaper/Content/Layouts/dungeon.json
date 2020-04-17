@@ -96,7 +96,15 @@
         {"name": "Spikes", "id": 14, "_eid": "80837030", "x": 352, "y": 80, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 17, "_eid": "80837030", "x": 352, "y": 48, "originX": 16, "originY": 16},
         {"name": "Spikes", "id": 18, "_eid": "80837030", "x": 352, "y": 208, "originX": 16, "originY": 16},
-        {"name": "Blob", "id": 21, "_eid": "48314842", "x": 272, "y": 128, "originX": 16, "originY": 16}
+        {"name": "Blob", "id": 21, "_eid": "48314842", "x": 272, "y": 128, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 24, "_eid": "96693540", "x": 320, "y": 208, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 25, "_eid": "96693540", "x": 48, "y": 48, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 26, "_eid": "48314842", "x": 128, "y": 176, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 27, "_eid": "48314842", "x": 208, "y": 48, "originX": 16, "originY": 16},
+        {"name": "Spikes", "id": 28, "_eid": "80837030", "x": 48, "y": 112, "originX": 16, "originY": 16},
+        {"name": "Spikes", "id": 29, "_eid": "80837030", "x": 48, "y": 144, "originX": 16, "originY": 16},
+        {"name": "Spikes", "id": 30, "_eid": "80837030", "x": 48, "y": 176, "originX": 16, "originY": 16},
+        {"name": "Spikes", "id": 31, "_eid": "80837030", "x": 48, "y": 208, "originX": 16, "originY": 16}
       ]
     },
     {

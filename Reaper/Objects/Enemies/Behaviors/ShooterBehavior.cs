@@ -40,12 +40,12 @@ namespace Reaper
         {
             if (gameTime.TotalGameTime.TotalSeconds > _timer)
             {
-                var direction = Owner.Position - _player.Position;
+                var direction = _player.Position - Owner.Position;
                 direction.Normalize();
 
                 var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
                 proj.ZOrder = Owner.ZOrder + 1;
-                proj.GetBehavior<ProjectileBehavior>().Direction = -direction;
+                proj.GetBehavior<ProjectileBehavior>().Direction = direction;
                 proj.GetBehavior<ProjectileBehavior>().Speed = 150f;
                 proj.GetBehavior<ProjectileBehavior>().IgnoreTags = new[] { "enemy" };
 

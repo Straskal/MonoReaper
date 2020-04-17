@@ -148,3 +148,5 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/SolidColor.fx
 
+#begin Layouts/dungeon2.json
+/copy:Layouts/dungeon2.json
