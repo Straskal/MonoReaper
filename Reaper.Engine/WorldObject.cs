@@ -116,11 +116,6 @@ namespace Reaper.Engine
             _bounds.Y = Position.Y - Origin.Y;
         }
 
-        public void AddBounds(float x, float y, int width, int height)
-        {
-            Layout.Grid.Add(this, new WorldObjectBounds(x, y, width, height));
-        }
-
         internal void Load(ContentManager contentManager)
         {
             Behaviors.Load(contentManager);

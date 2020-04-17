@@ -31,45 +31,19 @@ namespace Reaper.Engine
     }
 
     /// <summary>
-    /// A grid entity.
-    /// </summary>
-    public class GridObject
-    {
-        public GridObject(WorldObject worldObject) 
-        {
-            WorldObject = worldObject;
-            Bounds = worldObject.Bounds;
-        }
-
-        public GridObject(WorldObject worldObject, WorldObjectBounds bounds)
-        {
-            WorldObject = worldObject;
-            Bounds = bounds;
-        }
-
-        public WorldObject WorldObject { get; }
-        public WorldObjectBounds Bounds { get; }
-    }
-
-    /// <summary>
     /// The grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
-    /// 
-    /// The layout is broken out into a grid, representing world space. When querying for objects, we only query the cells that the world object is in.
-    /// Every world object has bounds. Bounds have 4 points: top left, top right, bottom left, bottom right.
-    /// The 4 points determine which cells the world object is in.
     /// </summary>
     public class WorldObjectGrid
     {
         struct Cell
         {
-            public HashSet<GridObject> WorldObjects;
+            public HashSet<WorldObject> WorldObjects;
         }
 
         private readonly int _cellSize;
         private readonly int _width;
         private readonly int _height;
         private readonly Cell[,] _cells;
-        private readonly Dictionary<WorldObject, List<GridObject>> _additionalGridObjects;
 
         internal WorldObjectGrid(int cellSize, int width, int height)
         {
@@ -77,13 +51,12 @@ namespace Reaper.Engine
             _width = (int)Math.Ceiling((double)width / cellSize);
             _height = (int)Math.Ceiling((double)height / cellSize);
             _cells = new Cell[_width, _height];
-            _additionalGridObjects = new Dictionary<WorldObject, List<GridObject>>();
 
             for (int i = 0; i < _width; i++)
             {
                 for (int j = 0; j < _height; j++)
                 {
-                    _cells[i, j].WorldObjects = new HashSet<GridObject>();
+                    _cells[i, j].WorldObjects = new HashSet<WorldObject>();
                 }
             }
         }
@@ -95,38 +68,7 @@ namespace Reaper.Engine
 
             foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
             {
-                _cells[cellPos.X, cellPos.Y].WorldObjects.Add(new GridObject(worldObject));
-            }
-        }
-
-        /// <summary>
-        /// Adds additional colliders to a world object's grid representation.
-        /// This currently has some limitations:
-        /// - When the owning world object moves, the additional grid objects do not move or get updated.
-        /// 
-        /// This was added in order to give the tilemap behavior a way to add tile colliders without actually adding them to the wo list, which caused noise.
-        /// </summary>
-        /// <param name="worldObject"></param>
-        /// <param name="bounds"></param>
-        internal void Add(WorldObject worldObject, WorldObjectBounds bounds)
-        {
-            if (worldObject.SpatialType == SpatialType.Pass)
-                return;
-
-            foreach (var cellPos in GetOccupyingCells(bounds))
-            {
-                var go = new GridObject(worldObject, bounds);
-
-                if (_additionalGridObjects.TryGetValue(worldObject, out var additionalGridObjects)) 
-                {
-                    additionalGridObjects.Add(go);
-                }
-                else 
-                {
-                    _additionalGridObjects.Add(worldObject, new List<GridObject> { go });
-                }
-
-                _cells[cellPos.X, cellPos.Y].WorldObjects.Add(go);
+                _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
             }
         }
 
@@ -137,18 +79,7 @@ namespace Reaper.Engine
 
             foreach (var cellPos in GetOccupyingCells(worldObject.PreviousBounds))
             {
-                _cells[cellPos.X, cellPos.Y].WorldObjects.RemoveWhere(go => go.WorldObject == worldObject);
-            }
-
-            if (_additionalGridObjects.TryGetValue(worldObject, out var additionalGridObjects))
-            {
-                foreach (var gridObject in additionalGridObjects)
-                {
-                    foreach (var cellPos in GetOccupyingCells(gridObject.Bounds))
-                    {
-                        _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(gridObject);
-                    }
-                }
+                _cells[cellPos.X, cellPos.Y].WorldObjects.RemoveWhere(wo => wo == worldObject);
             }
         }
 
@@ -167,74 +98,78 @@ namespace Reaper.Engine
         public bool IsOverlapping(WorldObject worldObject, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other.WorldObject != worldObject);
+            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject);
 
             if (overlappedObject != null)
             {
                 overlap.Depth = worldObject.Bounds.GetIntersectionDepth(overlappedObject.Bounds);
-                overlap.Other = overlappedObject.WorldObject;
+                overlap.Other = overlappedObject;
                 return true;
             }
+
             return false;
         }
 
         public bool IsOverlapping(WorldObject worldObject, string[] ignoreTags, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds)
-                .FirstOrDefault(other => other.WorldObject != worldObject && !ignoreTags.Any(tag => other.WorldObject.Tags.Contains(tag)));
+            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && !ignoreTags.Any(tag => other.Tags.Contains(tag)));
 
             if (overlappedObject != null)
             {
                 overlap.Depth = worldObject.Bounds.GetIntersectionDepth(overlappedObject.Bounds);
-                overlap.Other = overlappedObject.WorldObject;
+                overlap.Other = overlappedObject;
                 return true;
             }
+
             return false;
         }
 
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();
-            var bounds = worldObject.Bounds;
-            bounds.Offset(xOffset, yOffset);
-            var overlappedObject = QueryBounds(bounds).FirstOrDefault(other => other.WorldObject != worldObject && other.WorldObject.IsSolid);
+            var offsetBounds = worldObject.Bounds;
+            offsetBounds.Offset(xOffset, yOffset);
+
+            var overlappedObject = QueryBounds(offsetBounds).FirstOrDefault(other => other != worldObject && other.IsSolid);
 
             if (overlappedObject != null)
             {
-                overlap.Depth = bounds.GetIntersectionDepth(overlappedObject.Bounds);
-                overlap.Other = overlappedObject.WorldObject;
+                overlap.Depth = offsetBounds.GetIntersectionDepth(overlappedObject.Bounds);
+                overlap.Other = overlappedObject;
                 return true;
             }
+
             return false;
         }
 
-        public GridObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
+        public WorldObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
             // Removing ToRectangle() does not give us accurate overlaps.
             return QueryCells(bounds).Where(other => 
                 bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()) 
-                    && !ignoreTags.Any(tag => other.WorldObject.Tags.Contains(tag))).ToArray();
+                    && !ignoreTags.Any(tag => other.Tags.Contains(tag))).ToArray();
         }
 
-        public GridObject[] QueryBounds(WorldObjectBounds bounds)
+        public WorldObject[] QueryBounds(WorldObjectBounds bounds)
         {
             // Removing ToRectangle() does not give us accurate overlaps.
             return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle())).ToArray();
         }
 
-        internal void DebugDraw(Renderer renderer) 
+        internal void DebugDraw(Renderer renderer)
         {
+            const float opacity = 0.3f;
+
             for (int i = 0; i < _cells.GetLength(0); i++) 
             {
                 for (int j = 0; j < _cells.GetLength(1); j++)
                 {
-                    foreach (var go in _cells[i, j].WorldObjects) 
+                    foreach (var wo in _cells[i, j].WorldObjects) 
                     {
-                        const float opacity = 0.3f;
                         Color color;
 
-                        switch (go.WorldObject.SpatialType)
+                        switch (wo.SpatialType)
                         {
                             case SpatialType.Pass:
                                 color = Color.Pink * opacity;
@@ -247,13 +182,13 @@ namespace Reaper.Engine
                                 break;
                         }
 
-                        renderer.DrawRectangle(go.Bounds.ToRectangle(), color);
+                        renderer.DrawRectangle(wo.Bounds.ToRectangle(), color);
                     }
                 }
             }
         }
 
-        private IEnumerable<GridObject> QueryCells(WorldObjectBounds bounds) 
+        private IEnumerable<WorldObject> QueryCells(WorldObjectBounds bounds) 
         {
             return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
         }

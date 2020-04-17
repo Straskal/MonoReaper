@@ -51,7 +51,7 @@ namespace Reaper
 
             foreach (var overlap in overlaps) 
             {
-                if (overlap.WorldObject.Behaviors.TryGet<DamageableBehavior>(out var damageable))
+                if (overlap.Behaviors.TryGet<DamageableBehavior>(out var damageable))
                 {
                     damageable.Damage(new DamageableBehavior.DamageInfo { Amount = 1 });
                 }

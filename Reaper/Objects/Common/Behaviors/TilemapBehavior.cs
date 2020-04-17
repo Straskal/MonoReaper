@@ -57,9 +57,14 @@ namespace Reaper
             if (!Owner.IsSolid)
                 return;
 
+            var tileDefinition = new WorldObjectDefinition();
+            tileDefinition.SetTags("tile");
+            tileDefinition.SetSize(Data.CellSize, Data.CellSize);
+            tileDefinition.MakeSolid();
+
             foreach (var tile in GetTileInfos())
             {
-                Owner.AddBounds(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize);
+                Layout.Objects.Create(tileDefinition, tile.Position);
             }
         }
 
