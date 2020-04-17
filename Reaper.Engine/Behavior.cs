@@ -30,10 +30,9 @@ namespace Reaper.Engine
         public MainGame Game => Layout.Game;
 
         /// <summary>
-        /// First method called on a behavior. This is a good place for initialization.
+        /// First method called on a behavior. This is a good place for initialization and loading content.
         /// </summary>
-        /// <param name="contentManager"></param>
-        public virtual void Load(ContentManager contentManager) { }
+        public virtual void Load() { }
 
         /// <summary>
         /// Called once all other behaviors on the owner have been loaded.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,18 +10,16 @@ namespace Reaper.Engine
     /// <summary>
     /// The world object list contains all world objects for a layout and is used for world object queries.
     /// </summary>
-    public sealed class WorldObjectList
+    public sealed class WorldObjectList : IEnumerable<WorldObject>
     {
         private readonly Layout _layout;
-        private readonly ContentManager _content;
         private readonly List<WorldObject> _worldObjects;
 
         private WorldObject[] _worldObjectsThisFrame;
 
-        public WorldObjectList(Layout layout, ContentManager content)
+        public WorldObjectList(Layout layout)
         {
             _layout = layout ?? throw new ArgumentNullException(nameof(layout));
-            _content = content ?? throw new ArgumentNullException(nameof(content));
             _worldObjects = new List<WorldObject>();
         }
 
@@ -42,7 +41,7 @@ namespace Reaper.Engine
             // This way, behaviors that spawn objects can immediately access all properties of the spawned object.
             if (_layout.Started)
             {
-                worldObject.Load(_content);
+                worldObject.Load();
                 worldObject.OnCreated();
                 worldObject.OnLayoutStarted();
             }
@@ -135,7 +134,7 @@ namespace Reaper.Engine
         {
             foreach (var worldObject in worldObjects)
             {
-                worldObject.Load(_content);
+                worldObject.Load();
             }
         }
 
@@ -180,6 +179,19 @@ namespace Reaper.Engine
             {
                 worldObject.UpdatePreviousFrameData();
             }
+        }
+
+        public IEnumerator<WorldObject> GetEnumerator()
+        {
+            foreach (var worldObject in _worldObjects) 
+            {
+                yield return worldObject;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

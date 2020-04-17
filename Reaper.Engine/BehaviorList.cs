@@ -1,12 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Reaper.Engine
 {
-    public sealed class BehaviorList
+    public sealed class BehaviorList : IEnumerable<Behavior>
     {
         private readonly WorldObject _owner;
         private readonly List<Behavior> _behaviors;
@@ -33,68 +32,17 @@ namespace Reaper.Engine
             _behaviors.Add(createFunc?.Invoke(_owner));
         }
 
-        internal void Load(ContentManager contentManager)
+        public IEnumerator<Behavior> GetEnumerator()
         {
-            foreach (var behavior in _behaviors)
+            foreach (var behavior in _behaviors) 
             {
-                behavior.Load(contentManager);
+                yield return behavior;
             }
         }
 
-        internal void OnCreated()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.OnOwnerCreated();
-            }
-        }
-
-        internal void OnLayoutStarted()
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.OnLayoutStarted();
-            }
-        }
-
-        internal void Tick(GameTime gameTime)
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.Tick(gameTime);
-            }
-        }
-
-        internal void PostTick(GameTime gameTime)
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.PostTick(gameTime);
-            }
-        }
-
-        internal void Draw(Renderer renderer)
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.Draw(renderer);
-            }
-        }
-
-        internal void DebugDraw(Renderer renderer)
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.DebugDraw(renderer);
-            }
-        }
-
-        internal void OnDestroyed()
-        {
-            foreach (var behavior in _behaviors)
-            {
-                behavior.OnOwnerDestroyed();
-            }
+            return GetEnumerator();
         }
     }
 }

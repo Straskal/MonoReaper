@@ -21,9 +21,9 @@ namespace Reaper
 
         public event Action<DamageInfo> OnDamaged;
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
-            _effect = contentManager.Load<Effect>("Shaders/SolidColor");
+            _effect = Layout.Content.Load<Effect>("Shaders/SolidColor");
         }
 
         public override void OnOwnerCreated()

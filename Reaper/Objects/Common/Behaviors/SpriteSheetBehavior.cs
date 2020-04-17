@@ -49,11 +49,11 @@ namespace Reaper
         public int CurrentFrame { get; private set; }
         public bool IsFinished { get; private set; }
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
             foreach (var animation in _animations)
             {
-                animation.Image = contentManager.Load<Texture2D>(animation.ImageFilePath);
+                animation.Image = Layout.Content.Load<Texture2D>(animation.ImageFilePath);
             }
 
             Play(_animations[0].Name);

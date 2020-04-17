@@ -20,9 +20,9 @@ namespace Reaper
 
         public int Health { get; private set; } = 3;
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
-            _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
+            _hitSound = Layout.Content.Load<SoundEffect>("audio/hit_hurt");
         }
 
         public override void OnOwnerCreated()

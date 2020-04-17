@@ -116,9 +116,12 @@ namespace Reaper.Engine
             _bounds.Y = Position.Y - Origin.Y;
         }
 
-        internal void Load(ContentManager contentManager)
+        internal void Load()
         {
-            Behaviors.Load(contentManager);
+            foreach (var behavior in Behaviors) 
+            {
+                behavior.Load();
+            }
         }
 
         internal void OnCreated()
@@ -126,38 +129,61 @@ namespace Reaper.Engine
             PreviousPosition = Position;
             PreviousBounds = Bounds;
             PreviousSpatialType = SpatialType;
-            Behaviors.OnCreated();
+
+            foreach (var behavior in Behaviors)
+            {
+                behavior.OnOwnerCreated();
+            }
         }
 
         internal void OnLayoutStarted()
         {
-            Behaviors.OnLayoutStarted();
+            foreach (var behavior in Behaviors)
+            {
+                behavior.OnLayoutStarted();
+            }
         }
 
         internal void Tick(GameTime gameTime)
         {
             Timers.Tick();
-            Behaviors.Tick(gameTime);
+
+            foreach (var behavior in Behaviors)
+            {
+                behavior.Tick(gameTime);
+            }
         }
 
         internal void PostTick(GameTime gameTime)
         {
-            Behaviors.PostTick(gameTime);
+            foreach (var behavior in Behaviors)
+            {
+                behavior.PostTick(gameTime);
+            }
         }
 
         internal void Draw(Renderer renderer)
         {
-            Behaviors.Draw(renderer);
+            foreach (var behavior in Behaviors)
+            {
+                behavior.Draw(renderer);
+            }
         }
 
         internal void DebugDraw(Renderer renderer)
         {
-            Behaviors.DebugDraw(renderer);
+            foreach (var behavior in Behaviors)
+            {
+                behavior.DebugDraw(renderer);
+            }
         }
 
         internal void OnDestroyed()
         {
-            Behaviors.OnDestroyed();
+            foreach (var behavior in Behaviors)
+            {
+                behavior.OnOwnerDestroyed();
+            }
         }
 
         internal void UpdatePreviousFrameData()

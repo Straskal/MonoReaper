@@ -4,30 +4,33 @@ using Microsoft.Xna.Framework.Content;
 namespace Reaper.Engine
 {
     /// <summary>
-    /// Layouts can range from boss battles, levels, to menu screens.
-    /// 
-    /// - Layouts have a view.
-    /// - Layouts contain world objects.
-    /// - Layouts have a grid representation of world space for object queries.
+    /// Layouts contain world objects. Layouts can be used for menu screens, gameplay, etc...
     /// </summary>
     public sealed class Layout
     {
-        private readonly ContentManager _content;
-
         public Layout(MainGame game, int cellSize, int width, int height)
         {
-            _content = new ContentManager(game.Services, game.Content.RootDirectory);
-
             Started = false;
             Game = game;
             Width = width;
             Height = height;
+            Content = new ContentManager(game.Services, game.Content.RootDirectory);
             View = new LayoutView(game, this);
+            Objects = new WorldObjectList(this);
             Grid = new WorldObjectGrid(cellSize, width, height);
-            Objects = new WorldObjectList(this, _content);
         }
 
         public bool Started { get; private set; }
+
+        /// <summary>
+        /// The game...
+        /// </summary>
+        public MainGame Game { get; }
+
+        /// <summary>
+        /// The content for this layout. It will be unloaded when the layout ends.
+        /// </summary>
+        public ContentManager Content { get; }
 
         /// <summary>
         /// The layout's view, which is essentially the camera.
@@ -35,19 +38,14 @@ namespace Reaper.Engine
         public LayoutView View { get; }
 
         /// <summary>
-        /// The grid representation of world space. The grid is used for spatial and overlap queries.
-        /// </summary>
-        public WorldObjectGrid Grid { get; }
-
-        /// <summary>
         /// All of the world objects in the layout.
         /// </summary>
         public WorldObjectList Objects { get; }
 
         /// <summary>
-        /// The game...
+        /// The grid representation of world space. The grid is used for spatial and overlap queries.
         /// </summary>
-        public MainGame Game { get; }
+        public WorldObjectGrid Grid { get; }
 
         /// <summary>
         /// The width of the layout in pixels.
@@ -90,7 +88,7 @@ namespace Reaper.Engine
 
         internal void End() 
         {
-            _content.Unload();
+            Content.Unload();
         }
     }
 }

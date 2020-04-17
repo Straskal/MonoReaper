@@ -47,9 +47,9 @@ namespace Reaper
 
         public MapData Data { get; }
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
-            Data.Texture = contentManager.Load<Texture2D>(Data.TilesetFilePath);
+            Data.Texture = Layout.Content.Load<Texture2D>(Data.TilesetFilePath);
         }
 
         public override void OnLayoutStarted()

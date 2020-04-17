@@ -15,9 +15,9 @@ namespace Reaper
         public float Speed { get; set; } = 50f;
         public Vector2 Direction { get; set; } = new Vector2(0f, 1f);
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
-            _hitSound = contentManager.Load<SoundEffect>("audio/hit_hurt");
+            _hitSound = Layout.Content.Load<SoundEffect>("audio/hit_hurt");
         }
 
         public override void OnOwnerCreated()

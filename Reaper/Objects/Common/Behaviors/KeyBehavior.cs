@@ -21,9 +21,9 @@ namespace Reaper
         public string Door { get; set; }
         public float Speed { get; set; } = 50f;
 
-        public override void Load(ContentManager contentManager)
+        public override void Load()
         {
-            _pickupSound = contentManager.Load<SoundEffect>("audio/pickup_key");
+            _pickupSound = Layout.Content.Load<SoundEffect>("audio/pickup_key");
         }
 
         public override void OnLayoutStarted()
