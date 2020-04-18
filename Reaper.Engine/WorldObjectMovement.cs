@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Engine;
 
-namespace Reaper
+namespace Reaper.Engine
 {
     public static class WorldObjectMovement
     {
