@@ -14,10 +14,10 @@ namespace Reaper.Engine
         // Not returned from spatial queries.
         Pass = 0,
 
-        // Returned from general spatial queries.
+        // Returned from overlap queries.
         Overlap = 1 << 0,
 
-        // Returned from all spatial queries, including solid queries.
+        // Returned from overlap and solid queries.
         Solid = Overlap | (1 << 1)
     }
 
