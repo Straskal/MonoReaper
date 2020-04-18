@@ -79,7 +79,7 @@ namespace Reaper.Engine
 
             foreach (var cellPos in GetOccupyingCells(worldObject.PreviousBounds))
             {
-                _cells[cellPos.X, cellPos.Y].WorldObjects.RemoveWhere(wo => wo == worldObject);
+                _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
             }
         }
 
