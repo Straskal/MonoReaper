@@ -55,13 +55,13 @@ namespace Reaper.Engine
             set => _bounds = value;
         }
 
-        public float Width
+        public int Width
         {
             get => _bounds.Width;
             set => _bounds.Width = value;
         }
 
-        public float Height
+        public int Height
         {
             get => _bounds.Height;
             set => _bounds.Height = value;

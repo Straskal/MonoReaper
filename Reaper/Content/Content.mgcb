@@ -139,17 +139,35 @@
 /processorParam:Quality=Best
 /build:Audio/pickup_key.wav
 
-#begin Layouts/dungeon.json
-/copy:Layouts/dungeon.json
-
 #begin Shaders/SolidColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Shaders/SolidColor.fx
 
-#begin Layouts/dungeon2.json
-/copy:Layouts/dungeon2.json
+#begin Art/Player/mage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Player/mage.png
 
-#begin Layouts/dungeon3.json
-/copy:Layouts/dungeon3.json
+#begin Layouts/dungeontest.json
+/copy:Layouts/dungeontest.json
+
+#begin Art/Tilesets/dungset.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Tilesets/dungset.png

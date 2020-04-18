@@ -27,27 +27,30 @@ namespace Reaper
                 new SpriteSheetBehavior.Animation
                 {
                     Name = "idle",
-                    ImageFilePath = "art/player/peasant",
+                    ImageFilePath = "art/player/mage",
                     Loop = true,
-                    Origin = new Point(16, 32),
-                    Frames = new []
-                    {
-                        new SpriteSheetBehavior.Frame(0, 0, 32, 32),
-                    }
-                },
-                new SpriteSheetBehavior.Animation
-                {
-                    Name = "walk",
-                    ImageFilePath = "art/player/peasant",
                     SecPerFrame = 0.2f,
-                    Loop = true,
                     Origin = new Point(16, 32),
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 32, 32),
                         new SpriteSheetBehavior.Frame(32, 0, 32, 32),
                         new SpriteSheetBehavior.Frame(64, 0, 32, 32),
+                    }
+                },
+                new SpriteSheetBehavior.Animation
+                {
+                    Name = "walk",
+                    ImageFilePath = "art/player/mage",
+                    SecPerFrame = 0.2f,
+                    Loop = true,
+                    Origin = new Point(16, 32),
+                    Frames = new []
+                    {
                         new SpriteSheetBehavior.Frame(96, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(0, 32, 32, 32),
+                        new SpriteSheetBehavior.Frame(32, 32, 32, 32),
+                        new SpriteSheetBehavior.Frame(64, 32, 32, 32),
                     }
                 },
             };

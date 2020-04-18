@@ -5,10 +5,19 @@ namespace Reaper
 {
     public static class MovementStrategies
     {
+        /// <summary>
+        /// Move along x axis, resolve any collisions.
+        /// Move along y axis, resolve any collisions.
+        /// 
+        /// The last axis overlap is returned.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="direction"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public static bool MoveAndCollide(this WorldObject worldObject, Vector2 direction, out Overlap overlap)
         {
             overlap = new Overlap();
-
             if (direction == Vector2.Zero)
                 return false;
 

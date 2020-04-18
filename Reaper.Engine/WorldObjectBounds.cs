@@ -18,8 +18,8 @@ namespace Reaper.Engine
 
         public float X;
         public float Y;
-        public float Width;
-        public float Height;
+        public int Width;
+        public int Height;
 
         public float Left => X;
         public float Right => X + Width;
@@ -30,7 +30,11 @@ namespace Reaper.Engine
 
         public Rectangle ToRectangle()
         {
-            return new Rectangle((int)X, (int)Y, (int)Width, (int)Height);
+            return new Rectangle(
+                (int)Math.Round(X),
+                (int)Math.Round(Y),
+                Width,
+                Height);
         }
 
         public void Offset(float x, float y) 
