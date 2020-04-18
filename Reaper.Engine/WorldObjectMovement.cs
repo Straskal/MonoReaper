@@ -3,7 +3,7 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    public static class MovementStrategies
+    public static class WorldObjectMovement
     {
         /// <summary>
         /// Move along x axis, resolve any collisions.
