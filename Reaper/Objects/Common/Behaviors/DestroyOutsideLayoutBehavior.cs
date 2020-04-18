@@ -5,9 +5,7 @@ namespace Reaper
 {
     public class DestroyOutsideLayoutBehavior : Behavior
     {
-        public DestroyOutsideLayoutBehavior(WorldObject owner) : base(owner)
-        {
-        }
+        public DestroyOutsideLayoutBehavior(WorldObject owner) : base(owner) { }
 
         public override void Tick(GameTime gameTime)
         {

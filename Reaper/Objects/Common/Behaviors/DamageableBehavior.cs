@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Reaper.Engine;
 using System;
@@ -28,7 +27,7 @@ namespace Reaper
 
         public override void OnOwnerCreated()
         {
-            _spriteSheet = Owner.Behaviors.Get<SpriteSheetBehavior>();
+            _spriteSheet = Owner.Behaviors.Require<SpriteSheetBehavior>();
         }
 
         public void Damage(DamageInfo info)

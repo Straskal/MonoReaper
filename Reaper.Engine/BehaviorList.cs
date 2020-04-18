@@ -18,13 +18,18 @@ namespace Reaper.Engine
 
         public T Get<T>() where T : class
         {
-            return _behaviors.FirstOrDefault(behavior => behavior is T) as T;
+            return _behaviors.FirstOrDefault(b => b is T) as T;
         }
 
         public bool TryGet<T>(out T behavior) where T : class
         {
             behavior = _behaviors.FirstOrDefault(b => b is T) as T;
             return behavior != null;
+        }
+
+        public T Require<T>() where T : class
+        {
+            return _behaviors.FirstOrDefault(b => b is T) as T ?? throw new Exception($"Required behavior of type {typeof(T).Name} is missing.");
         }
 
         internal void Add(Func<WorldObject, Behavior> createFunc)

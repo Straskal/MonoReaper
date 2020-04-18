@@ -27,5 +27,15 @@ namespace Reaper
             }));
             return def;
         }
+
+        public static WorldObject CreateProjectile(this WorldObjectList worldObjectList, Vector2 position, Vector2 direction, float speed, params string[] ignoreTags) 
+        {
+            var proj = worldObjectList.Create(Definition(), position);
+            var projBehavior = proj.Behaviors.Get<ProjectileBehavior>();
+            projBehavior.Direction = direction;
+            projBehavior.Speed = speed;
+            projBehavior.IgnoreTags = ignoreTags;
+            return proj;
+        }
     }
 }

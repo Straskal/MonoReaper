@@ -2,7 +2,7 @@
 
 namespace Reaper
 {
-    public static class OverworldPlayerSpawnPoint
+    public static class PlayerSpawnPoint
     {
         [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition() 
@@ -12,7 +12,7 @@ namespace Reaper
             playerSpawnPoint.MakeDecal();
             playerSpawnPoint.LoadFromOgmo((wo, oe) => 
             {
-                var playerInstance = wo.Layout.Objects.Create(OverworldPlayer.Definition(), wo.Position);
+                var playerInstance = wo.Layout.Objects.Create(Player.Definition(), wo.Position);
                 playerInstance.IsMirrored = wo.IsMirrored;
                 wo.Destroy();
             });

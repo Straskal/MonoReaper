@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Reaper.Engine;
 
 namespace Reaper
@@ -11,15 +10,14 @@ namespace Reaper
 
         private SpriteSheetBehavior _spriteSheetBehavior;
         private SoundEffect _fireSound;
+        private WorldObjectPoint _projectileSpawnPoint;
+
         private InputManager.AxisAction _horizontalAction;
         private InputManager.AxisAction _verticalAction;
         private InputManager.AxisAction _attackHorizontalAction;
         private InputManager.AxisAction _attackVerticalAction;
 
-        private WorldObjectPoint _projectileSpawnPoint;
-
         private float _attackTimer;
-        private bool _isMoving;
 
         public PlayerBehavior(WorldObject owner) : base(owner) { }
 
@@ -35,53 +33,58 @@ namespace Reaper
         public override void OnOwnerCreated()
         {
             _spriteSheetBehavior = Owner.Behaviors.Get<SpriteSheetBehavior>();
-            Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
             _projectileSpawnPoint = Owner.Points.Get("projectileSpawn");
+
             var input = Game.Singletons.Get<InputManager>();
             _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
             _verticalAction = input.GetAction<InputManager.AxisAction>("vertical");
             _attackHorizontalAction = input.GetAction<InputManager.AxisAction>("attackHorizontal");
             _attackVerticalAction = input.GetAction<InputManager.AxisAction>("attackVertical");
+
+            Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
         }
 
         public override void Tick(GameTime gameTime)
         {
             float elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Vector2 movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
-            _isMoving = movement != Vector2.Zero;
-
-            if (_isMoving)
-                Direction = movement;
-
-            if (movement.LengthSquared() > 0f)
-                movement.Normalize();
-
-            Owner.MoveAndCollide(movement * Speed * elapsedTime, out var _);
-            CheckAttack(gameTime);
-            _spriteSheetBehavior.Play(_isMoving ? "walk" : "idle");
+            MoveAndAnimate(elapsedTime);
+            CheckAttack();
         }
 
-        private void CheckAttack(GameTime gameTime) 
+        private void CheckAttack() 
         {
-            var attackDirection = new Vector2(_attackHorizontalAction.GetAxis(), _attackVerticalAction.GetAxis());
-
-            if (attackDirection != Vector2.Zero)
+            if (IsAttacking(out Vector2 direction))
             {
-                if (gameTime.TotalGameTime.TotalSeconds > _attackTimer)
+                if (Game.TotalTime > _attackTimer)
                 {
-                    if (attackDirection.Length() > 1f)
-                        attackDirection.Normalize();
-
-                    var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
+                    var proj = Layout.Objects.CreateProjectile(_projectileSpawnPoint.Value, direction, 200f, ignoreTags: "player");
                     proj.ZOrder = Owner.ZOrder + 1;
-                    proj.Behaviors.Get<ProjectileBehavior>().Direction = attackDirection;
-                    proj.Behaviors.Get<ProjectileBehavior>().Speed = 200f;
-                    proj.Behaviors.Get<ProjectileBehavior>().IgnoreTags = new[] { "player" };
 
                     _fireSound.Play();
-                    _attackTimer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
+                    _attackTimer = Game.TotalTime + ATTACK_TIME_BUFFER;
                 }
             }
+        }
+
+        private void MoveAndAnimate(float elapsedTime) 
+        {
+            Vector2 movement = new Vector2(_horizontalAction.GetAxis(), _verticalAction.GetAxis());
+            bool isMoving = movement != Vector2.Zero;
+
+            if (movement.Length() > 1f)
+                movement.Normalize();
+
+            if (isMoving)
+                Direction = movement;
+
+            Owner.MoveAndCollide(movement * Speed * elapsedTime, out var _);
+            _spriteSheetBehavior.Play(isMoving ? "walk" : "idle");
+        }
+
+        private bool IsAttacking(out Vector2 direction) 
+        {
+            direction = new Vector2(_attackHorizontalAction.GetAxis(), _attackVerticalAction.GetAxis());
+            return direction != Vector2.Zero;
         }
 
         private void OnDamaged(DamageableBehavior.DamageInfo info)

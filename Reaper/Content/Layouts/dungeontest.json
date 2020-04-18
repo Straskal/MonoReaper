@@ -17,7 +17,7 @@
       "gridCellsY": 15,
       "entities": [
         {
-          "name": "OverworldPlayerSpawnPoint",
+          "name": "PlayerSpawnPoint",
           "id": 0,
           "_eid": "29682872",
           "x": 160,

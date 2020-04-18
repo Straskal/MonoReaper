@@ -3,7 +3,7 @@ using Reaper.Engine;
 
 namespace Reaper
 {
-    public static class OverworldPlayer
+    public static class Player
     {
         [RequiredByLayoutLoad]
         public static WorldObjectDefinition Definition()

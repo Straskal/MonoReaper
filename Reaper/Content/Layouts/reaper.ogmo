@@ -91,7 +91,7 @@
     },
     {
       "exportID": "29682872",
-      "name": "OverworldPlayerSpawnPoint",
+      "name": "PlayerSpawnPoint",
       "limit": -1,
       "size": {"x": 32, "y": 32},
       "origin": {"x": 16, "y": 16},
