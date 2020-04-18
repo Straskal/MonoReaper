@@ -34,8 +34,6 @@ namespace Reaper
                     Frames = new []
                     {
                         new SpriteSheetBehavior.Frame(0, 0, 32, 32),
-                        new SpriteSheetBehavior.Frame(32, 0, 32, 32),
-                        new SpriteSheetBehavior.Frame(64, 0, 32, 32),
                     }
                 },
                 new SpriteSheetBehavior.Animation
@@ -47,10 +45,10 @@ namespace Reaper
                     Origin = new Point(16, 32),
                     Frames = new []
                     {
+                        new SpriteSheetBehavior.Frame(0, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(32, 0, 32, 32),
+                        new SpriteSheetBehavior.Frame(64, 0, 32, 32),
                         new SpriteSheetBehavior.Frame(96, 0, 32, 32),
-                        new SpriteSheetBehavior.Frame(0, 32, 32, 32),
-                        new SpriteSheetBehavior.Frame(32, 32, 32, 32),
-                        new SpriteSheetBehavior.Frame(64, 32, 32, 32),
                     }
                 },
             };

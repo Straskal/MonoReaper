@@ -4,6 +4,30 @@ namespace Reaper.Engine
 {
     public static class WorldObjectMovement
     {
+        public static bool MoveAndCollideX(this WorldObject worldObject, float x) 
+        {
+            if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, x, 0f, out var overlap))
+            {
+                worldObject.Move(x + overlap.Depth.X, 0f);
+                return true;
+            }
+
+            worldObject.Move(x, 0f);
+            return false;
+        }
+
+        public static bool MoveAndCollideY(this WorldObject worldObject, float y)
+        {
+            if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, 0f, y, out var overlap))
+            {
+                worldObject.Move(0f, y + overlap.Depth.Y);
+                return true;
+            }
+
+            worldObject.Move(0f, y);
+            return false;
+        }
+
         /// <summary>
         /// Moves the world object and stops when it hits a solid.
         /// Returns true if there was a collision and outputs the overlap.

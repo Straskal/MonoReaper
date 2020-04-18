@@ -25,7 +25,9 @@
           "originX": 16,
           "originY": 16,
           "values": {"SpawnPointName": ""}
-        }
+        },
+        {"name": "Blob", "id": 2, "_eid": "48314842", "x": 64, "y": 112, "originX": 16, "originY": 16},
+        {"name": "Blob", "id": 3, "_eid": "48314842", "x": 224, "y": 176, "originX": 16, "originY": 16}
       ]
     },
     {
