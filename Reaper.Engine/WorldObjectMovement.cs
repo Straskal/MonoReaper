@@ -5,10 +5,8 @@ namespace Reaper.Engine
     public static class WorldObjectMovement
     {
         /// <summary>
-        /// Move along x axis, resolve any collisions.
-        /// Move along y axis, resolve any collisions.
-        /// 
-        /// The last axis overlap is returned.
+        /// Moves the world object and stops when it hits a solid.
+        /// Returns true if there was a collision and outputs the overlap.
         /// </summary>
         /// <param name="worldObject"></param>
         /// <param name="direction"></param>
@@ -42,12 +40,28 @@ namespace Reaper.Engine
             return result;
         }
 
+        /// <summary>
+        /// Moves the world object while looking for overlaps.
+        /// Returns true if there is an overlap and outputs the overlap.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="direction"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public static bool MoveAndOverlap(this WorldObject worldObject, Vector2 direction, out Overlap overlap)
         {
             worldObject.Move(direction);
             return worldObject.Layout.Grid.IsOverlapping(worldObject, out overlap);
         }
 
+        /// <summary>
+        /// Moves the world object while looking for overlaps, ignoring any overlaps with the given tags.
+        /// Returns true if there is an overlap and outputs the overlap.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="direction"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public static bool MoveAndOverlap(this WorldObject worldObject, Vector2 direction, string[] ignoreTags, out Overlap overlap)
         {
             worldObject.Move(direction);
