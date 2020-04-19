@@ -17,10 +17,8 @@ namespace Reaper
 
             using (var game = new MainGame(settings))
             {
-                game.Singletons.Register(new InputManager(game));
+                game.Singletons.Register(new InputManager(game).SetUpBindings());
                 game.Singletons.Register(new GlobalInputHandler(game));
-                InputBindings.Initialize(game.Singletons.Get<InputManager>());
-                //game.LoadOgmoLayout("content/layouts/dungeontest.json");
                 game.LoadOgmoLayout(args[0]);
                 game.Run();
             }
