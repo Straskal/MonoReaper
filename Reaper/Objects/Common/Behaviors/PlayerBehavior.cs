@@ -28,6 +28,7 @@ namespace Reaper
 
         public int Health { get; private set; } = 5;
         public Vector2 Direction { get; private set; } = new Vector2(0, 1f);
+
         public Vector2 Velocity 
         {
             get => _velocity;
@@ -59,12 +60,11 @@ namespace Reaper
 
             if (IsMoving(out var movementDirection)) 
             {
-                UpdateVelocity(movementDirection, elapsedTime);
                 UpdateDirection(movementDirection);
             }
 
-            SimulateDrag();
-            ApplyVelocity();
+            UpdateVelocity(movementDirection, elapsedTime);
+            MoveAndCollide();
             Animate(movementDirection);
             
             if (IsAttacking(out var attackDirection)) 
@@ -86,16 +86,12 @@ namespace Reaper
         private void UpdateVelocity(Vector2 movementInput, float elapsedTime) 
         {
             _velocity += movementInput * ACCELERATION * elapsedTime;
-        }
-
-        private void SimulateDrag() 
-        {
             _velocity *= DRAG;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_SPEED, MAX_SPEED);
             _velocity.Y = MathHelper.Clamp(_velocity.Y, -MAX_SPEED, MAX_SPEED);
         }
 
-        private void ApplyVelocity()
+        private void MoveAndCollide()
         {
             if (Owner.MoveAndCollideX(_velocity.X))
                 _velocity.X = 0f;
