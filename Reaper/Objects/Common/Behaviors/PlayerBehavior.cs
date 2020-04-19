@@ -16,10 +16,10 @@ namespace Reaper
         private SoundEffect _fireSound;
         private WorldObjectPoint _projectileSpawnPoint;
 
-        private InputManager.AxisAction _horizontalAction;
-        private InputManager.AxisAction _verticalAction;
-        private InputManager.AxisAction _attackHorizontalAction;
-        private InputManager.AxisAction _attackVerticalAction;
+        private AxisAction _horizontalAction;
+        private AxisAction _verticalAction;
+        private AxisAction _attackHorizontalAction;
+        private AxisAction _attackVerticalAction;
 
         private Vector2 _velocity;
         private float _attackTimer;
@@ -46,10 +46,10 @@ namespace Reaper
             _projectileSpawnPoint = Owner.Points.Get("projectileSpawn");
 
             var input = Game.Singletons.Get<InputManager>();
-            _horizontalAction = input.GetAction<InputManager.AxisAction>("horizontal");
-            _verticalAction = input.GetAction<InputManager.AxisAction>("vertical");
-            _attackHorizontalAction = input.GetAction<InputManager.AxisAction>("attackHorizontal");
-            _attackVerticalAction = input.GetAction<InputManager.AxisAction>("attackVertical");
+            _horizontalAction = input.GetAction<AxisAction>("horizontal");
+            _verticalAction = input.GetAction<AxisAction>("vertical");
+            _attackHorizontalAction = input.GetAction<AxisAction>("attackHorizontal");
+            _attackVerticalAction = input.GetAction<AxisAction>("attackVertical");
 
             Owner.Behaviors.Get<DamageableBehavior>().OnDamaged += OnDamaged;
         }

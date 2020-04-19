@@ -10,10 +10,10 @@ namespace Reaper
         public override void HandleInput(GameTime gameTime)
         {
             var inputManager = Game.Singletons.Get<InputManager>();
-            var toggleFullscreen = inputManager.GetAction<InputManager.PressedAction>("toggleFullscreen");
-            var togglePaused = inputManager.GetAction<InputManager.PressedAction>("togglePaused");
-            var toggleDebug = inputManager.GetAction<InputManager.PressedAction>("toggleDebug");
-            var exitGame = inputManager.GetAction<InputManager.PressedAction>("exitGame");
+            var toggleFullscreen = inputManager.GetAction<PressedAction>("toggleFullscreen");
+            var togglePaused = inputManager.GetAction<PressedAction>("togglePaused");
+            var toggleDebug = inputManager.GetAction<PressedAction>("toggleDebug");
+            var exitGame = inputManager.GetAction<PressedAction>("exitGame");
 
             if (toggleFullscreen.WasPressed()) Game.ToggleFullscreen();
             if (togglePaused.WasPressed()) Game.TogglePaused();
