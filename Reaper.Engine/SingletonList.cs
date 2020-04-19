@@ -29,6 +29,22 @@ namespace Reaper.Engine
             throw new ArgumentException($"{typeof(T)} is not a registered singleton.");
         }
 
+        internal void Load()
+        {
+            foreach (var singleton in _singletons.Values)
+            {
+                singleton.Load();
+            }
+        }
+
+        internal void OnLayoutStarted()
+        {
+            foreach (var singleton in _singletons.Values)
+            {
+                singleton.OnLayoutStarted();
+            }
+        }
+
         internal void HandleInput(GameTime gameTime) 
         {
             foreach (var singleton in _singletons.Values)
@@ -58,6 +74,22 @@ namespace Reaper.Engine
                 {
                     singleton.DebugDraw(renderer);
                 }
+            }
+        }
+
+        internal void DrawGUI(Renderer renderer)
+        {
+            foreach (var singleton in _singletons.Values)
+            {
+                singleton.DrawGUI(renderer);
+            }
+        }
+
+        internal void OnLayoutEnded()
+        {
+            foreach (var singleton in _singletons.Values)
+            {
+                singleton.OnLayoutEnded();
             }
         }
     }

@@ -92,16 +92,21 @@ namespace Reaper.Engine
             _isDebugging = !_isDebugging;
         }
 
+        protected override void LoadContent()
+        {
+            Singletons.Load();
+        }
+
         protected override void UnloadContent()
         {
             CurrentLayout.End();
             _renderer.Unload();
+            Content.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
-
             Singletons.HandleInput(gameTime);
 
             if (!_paused) 
@@ -121,6 +126,7 @@ namespace Reaper.Engine
             _renderer.BeginDraw();
             CurrentLayout.Draw(_renderer, _isDebugging);
             Singletons.Draw(_renderer, _isDebugging);
+            Singletons.DrawGUI(_renderer);
             _renderer.EndDraw();
             
             base.Draw(gameTime);
@@ -131,12 +137,18 @@ namespace Reaper.Engine
             if (_nextLayout != null)
             {
                 if (CurrentLayout != null)
+                {
                     CurrentLayout.End();
+                    Singletons.OnLayoutEnded();
+                }
 
                 CurrentLayout = _nextLayout;
 
                 if (CurrentLayout != null)
+                {
                     CurrentLayout.Start();
+                    Singletons.OnLayoutStarted();
+                }
 
                 _nextLayout = null;
             }

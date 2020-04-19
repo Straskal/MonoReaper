@@ -17,8 +17,10 @@ namespace Reaper
 
             using (var game = new MainGame(settings))
             {
+                game.Singletons.Register(new GameManager(game));
                 game.Singletons.Register(new InputManager(game).SetUpBindings());
                 game.Singletons.Register(new GlobalInputHandler(game));
+                game.Singletons.Register(new Hearts(game));
                 game.LoadOgmoLayout(args[0]);
                 game.Run();
             }

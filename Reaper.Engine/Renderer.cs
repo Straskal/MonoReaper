@@ -44,6 +44,12 @@ namespace Reaper.Engine
             );
         }
 
+        public void Draw(Texture2D texture, Vector2 position, Color color)
+        {
+            HandleEffectChange(null);
+            _batch.Draw(texture, position, color);
+        }
+
         public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
