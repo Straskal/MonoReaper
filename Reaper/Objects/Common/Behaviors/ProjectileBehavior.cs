@@ -28,7 +28,9 @@ namespace Reaper
                 Owner.Destroy();
             }
             else if (overlap.Other.IsSolid)
+            {
                 Owner.Destroy();
+            }
         }
     }
 }
