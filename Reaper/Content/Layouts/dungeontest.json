@@ -27,8 +27,7 @@
           "values": {"SpawnPointName": ""}
         },
         {"name": "Blob", "id": 1, "_eid": "48314842", "x": 80, "y": 96, "originX": 16, "originY": 16},
-        {"name": "Blob", "id": 2, "_eid": "48314842", "x": 272, "y": 64, "originX": 16, "originY": 16},
-        {"name": "Shooter", "id": 3, "_eid": "96693540", "x": 32, "y": 64, "originX": 16, "originY": 16}
+        {"name": "Blob", "id": 2, "_eid": "48314842", "x": 272, "y": 64, "originX": 16, "originY": 16}
       ]
     },
     {

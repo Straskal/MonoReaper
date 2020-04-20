@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Reaper.Engine
@@ -102,6 +103,11 @@ namespace Reaper.Engine
             CurrentLayout.End();
             _renderer.Unload();
             Content.Unload();
+        }
+
+        protected override void OnDeactivated(object sender, EventArgs args)
+        {
+            _paused = true;
         }
 
         protected override void Update(GameTime gameTime)
