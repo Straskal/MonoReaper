@@ -8,8 +8,8 @@ namespace Reaper
     public class PlayerBehavior : Behavior
     {
         private const float ATTACK_TIME_BUFFER = 0.5f;
-        private const float MAX_SPEED = 20f;
-        private const float ACCELERATION = 30f;
+        private const float MAX_SPEED = 15f;
+        private const float ACCELERATION = 25f;
         private const float DRAG = 0.8f;
 
         private SpriteSheetBehavior _spriteSheetBehavior;
