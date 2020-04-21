@@ -43,11 +43,11 @@ namespace Reaper
                 var direction = _player.Position - Owner.Position;
                 direction.Normalize();
 
-                var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
-                proj.ZOrder = Owner.ZOrder + 1;
-                proj.Behaviors.Get<ProjectileBehavior>().Direction = direction;
-                proj.Behaviors.Get<ProjectileBehavior>().Speed = 150f;
-                proj.Behaviors.Get<ProjectileBehavior>().IgnoreTags = new[] { "enemy" };
+                //var proj = Layout.Objects.Create(Projectile.Definition(), _projectileSpawnPoint.Value);
+                //proj.ZOrder = Owner.ZOrder + 1;
+                //proj.Behaviors.Get<ProjectileBehavior>().Direction = direction;
+                //proj.Behaviors.Get<ProjectileBehavior>().Speed = 150f;
+                //proj.Behaviors.Get<ProjectileBehavior>().IgnoreTags = new[] { "enemy" };
 
                 _timer = (float)gameTime.TotalGameTime.TotalSeconds + ATTACK_TIME_BUFFER;
             }

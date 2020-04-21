@@ -37,6 +37,8 @@ namespace Reaper.Engine
 
             _gpuManager.ApplyChanges();
             _renderer = new Renderer(this);
+
+            CurrentLayout = new Layout(this, 32, 32, 32);
         }
 
         public SingletonList Singletons { get; private set; }

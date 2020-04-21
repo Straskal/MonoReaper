@@ -123,8 +123,8 @@ namespace Reaper
         {
             if (Game.TotalTime > _attackTimer)
             {
-                var proj = Layout.Objects.CreateProjectile(_projectileSpawnPoint.Value, direction, 200f, ignoreTags: "player");
-                proj.ZOrder = Owner.ZOrder + 1;
+                //var proj = Layout.Objects.CreateProjectile(_projectileSpawnPoint.Value, direction, 200f, ignoreTags: "player");
+                //proj.ZOrder = Owner.ZOrder + 1;
 
                 _fireSound.Play();
                 _attackTimer = Game.TotalTime + ATTACK_TIME_BUFFER;

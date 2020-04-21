@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reaper", "Reaper\Reaper.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reaper.Engine", "Reaper.Engine\Reaper.Engine.csproj", "{86EFDEA3-274F-4F41-9716-2652E53528FD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reaper.Gameplay", "Reaper.Behaviors\Reaper.Gameplay.csproj", "{EB1228DD-AD33-4D65-AC3C-619AF6FD6FE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reaper.WorldObjectBuilder", "Reaper.WorldObjectBuilder\Reaper.WorldObjectBuilder.csproj", "{240D70A7-EFEC-44CD-89C7-B4BB7923D2B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{86EFDEA3-274F-4F41-9716-2652E53528FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86EFDEA3-274F-4F41-9716-2652E53528FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86EFDEA3-274F-4F41-9716-2652E53528FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB1228DD-AD33-4D65-AC3C-619AF6FD6FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1228DD-AD33-4D65-AC3C-619AF6FD6FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1228DD-AD33-4D65-AC3C-619AF6FD6FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1228DD-AD33-4D65-AC3C-619AF6FD6FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{240D70A7-EFEC-44CD-89C7-B4BB7923D2B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{240D70A7-EFEC-44CD-89C7-B4BB7923D2B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{240D70A7-EFEC-44CD-89C7-B4BB7923D2B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{240D70A7-EFEC-44CD-89C7-B4BB7923D2B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
