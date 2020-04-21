@@ -19,7 +19,7 @@
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
-  "playCommand": "start scripts\\run_level.bat %level",
+  "playCommand": "start scripts\\debug_level.bat %level",
   "entityTags": ["common", "enemies"],
   "layers": [
     {
