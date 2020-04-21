@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Reaper.Engine;
-using System.Linq;
 
 namespace Reaper
 {
