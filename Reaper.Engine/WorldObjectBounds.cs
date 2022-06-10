@@ -45,8 +45,8 @@ namespace Reaper.Engine
 
         public bool Intersects(WorldObjectBounds aabb2)
         {
-            return !(Right < aabb2.Left || Left > aabb2.Right)
-                && !(Bottom < aabb2.Top || Top > aabb2.Bottom);
+            return !(Right <= aabb2.Left || Left >= aabb2.Right)
+                && !(Bottom <= aabb2.Top || Top >= aabb2.Bottom);
         }
 
         public Vector2 GetIntersectionDepth(WorldObjectBounds aabb2)
