@@ -147,14 +147,13 @@ namespace Reaper.Engine
         {
             // Removing ToRectangle() does not give us accurate overlaps.
             return QueryCells(bounds).Where(other => 
-                bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()) 
+                bounds.Intersects(other.Bounds) 
                     && !ignoreTags.Any(tag => other.Tags.Contains(tag))).ToArray();
         }
 
         public WorldObject[] QueryBounds(WorldObjectBounds bounds)
         {
-            // Removing ToRectangle() does not give us accurate overlaps.
-            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle())).ToArray();
+            return QueryCells(bounds).Where(other => bounds.Intersects(other.Bounds)).ToArray();
         }
 
         internal void DebugDraw(Renderer renderer)
