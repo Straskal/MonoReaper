@@ -21,8 +21,9 @@ namespace Reaper
                 game.Singletons.Register(new InputManager(game).SetUpBindings());
                 game.Singletons.Register(new GlobalInputHandler(game));
                 game.Singletons.Register(new Hearts(game));
-                //game.LoadOgmoLayout("content/layouts/dungeontest.json");
-                game.LoadOgmoLayout(args[0]);
+                //game.LoadOgmoLayout("content/layouts/layout1.json");
+                game.LoadOgmoLayout("content/layouts/level_0.json");
+                //game.LoadOgmoLayout(args[0]);
                 game.Run();
             }
         }

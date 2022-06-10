@@ -15,6 +15,13 @@ namespace Reaper
             def.AddBehavior(wo => new DamageableBehavior(wo));
             def.AddBehavior(wo => new BlobBehavior(wo));
             def.AddBehavior(wo => new SpriteSheetBehavior(wo, GetBlobAnimations()));
+            def.LoadFromOgmo((wo, og) => 
+            {
+                if (og.Values.Horizontal) 
+                {
+                    wo.Behaviors.Get<BlobBehavior>().Direction = new Vector2(1, 0);                    
+                }
+            });
             return def;
         }
 

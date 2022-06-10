@@ -1,6 +1,6 @@
 {
   "name": "Reaper",
-  "ogmoVersion": "3.3.0",
+  "ogmoVersion": "3.4.0",
   "levelPaths": ["."],
   "backgroundColor": "#282c34ff",
   "gridColor": "#3c40490c",
@@ -11,15 +11,15 @@
   "levelMinSize": {"x": 128, "y": 128},
   "levelMaxSize": {"x": 4096, "y": 4096},
   "levelValues": [
-    {"name": "SpatialCellSize", "definition": "Integer", "defaults": 256, "bounded": false, "min": 0, "max": 100},
-    {"name": "EntrySpawnPoint", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true},
-    {"name": "OffsetX", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100},
-    {"name": "OffsetY", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
+    {"name": "SpatialCellSize", "definition": "Integer", "display": 0, "defaults": 256, "bounded": false, "min": 0, "max": 100},
+    {"name": "EntrySpawnPoint", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true},
+    {"name": "OffsetX", "definition": "Integer", "display": 0, "defaults": 0, "bounded": false, "min": 0, "max": 100},
+    {"name": "OffsetY", "definition": "Integer", "display": 0, "defaults": 0, "bounded": false, "min": 0, "max": 100}
   ],
   "defaultExportMode": ".json",
   "compactExport": false,
   "externalScript": "",
-  "playCommand": "start scripts\\debug_level.bat %level",
+  "playCommand": "start scripts\\debug_level.bat %lvl",
   "entityTags": ["common", "enemies"],
   "layers": [
     {
@@ -85,8 +85,8 @@
       "nodeGhost": true,
       "tags": ["common"],
       "values": [
-        {"name": "Level", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true},
-        {"name": "SpawnPoint", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+        {"name": "Level", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true},
+        {"name": "SpawnPoint", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
     },
     {
@@ -124,7 +124,7 @@
       "nodeGhost": true,
       "tags": ["common"],
       "values": [
-        {"name": "SpawnPointName", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+        {"name": "SpawnPointName", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
     },
     {
@@ -161,7 +161,9 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": ["enemies"],
-      "values": []
+      "values": [
+        {"name": "Horizontal", "definition": "Boolean", "display": 0, "defaults": false}
+      ]
     },
     {
       "exportID": "70591290",
@@ -198,7 +200,7 @@
       "nodeGhost": true,
       "tags": ["common"],
       "values": [
-        {"name": "Door", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+        {"name": "Door", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
     },
     {
@@ -236,7 +238,7 @@
       "nodeGhost": true,
       "tags": ["common"],
       "values": [
-        {"name": "Id", "definition": "String", "defaults": "", "maxLength": 0, "trimWhitespace": true}
+        {"name": "Id", "definition": "String", "display": 0, "defaults": "", "maxLength": 0, "trimWhitespace": true}
       ]
     },
     {
@@ -313,6 +315,6 @@
     }
   ],
   "tilesets": [
-    {"label": "dungeonset", "path": "../Art/Tilesets/dungeonset.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAMFBMVEUAAAAdK1N+JVMAh1GrUjZfV0/Cw8f/8ej/AE3/owD/7CcA5DYprf+Ddpz/d6j/zKruozp8AAAAEHRSTlMA////////////////////wFCLQwAAAWdJREFUeJztmNEOgyAMRQeZS3zw/393A51i2cSm0M5xzxIN1IwToIDePJPHC+/ibcbtuXHxjoWfAm7acGOKvoAb7yk6An7xWAS8f7UcLl5DIKsZQ8Pvn1IPTMk47IdAYRIOK2657Rj0BUj5/wVKDzQXyFZCUm4ukK2EpAwBFYF0KaZlqUC+/5J4yVAsQDp3onHxrJcKiMdcKiDucrFAPPdslx4FwrZ/Xy8QgAAEINCrQKSNQPFA0rgHSuwEwucJWwFnIRCZ34RtBH5pCMIbqamAYRZE7NMQAhCAQB0BJtRILDBwOfbjfycM/0lPQd9oJXC2/dmgvsD59qPBh1bTB/gCnPaDwYfKZE4qCBynKQR6EKiehpcToDXqAnTUSVxfoL8saC1A45lA6yy4pEAaby+QTYvK23FRwHwSQsBc4BfTUFeAVFTfjosCdNRJXF+gvywwFyjAFgAAAAAAAAAAAAAAAAAAQPc8AeGYdKh+or+UAAAAAElFTkSuQmCC", "tileWidth": 16, "tileHeight": 16, "tileSeparationX": 0, "tileSeparationY": 0}
+    {"label": "dungeonset", "path": "../Art/Tilesets/dungeonset.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAMFBMVEUAAAAdK1N+JVMAh1GrUjZfV0/Cw8f/8ej/AE3/owD/7CcA5DYprf+Ddpz/d6j/zKruozp8AAAAEHRSTlMA////////////////////wFCLQwAAAWdJREFUeJztmNEOgyAMRQeZS3zw/393A51i2cSm0M5xzxIN1IwToIDePJPHC+/ibcbtuXHxjoWfAm7acGOKvoAb7yk6An7xWAS8f7UcLl5DIKsZQ8Pvn1IPTMk47IdAYRIOK2657Rj0BUj5/wVKDzQXyFZCUm4ukK2EpAwBFYF0KaZlqUC+/5J4yVAsQDp3onHxrJcKiMdcKiDucrFAPPdslx4FwrZ/Xy8QgAAEINCrQKSNQPFA0rgHSuwEwucJWwFnIRCZ34RtBH5pCMIbqamAYRZE7NMQAhCAQB0BJtRILDBwOfbjfycM/0lPQd9oJXC2/dmgvsD59qPBh1bTB/gCnPaDwYfKZE4qCBynKQR6EKiehpcToDXqAnTUSVxfoL8saC1A45lA6yy4pEAaby+QTYvK23FRwHwSQsBc4BfTUFeAVFTfjosCdNRJXF+gvywwFyjAFgAAAAAAAAAAAAAAAAAAQPc8AeGYdKh+or+UAAAAAElFTkSuQmCC", "tileWidth": 16, "tileHeight": 16, "tileSeparationX": 0, "tileSeparationY": 0, "tileMarginX": 0, "tileMarginY": 0}
   ]
 }

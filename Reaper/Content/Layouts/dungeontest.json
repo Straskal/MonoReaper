@@ -1,5 +1,5 @@
 {
-  "ogmoVersion": "3.3.0",
+  "ogmoVersion": "3.4.0",
   "width": 320,
   "height": 208,
   "offsetX": 0,
@@ -26,8 +26,29 @@
           "originY": 16,
           "values": {"SpawnPointName": ""}
         },
-        {"name": "Blob", "id": 1, "_eid": "48314842", "x": 80, "y": 96, "originX": 16, "originY": 16},
-        {"name": "Blob", "id": 2, "_eid": "48314842", "x": 272, "y": 64, "originX": 16, "originY": 16}
+        {
+          "name": "Blob",
+          "id": 1,
+          "_eid": "48314842",
+          "x": 80,
+          "y": 96,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 2,
+          "_eid": "48314842",
+          "x": 272,
+          "y": 64,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {"name": "Spikes", "id": 3, "_eid": "80837030", "x": 224, "y": 160, "originX": 16, "originY": 16},
+        {"name": "Spikes", "id": 4, "_eid": "80837030", "x": 96, "y": 160, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 5, "_eid": "96693540", "x": 128, "y": 64, "originX": 16, "originY": 16}
       ]
     },
     {
