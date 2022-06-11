@@ -69,6 +69,16 @@
           "originX": 0,
           "originY": 0,
           "values": {"Level": "content/layouts/level_2.json", "SpawnPoint": ""}
+        },
+        {
+          "name": "Blob",
+          "id": 5,
+          "_eid": "48314842",
+          "x": 64,
+          "y": 128,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
         }
       ]
     },
