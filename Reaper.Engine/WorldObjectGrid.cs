@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GridCell = System.Collections.Generic.HashSet<Reaper.Engine.WorldObject>;
 
 namespace Reaper.Engine
 {
