@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Reaper.Engine
 {
@@ -8,6 +9,8 @@ namespace Reaper.Engine
     // But if we can start taking the objects direction (Vector2) into the mix, we can calculate the "slide" direction.
     public static class WorldObjectMovement
     {
+        private const float OVERLAP_BUFFER = 0.005f;
+
         /// <summary>
         /// Moves the world object and stops when it hits a solid.
         /// Returns true if there was a collision and outputs the overlap.
@@ -20,7 +23,11 @@ namespace Reaper.Engine
         {
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, x, 0f, out var overlap))
             {
-                worldObject.Move(x + overlap.Depth.X, 0f);
+                var depthX = overlap.Depth.X;
+                var depthSign = Math.Sign(depthX);
+                var correction = depthX + OVERLAP_BUFFER * depthSign;
+
+                worldObject.Move(x + correction, 0f);
                 return true;
             }
 
@@ -41,7 +48,11 @@ namespace Reaper.Engine
         {
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, 0f, y, out var overlap))
             {
-                worldObject.Move(0f, y + overlap.Depth.Y);
+                var depthY = overlap.Depth.Y;
+                var depthSign = Math.Sign(depthY);
+                var correction = depthY + OVERLAP_BUFFER * depthSign;
+
+                worldObject.Move(0f, y + correction);
                 return true;
             }
 
@@ -68,14 +79,22 @@ namespace Reaper.Engine
 
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, direction.X, 0f, out var overlapX))
             {
-                direction.X += overlapX.Depth.X;
+                var depthX = overlapX.Depth.X;
+                var depthSign = Math.Sign(depthX);
+                var correction = depthX + OVERLAP_BUFFER * depthSign;
+
+                direction.X += correction;
                 overlap = overlapX;
                 result = true;
             }
 
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, 0f, direction.Y, out var overlapY))
             {
-                direction.Y += overlapY.Depth.Y;
+                var depthY = overlapY.Depth.Y;
+                var depthSign = Math.Sign(depthY);
+                var correction = depthY + OVERLAP_BUFFER * depthSign;
+
+                direction.Y += correction;
 
                 if (!result)
                     overlap = overlapY;
