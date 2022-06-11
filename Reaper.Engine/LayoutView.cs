@@ -147,6 +147,7 @@ namespace Reaper.Engine
 
             var min = new Vector2(xMin, yMin);
             var max = new Vector2(xMax, yMax);
+            
             return Vector2.Clamp(position, min, max);
         }
     }

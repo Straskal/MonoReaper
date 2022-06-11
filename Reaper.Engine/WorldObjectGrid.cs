@@ -38,26 +38,25 @@ namespace Reaper.Engine
     /// </summary>
     public class WorldObjectGrid
     {
-        private readonly GridCell[,] _cells;
+        private readonly HashSet<int> _tempCells = new HashSet<int>();
+        private readonly Dictionary<int, List<WorldObject>> _buckets;
+        private readonly int _cellSize;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly int _length;
 
-        public readonly int CellSize;
-        public readonly int Width;
-        public readonly int Height;
 
         internal WorldObjectGrid(int cellSize, int width, int height)
         {
-            _cells = new GridCell[width, height];
+            _cellSize = cellSize;
+            _width = (int)Math.Ceiling((double)width / cellSize);
+            _height = (int)Math.Ceiling((double)height / cellSize);
+            _length = _width * _height;
+            _buckets = new Dictionary<int, List<WorldObject>>(_length);
 
-            CellSize = cellSize;
-            Width = (int)Math.Ceiling((double)width / cellSize);
-            Height = (int)Math.Ceiling((double)height / cellSize);
-
-            for (int i = 0; i < Width; i++)
+            for (int i = 0; i < _length; i++)
             {
-                for (int j = 0; j < Height; j++)
-                {
-                    _cells[i, j] = new GridCell();
-                }
+                _buckets[i] = new List<WorldObject>();
             }
         }
 
@@ -69,10 +68,11 @@ namespace Reaper.Engine
         {
             if (worldObject.SpatialType != SpatialType.Pass)
             {
-                // Add the object all cells that contain in.
-                foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
+                var buckets = GetOccupyingBuckets(worldObject.Bounds);
+
+                for (int i = 0; i < buckets.Length; i++)
                 {
-                    _cells[cellPos.X, cellPos.Y].Add(worldObject);
+                    _buckets[buckets[i]].Add(worldObject);
                 }
             }
         }
@@ -85,10 +85,11 @@ namespace Reaper.Engine
         {
             if (worldObject.PreviousSpatialType != SpatialType.Pass)
             {
-                // Remove the object from all cells that contain it.
-                foreach (var cellPos in GetOccupyingCells(worldObject.PreviousBounds))
+                var buckets = GetOccupyingBuckets(worldObject.PreviousBounds);
+
+                for (int i = 0; i < buckets.Length; i++)
                 {
-                    _cells[cellPos.X, cellPos.Y].Remove(worldObject);
+                    _buckets[buckets[i]].Remove(worldObject);
                 }
             }
         }
@@ -125,7 +126,9 @@ namespace Reaper.Engine
         public bool IsOverlapping(WorldObject worldObject, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject);
+
+            var overlaps = QueryBounds(worldObject.Bounds);
+            var overlappedObject = overlaps.FirstOrDefault(other => other != worldObject);
 
             if (overlappedObject != null)
             {
@@ -148,7 +151,9 @@ namespace Reaper.Engine
         public bool IsOverlapping(WorldObject worldObject, string[] ignoreTags, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds, ignoreTags).FirstOrDefault(other => other != worldObject);
+
+            var overlaps = QueryBounds(worldObject.Bounds, ignoreTags);
+            var overlappedObject = overlaps.FirstOrDefault(other => other != worldObject);
 
             if (overlappedObject != null)
             {
@@ -187,79 +192,111 @@ namespace Reaper.Engine
             return false;
         }
 
-        public WorldObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
-            // Removing ToRectangle() does not give us accurate overlaps.
-            return QueryCells(bounds).Where(other => bounds.Intersects(other.Bounds) && !ignoreTags.Any(tag => other.Tags.Contains(tag))).ToArray();
+            return QueryBuckets(bounds).Where(other => bounds.Intersects(other.Bounds) && !ignoreTags.Any(tag => other.Tags.Contains(tag)));
         }
 
-        public WorldObject[] QueryBounds(WorldObjectBounds bounds)
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds)
         {
-            return QueryCells(bounds).Where(other => bounds.Intersects(other.Bounds)).ToArray();
+            return QueryBuckets(bounds).Where(other => bounds.Intersects(other.Bounds));
         }
 
         internal void DebugDraw(Renderer renderer)
         {
             const float opacity = 0.3f;
 
-            for (int i = 0; i < _cells.GetLength(0); i++)
+            for (int i = 0; i < _length; i++)
             {
-                for (int j = 0; j < _cells.GetLength(1); j++)
+                var row = i / _width;
+                var col = i % _width;
+                var x = col * _cellSize;
+                var y = row * _cellSize;
+                var color = Color.LightBlue;
+
+                renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), color);
+            }
+
+            for (int i = 0; i < _length; i++)
+            {
+                foreach (var obj in _buckets[i])
                 {
-                    foreach (var wo in _cells[i, j])
+                    Color color;
+
+                    switch (obj.SpatialType)
                     {
-                        Color color;
-
-                        switch (wo.SpatialType)
-                        {
-                            case SpatialType.Pass:
-                                color = Color.Pink * opacity;
-                                break;
-                            case SpatialType.Overlap:
-                                color = Color.Blue * opacity;
-                                break;
-                            default:
-                                color = Color.Red * opacity;
-                                break;
-                        }
-
-                        renderer.DrawRectangle(wo.Bounds.ToRectangle(), color);
+                        case SpatialType.Pass:
+                            color = Color.Pink * opacity;
+                            break;
+                        case SpatialType.Overlap:
+                            color = Color.Blue * opacity;
+                            break;
+                        default:
+                            color = Color.Red * opacity;
+                            break;
                     }
+
+                    renderer.DrawRectangle(obj.Bounds.ToRectangle(), color);
                 }
             }
         }
 
-        private IEnumerable<WorldObject> QueryCells(WorldObjectBounds bounds)
+        private IEnumerable<WorldObject> QueryBuckets(WorldObjectBounds bounds)
         {
-            return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y]).Distinct();
+            var results = new HashSet<WorldObject>();
+            var buckets = GetOccupyingBuckets(bounds);
+
+            for (int i = 0; i < buckets.Length; i++)
+            {
+                results.UnionWith(_buckets[buckets[i]]);
+            }
+
+            return results;
         }
 
-        private IEnumerable<Point> GetOccupyingCells(WorldObjectBounds bounds)
+        private Span<int> GetOccupyingBuckets(WorldObjectBounds bounds)
         {
-            return GetBoundPointCells(bounds).Distinct();
-        }
+            var width = _width;
 
-        private IEnumerable<Point> GetBoundPointCells(WorldObjectBounds bounds)
-        {
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
-                yield return new Point(topLeftCol, topLeftRow);
+            var tlRow = Math.Floor(bounds.Top / _cellSize);
+            var tlCol = Math.Floor(bounds.Left / _cellSize);
+            var tlBucket = (int)(tlCol + tlRow * width);
 
-            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Top), out int topRightCol, out int topRightRow))
-                yield return new Point(topRightCol, topRightRow);
+            var trRow = Math.Floor(bounds.Top / _cellSize);
+            var trCol = Math.Floor(bounds.Right / _cellSize);
+            var trBucket = (int)(trCol + trRow * width);
 
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Bottom), out int bottomLeftCol, out int bottomLeftRow))
-                yield return new Point(bottomLeftCol, bottomLeftRow);
+            var blRow = Math.Floor(bounds.Bottom / _cellSize);
+            var blCol = Math.Floor(bounds.Right / _cellSize);
+            var blBucket = (int)(blCol + blRow * width);
 
-            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Bottom), out int bottomRightCol, out int bottomRightRow))
-                yield return new Point(bottomRightCol, bottomRightRow);
-        }
+            var brRow = Math.Floor(bounds.Bottom / _cellSize);
+            var brCol = Math.Floor(bounds.Right / _cellSize);
+            var brBucket = (int)(brCol + brRow * width);
 
-        private bool TryGetCellPosition(Vector2 position, out int column, out int row)
-        {
-            column = (int)(position.X / CellSize);
-            row = (int)(position.Y / CellSize);
+            _tempCells.Clear();
 
-            return column < _cells.GetLength(0) && row < _cells.GetLength(1);
+            if (tlBucket >= 0 && tlBucket < _length)
+            {
+                _tempCells.Add(tlBucket);
+            }
+
+            if (trBucket >= 0 && trBucket < _length)
+            {
+                _tempCells.Add(trBucket);
+            }
+
+            if (blBucket >= 0 && blBucket < _length)
+            {
+                _tempCells.Add(blBucket);
+            }
+
+            if (brBucket >= 0 && brBucket < _length)
+            {
+                _tempCells.Add(brBucket);
+            }
+
+            return _tempCells.ToArray();
         }
     }
 }

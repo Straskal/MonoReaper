@@ -4,7 +4,6 @@ namespace Reaper.Engine
 {
     public static class WorldObjectMovement
     {
-
         /// <summary>
         /// Moves the world object and stops when it hits a solid.
         /// Returns true if there was a collision and outputs the overlap.

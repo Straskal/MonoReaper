@@ -89,6 +89,86 @@
           "originX": 16,
           "originY": 16,
           "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 7,
+          "_eid": "48314842",
+          "x": 256,
+          "y": 96,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 8,
+          "_eid": "48314842",
+          "x": 160,
+          "y": 160,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 9,
+          "_eid": "48314842",
+          "x": 272,
+          "y": 160,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 10,
+          "_eid": "48314842",
+          "x": 208,
+          "y": 192,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 11,
+          "_eid": "48314842",
+          "x": 128,
+          "y": 80,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 12,
+          "_eid": "48314842",
+          "x": 208,
+          "y": 96,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 13,
+          "_eid": "48314842",
+          "x": 160,
+          "y": 112,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
+        },
+        {
+          "name": "Blob",
+          "id": 14,
+          "_eid": "48314842",
+          "x": 256,
+          "y": 192,
+          "originX": 16,
+          "originY": 16,
+          "values": {"Horizontal": false}
         }
       ]
     },
