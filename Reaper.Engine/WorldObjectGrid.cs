@@ -33,13 +33,13 @@ namespace Reaper.Engine
     /// <summary>
     /// The grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
     /// </summary>
-    public class WorldObjectGrid
+    public sealed class WorldObjectGrid
     {
-        // Used to temporarily store cells for calculations.
-        private readonly HashSet<int> _tempCells = new HashSet<int>();
+        // Max buckets per world object (4 corners).
+        private const int MAX_BOUNDS_BUCKETS = 4;
 
         // The grid cells (buckets) that track world object positions.
-        private readonly Dictionary<int, List<WorldObject>> _buckets;
+        private readonly List<WorldObject>[] _buckets;
 
         // The size of a single spatial hash cell.
         private readonly int _cellSize;
@@ -59,7 +59,7 @@ namespace Reaper.Engine
             _width = (int)Math.Ceiling((double)width / cellSize);
             _height = (int)Math.Ceiling((double)height / cellSize);
             _length = _width * _height;
-            _buckets = new Dictionary<int, List<WorldObject>>(_length);
+            _buckets = new List<WorldObject>[_length];
 
             for (int i = 0; i < _length; i++)
             {
@@ -75,12 +75,8 @@ namespace Reaper.Engine
         {
             if (worldObject.SpatialType != SpatialType.Pass)
             {
-                var buckets = GetOccupyingBuckets(worldObject.Bounds);
-
-                for (int i = 0; i < buckets.Length; i++)
-                {
-                    _buckets[buckets[i]].Add(worldObject);
-                }
+                Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
+                Add(worldObject, buckets);
             }
         }
 
@@ -90,14 +86,10 @@ namespace Reaper.Engine
         /// <param name="worldObject"></param>
         internal void Remove(WorldObject worldObject)
         {
-            if (worldObject.PreviousSpatialType != SpatialType.Pass)
+            if (worldObject.SpatialType != SpatialType.Pass)
             {
-                var buckets = GetOccupyingBuckets(worldObject.PreviousBounds);
-
-                for (int i = 0; i < buckets.Length; i++)
-                {
-                    _buckets[buckets[i]].Remove(worldObject);
-                }
+                Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
+                Remove(worldObject, buckets);
             }
         }
 
@@ -107,19 +99,22 @@ namespace Reaper.Engine
         /// <param name="worldObject"></param>
         internal void Update(WorldObject worldObject)
         {
-            // TODO: This needs to be improved.
-            // The current implementation will do a bunch of unnecessary work if the object isn't moving cells.
-            if (worldObject.Position != worldObject.PreviousPosition)
-            {
-                if (worldObject.PreviousSpatialType != SpatialType.Pass)
-                {
-                    Remove(worldObject);
-                }
+            if (worldObject.SpatialType == SpatialType.Pass)
+                return;
 
-                if (worldObject.SpatialType != SpatialType.Pass)
-                {
-                    Add(worldObject);
-                }
+            if (worldObject.Position == worldObject.PreviousPosition)
+                return;
+
+            Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
+
+            if (worldObject.PreviousSpatialType != SpatialType.Pass)
+            {
+                Remove(worldObject, buckets);
+            }
+
+            if (worldObject.SpatialType != SpatialType.Pass)
+            {
+                Add(worldObject, buckets);
             }
         }
 
@@ -238,9 +233,8 @@ namespace Reaper.Engine
                 var col = i % _width;
                 var x = col * _cellSize;
                 var y = row * _cellSize;
-                var color = Color.LightBlue;
 
-                renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), color);
+                renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), Color.Purple * opacity);
             }
 
             // Draw individual colliders.
@@ -268,14 +262,35 @@ namespace Reaper.Engine
             }
         }
 
+        private void Add(WorldObject worldObject, Span<int> buckets)
+        {
+            var length = GetOccupyingBuckets(worldObject.Bounds, buckets);
+
+            for (int i = 0; i < length; i++)
+            {
+                _buckets[buckets[i]].Add(worldObject);
+            }
+        }
+
+        private void Remove(WorldObject worldObject, Span<int> buckets)
+        {
+            var length = GetOccupyingBuckets(worldObject.PreviousBounds, buckets);
+
+            for (int i = 0; i < length; i++)
+            {
+                _buckets[buckets[i]].Remove(worldObject);
+            }
+        }
+
         // This is the "broad phase" portion of the spatial queries.
         // This returns all world objects that could 'possibly' collide with the given bounds.
         private IEnumerable<WorldObject> QueryBuckets(WorldObjectBounds bounds)
         {
             var results = new HashSet<WorldObject>();
-            var buckets = GetOccupyingBuckets(bounds);
+            Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
+            var length = GetOccupyingBuckets(bounds, buckets);
 
-            for (int i = 0; i < buckets.Length; i++)
+            for (int i = 0; i < length; i++)
             {
                 results.UnionWith(_buckets[buckets[i]]);
             }
@@ -285,47 +300,57 @@ namespace Reaper.Engine
 
         // Returns the buckets that contain the given bounds.
         // The containing bucket is checked for each point, so a world object could technically exist within 4 separate cells.
-        private Span<int> GetOccupyingBuckets(WorldObjectBounds bounds)
+        private int GetOccupyingBuckets(WorldObjectBounds bounds, Span<int> buckets)
         {
-            // Vectors representing the bound's 4 corners:
-            // Top left, top right, bottom left, bottom right.
+            var resultLength = 0;
+
+            // Calculate the bucket index for each corner of bounds.
             var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
             var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
 
-            // Divide the 4 corners by cell size to get the row and column index of each point.
             var row = y / _cellSize;
             var col = x / _cellSize;
 
-            // Floor the values so we end up with some nice round numbers to calculate each bucket index.
             row.Floor();
             col.Floor();
 
-            // Multiply rows with the grid width to find the row index, then add the column index.
-            var buckets = (row * _width) + col;
+            var index = (row * _width) + col;
 
-            _tempCells.Clear();
+            // Create temp collections for finding distinct bucket indexes.
+            Span<int> bucketIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
+            bucketIndexes[0] = (int)index.X;
+            bucketIndexes[1] = (int)index.Y;
+            bucketIndexes[2] = (int)index.Z;
+            bucketIndexes[3] = (int)index.W;
 
-            if (buckets.X >= 0 && buckets.X < _length)
+            Span<int> visitedIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
+            visitedIndexes.Fill(0);
+
+            bool visited;
+            int bi;
+
+            // Only add distinct bucket indexes to result.
+            for (int i = 0; i < bucketIndexes.Length; i++)
             {
-                _tempCells.Add((int)buckets.X);
+                visited = false;
+                bi = bucketIndexes[i];
+
+                for (int j = 0; j < resultLength; j++) 
+                {
+                    if (visitedIndexes[j] == bi)
+                    {
+                        visited = true;
+                    }
+                }
+
+                if (!visited)
+                {
+                    visitedIndexes[resultLength++] = bi;
+                    buckets[i] = bi;
+                }
             }
 
-            if (buckets.Y >= 0 && buckets.Y < _length)
-            {
-                _tempCells.Add((int)buckets.Y);
-            }
-
-            if (buckets.Z >= 0 && buckets.Z < _length)
-            {
-                _tempCells.Add((int)buckets.Z);
-            }
-
-            if (buckets.W >= 0 && buckets.W < _length)
-            {
-                _tempCells.Add((int)buckets.W);
-            }
-
-            return _tempCells.ToArray();
+            return resultLength;
         }
     }
 }
