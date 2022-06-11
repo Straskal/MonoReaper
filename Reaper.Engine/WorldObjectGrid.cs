@@ -284,48 +284,45 @@ namespace Reaper.Engine
         }
 
         // Returns the buckets that contain the given bounds.
-        // Bounds are split into their 4 corners: top left, top right, bottom left, bottom right.
         // The containing bucket is checked for each point, so a world object could technically exist within 4 separate cells.
         private Span<int> GetOccupyingBuckets(WorldObjectBounds bounds)
         {
-            var width = _width;
+            // Vectors representing the bound's 4 corners:
+            // Top left, top right, bottom left, bottom right.
+            var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
+            var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
 
-            var tlRow = Math.Floor(bounds.Top / _cellSize);
-            var tlCol = Math.Floor(bounds.Left / _cellSize);
-            var tlBucket = (int)(tlCol + tlRow * width);
+            // Divide the 4 corners by cell size to get the row and column index of each point.
+            var row = y / _cellSize;
+            var col = x / _cellSize;
 
-            var trRow = Math.Floor(bounds.Top / _cellSize);
-            var trCol = Math.Floor(bounds.Right / _cellSize);
-            var trBucket = (int)(trCol + trRow * width);
+            // Floor the values so we end up with some nice round numbers to calculate each bucket index.
+            row.Floor();
+            col.Floor();
 
-            var blRow = Math.Floor(bounds.Bottom / _cellSize);
-            var blCol = Math.Floor(bounds.Right / _cellSize);
-            var blBucket = (int)(blCol + blRow * width);
-
-            var brRow = Math.Floor(bounds.Bottom / _cellSize);
-            var brCol = Math.Floor(bounds.Right / _cellSize);
-            var brBucket = (int)(brCol + brRow * width);
+            // Multiply rows with the grid width to find the row index, then add the column index.
+            var buckets = (row * _width) + col;
 
             _tempCells.Clear();
 
-            if (tlBucket >= 0 && tlBucket < _length)
+            if (buckets.X >= 0 && buckets.X < _length)
             {
-                _tempCells.Add(tlBucket);
+                _tempCells.Add((int)buckets.X);
             }
 
-            if (trBucket >= 0 && trBucket < _length)
+            if (buckets.Y >= 0 && buckets.Y < _length)
             {
-                _tempCells.Add(trBucket);
+                _tempCells.Add((int)buckets.Y);
             }
 
-            if (blBucket >= 0 && blBucket < _length)
+            if (buckets.Z >= 0 && buckets.Z < _length)
             {
-                _tempCells.Add(blBucket);
+                _tempCells.Add((int)buckets.Z);
             }
 
-            if (brBucket >= 0 && brBucket < _length)
+            if (buckets.W >= 0 && buckets.W < _length)
             {
-                _tempCells.Add(brBucket);
+                _tempCells.Add((int)buckets.W);
             }
 
             return _tempCells.ToArray();
