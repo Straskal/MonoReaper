@@ -8,7 +8,7 @@ namespace Reaper.Engine
     /// </summary>
     public struct WorldObjectBounds
     {
-        public WorldObjectBounds(float x, float y, int width, int height) 
+        public WorldObjectBounds(float x, float y, int width, int height)
         {
             X = x;
             Y = y;
@@ -37,7 +37,7 @@ namespace Reaper.Engine
                 Height);
         }
 
-        public void Offset(float x, float y) 
+        public void Offset(float x, float y)
         {
             X += x;
             Y += y;
@@ -45,7 +45,8 @@ namespace Reaper.Engine
 
         public bool Intersects(WorldObjectBounds aabb2)
         {
-            return !(aabb2.Left > Right || aabb2.Right < Left || aabb2.Top > Bottom || aabb2.Bottom < Top);
+            return !(Right <= aabb2.Left || Left >= aabb2.Right)
+                && !(Bottom <= aabb2.Top || Top >= aabb2.Bottom);
         }
 
         public Vector2 GetIntersectionDepth(WorldObjectBounds aabb2)

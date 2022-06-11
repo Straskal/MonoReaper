@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using System;
 
 namespace Reaper.Engine
@@ -9,7 +8,7 @@ namespace Reaper.Engine
     /// </summary>
     public sealed class WorldObject
     {
-        internal WorldObject(Layout layout)
+        public WorldObject(Layout layout)
         {
             Layout = layout ?? throw new ArgumentNullException(nameof(layout));
             Behaviors = new BehaviorList(this);
@@ -19,21 +18,66 @@ namespace Reaper.Engine
             SpatialType = SpatialType.Overlap;
         }
 
+        /// <summary>
+        /// The layout that this world object lives.
+        /// </summary>
         public Layout Layout { get; }
+
+        /// <summary>
+        /// Collection of behaviors owned by this world object.
+        /// </summary>
         public BehaviorList Behaviors { get; }
+
+        /// <summary>
+        /// A collection of points on this world object.
+        /// </summary>
         public WorldObjectPointList Points { get; }
+
+        /// <summary>
+        /// This world objects timer list. A timers lifespan is dependent on it's owner.
+        /// </summary>
         public TimerList Timers { get; }
+
+        /// <summary>
+        /// Any tags associated with this world object.
+        /// </summary>
         public string[] Tags { get; set; }
+
+        /// <summary>
+        /// True if the object is mirrored.
+        /// 
+        /// TODO: Use bit flags for a mirror mask that supports horizontal and vertical.
+        /// </summary>
         public bool IsMirrored { get; set; }
+
+        /// <summary>
+        /// The object's physical attribute.
+        /// </summary>
         public SpatialType SpatialType { get; set; }
+
+        /// <summary>
+        /// The Z order layer that this object will be drawn to.
+        /// </summary>
         public int ZOrder { get; set; }
+
+        /// <summary>
+        /// True if the object is solid.
+        /// </summary>
         public bool IsSolid => SpatialType.HasFlag(SpatialType.Solid);
 
+        // Previous tracking is kind of annoying and only exists because some other areas need to be reimplemented.
         public Vector2 PreviousPosition { get; private set; }
         public WorldObjectBounds PreviousBounds { get; private set; }
         public SpatialType PreviousSpatialType { get; private set; }
+
+        /// <summary>
+        /// True if the object has been marked for destruction next frame.
+        /// </summary>
         public bool IsDestroyed { get; private set; }
 
+        /// <summary>
+        /// The object's position in world space.
+        /// </summary>
         private Vector2 _position;
         public Vector2 Position
         {
@@ -41,6 +85,9 @@ namespace Reaper.Engine
             set => _position = value;
         }
 
+        /// <summary>
+        /// The objects origin.
+        /// </summary>
         private Point _origin;
         public Point Origin
         {
@@ -48,6 +95,9 @@ namespace Reaper.Engine
             set => _origin = value;
         }
 
+        /// <summary>
+        /// The bounds, or size of the object in pixels.
+        /// </summary>
         private WorldObjectBounds _bounds;
         public WorldObjectBounds Bounds
         {
@@ -55,18 +105,25 @@ namespace Reaper.Engine
             set => _bounds = value;
         }
 
+        /// <summary>
+        /// The object's width in pixels.
+        /// </summary>
         public int Width
         {
             get => _bounds.Width;
             set => _bounds.Width = value;
         }
 
+        /// <summary>
+        /// The object's height in pixels.
+        /// </summary>
         public int Height
         {
             get => _bounds.Height;
             set => _bounds.Height = value;
         }
 
+        // Need to set BBOX below?
         public void SetX(float x)
         {
             _position.X = x;
@@ -77,21 +134,34 @@ namespace Reaper.Engine
             _position.Y = y;
         }
 
+        /// <summary>
+        /// Moves the object in the given direction.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void Move(float x, float y)
         {
             _position.X += x;
             _position.Y += y;
+
             UpdateBBox();
         }
 
+        /// <summary>
+        /// Moves the object in the given direction.
+        /// </summary>
+        /// <param name="direction"></param>
         public void Move(Vector2 direction)
         {
             _position += direction;
+
             UpdateBBox();
         }
 
         /// <summary>
         /// Updates the world object's position in the layout's spatial grid. Must be called after directly modifying a world object's position.
+        /// 
+        /// TODO: Look into this. Not sure this approach is best.
         /// </summary>
         public void UpdateBBox()
         {
@@ -99,18 +169,19 @@ namespace Reaper.Engine
                 return;
 
             InternalUpdateBBox();
+
             Layout.Grid.Update(this);
         }
 
         /// <summary>
-        /// Destroys the world object.
+        /// Marks the object for destruction next frame.
         /// </summary>
         public void Destroy()
         {
             Layout.Objects.Destroy(this);
         }
 
-        public void InternalUpdateBBox()
+        internal void InternalUpdateBBox()
         {
             _bounds.X = Position.X - Origin.X;
             _bounds.Y = Position.Y - Origin.Y;
@@ -118,7 +189,7 @@ namespace Reaper.Engine
 
         internal void Load()
         {
-            foreach (var behavior in Behaviors) 
+            foreach (var behavior in Behaviors)
             {
                 behavior.Load();
             }
@@ -199,7 +270,9 @@ namespace Reaper.Engine
         internal void MarkForDestroy()
         {
             if (IsDestroyed)
+            {
                 throw new InvalidOperationException("Attempting to destroy world object that has already been destroyed.");
+            }
 
             IsDestroyed = true;
         }

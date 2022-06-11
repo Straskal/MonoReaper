@@ -19,7 +19,7 @@ namespace Reaper
             if (_player != null && _player.IsDestroyed) 
             {
                 _player = null;
-                Game.LoadOgmoLayout("dungeontest.json");
+                Game.LoadOgmoLayout("content/layouts/level_0.json");
             }
         }
     }

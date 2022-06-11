@@ -24,7 +24,7 @@ namespace Reaper.Engine
     /// <summary>
     /// A structure that contains information about the nature of an overlap.
     /// </summary>
-    public struct Overlap 
+    public struct Overlap
     {
         public Vector2 Depth;
         public WorldObject Other;
@@ -35,70 +35,107 @@ namespace Reaper.Engine
     /// </summary>
     public class WorldObjectGrid
     {
-        struct Cell
-        {
-            public HashSet<WorldObject> WorldObjects;
-        }
+        // Used to temporarily store cells for calculations.
+        private readonly HashSet<int> _tempCells = new HashSet<int>();
 
+        // The grid cells (buckets) that track world object positions.
+        private readonly Dictionary<int, List<WorldObject>> _buckets;
+
+        // The size of a single spatial hash cell.
         private readonly int _cellSize;
+
+        // The width of the grid in cells.
         private readonly int _width;
+
+        // The height of the grid in cells.
         private readonly int _height;
-        private readonly Cell[,] _cells;
+
+        // The number of cells in the grid.
+        private readonly int _length;
 
         internal WorldObjectGrid(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
             _width = (int)Math.Ceiling((double)width / cellSize);
             _height = (int)Math.Ceiling((double)height / cellSize);
-            _cells = new Cell[_width, _height];
+            _length = _width * _height;
+            _buckets = new Dictionary<int, List<WorldObject>>(_length);
 
-            for (int i = 0; i < _width; i++)
+            for (int i = 0; i < _length; i++)
             {
-                for (int j = 0; j < _height; j++)
+                _buckets[i] = new List<WorldObject>();
+            }
+        }
+
+        /// <summary>
+        /// Adds the object to world space.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        internal void Add(WorldObject worldObject)
+        {
+            if (worldObject.SpatialType != SpatialType.Pass)
+            {
+                var buckets = GetOccupyingBuckets(worldObject.Bounds);
+
+                for (int i = 0; i < buckets.Length; i++)
                 {
-                    _cells[i, j].WorldObjects = new HashSet<WorldObject>();
+                    _buckets[buckets[i]].Add(worldObject);
                 }
             }
         }
 
-        internal void Add(WorldObject worldObject)
-        {
-            if (worldObject.SpatialType == SpatialType.Pass)
-                return;
-
-            foreach (var cellPos in GetOccupyingCells(worldObject.Bounds))
-            {
-                _cells[cellPos.X, cellPos.Y].WorldObjects.Add(worldObject);
-            }
-        }
-
+        /// <summary>
+        /// Removes the object from world space.
+        /// </summary>
+        /// <param name="worldObject"></param>
         internal void Remove(WorldObject worldObject)
         {
-            if (worldObject.PreviousSpatialType == SpatialType.Pass)
-                return;
-
-            foreach (var cellPos in GetOccupyingCells(worldObject.PreviousBounds))
+            if (worldObject.PreviousSpatialType != SpatialType.Pass)
             {
-                _cells[cellPos.X, cellPos.Y].WorldObjects.Remove(worldObject);
+                var buckets = GetOccupyingBuckets(worldObject.PreviousBounds);
+
+                for (int i = 0; i < buckets.Length; i++)
+                {
+                    _buckets[buckets[i]].Remove(worldObject);
+                }
             }
         }
 
+        /// <summary>
+        /// Updates the objects position in world space.
+        /// </summary>
+        /// <param name="worldObject"></param>
         internal void Update(WorldObject worldObject)
         {
-            if (worldObject.Position == worldObject.PreviousPosition)
-                return;
+            // TODO: This needs to be improved.
+            // The current implementation will do a bunch of unnecessary work if the object isn't moving cells.
+            if (worldObject.Position != worldObject.PreviousPosition)
+            {
+                if (worldObject.PreviousSpatialType != SpatialType.Pass)
+                {
+                    Remove(worldObject);
+                }
 
-            if (worldObject.PreviousSpatialType != SpatialType.Pass)
-                Remove(worldObject);
-
-            if (worldObject.SpatialType != SpatialType.Pass)
-                Add(worldObject);
+                if (worldObject.SpatialType != SpatialType.Pass)
+                {
+                    Add(worldObject);
+                }
+            }
         }
 
+        /// <summary>
+        /// Returns true if the object is overlapping with another object.
+        /// If true, outputs information about the overlap.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public bool IsOverlapping(WorldObject worldObject, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject);
+
+            var overlaps = QueryBounds(worldObject.Bounds);
+            var overlappedObject = overlaps.FirstOrDefault(other => other != worldObject);
 
             if (overlappedObject != null)
             {
@@ -110,10 +147,20 @@ namespace Reaper.Engine
             return false;
         }
 
+        /// <summary>
+        /// Returns true if the object is overlapping with another object that does not contain the given tags.
+        /// If true, outputs information about the overlap.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="ignoreTags"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public bool IsOverlapping(WorldObject worldObject, string[] ignoreTags, out Overlap overlap)
         {
             overlap = new Overlap();
-            var overlappedObject = QueryBounds(worldObject.Bounds).FirstOrDefault(other => other != worldObject && !ignoreTags.Any(tag => other.Tags.Contains(tag)));
+
+            var overlaps = QueryBounds(worldObject.Bounds, ignoreTags);
+            var overlappedObject = overlaps.FirstOrDefault(other => other != worldObject);
 
             if (overlappedObject != null)
             {
@@ -125,6 +172,15 @@ namespace Reaper.Engine
             return false;
         }
 
+        /// <summary>
+        /// Returns true if the object is overlapping with another object at the given offset.
+        /// If true, outputs information about the overlap.
+        /// </summary>
+        /// <param name="worldObject"></param>
+        /// <param name="xOffset"></param>
+        /// <param name="yOffset"></param>
+        /// <param name="overlap"></param>
+        /// <returns></returns>
         public bool IsCollidingAtOffset(WorldObject worldObject, float xOffset, float yOffset, out Overlap overlap)
         {
             overlap = new Overlap();
@@ -143,81 +199,133 @@ namespace Reaper.Engine
             return false;
         }
 
-        public WorldObject[] QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
+        /// <summary>
+        /// Returns all world objects that overlap with the given bounds.
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="ignoreTags"></param>
+        /// <returns></returns>
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
-            // Removing ToRectangle() does not give us accurate overlaps.
-            return QueryCells(bounds).Where(other => 
-                bounds.ToRectangle().Intersects(other.Bounds.ToRectangle()) 
-                    && !ignoreTags.Any(tag => other.Tags.Contains(tag))).ToArray();
+            return QueryBounds(bounds).Where(other => !ignoreTags.Any(tag => other.Tags.Contains(tag)));
         }
 
-        public WorldObject[] QueryBounds(WorldObjectBounds bounds)
+        /// <summary>
+        /// Returns all world objects that overlap with the given bounds.
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="ignoreTags"></param>
+        /// <returns></returns>
+        public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds)
         {
-            // Removing ToRectangle() does not give us accurate overlaps.
-            return QueryCells(bounds).Where(other => bounds.ToRectangle().Intersects(other.Bounds.ToRectangle())).ToArray();
+            // 'Narrow Phase' of collision detection.
+            // We let QueryBuckets(...) rule out all impossible collisions, then take the (sometimes) smaller result set and test intersections.
+            return QueryBuckets(bounds).Where(other => bounds.Intersects(other.Bounds));
         }
 
+        /// <summary>
+        /// Super useful method for debugging collision shit.
+        /// </summary>
+        /// <param name="renderer"></param>
         internal void DebugDraw(Renderer renderer)
         {
             const float opacity = 0.3f;
 
-            for (int i = 0; i < _cells.GetLength(0); i++) 
+            // Draw grid cells.
+            for (int i = 0; i < _length; i++)
             {
-                for (int j = 0; j < _cells.GetLength(1); j++)
+                var row = i / _width;
+                var col = i % _width;
+                var x = col * _cellSize;
+                var y = row * _cellSize;
+                var color = Color.LightBlue;
+
+                renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), color);
+            }
+
+            // Draw individual colliders.
+            for (int i = 0; i < _length; i++)
+            {
+                foreach (var obj in _buckets[i])
                 {
-                    foreach (var wo in _cells[i, j].WorldObjects) 
+                    Color color;
+
+                    switch (obj.SpatialType)
                     {
-                        Color color;
-
-                        switch (wo.SpatialType)
-                        {
-                            case SpatialType.Pass:
-                                color = Color.Pink * opacity;
-                                break;
-                            case SpatialType.Overlap:
-                                color = Color.Blue * opacity;
-                                break;
-                            default:
-                                color = Color.Red * opacity;
-                                break;
-                        }
-
-                        renderer.DrawRectangle(wo.Bounds.ToRectangle(), color);
+                        case SpatialType.Pass:
+                            color = Color.Pink * opacity;
+                            break;
+                        case SpatialType.Overlap:
+                            color = Color.Blue * opacity;
+                            break;
+                        default:
+                            color = Color.Red * opacity;
+                            break;
                     }
+
+                    renderer.DrawRectangle(obj.Bounds.ToRectangle(), color);
                 }
             }
         }
 
-        private IEnumerable<WorldObject> QueryCells(WorldObjectBounds bounds) 
+        // This is the "broad phase" portion of the spatial queries.
+        // This returns all world objects that could 'possibly' collide with the given bounds.
+        private IEnumerable<WorldObject> QueryBuckets(WorldObjectBounds bounds)
         {
-            return GetOccupyingCells(bounds).SelectMany(cell => _cells[cell.X, cell.Y].WorldObjects).Distinct();
+            var results = new HashSet<WorldObject>();
+            var buckets = GetOccupyingBuckets(bounds);
+
+            for (int i = 0; i < buckets.Length; i++)
+            {
+                results.UnionWith(_buckets[buckets[i]]);
+            }
+
+            return results;
         }
 
-        private IEnumerable<Point> GetOccupyingCells(WorldObjectBounds bounds) 
+        // Returns the buckets that contain the given bounds.
+        // The containing bucket is checked for each point, so a world object could technically exist within 4 separate cells.
+        private Span<int> GetOccupyingBuckets(WorldObjectBounds bounds)
         {
-            return GetBoundPointCells(bounds).Distinct();
-        }
+            // Vectors representing the bound's 4 corners:
+            // Top left, top right, bottom left, bottom right.
+            var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
+            var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
 
-        private IEnumerable<Point> GetBoundPointCells(WorldObjectBounds bounds) 
-        {
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Top), out int topLeftCol, out int topLeftRow))
-                yield return new Point(topLeftCol, topLeftRow);
+            // Divide the 4 corners by cell size to get the row and column index of each point.
+            var row = y / _cellSize;
+            var col = x / _cellSize;
 
-            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Top), out int topRightCol, out int topRightRow))
-                yield return new Point(topRightCol, topRightRow);
+            // Floor the values so we end up with some nice round numbers to calculate each bucket index.
+            row.Floor();
+            col.Floor();
 
-            if (TryGetCellPosition(new Vector2(bounds.X, bounds.Bottom), out int bottomLeftCol, out int bottomLeftRow))
-                yield return new Point(bottomLeftCol, bottomLeftRow);
+            // Multiply rows with the grid width to find the row index, then add the column index.
+            var buckets = (row * _width) + col;
 
-            if (TryGetCellPosition(new Vector2(bounds.Right, bounds.Bottom), out int bottomRightCol, out int bottomRightRow))
-                yield return new Point(bottomRightCol, bottomRightRow);
-        }
+            _tempCells.Clear();
 
-        private bool TryGetCellPosition(Vector2 position, out int column, out int row)
-        {
-            column = (int)(position.X / _cellSize);
-            row = (int)(position.Y / _cellSize);
-            return column < _cells.GetLength(0) && row < _cells.GetLength(1);
+            if (buckets.X >= 0 && buckets.X < _length)
+            {
+                _tempCells.Add((int)buckets.X);
+            }
+
+            if (buckets.Y >= 0 && buckets.Y < _length)
+            {
+                _tempCells.Add((int)buckets.Y);
+            }
+
+            if (buckets.Z >= 0 && buckets.Z < _length)
+            {
+                _tempCells.Add((int)buckets.Z);
+            }
+
+            if (buckets.W >= 0 && buckets.W < _length)
+            {
+                _tempCells.Add((int)buckets.W);
+            }
+
+            return _tempCells.ToArray();
         }
     }
 }

@@ -2,9 +2,12 @@
 
 namespace Reaper.Engine
 {
+    // TODO: All movement has great potential for optimization.
+    // We perform two spatial queries per movement when combining X and Y movement.
+    // This is a quick and easy solution for now.
+    // But if we can start taking the objects direction (Vector2) into the mix, we can calculate the "slide" direction.
     public static class WorldObjectMovement
     {
-
         /// <summary>
         /// Moves the world object and stops when it hits a solid.
         /// Returns true if there was a collision and outputs the overlap.
@@ -57,10 +60,12 @@ namespace Reaper.Engine
         public static bool MoveAndCollide(this WorldObject worldObject, Vector2 direction, out Overlap overlap)
         {
             overlap = new Overlap();
+            
             if (direction == Vector2.Zero)
                 return false;
 
             bool result = false;
+
             if (worldObject.Layout.Grid.IsCollidingAtOffset(worldObject, direction.X, 0f, out var overlapX))
             {
                 direction.X += overlapX.Depth.X;
@@ -93,6 +98,7 @@ namespace Reaper.Engine
         public static bool MoveAndOverlap(this WorldObject worldObject, Vector2 direction, out Overlap overlap)
         {
             worldObject.Move(direction);
+
             return worldObject.Layout.Grid.IsOverlapping(worldObject, out overlap);
         }
 
@@ -107,6 +113,7 @@ namespace Reaper.Engine
         public static bool MoveAndOverlap(this WorldObject worldObject, Vector2 direction, string[] ignoreTags, out Overlap overlap)
         {
             worldObject.Move(direction);
+
             return worldObject.Layout.Grid.IsOverlapping(worldObject, ignoreTags, out overlap);
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace Reaper
 {
-    public class OgmoEntityValues 
+    public class OgmoEntityValues
     {
         public int DrawOrder { get; set; }
         public string Level { get; set; }
@@ -8,8 +8,9 @@
         public string SpawnPoint { get; set; }
         public string Door { get; set; }
         public string Id { get; set; }
+        public bool Horizontal { get; set; }
     }
-    
+
     public class OgmoEntity
     {
         public string Name { get; set; }

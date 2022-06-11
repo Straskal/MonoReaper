@@ -207,3 +207,15 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Player/heartpickup.png
+
+#begin Layouts/level_0.json
+/copy:Layouts/level_0.json
+
+#begin Layouts/level_1.json
+/copy:Layouts/level_1.json
+
+#begin Layouts/level_2.json
+/copy:Layouts/level_2.json
+
+#begin Layouts/collision_test.json
+/copy:Layouts/collision_test.json
