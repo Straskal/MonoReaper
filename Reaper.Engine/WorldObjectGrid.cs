@@ -33,18 +33,26 @@ namespace Reaper.Engine
 
     /// <summary>
     /// The grid is a data structure that organizes world objects by their position and allows for efficient spatial queries.
-    /// 
-    /// TODO: This grid is really inefficient. Uses way too much Enumeration and LINQ, which both generate a lot of garbage.
     /// </summary>
     public class WorldObjectGrid
     {
+        // Used to temporarily store cells for calculations.
         private readonly HashSet<int> _tempCells = new HashSet<int>();
-        private readonly Dictionary<int, List<WorldObject>> _buckets;
-        private readonly int _cellSize;
-        private readonly int _width;
-        private readonly int _height;
-        private readonly int _length;
 
+        // The grid cells (buckets) that track world object positions.
+        private readonly Dictionary<int, List<WorldObject>> _buckets;
+
+        // The size of a single spatial hash cell.
+        private readonly int _cellSize;
+
+        // The width of the grid in cells.
+        private readonly int _width;
+
+        // The height of the grid in cells.
+        private readonly int _height;
+
+        // The number of cells in the grid.
+        private readonly int _length;
 
         internal WorldObjectGrid(int cellSize, int width, int height)
         {
@@ -192,20 +200,39 @@ namespace Reaper.Engine
             return false;
         }
 
+        /// <summary>
+        /// Returns all world objects that overlap with the given bounds.
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="ignoreTags"></param>
+        /// <returns></returns>
         public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds, params string[] ignoreTags)
         {
-            return QueryBuckets(bounds).Where(other => bounds.Intersects(other.Bounds) && !ignoreTags.Any(tag => other.Tags.Contains(tag)));
+            return QueryBounds(bounds).Where(other => !ignoreTags.Any(tag => other.Tags.Contains(tag)));
         }
 
+        /// <summary>
+        /// Returns all world objects that overlap with the given bounds.
+        /// </summary>
+        /// <param name="bounds"></param>
+        /// <param name="ignoreTags"></param>
+        /// <returns></returns>
         public IEnumerable<WorldObject> QueryBounds(WorldObjectBounds bounds)
         {
+            // 'Narrow Phase' of collision detection.
+            // We let QueryBuckets(...) rule out all impossible collisions, then take the (sometimes) smaller result set and test intersections.
             return QueryBuckets(bounds).Where(other => bounds.Intersects(other.Bounds));
         }
 
+        /// <summary>
+        /// Super useful method for debugging collision shit.
+        /// </summary>
+        /// <param name="renderer"></param>
         internal void DebugDraw(Renderer renderer)
         {
             const float opacity = 0.3f;
 
+            // Draw grid cells.
             for (int i = 0; i < _length; i++)
             {
                 var row = i / _width;
@@ -217,6 +244,7 @@ namespace Reaper.Engine
                 renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), color);
             }
 
+            // Draw individual colliders.
             for (int i = 0; i < _length; i++)
             {
                 foreach (var obj in _buckets[i])
@@ -241,6 +269,8 @@ namespace Reaper.Engine
             }
         }
 
+        // This is the "broad phase" portion of the spatial queries.
+        // This returns all world objects that could 'possibly' collide with the given bounds.
         private IEnumerable<WorldObject> QueryBuckets(WorldObjectBounds bounds)
         {
             var results = new HashSet<WorldObject>();
@@ -254,6 +284,9 @@ namespace Reaper.Engine
             return results;
         }
 
+        // Returns the buckets that contain the given bounds.
+        // Bounds are split into their 4 corners: top left, top right, bottom left, bottom right.
+        // The containing bucket is checked for each point, so a world object could technically exist within 4 separate cells.
         private Span<int> GetOccupyingBuckets(WorldObjectBounds bounds)
         {
             var width = _width;
