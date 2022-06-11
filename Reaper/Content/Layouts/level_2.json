@@ -169,7 +169,11 @@
           "originX": 16,
           "originY": 16,
           "values": {"Horizontal": false}
-        }
+        },
+        {"name": "Shooter", "id": 15, "_eid": "96693540", "x": 288, "y": 80, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 16, "_eid": "96693540", "x": 48, "y": 80, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 17, "_eid": "96693540", "x": 160, "y": 208, "originX": 16, "originY": 16},
+        {"name": "Shooter", "id": 18, "_eid": "96693540", "x": 256, "y": 128, "originX": 16, "originY": 16}
       ]
     },
     {
