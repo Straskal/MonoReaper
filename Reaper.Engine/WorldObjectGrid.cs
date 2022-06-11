@@ -302,6 +302,9 @@ namespace Reaper.Engine
         // The containing bucket is checked for each point, so a world object could technically exist within 4 separate cells.
         private int GetOccupyingBuckets(WorldObjectBounds bounds, Span<int> buckets)
         {
+            var resultLength = 0;
+
+            // Calculate the bucket index for each corner of bounds.
             var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
             var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
 
@@ -313,19 +316,20 @@ namespace Reaper.Engine
 
             var index = (row * _width) + col;
 
+            // Create temp collections for finding distinct bucket indexes.
             Span<int> bucketIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
-            Span<int> visitedIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
-
             bucketIndexes[0] = (int)index.X;
             bucketIndexes[1] = (int)index.Y;
             bucketIndexes[2] = (int)index.Z;
             bucketIndexes[3] = (int)index.W;
 
-            var resultLength = 0;
+            Span<int> visitedIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
+            visitedIndexes.Fill(0);
 
             bool visited;
             int bi;
 
+            // Only add distinct bucket indexes to result.
             for (int i = 0; i < bucketIndexes.Length; i++)
             {
                 visited = false;
