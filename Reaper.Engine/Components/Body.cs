@@ -60,8 +60,7 @@ namespace Reaper.Engine.Components
             while (true)
             {
                 var previousPosition = Entity.Position;
-                var broadphaseArea = Collision.GetBroadphaseRectangle(Bounds, velocity);
-                var others = Level.Partition.QueryBounds(broadphaseArea).Except(visited);
+                var others = Level.Partition.QueryBounds(Bounds).Except(visited);
                 var collided = Collision.TestAABB(this, velocity, others, out var info);
 
                 Entity.Position = info.Position;

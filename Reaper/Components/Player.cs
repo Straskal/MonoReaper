@@ -29,9 +29,9 @@ namespace Reaper.Components
             moveY = Input.NewAxisAction(Keys.W, Keys.S);
             interact = Input.NewPressedAction(Keys.E);
 
-            body.Acceleration = 500f;
-            body.Drag = 1f;
-            body.MaxSpeed = 1000f;
+            body.Acceleration = 25f;
+            body.Drag = 0.8f;
+            body.MaxSpeed = 1.5f;
         }
 
         public override void OnTick(GameTime gameTime)
@@ -67,40 +67,39 @@ namespace Reaper.Components
 
             Animate(faceDirection);
 
-            if (interact.WasPressed()) 
-            {
-                var ray = faceDirection * 50f;
-                var broadphase = Collision.GetBroadphaseRectangle(Entity.Position, ray);
-                var others = Level.Partition.QueryBounds(broadphase).Except(new List<Box>() { body });
-                var hit = Collision.TestRay(Entity.Position, ray, others, out var info);
+            //if (interact.WasPressed()) 
+            //{
+            //    var ray = faceDirection * 50f;
+            //    var others = Level.Partition.QueryBounds(Bounds).Except(new List<Box>() { body });
+            //    var hit = Collision.TestRay(Entity.Position, ray, others, out var info);
 
-                if (hit) 
-                {
-                    var other = info.Other;
-                    var fire = new Entity() { Origin = Origin.BottomCenter };
+            //    if (hit) 
+            //    {
+            //        var other = info.Other;
+            //        var fire = new Entity() { Origin = Origin.BottomCenter };
 
-                    fire.AddComponent(new OnFire(other, 10f));
-                    fire.AddComponent(new Sprite("art/player/fire"));
-                    fire.AddComponent(new Animator(new[] 
-                    {
-                        new Animator.Animation 
-                        {
-                            Name = "idle",
-                            ImageFilePath = "art/player/fire",
-                            Loop = true,
-                            SecPerFrame = 0.2f,
-                            Frames = new Rectangle[] 
-                            {
-                                new Rectangle(0, 0, 16, 16),
-                                new Rectangle(16, 0, 16, 16)
-                            }
-                        }
-                    } ));
-                    Level.Spawn(fire);
-                }
+            //        fire.AddComponent(new OnFire(other, 10f));
+            //        fire.AddComponent(new Sprite("art/player/fire"));
+            //        fire.AddComponent(new Animator(new[] 
+            //        {
+            //            new Animator.Animation 
+            //            {
+            //                Name = "idle",
+            //                ImageFilePath = "art/player/fire",
+            //                Loop = true,
+            //                SecPerFrame = 0.2f,
+            //                Frames = new Rectangle[] 
+            //                {
+            //                    new Rectangle(0, 0, 16, 16),
+            //                    new Rectangle(16, 0, 16, 16)
+            //                }
+            //            }
+            //        } ));
+            //        Level.Spawn(fire);
+            //    }
 
-                Debug.WriteLine(hit);
-            }
+            //    Debug.WriteLine(hit);
+            //}
         }
 
         private void Animate(Vector2 movementInput)

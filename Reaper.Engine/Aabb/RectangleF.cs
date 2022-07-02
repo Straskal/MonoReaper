@@ -23,6 +23,7 @@ namespace Reaper.Engine.AABB
         }
 
         public Vector2 Position => new(X, Y);
+        public Vector2 Size => new(Width, Height);
 
         public RectangleF(float x, float y, float width, float height) 
         {
