@@ -69,7 +69,7 @@ namespace Reaper.Engine.AABB
             return info.Time < 1f;
         }
 
-        public static RectangleF GetBroadphaseRectangle(Vector2 position, Vector2 padding, Vector2 length)
+        private static RectangleF GetBroadphaseRectangle(Vector2 position, Vector2 padding, Vector2 length)
         {
             var offset = position + length;
 
