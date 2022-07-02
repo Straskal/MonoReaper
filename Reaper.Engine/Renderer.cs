@@ -4,115 +4,111 @@ using System;
 
 namespace Reaper.Engine
 {
-    /// <summary>
-    /// The game's renderer. Should only be used when it is passed through Draw(...) methods.
-    /// </summary>
-    public class Renderer
+    public static class Renderer
     {
-        private readonly MainGame _game;
-        private readonly SpriteBatch _batch;
-        private readonly Texture2D _texture;
+        private static SpriteBatch batcher;
+        private static Texture2D texture;
+        private static Effect effect;
+        private static Matrix transformation;
 
-        private Effect _currentEffect;
-
-        internal Renderer(MainGame game)
+        internal static void Initialize() 
         {
-            _game = game ?? throw new ArgumentNullException(nameof(game));
-            _batch = new SpriteBatch(game.GraphicsDevice);
-            _texture = new Texture2D(game.GraphicsDevice, 1, 1);
-            _texture.SetData(new[] { Color.White });
+            batcher = new SpriteBatch(App.Graphics);
+            texture = new Texture2D(App.Graphics, 1, 1);
+            texture.SetData(new[] { Color.White });
         }
 
-        internal void BeginDraw()
+        internal static void BeginDraw(Matrix matrix)
         {
-            _currentEffect = null;
+            transformation = matrix;
+            effect = null;
 
             CreateBlackBars();
             PrepareBatch();
         }
 
-        private void PrepareBatch()
+        private static void PrepareBatch()
         {
-            _batch.Begin(
+            batcher.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullCounterClockwise,
-                _currentEffect,
-                _game.CurrentLayout.View.TransformationMatrix
+                effect,
+                transformation
             );
         }
 
-        public void Draw(Texture2D texture, Vector2 position, Color color)
+        public static void Draw(Texture2D texture, Vector2 position, Color color)
         {
             HandleEffectChange(null);
-            _batch.Draw(texture, position, color);
+            batcher.Draw(texture, position, color);
         }
 
-        public void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
+        public static void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-            _batch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            batcher.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        public void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
+        public static void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-            _batch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            batcher.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        public void DrawRectangle(Rectangle rectangle, Color color)
+        public static void DrawRectangle(Rectangle rectangle, Color color)
         {
             HandleEffectChange(null);
-            _batch.Draw(_texture, rectangle, null, color);
+            batcher.Draw(texture, rectangle, null, color);
         }
 
-        private void HandleEffectChange(Effect effect)
+        private static void HandleEffectChange(Effect effect)
         {
-            if (_currentEffect != effect)
+            if (Renderer.effect != effect)
             {
-                _currentEffect = effect;
+                Renderer.effect = effect;
 
                 EndDraw();
                 PrepareBatch();
             }
         }
 
-        internal void EndDraw()
+        internal static void EndDraw()
         {
-            _batch.End();
+            batcher.End();
         }
 
-        internal void Unload()
+        internal static void Unload()
         {
-            _batch.Dispose();
+            batcher.Dispose();
         }
 
-        private void CreateBlackBars()
+        private static void CreateBlackBars()
         {
-            _game.GraphicsDevice.Viewport = GetFullViewport();
-            _game.GraphicsDevice.Clear(Color.Black);
-            _game.GraphicsDevice.Viewport = GetLargestVirtualViewport();
+            App.Graphics.Viewport = GetFullViewport();
+            App.Graphics.Clear(Color.Black);
+            App.Graphics.Viewport = GetLargestVirtualViewport();
         }
 
-        private Viewport GetFullViewport()
+        private static Viewport GetFullViewport()
         {
             return new Viewport
             {
                 X = 0,
                 Y = 0,
-                Width = _game.GraphicsDevice.PresentationParameters.BackBufferWidth,
-                Height = _game.GraphicsDevice.PresentationParameters.BackBufferHeight
+                Width = App.Graphics.PresentationParameters.BackBufferWidth,
+                Height = App.Graphics.PresentationParameters.BackBufferHeight
             };
         }
 
-        private Viewport GetLargestVirtualViewport()
+        private static Viewport GetLargestVirtualViewport()
         {
             // Start off assuming letterbox.
-            float targetAspectRatio = _game.CurrentLayout.View.Width / (float)_game.CurrentLayout.View.Height;
-            int screenWidth = _game.GraphicsDevice.PresentationParameters.BackBufferWidth;
-            int screenHeight = _game.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            float targetAspectRatio = App.ViewportWidth / (float)App.ViewportHeight;
+            int screenWidth = App.Graphics.PresentationParameters.BackBufferWidth;
+            int screenHeight = App.Graphics.PresentationParameters.BackBufferHeight;
             int width = screenWidth;
             int height = (int)(screenWidth / targetAspectRatio + 0.5f);
 
