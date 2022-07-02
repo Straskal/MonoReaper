@@ -125,10 +125,38 @@ namespace Reaper.Engine.AABB
             v[0] = direction.X;
             v[1] = direction.Y;
 
-            return RayAABBSweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
+            return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
         }
 
-        public static float RayAABBSweep(
+        public static float Allocate_AABBAABBSweep(RectangleF a, RectangleF b, Vector2 velocity, out Vector2 normal)
+        {
+            Span<float> amin    = stackalloc float[2];
+            Span<float> amax    = stackalloc float[2];
+            Span<float> bmin    = stackalloc float[2];
+            Span<float> bmax    = stackalloc float[2];
+            Span<float> v       = stackalloc float[2];
+            Span<float> dn      = stackalloc float[2];
+            Span<float> df      = stackalloc float[2];
+            Span<float> tn      = stackalloc float[2];
+            Span<float> tf      = stackalloc float[2];
+
+            amin[0] = a.Left;
+            amin[1] = a.Top;
+            amax[0] = a.Right;
+            amax[1] = a.Bottom;
+
+            bmin[0] = b.Left;
+            bmin[1] = b.Top;
+            bmax[0] = b.Right;
+            bmax[1] = b.Bottom;
+
+            v[0] = velocity.X;
+            v[1] = velocity.Y;
+
+            return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
+        }
+
+        public static float Sweep(
             Span<float> amin, 
             Span<float> amax,
             Span<float> bmin, 
@@ -255,133 +283,6 @@ namespace Reaper.Engine.AABB
 
             v[0] = direction.X;
             v[1] = direction.Y;
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (v[i] > 0f)
-                {
-                    dn[i] = bmin[i] - amax[i];
-                    df[i] = bmax[i] - amin[i];
-                }
-                else
-                {
-                    dn[i] = bmax[i] - amin[i];
-                    df[i] = bmin[i] - amax[i];
-                }
-
-                if (Math.Abs(v[i]) < 0.0001f)
-                {
-                    tn[i] = float.MinValue;
-                    tf[i] = float.MaxValue;
-                }
-                else
-                {
-                    tn[i] = dn[i] / v[i];
-                    tf[i] = df[i] / v[i];
-                }
-            }
-
-            float near = Math.Max(tn[0], tn[1]);
-            float far = Math.Min(tf[0], tf[1]);
-
-            if (near > far)
-            {
-                return 1f;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (tn[i] > 1f)
-                {
-                    tn[i] = float.MinValue;
-                }
-            }
-
-            if (tn[0] < 0f && tn[1] < 0f)
-            {
-                return 1f;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (tn[i] < 0f && (amax[i] < bmin[i] || amin[i] > bmax[i]))
-                {
-                    return 1f;
-                }
-            }
-
-            if (tn[0] > tn[1])
-            {
-                if (dn[0] < 0f || Math.Abs(dn[0]) < 0.0001f && df[0] < 0f)
-                {
-                    normal.X = 1f;
-                    normal.Y = 0f;
-                }
-                else
-                {
-                    normal.X = -1f;
-                    normal.Y = 0f;
-                }
-            }
-            else
-            {
-                if (dn[1] < 0f || Math.Abs(dn[1]) < 0.0001f && df[1] < 0f)
-                {
-                    normal.X = 0f;
-                    normal.Y = 1f;
-                }
-                else
-                {
-                    normal.X = 0f;
-                    normal.Y = -1f;
-                }
-            }
-
-            return near;
-        }
-
-        public static float Allocate_AABBAABBSweep(RectangleF a, RectangleF b, Vector2 velocity, out Vector2 normal) 
-        {
-            Span<float> amin = stackalloc float[2];
-            Span<float> amax = stackalloc float[2];
-            Span<float> bmin = stackalloc float[2];
-            Span<float> bmax = stackalloc float[2];
-            Span<float> v = stackalloc float[2];
-            Span<float> dn = stackalloc float[2];
-            Span<float> df = stackalloc float[2];
-            Span<float> tn = stackalloc float[2];
-            Span<float> tf = stackalloc float[2];
-
-            amin[0] = a.Left;
-            amin[1] = a.Top;
-            amax[0] = a.Right;
-            amax[1] = a.Bottom;
-
-            bmin[0] = b.Left;
-            bmin[1] = b.Top;
-            bmax[0] = b.Right;
-            bmax[1] = b.Bottom;
-
-            v[0] = velocity.X;
-            v[1] = velocity.Y;
-
-            return AABBAABBSweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
-        }
-
-        public static float AABBAABBSweep(
-            Span<float> amin,
-            Span<float> amax,
-            Span<float> bmin,
-            Span<float> bmax,
-            Span<float> v,
-            Span<float> dn,
-            Span<float> df,
-            Span<float> tn,
-            Span<float> tf,
-            out Vector2 normal)
-        {
-            normal.X = 0;
-            normal.Y = 0;
 
             for (int i = 0; i < 2; i++)
             {
