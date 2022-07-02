@@ -116,62 +116,6 @@ namespace Reaper.Engine.AABB
             return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
         }
 
-        private static float Allocate_RayAABBSweep(Vector2 position, Vector2 direction, RectangleF b, out Vector2 normal) 
-        {
-            Span<float> amin    = stackalloc float[2];
-            Span<float> amax    = stackalloc float[2];
-            Span<float> bmin    = stackalloc float[2];
-            Span<float> bmax    = stackalloc float[2];
-            Span<float> v       = stackalloc float[2];
-            Span<float> dn      = stackalloc float[2];
-            Span<float> df      = stackalloc float[2];
-            Span<float> tn      = stackalloc float[2];
-            Span<float> tf      = stackalloc float[2];
-
-            amin[0] = position.X;
-            amin[1] = position.Y;
-            amax[0] = position.X;
-            amax[1] = position.Y;
-
-            bmin[0] = b.Left;
-            bmin[1] = b.Top;
-            bmax[0] = b.Right;
-            bmax[1] = b.Bottom;
-
-            v[0] = direction.X;
-            v[1] = direction.Y;
-
-            return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
-        }
-
-        private static float Allocate_AABBAABBSweep(RectangleF a, RectangleF b, Vector2 velocity, out Vector2 normal)
-        {
-            Span<float> amin    = stackalloc float[2];
-            Span<float> amax    = stackalloc float[2];
-            Span<float> bmin    = stackalloc float[2];
-            Span<float> bmax    = stackalloc float[2];
-            Span<float> v       = stackalloc float[2];
-            Span<float> dn      = stackalloc float[2];
-            Span<float> df      = stackalloc float[2];
-            Span<float> tn      = stackalloc float[2];
-            Span<float> tf      = stackalloc float[2];
-
-            amin[0] = a.Left;
-            amin[1] = a.Top;
-            amax[0] = a.Right;
-            amax[1] = a.Bottom;
-
-            bmin[0] = b.Left;
-            bmin[1] = b.Top;
-            bmax[0] = b.Right;
-            bmax[1] = b.Bottom;
-
-            v[0] = velocity.X;
-            v[1] = velocity.Y;
-
-            return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
-        }
-
         private static float Sweep(
             Span<float> amin, 
             Span<float> amax,
