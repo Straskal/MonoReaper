@@ -15,45 +15,8 @@ namespace Reaper.Engine.Components
         {
         }
 
-        private Vector2 velocity;
-        public Vector2 Velocity
+        public void Move(ref Vector2 velocity, CollisionCallback response = null)
         {
-            get => velocity;
-            set => velocity = value;
-        }
-
-        private float drag = 0.8f;
-        public float Drag
-        {
-            get => drag;
-            set => drag = value;
-        }
-
-        private float acceleration = 15f;
-        public float Acceleration
-        {
-            get => acceleration;
-            set => acceleration = value;
-        }
-
-        private float maxSpeed = 1.25f;
-        public float MaxSpeed
-        {
-            get => maxSpeed;
-            set => maxSpeed = value;
-        }
-
-        public override void OnPostTick(GameTime gameTime)
-        {
-            velocity *= Drag;
-            velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
-            velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
-        }
-
-        public void Move(Vector2 direction, CollisionCallback response = null)
-        {
-            velocity += direction * Acceleration;
-
             visited.Clear();
             visited.Add(this);
 
