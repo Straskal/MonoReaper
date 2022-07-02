@@ -19,8 +19,8 @@ namespace Reaper.Components
         private Vector2 faceDirection;
 
         private float drag = 0.85f;
-        private float acceleration = 0.3f;
-        private float maxSpeed = 1f;
+        private float acceleration = 10f;
+        private float maxSpeed = 0.85f;
         private Vector2 velocity = Vector2.Zero;
 
         public override void OnSpawn()
@@ -53,7 +53,7 @@ namespace Reaper.Components
                 animation.CurrentAnimation.Loop = false;
             }
 
-            velocity += movementInput * acceleration;
+            velocity += movementInput * acceleration * delta;
             velocity *= drag;
             velocity.X = MathHelper.Clamp(velocity.X, -maxSpeed, maxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -maxSpeed, maxSpeed);
