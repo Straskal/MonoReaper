@@ -74,5 +74,53 @@ namespace Reaper.Engine
 
             return new Vector2(result.X, result.Y);
         }
+
+        public static Vector2 Offset(Origin origin, float x, float y, float width, float height) 
+        {
+            Vector2 position;
+
+            switch (origin)
+            {
+                case Origin.TopLeft:
+                default:
+                    position.X = x;
+                    position.Y = y;
+                    break;
+                case Origin.TopCenter:
+                    position.X = x + width / 2;
+                    position.Y = y;
+                    break;
+                case Origin.TopRight:
+                    position.X = x + width;
+                    position.Y = y;
+                    break;
+                case Origin.CenterLeft:
+                    position.X = x;
+                    position.Y = y + height / 2;
+                    break;
+                case Origin.Center:
+                    position.X = x + width / 2;
+                    position.Y = y + height / 2;
+                    break;
+                case Origin.CenterRight:
+                    position.X = x + width;
+                    position.Y = y + height / 2;
+                    break;
+                case Origin.BottomLeft:
+                    position.X = x;
+                    position.Y = y + height;
+                    break;
+                case Origin.BottomCenter:
+                    position.X = x + width / 2;
+                    position.Y = y + height;
+                    break;
+                case Origin.BottomRight:
+                    position.X = x + width;
+                    position.Y = y + height;
+                    break;
+            }
+
+            return position;
+        }
     }
 }

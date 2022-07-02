@@ -12,18 +12,27 @@ namespace Reaper.Engine.AABB
 
         public static bool TestAABB(Box box, Vector2 velocity, IEnumerable<Box> others, out CollisionInfo info)
         {
-            info = CollisionInfo.NoHit(position: box.Entity.Position + velocity);
+            return Test(box.Bounds.Position, box.Bounds.Size, velocity, others, out info);
+        }
 
-            var broadphase = GetBroadphaseRectangle(box.Bounds.Position, box.Bounds.Size, velocity);
-            var bounds = box.Bounds;
+        public static bool TestRay(Vector2 position, Vector2 direction, IEnumerable<Box> others, out CollisionInfo info)
+        {
+            return Test(position, Vector2.Zero, direction, others, out info);
+        }
+
+        private static bool Test(Vector2 position, Vector2 padding, Vector2 velocity, IEnumerable<Box> others, out CollisionInfo info)
+        {
+            info = CollisionInfo.NoHit(position: position + velocity);
+
+            var broadphase = GetBroadphaseRectangle(position, padding, velocity);
 
             foreach (var other in others)
             {
                 var otherBounds = other.Bounds;
 
-                if (broadphase.Intersects(otherBounds)) 
+                if (broadphase.Intersects(otherBounds))
                 {
-                    var collisionTime = Allocate_Sweep(bounds.Position, bounds.Size, otherBounds.Position, otherBounds.Size, velocity, out var normal);
+                    var collisionTime = Allocate_Sweep(position, padding, otherBounds.Position, otherBounds.Size, velocity, out var normal);
 
                     if (collisionTime < info.Time)
                     {
@@ -32,36 +41,7 @@ namespace Reaper.Engine.AABB
                             velocity: velocity,
                             normal: normal,
                             collisionTime: collisionTime,
-                            position: box.Entity.Position + velocity * collisionTime + (CorrectionBuffer * normal)); // Give buffer so we completely separate the two shapes.
-                    }
-                }
-            }
-
-            return info.Time < 1f;
-        }
-
-        public static bool TestRay(Vector2 position, Vector2 direction, IEnumerable<Box> others, out CollisionInfo info)
-        {
-            info = CollisionInfo.NoHit(position: position + direction);
-
-            var broadphase = GetBroadphaseRectangle(position, Vector2.Zero, direction);
-
-            foreach (var other in others)
-            {
-                var otherBounds = other.Bounds;
-
-                if (broadphase.Intersects(otherBounds)) 
-                {
-                    var collisionTime = Allocate_Sweep(position, Vector2.Zero, otherBounds.Position, otherBounds.Size, direction, out var normal);
-
-                    if (collisionTime < info.Time)
-                    {
-                        info = new CollisionInfo(
-                            other: other,
-                            velocity: direction,
-                            normal: normal,
-                            collisionTime: collisionTime,
-                            position: position + direction * collisionTime + (CorrectionBuffer * normal)); // Give buffer so we completely separate the two shapes.
+                            position: position + velocity * collisionTime + (CorrectionBuffer * normal)); // Give buffer so we completely separate the two shapes.
                     }
                 }
             }

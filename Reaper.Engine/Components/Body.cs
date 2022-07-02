@@ -26,7 +26,7 @@ namespace Reaper.Engine.Components
                 var others = Level.Partition.QueryBounds(Bounds).Except(visited);
                 var collided = Collision.TestAABB(this, velocity, others, out var info);
 
-                Entity.Position = info.Position;
+                Entity.Position = OriginHelpers.Offset(Entity.Origin, info.Position.X, info.Position.Y, Width, Height);
 
                 UpdateBBox(previousPosition);
 
