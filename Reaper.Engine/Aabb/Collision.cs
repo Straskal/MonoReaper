@@ -128,7 +128,7 @@ namespace Reaper.Engine.AABB
             return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
         }
 
-        public static float Allocate_AABBAABBSweep(RectangleF a, RectangleF b, Vector2 velocity, out Vector2 normal)
+        private static float Allocate_AABBAABBSweep(RectangleF a, RectangleF b, Vector2 velocity, out Vector2 normal)
         {
             Span<float> amin    = stackalloc float[2];
             Span<float> amax    = stackalloc float[2];
@@ -156,7 +156,7 @@ namespace Reaper.Engine.AABB
             return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
         }
 
-        public static float Sweep(
+        private static float Sweep(
             Span<float> amin, 
             Span<float> amax,
             Span<float> bmin, 
