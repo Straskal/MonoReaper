@@ -73,6 +73,12 @@ namespace Reaper
 
                 switch (entity.Name)
                 {
+                    case "Barrel":
+
+                        spawned.AddComponent(new Barrel());
+                        spawned.AddComponent(new Sprite("art/common/barrel", new Rectangle(0, 0, 16, 16)));
+                        spawned.AddComponent(new Box(CollisionLayer.Overlap, 16, 16));
+                        break;
                     case "LayoutTransition":
 
                         spawned.AddComponent(new LevelTrigger(entity.Values.Level, entity.Values.SpawnPoint));

@@ -59,6 +59,44 @@
   ],
   "entities": [
     {
+      "exportID": "95105658",
+      "name": "Barrel",
+      "limit": -1,
+      "size": {"x": 16, "y": 16},
+      "origin": {"x": 8, "y": 16},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["common"],
+      "values": [],
+      "texture": "../Art/Common/barrel.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAIRJREFUOI1jYKAQMKILpFka/senYdbx8yh64Jw0S8P/mrJcRNl6/fE3uEEs6BKkAkZSbUd3BQuyADmABZsgLtdgswRugKYsF1wBIdcgq2Ui1nZcchgGICvUlOVCYWMDWA0gBcANICUWkNViuACfQdjkUJIy0U5gQOQJlIxBrCHoGYoiAAD9QTfQT5oEPQAAAABJRU5ErkJggg=="
+    },
+    {
       "exportID": "48795505",
       "name": "LayoutTransition",
       "limit": -1,
@@ -101,8 +139,8 @@
       "exportID": "29682872",
       "name": "PlayerSpawnPoint",
       "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 16, "y": 16},
+      "size": {"x": 16, "y": 16},
+      "origin": {"x": 8, "y": 16},
       "originAnchored": true,
       "shape": {
         "label": "Rectangle",

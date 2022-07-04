@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Core;
 using Core.Collision;
 using Core.Graphics;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Reaper.Components
 {
@@ -18,6 +20,7 @@ namespace Reaper.Components
 
         private AxisAction _moveX;
         private AxisAction _moveY;
+        private PressedAction _interact;
 
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
@@ -28,6 +31,7 @@ namespace Reaper.Components
             _animation = Entity.RequireComponent<Animator>();
             _moveX = Input.NewAxisAction(Keys.A, Keys.D);
             _moveY = Input.NewAxisAction(Keys.W, Keys.S);
+            _interact = Input.NewPressedAction(Keys.E);
         }
 
         public override void OnTick(GameTime gameTime)
@@ -44,7 +48,7 @@ namespace Reaper.Components
 
                 _animation.CurrentAnimation.Loop = true;
             }
-            else 
+            else
             {
                 _animation.CurrentAnimation.Loop = false;
             }
@@ -57,9 +61,25 @@ namespace Reaper.Components
             _body.Move(ref _velocity, HandleCollision);
 
             Animate(_direction);
+
+            if (_interact.WasPressed())
+            {
+                var fireball = new Entity(Origin.Center);
+
+                fireball.AddComponent(new Projectile(_direction * 100f * gameTime.GetDeltaTime()));
+                fireball.AddComponent(new Particles
+                {
+                    Velocity = -_direction,
+                    AngularVelocity = 10f,
+                    Color = Color.Red,
+                    Time = 1f
+                });
+
+                Level.Spawn(fireball, Entity.Position);
+            }
         }
 
-        private Vector2 HandleCollision(Hit hit) 
+        private Vector2 HandleCollision(Hit hit)
         {
             if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
             {

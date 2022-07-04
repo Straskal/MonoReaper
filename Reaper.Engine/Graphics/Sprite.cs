@@ -8,10 +8,15 @@ namespace Core.Graphics
     {
         private readonly string _texturePath;
 
-        public Sprite(string texturePath)
+        public Sprite(string texturePath) : this(texturePath, Rectangle.Empty)
+        {
+        }
+
+        public Sprite(string texturePath, Rectangle sourceRectangle)
         {
             _texturePath = texturePath;
 
+            SourceRectangle = sourceRectangle;
             IsTickEnabled = false;
             IsDrawEnabled = true;
         }

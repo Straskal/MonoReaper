@@ -21,9 +21,9 @@ namespace Core.Collision
 
         public RectangleF(float x, float y, float width, float height)
         {
-            X      = x;
-            Y      = y;
-            Width  = width;
+            X = x;
+            Y = y;
+            Width = width;
             Height = height;
         }
 
@@ -32,7 +32,7 @@ namespace Core.Collision
             return other.Left < Right && Left < other.Right && other.Top < Bottom && Top < other.Bottom;
         }
 
-        public RectangleF Offset(Vector2 offset) 
+        public RectangleF Offset(Vector2 offset)
         {
             return new(X + offset.X, Y + offset.Y, Width, Height);
         }
@@ -41,15 +41,15 @@ namespace Core.Collision
         {
             RectangleF result;
 
-            result.X      = Math.Min(X, other.X);
-            result.Y      = Math.Min(Y, other.Y);
-            result.Width  = Math.Max(Right, other.Right) - result.X;
+            result.X = Math.Min(X, other.X);
+            result.Y = Math.Min(Y, other.Y);
+            result.Width = Math.Max(Right, other.Right) - result.X;
             result.Height = Math.Max(Bottom, other.Bottom) - result.Y;
 
             return result;
         }
 
-        public Rectangle ToXnaRect() 
+        public Rectangle ToXnaRect()
         {
             return new(
                 (int)Math.Floor(X),

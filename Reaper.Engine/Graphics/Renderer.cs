@@ -6,22 +6,24 @@ namespace Core.Graphics
 {
     public static class Renderer
     {
-        private static SpriteBatch batcher;
-        private static Texture2D texture;
-        private static Effect effect;
-        private static Matrix transformation;
+        public static Texture2D BlankTexture => _texture;
+
+        private static SpriteBatch _batcher;
+        private static Texture2D _texture;
+        private static Effect _effect;
+        private static Matrix _transformation;
 
         internal static void Initialize()
         {
-            batcher = new SpriteBatch(App.Graphics);
-            texture = new Texture2D(App.Graphics, 1, 1);
-            texture.SetData(new[] { Color.White });
+            _batcher = new SpriteBatch(App.Graphics);
+            _texture = new Texture2D(App.Graphics, 1, 1);
+            _texture.SetData(new[] { Color.White });
         }
 
         internal static void BeginDraw(Matrix matrix)
         {
-            transformation = matrix;
-            effect = null;
+            _transformation = matrix;
+            _effect = null;
 
             CreateBlackBars();
             PrepareBatch();
@@ -29,46 +31,50 @@ namespace Core.Graphics
 
         private static void PrepareBatch()
         {
-            batcher.Begin(
+            _batcher.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullCounterClockwise,
-                effect,
-                transformation
+                _effect,
+                _transformation
             );
         }
 
         public static void Draw(Texture2D texture, Vector2 position, Color color)
         {
             HandleEffectChange(null);
-            batcher.Draw(texture, position, color);
+
+            _batcher.Draw(texture, position, color);
         }
 
         public static void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-            batcher.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+
+            _batcher.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public static void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
-            batcher.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+
+            _batcher.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public static void DrawRectangle(Rectangle rectangle, Color color)
         {
             HandleEffectChange(null);
-            batcher.Draw(texture, rectangle, null, color);
+
+            _batcher.Draw(_texture, rectangle, null, color);
         }
 
         private static void HandleEffectChange(Effect effect)
         {
-            if (Renderer.effect != effect)
+            if (_effect != effect)
             {
-                Renderer.effect = effect;
+                _effect = effect;
 
                 EndDraw();
                 PrepareBatch();
@@ -77,12 +83,12 @@ namespace Core.Graphics
 
         internal static void EndDraw()
         {
-            batcher.End();
+            _batcher.End();
         }
 
         internal static void Unload()
         {
-            batcher.Dispose();
+            _batcher.Dispose();
         }
 
         private static void CreateBlackBars()

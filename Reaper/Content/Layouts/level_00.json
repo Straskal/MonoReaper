@@ -79,7 +79,8 @@
           "originX": 16,
           "originY": 16,
           "values": {"Horizontal": false}
-        }
+        },
+        {"name": "Barrel", "id": 6, "_eid": "95105658", "x": 256, "y": 64, "originX": 0, "originY": 0}
       ]
     },
     {

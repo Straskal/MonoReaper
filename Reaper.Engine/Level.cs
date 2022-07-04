@@ -186,8 +186,6 @@ namespace Core
                         _componentsToDraw.Add(copy[i]);
                     }
                 }
-
-                _componentsToDraw.AddRange(copy);
             }
             catch (StackOverflowException) 
             {

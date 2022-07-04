@@ -14,6 +14,11 @@ namespace Core
         public Origin Origin { get; set; }
         public bool IsDestroyed { get; internal set; }
 
+        public Entity(Origin origin = Origin.TopLeft) 
+        {
+            Origin = origin;
+        }
+
         public void AddComponent(Component component)
         {
             _components.Add(component);
