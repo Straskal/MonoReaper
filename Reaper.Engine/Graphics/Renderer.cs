@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Reaper.Engine
+namespace Reaper.Engine.Graphics
 {
     public static class Renderer
     {
@@ -11,7 +11,7 @@ namespace Reaper.Engine
         private static Effect effect;
         private static Matrix transformation;
 
-        internal static void Initialize() 
+        internal static void Initialize()
         {
             batcher = new SpriteBatch(App.Graphics);
             texture = new Texture2D(App.Graphics, 1, 1);

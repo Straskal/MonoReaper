@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using Reaper.Components;
 using Reaper.Engine;
-using Reaper.Engine.AABB;
-using Reaper.Engine.Components;
+using Reaper.Engine.Collision;
+using Reaper.Engine.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -215,7 +215,6 @@ namespace Reaper
 
                 if (spawned != default(Entity))
                 {
-                    spawned.IsMirrored = entity.FlippedX;
 
                     level.Spawn(spawned, new Vector2(entity.X, entity.Y));
                 }

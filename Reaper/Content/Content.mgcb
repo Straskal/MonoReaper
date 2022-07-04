@@ -282,3 +282,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Tilesets/new2.png
+
+#begin Layouts/level_000.json
+/copy:Layouts/level_000.json

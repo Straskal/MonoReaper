@@ -2,65 +2,61 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Reaper.Engine;
-using Reaper.Engine.AABB;
-using Reaper.Engine.Components;
+using Reaper.Engine.Collision;
+using Reaper.Engine.Graphics;
 
 namespace Reaper.Components
 {
     public class Player : Component
     {
-        private Body body;
-        private Animator animation;
+        public const float DRAG = 0.85f;
+        public const float ACCELERATION = 20f;
+        public const float MAX_SPEED = 0.85f;
 
-        private AxisAction moveX;
-        private AxisAction moveY;
-        private PressedAction interact;
+        private Body _body;
+        private Animator _animation;
 
-        private Vector2 faceDirection;
+        private AxisAction _moveX;
+        private AxisAction _moveY;
 
-        private float drag = 0.85f;
-        private float acceleration = 25f;
-        private float maxSpeed = 0.85f;
-        private Vector2 velocity = Vector2.Zero;
+        private Vector2 _direction = Vector2.One;
+        private Vector2 _velocity = Vector2.Zero;
 
         public override void OnSpawn()
         {
-            body = Entity.GetComponentOrThrow<Body>();
-            animation = Entity.GetComponentOrThrow<Animator>();
-            moveX = Input.NewAxisAction(Keys.A, Keys.D);
-            moveY = Input.NewAxisAction(Keys.W, Keys.S);
-            interact = Input.NewPressedAction(Keys.E);
+            _body = Entity.RequireComponent<Body>();
+            _animation = Entity.RequireComponent<Animator>();
+            _moveX = Input.NewAxisAction(Keys.A, Keys.D);
+            _moveY = Input.NewAxisAction(Keys.W, Keys.S);
         }
 
         public override void OnTick(GameTime gameTime)
         {
             var delta = gameTime.GetDeltaTime();
-            var movementInput = new Vector2(moveX.GetAxis(), moveY.GetAxis());
+            var movementInput = new Vector2(_moveX.GetAxis(), _moveY.GetAxis());
+            var length = movementInput.LengthSquared();
 
-            if (movementInput.Length() > 1f)
+            if (length > 0f)
             {
-                movementInput.Normalize();
-            }
+                if (length > 1f) movementInput.Normalize();
 
-            if (movementInput.Length() > 0f)
-            {
-                faceDirection = movementInput;
+                _direction = movementInput;
 
-                animation.CurrentAnimation.Loop = true;
+                _animation.CurrentAnimation.Loop = true;
             }
             else 
             {
-                animation.CurrentAnimation.Loop = false;
+                _animation.CurrentAnimation.Loop = false;
             }
 
-            velocity += movementInput * acceleration * delta;
-            velocity *= drag;
-            velocity.X = MathHelper.Clamp(velocity.X, -maxSpeed, maxSpeed);
-            velocity.Y = MathHelper.Clamp(velocity.Y, -maxSpeed, maxSpeed);
+            _velocity += movementInput * ACCELERATION * delta;
+            _velocity *= DRAG;
+            _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_SPEED, MAX_SPEED);
+            _velocity.Y = MathHelper.Clamp(_velocity.Y, -MAX_SPEED, MAX_SPEED);
 
-            body.Move(ref velocity, HandleCollision);
+            _body.Move(ref _velocity, HandleCollision);
 
-            Animate(faceDirection);
+            Animate(_direction);
         }
 
         private Vector2 HandleCollision(Hit info) 
@@ -79,22 +75,22 @@ namespace Reaper.Components
             {
                 if (movementInput.X < 0f)
                 {
-                    animation.Play("walk_left");
+                    _animation.Play("walk_left");
                 }
                 else
                 {
-                    animation.Play("walk_right");
+                    _animation.Play("walk_right");
                 }
             }
             else
             {
                 if (movementInput.Y < 0f)
                 {
-                    animation.Play("walk_up");
+                    _animation.Play("walk_up");
                 }
                 else
                 {
-                    animation.Play("walk_down");
+                    _animation.Play("walk_down");
 
                 }
             }

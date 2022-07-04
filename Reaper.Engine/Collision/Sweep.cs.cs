@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Reaper.Engine.Components;
 
-namespace Reaper.Engine.AABB
+namespace Reaper.Engine.Collision
 {
-    public static class Collision
+    public static class Sweep
     {
         public const float CorrectionBuffer = 0.005f;
 
@@ -25,7 +24,7 @@ namespace Reaper.Engine.AABB
 
             foreach (var other in others)
             {
-                var otherBounds = other.Bounds;
+                var otherBounds = other.CalculateBounds();
 
                 var collisionTime = Allocate_Sweep(position, padding, otherBounds.Position, otherBounds.Size, velocity, out var normal);
 
@@ -41,20 +40,6 @@ namespace Reaper.Engine.AABB
             }
 
             return hit.Time < 1f;
-        }
-
-        public static RectangleF GetBroadphaseRectangle(Vector2 position, Vector2 padding, Vector2 length)
-        {
-            var offset = position + length;
-
-            RectangleF broadphase;
-
-            broadphase.X = Math.Min(position.X, offset.X);
-            broadphase.Y = Math.Min(position.Y, offset.Y);
-            broadphase.Width = Math.Abs(length.X) + padding.X;
-            broadphase.Height = Math.Abs(length.Y) + padding.Y;
-
-            return broadphase;
         }
 
         private static float Allocate_Sweep(Vector2 a, Vector2 aPadding, Vector2 b, Vector2 bPadding, Vector2 direction, out Vector2 normal)
@@ -82,10 +67,10 @@ namespace Reaper.Engine.AABB
             v[0] = direction.X;
             v[1] = direction.Y;
 
-            return Sweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
+            return PerformSweep(amin, amax, bmin, bmax, v, dn, df, tn, tf, out normal);
         }
 
-        private static float Sweep(
+        private static float PerformSweep(
             Span<float> amin,
             Span<float> amax,
             Span<float> bmin,

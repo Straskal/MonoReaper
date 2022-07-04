@@ -2,30 +2,30 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Aabb;
+using Reaper.Engine.Collision;
+using Reaper.Engine.Graphics;
 
 namespace Reaper.Engine
 {
     public class Level
     {
-        private readonly ContentManager content; 
+        private readonly ContentManager _content; 
 
-        private readonly List<Entity> entities = new();
-        private readonly List<Entity> entitiesToDestroy = new();
-        private readonly List<Component> components = new();
-        private readonly List<Component> componentsToDraw = new();
-        private readonly List<Component> componentsToRemove = new();
+        private readonly List<Entity> _entities = new();
+        private readonly List<Entity> _entitiesToDestroy = new();
+        private readonly List<Component> _components = new();
+        private readonly List<Component> _componentsToDraw = new();
+        private readonly List<Component> _componentsToRemove = new();
 
-        private Action<Entity, Component> onComponentAdded;
-        private Action<Entity, List<Component>> onComponentsAdded;
+        private Action<Entity, Component> _onComponentAdded;
+        private Action<Entity, List<Component>> _onComponentsAdded;
 
         public Level(int cellSize, int width, int height)
         {
-            content = new ContentManager(App.Current.Services, App.ContentRoot);
+            _content = new ContentManager(App.Current.Services, App.ContentRoot);
 
             Width = width;
             Height = height;
-
             Camera = new Camera(this); 
             Partition = new SpatialPartition(cellSize, width, height);
         }
@@ -36,21 +36,18 @@ namespace Reaper.Engine
         public int Width { get; }
         public int Height { get; }
 
+        public void Spawn(Entity entity, Vector2 position)
+        {
+            entity.Position = position;
+
+            Spawn(entity);
+        }
+
         public void Spawn(Entity entity)
         {
             entity.Level = this;
 
-            entities.Add(entity);
-
-            AddComponents(entity, entity.Components);
-        }
-
-        public void Spawn(Entity entity, Vector2 position)
-        {
-            entity.Level = this;
-            entity.Position = position;
-
-            entities.Add(entity);
+            _entities.Add(entity);
 
             AddComponents(entity, entity.Components);
         }
@@ -60,16 +57,18 @@ namespace Reaper.Engine
             if (!entity.IsDestroyed)
             {
                 entity.IsDestroyed = true;
-                entitiesToDestroy.Add(entity);
+
+                _entitiesToDestroy.Add(entity);
             }
         }
 
         internal void AddComponent(Entity entity, Component component) 
         {
             component.Entity = entity;
-            component.OnAttach(entity);
-            components.Add(component);
-            onComponentAdded?.Invoke(entity, component);
+            component.OnAttach();
+
+            _components.Add(component);
+            _onComponentAdded?.Invoke(entity, component);
         }
 
         internal void AddComponents(Entity entity, List<Component> components)
@@ -77,53 +76,53 @@ namespace Reaper.Engine
             for (int i = 0; i < components.Count; i++) 
             {
                 components[i].Entity = entity;
-                components[i].OnAttach(entity);
+                components[i].OnAttach();
             }
 
-            this.components.AddRange(components);
-            onComponentsAdded?.Invoke(entity, components);
+            _components.AddRange(components);
+            _onComponentsAdded?.Invoke(entity, components);
         }
 
         internal void RemoveComponent(Component component) 
         {
-            componentsToRemove.Add(component);
+            _componentsToRemove.Add(component);
         }
 
         public virtual void Start() 
         {
             try
             {
-                var copy = new List<Component>(components);
+                var copy = new List<Component>(_components);
 
-                onComponentAdded = (e, c) =>
+                _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(content);
+                    c.OnLoad(_content);
                 };
 
-                onComponentsAdded = (e, c) =>
+                _onComponentsAdded = (e, c) =>
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(content);
+                        c[i].OnLoad(_content);
                     }
                 };
 
                 for (int i = 0; i < copy.Count; i++)
                 {
-                    copy[i].OnLoad(content);
+                    copy[i].OnLoad(_content);
                 }
 
-                onComponentAdded = (e, c) =>
+                _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(content);
+                    c.OnLoad(_content);
                     c.OnSpawn();
                 };
 
-                onComponentsAdded = (e, c) =>
+                _onComponentsAdded = (e, c) =>
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(content);
+                        c[i].OnLoad(_content);
                     }
 
                     for (int i = 0; i < c.Count; i++)
@@ -137,20 +136,20 @@ namespace Reaper.Engine
                     copy[i].OnSpawn();
                 }
 
-                onComponentAdded = (e, c) =>
+                _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(content);
+                    c.OnLoad(_content);
                     c.OnSpawn();
                     c.OnStart();
 
-                    componentsToDraw.Add(c);
+                    _componentsToDraw.Add(c);
                 };
 
-                onComponentsAdded = (e, c) =>
+                _onComponentsAdded = (e, c) =>
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(content);
+                        c[i].OnLoad(_content);
                     }
 
                     for (int i = 0; i < c.Count; i++)
@@ -163,7 +162,13 @@ namespace Reaper.Engine
                         c[i].OnStart();
                     }
 
-                    componentsToDraw.AddRange(c);
+                    for (int i = 0; i < c.Count; i++)
+                    {
+                        if (c[i].IsDrawEnabled) 
+                        {
+                            _componentsToDraw.Add(c[i]);
+                        }
+                    }
                 };
 
                 for (int i = 0; i < copy.Count; i++)
@@ -176,7 +181,15 @@ namespace Reaper.Engine
                     copy[i].OnStart();
                 }
 
-                componentsToDraw.AddRange(copy);
+                for (int i = 0; i < copy.Count; i++)
+                {
+                    if (copy[i].IsDrawEnabled)
+                    {
+                        _componentsToDraw.Add(copy[i]);
+                    }
+                }
+
+                _componentsToDraw.AddRange(copy);
             }
             catch (StackOverflowException) 
             {
@@ -186,19 +199,25 @@ namespace Reaper.Engine
 
         public virtual void Tick(GameTime gameTime)
         {
-            for (int i = 0; i < components.Count; i++)
+            for (int i = 0; i < _components.Count; i++)
             {
-                components[i].OnTick(gameTime);
+                _components[i].OnTick(gameTime);
             }
 
-            for (int i = 0; i < components.Count; i++)
+            for (int i = 0; i < _components.Count; i++)
             {
-                components[i].OnPostTick(gameTime);
+                _components[i].OnPostTick(gameTime);
             }
 
-            for (int i = 0; i < entitiesToDestroy.Count; i++)
+            PostTickDestroyEntities();
+            PostTickRemoveComponents();
+        }
+
+        private void PostTickDestroyEntities()
+        {
+            for (int i = 0; i < _entitiesToDestroy.Count; i++)
             {
-                var destroyedEntity = entitiesToDestroy[i];
+                var destroyedEntity = _entitiesToDestroy[i];
                 var destroyedComponents = destroyedEntity.Components;
 
                 for (int j = 0; j < destroyedComponents.Count; j++)
@@ -208,47 +227,51 @@ namespace Reaper.Engine
 
                 for (int j = 0; j < destroyedComponents.Count; j++)
                 {
-                    components.Remove(destroyedComponents[j]);
-                    componentsToDraw.Remove(destroyedComponents[j]);
-                    componentsToRemove.Remove(destroyedComponents[j]);
+                    _components.Remove(destroyedComponents[j]);
+                    _componentsToDraw.Remove(destroyedComponents[j]);
+                    _componentsToRemove.Remove(destroyedComponents[j]);
                 }
 
-                entities.Remove(destroyedEntity);
+                _entities.Remove(destroyedEntity);
             }
 
-            for (int i = 0; i < componentsToRemove.Count; i++) 
+            _entitiesToDestroy.Clear();
+        }
+
+        private void PostTickRemoveComponents()
+        {
+            for (int i = 0; i < _componentsToRemove.Count; i++)
             {
-                componentsToRemove[i].OnDetach();
-                componentsToRemove[i].Entity = null;
+                _componentsToRemove[i].OnDetach();
+                _componentsToRemove[i].Entity = null;
             }
 
-            entitiesToDestroy.Clear();
-            componentsToRemove.Clear();
+            _componentsToRemove.Clear();
         }
 
         public virtual void Draw(bool debug)
         {
-            componentsToDraw.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
+            _componentsToDraw.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
 
-            for (int i = 0; i < componentsToDraw.Count; i++)
+            for (int i = 0; i < _componentsToDraw.Count; i++)
             {
-                componentsToDraw[i].OnDraw();
+                _componentsToDraw[i].OnDraw();
             }
 
             if (debug)
             {
                 Partition.DebugDraw();
 
-                for (int i = 0; i < componentsToDraw.Count; i++)
+                for (int i = 0; i < _componentsToDraw.Count; i++)
                 {
-                    componentsToDraw[i].OnDebugDraw();
+                    _componentsToDraw[i].OnDebugDraw();
                 }
             }
         }
 
         public virtual void End() 
         {
-            content.Unload();
+            _content.Unload();
         }
     }
 }

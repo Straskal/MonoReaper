@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Engine.AABB;
 
-namespace Reaper.Engine.Components
+namespace Reaper.Engine.Collision
 {
     public class Box : Component
     {
@@ -13,14 +12,7 @@ namespace Reaper.Engine.Components
         }
 
         public CollisionLayer Layer { get; set; }
-        public bool IsSolid => Layer == CollisionLayer.Solid;
-
-        public RectangleF Bounds => OriginHelpers.GetOffsetRect(
-            Entity.Origin,
-            Entity.Position.X,
-            Entity.Position.Y,
-            Width,
-            Height);
+        public bool IsSolid => Layer.HasFlag(CollisionLayer.Solid);
 
         public Vector2 Size { get; set; }
         public float Width { get; set; }
@@ -39,6 +31,16 @@ namespace Reaper.Engine.Components
         public override void OnDetach()
         {
             Level.Partition.Remove(this, Entity.Position);
+        }
+
+        public RectangleF CalculateBounds() 
+        {
+            return Offset.GetRect(
+                Entity.Origin,
+                Entity.Position.X,
+                Entity.Position.Y,
+                Width,
+                Height);
         }
 
         public void Move(Vector2 direction)

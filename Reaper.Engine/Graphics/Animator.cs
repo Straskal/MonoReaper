@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Engine.Components
+namespace Reaper.Engine.Graphics
 {
     public sealed class Animator : Component
     {
@@ -23,8 +23,8 @@ namespace Reaper.Engine.Components
 
         private Sprite sprite;
         private float lastFrameTime;
-        private float timer; 
-        
+        private float timer;
+
         public Animator(Animation[] animations)
         {
             this.animations = animations ?? throw new ArgumentNullException(nameof(animations));
@@ -36,7 +36,7 @@ namespace Reaper.Engine.Components
 
         public override void OnLoad(ContentManager content)
         {
-            if (animations.Length > 0) 
+            if (animations.Length > 0)
             {
                 foreach (var animation in animations)
                 {
@@ -58,7 +58,7 @@ namespace Reaper.Engine.Components
             {
                 var animation = animations.SingleOrDefault(a => a.Name == name);
 
-                if (animation == null) 
+                if (animation == null)
                 {
                     throw new ArgumentException($"Animation {name} does not exist.");
                 }
@@ -71,7 +71,7 @@ namespace Reaper.Engine.Components
 
         public override void OnTick(GameTime gameTime)
         {
-            if (!IsFinished) 
+            if (!IsFinished)
             {
                 timer += gameTime.GetDeltaTime();
 
@@ -81,7 +81,7 @@ namespace Reaper.Engine.Components
                     {
                         CurrentFrame = (CurrentFrame + 1) % CurrentAnimation.Frames.Length;
                     }
-                    else if (++CurrentFrame >= CurrentAnimation.Frames.Length) 
+                    else if (++CurrentFrame >= CurrentAnimation.Frames.Length)
                     {
                         CurrentFrame--;
                         IsFinished = true;

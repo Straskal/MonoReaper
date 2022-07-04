@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Engine.Components
+namespace Reaper.Engine.Graphics
 {
     public class Sprite : Component
     {
-        private readonly string texturePath;
+        private readonly string _texturePath;
 
-        public Sprite(string texturePath) 
+        public Sprite(string texturePath)
         {
-            this.texturePath = texturePath;
+            _texturePath = texturePath;
 
             IsTickEnabled = false;
             IsDrawEnabled = true;
@@ -23,16 +23,16 @@ namespace Reaper.Engine.Components
 
         public override void OnLoad(ContentManager content)
         {
-            Texture = content.Load<Texture2D>(texturePath);
+            Texture = content.Load<Texture2D>(_texturePath);
         }
 
         public override void OnDraw()
         {
-            var offset = OriginHelpers.GetOffsetVector(
-                Entity.Origin, 
-                Entity.Position.X, 
-                Entity.Position.Y, 
-                SourceRectangle.Width, 
+            var offset = Offset.GetVector(
+                Entity.Origin,
+                Entity.Position.X,
+                Entity.Position.Y,
+                SourceRectangle.Width,
                 SourceRectangle.Height);
 
             Renderer.Draw(Texture, SourceRectangle, new Vector2(offset.X, offset.Y), Color.White, IsMirrored, Effect);

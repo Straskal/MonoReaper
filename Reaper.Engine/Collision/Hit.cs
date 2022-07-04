@@ -1,16 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Engine.Components;
 using System;
 
-namespace Reaper.Engine.AABB
+namespace Reaper.Engine.Collision
 {
-    public struct Hit
+    public readonly ref struct Hit
     {
-        public Box Other;
-        public Vector2 Velocity;
-        public Vector2 Normal;
-        public Vector2 Position;
-        public float Time;
+        public readonly Box Other;
+        public readonly Vector2 Velocity;
+        public readonly Vector2 Normal;
+        public readonly Vector2 Position;
+        public readonly float Time;
 
         public float RemainingTime => 1f - Time;
 

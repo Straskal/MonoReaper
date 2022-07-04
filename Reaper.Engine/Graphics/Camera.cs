@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Reaper.Engine
+namespace Reaper.Engine.Graphics
 {
     /// <summary>
     /// The layout view is essentially the camera.
@@ -37,10 +37,10 @@ namespace Reaper.Engine
         public float Zoom { get; set; }
         public float Rotation { get; set; }
 
-        public Vector2 Position 
+        public Vector2 Position
         {
             get => _position;
-            set 
+            set
             {
                 _position = ClampViewToLayout(value);
                 _offsetPosition = _position + new Vector2(OffsetX, OffsetY);
@@ -97,7 +97,7 @@ namespace Reaper.Engine
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector2 ToWorld(Vector2 position) 
+        public Vector2 ToWorld(Vector2 position)
         {
             return Vector2.Transform(position, TransformationMatrix);
         }
@@ -121,12 +121,12 @@ namespace Reaper.Engine
         {
             float xMin, xMax, yMin, yMax;
 
-            if (Width >= _level.Width) 
+            if (Width >= _level.Width)
             {
                 xMin = _level.Width * 0.5f;
                 xMax = _level.Width * 0.5f;
             }
-            else 
+            else
             {
                 xMin = Width * 0.5f;
                 xMax = _level.Width - Width * 0.5f;
@@ -145,7 +145,7 @@ namespace Reaper.Engine
 
             var min = new Vector2(xMin, yMin);
             var max = new Vector2(xMax, yMax);
-            
+
             return Vector2.Clamp(position, min, max);
         }
     }

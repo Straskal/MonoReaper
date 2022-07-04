@@ -2,35 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Reaper.Engine.AABB;
-using Reaper.Engine.Components;
+using Reaper.Engine.Graphics;
 
-namespace Reaper.Engine.Aabb
+namespace Reaper.Engine.Collision
 {
     public sealed class SpatialPartition
     {
         // Each corner (x4) can exist in a different cell.
         private const int MAX_BOUNDS_BUCKETS = 4;
 
-        private readonly List<Box>[] cells;
+        private readonly List<Box>[] _cells;
 
-        private readonly int cellSize;
-        private readonly int width;
-        private readonly int height;
-        private readonly int length;
+        private readonly int _cellSize;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly int _length;
 
         internal SpatialPartition(int cellSize, int width, int height)
         {
-            this.cellSize = cellSize;
-            this.width = (int)Math.Ceiling((double)width / cellSize);
-            this.height = (int)Math.Ceiling((double)height / cellSize);
+            _cellSize = cellSize;
+            _width = (int)Math.Ceiling((double)width / cellSize);
+            _height = (int)Math.Ceiling((double)height / cellSize);
 
-            length = this.width * this.height;
-            cells = new List<Box>[length];
+            _length = _width * _height;
+            _cells = new List<Box>[_length];
 
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < _length; i++)
             {
-                cells[i] = new List<Box>();
+                _cells[i] = new List<Box>();
             }
         }
 
@@ -65,9 +64,7 @@ namespace Reaper.Engine.Aabb
 
         public IEnumerable<Box> QueryBounds(RectangleF bounds)
         {
-            return QueryBuckets(bounds)
-                .Where(b => b.Layer.HasFlag(CollisionLayer.Overlap))
-                .Where(b => bounds.Intersects(b.Bounds));
+            return QueryBuckets(bounds).Where(b => b.Layer.HasFlag(CollisionLayer.Overlap));
         }
 
         internal void DebugDraw()
@@ -75,20 +72,20 @@ namespace Reaper.Engine.Aabb
             const float opacity = 0.3f;
 
             // Draw grid cells.
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < _length; i++)
             {
-                var row = i / width;
-                var col = i % width;
-                var x = col * cellSize;
-                var y = row * cellSize;
+                var row = i / _width;
+                var col = i % _width;
+                var x = col * _cellSize;
+                var y = row * _cellSize;
 
-                Renderer.DrawRectangle(new Rectangle(x, y, cellSize - 1, cellSize - 1), Color.Purple * opacity);
+                Renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), Color.Purple * opacity);
             }
 
             // Draw individual colliders.
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < _length; i++)
             {
-                foreach (var obj in cells[i])
+                foreach (var obj in _cells[i])
                 {
                     Color color;
 
@@ -105,34 +102,34 @@ namespace Reaper.Engine.Aabb
                             break;
                     }
 
-                    Renderer.DrawRectangle(obj.Bounds.AsRectangle, color);
+                    Renderer.DrawRectangle(obj.CalculateBounds().ToXnaRect(), color);
                 }
             }
         }
 
         private void Add(Box box, Span<int> buckets)
         {
-            var length = GetOccupyingBuckets(box.Bounds, buckets);
+            var length = GetOccupyingCells(box.CalculateBounds(), buckets);
 
             for (int i = 0; i < length; i++)
             {
-                if (buckets[i] >= 0 && buckets[i] < this.cells.Length)
+                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
                 {
-                    this.cells[buckets[i]].Add(box);
+                    _cells[buckets[i]].Add(box);
                 }
             }
         }
 
         private void Remove(Box box, Vector2 previousPosition, Span<int> buckets)
         {
-            var bounds = OriginHelpers.GetOffsetRect(box.Entity.Origin, previousPosition.X, previousPosition.Y, box.Width, box.Height);
-            var length = GetOccupyingBuckets(bounds, buckets);
+            var bounds = Offset.GetRect(box.Entity.Origin, previousPosition.X, previousPosition.Y, box.Width, box.Height);
+            var length = GetOccupyingCells(bounds, buckets);
 
             for (int i = 0; i < length; i++)
             {
-                if (buckets[i] >= 0 && buckets[i] < this.cells.Length)
+                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
                 {
-                    this.cells[buckets[i]].Remove(box);
+                    _cells[buckets[i]].Remove(box);
                 }
             }
         }
@@ -141,20 +138,20 @@ namespace Reaper.Engine.Aabb
         {
             var results = new HashSet<Box>();
             Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
-            var length = GetOccupyingBuckets(bounds, buckets);
+            var length = GetOccupyingCells(bounds, buckets);
 
             for (int i = 0; i < length; i++)
             {
-                if (buckets[i] >= 0 && buckets[i] < this.cells.Length)
+                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
                 {
-                    results.UnionWith(this.cells[buckets[i]]);
+                    results.UnionWith(_cells[buckets[i]]);
                 }
             }
 
             return results;
         }
 
-        private int GetOccupyingBuckets(RectangleF bounds, Span<int> buckets)
+        private int GetOccupyingCells(RectangleF bounds, Span<int> buckets)
         {
             var resultLength = 0;
 
@@ -162,13 +159,13 @@ namespace Reaper.Engine.Aabb
             var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
             var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
 
-            var row = y / cellSize;
-            var col = x / cellSize;
+            var row = y / _cellSize;
+            var col = x / _cellSize;
 
             row.Floor();
             col.Floor();
 
-            var index = row * width + col;
+            var index = row * _width + col;
 
             // Create temp collections for finding distinct bucket indexes.
             Span<int> bucketIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];

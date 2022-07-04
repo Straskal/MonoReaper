@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Reaper.Engine.AABB;
+using Reaper.Engine.Collision;
 
 namespace Reaper.Engine
 {
@@ -16,9 +16,9 @@ namespace Reaper.Engine
         BottomRight
     }
 
-    public static class OriginHelpers 
+    public static class Offset 
     {
-        public static RectangleF GetOffsetRect(Origin origin, float x, float y, float width, float height) 
+        public static RectangleF GetRect(Origin origin, float x, float y, float width, float height) 
         {
             RectangleF rect;
             rect.Width = width;
@@ -68,14 +68,14 @@ namespace Reaper.Engine
             return rect;
         }
 
-        public static Vector2 GetOffsetVector(Origin origin, float x, float y, float width, float height)
+        public static Vector2 GetVector(Origin origin, float x, float y, float width, float height)
         {
-            var result = GetOffsetRect(origin, x, y, width, height);
+            var result = GetRect(origin, x, y, width, height);
 
             return new Vector2(result.X, result.Y);
         }
 
-        public static Vector2 Offset(Origin origin, float x, float y, float width, float height) 
+        public static Vector2 Create(Origin origin, float x, float y, float width, float height) 
         {
             Vector2 position;
 
