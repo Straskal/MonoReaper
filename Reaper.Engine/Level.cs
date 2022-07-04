@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Reaper.Engine.Aabb;
-using Reaper.Engine.AABB;
 
 namespace Reaper.Engine
 {

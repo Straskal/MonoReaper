@@ -65,7 +65,9 @@ namespace Reaper.Engine.Aabb
 
         public IEnumerable<Box> QueryBounds(RectangleF bounds)
         {
-            return QueryBuckets(bounds).Where(b => b.Layer.HasFlag(CollisionLayer.Overlap));
+            return QueryBuckets(bounds)
+                .Where(b => b.Layer.HasFlag(CollisionLayer.Overlap))
+                .Where(b => bounds.Intersects(b.Bounds));
         }
 
         internal void DebugDraw()

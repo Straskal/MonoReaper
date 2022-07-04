@@ -4,7 +4,7 @@ using System;
 
 namespace Reaper.Engine.AABB
 {
-    public struct CollisionInfo
+    public struct Hit
     {
         public Box Other;
         public Vector2 Velocity;
@@ -14,12 +14,12 @@ namespace Reaper.Engine.AABB
 
         public float RemainingTime => 1f - Time;
 
-        public static CollisionInfo NoHit(Vector2 position) 
+        public static Hit NoHit(Vector2 position) 
         {
             return new(null, Vector2.Zero, Vector2.Zero, 1f, position);
         }
 
-        public CollisionInfo(Box other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
+        public Hit(Box other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
             Other = other;
             Velocity = velocity;

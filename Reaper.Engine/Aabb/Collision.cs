@@ -8,77 +8,66 @@ namespace Reaper.Engine.AABB
     public static class Collision
     {
         public const float CorrectionBuffer = 0.005f;
-        public const float BroadphasePadding = 10f;
 
-        public static bool TestAABB(Box box, Vector2 velocity, IEnumerable<Box> others, out CollisionInfo info)
+        public static bool TestAABB(RectangleF bounds, Vector2 velocity, IEnumerable<Box> others, out Hit hit)
         {
-            return Test(box.Bounds.Position, box.Bounds.Size, velocity, others, out info);
+            return Test(bounds.Position, bounds.Size, velocity, others, out hit);
         }
 
-        public static bool TestRay(Vector2 position, Vector2 direction, IEnumerable<Box> others, out CollisionInfo info)
+        public static bool TestRay(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Hit hit)
         {
-            return Test(position, Vector2.Zero, direction, others, out info);
+            return Test(position, Vector2.Zero, direction, others, out hit);
         }
 
-        private static bool Test(Vector2 position, Vector2 padding, Vector2 velocity, IEnumerable<Box> others, out CollisionInfo info)
+        private static bool Test(Vector2 position, Vector2 padding, Vector2 velocity, IEnumerable<Box> others, out Hit hit)
         {
-            info = CollisionInfo.NoHit(position: position + velocity);
-
-            var broadphase = GetBroadphaseRectangle(position, padding, velocity);
+            hit = Hit.NoHit(position: position + velocity);
 
             foreach (var other in others)
             {
                 var otherBounds = other.Bounds;
 
-                if (broadphase.Intersects(otherBounds))
-                {
-                    var collisionTime = Allocate_Sweep(position, padding, otherBounds.Position, otherBounds.Size, velocity, out var normal);
+                var collisionTime = Allocate_Sweep(position, padding, otherBounds.Position, otherBounds.Size, velocity, out var normal);
 
-                    if (collisionTime < info.Time)
-                    {
-                        info = new CollisionInfo(
-                            other: other,
-                            velocity: velocity,
-                            normal: normal,
-                            collisionTime: collisionTime,
-                            position: position + velocity * collisionTime + (CorrectionBuffer * normal)); // Give buffer so we completely separate the two shapes.
-                    }
+                if (collisionTime < hit.Time)
+                {
+                    hit = new Hit(
+                        other: other,
+                        velocity: velocity,
+                        normal: normal,
+                        collisionTime: collisionTime,
+                        position: position + velocity * collisionTime + (CorrectionBuffer * normal)); // Give buffer so we completely separate the two shapes.
                 }
             }
 
-            return info.Time < 1f;
+            return hit.Time < 1f;
         }
 
-        private static RectangleF GetBroadphaseRectangle(Vector2 position, Vector2 padding, Vector2 length)
+        public static RectangleF GetBroadphaseRectangle(Vector2 position, Vector2 padding, Vector2 length)
         {
             var offset = position + length;
 
             RectangleF broadphase;
 
-            broadphase.X        = Math.Min(position.X, offset.X);
-            broadphase.Y        = Math.Min(position.Y, offset.Y);
-            broadphase.Width    = Math.Abs(length.X) + padding.X;
-            broadphase.Height   = Math.Abs(length.Y) + padding.Y;
-
-            broadphase.X        -= BroadphasePadding;
-            broadphase.Y        -= BroadphasePadding;
-            broadphase.Width    += BroadphasePadding;
-            broadphase.Height   += BroadphasePadding;
+            broadphase.X = Math.Min(position.X, offset.X);
+            broadphase.Y = Math.Min(position.Y, offset.Y);
+            broadphase.Width = Math.Abs(length.X) + padding.X;
+            broadphase.Height = Math.Abs(length.Y) + padding.Y;
 
             return broadphase;
         }
 
         private static float Allocate_Sweep(Vector2 a, Vector2 aPadding, Vector2 b, Vector2 bPadding, Vector2 direction, out Vector2 normal)
         {
-            Span<float> amin    = stackalloc float[2];
-            Span<float> amax    = stackalloc float[2];
-            Span<float> bmin    = stackalloc float[2];
-            Span<float> bmax    = stackalloc float[2];
-            Span<float> v       = stackalloc float[2];
-            Span<float> dn      = stackalloc float[2];
-            Span<float> df      = stackalloc float[2];
-            Span<float> tn      = stackalloc float[2];
-            Span<float> tf      = stackalloc float[2];
+            Span<float> amin = stackalloc float[2];
+            Span<float> amax = stackalloc float[2];
+            Span<float> bmin = stackalloc float[2];
+            Span<float> bmax = stackalloc float[2];
+            Span<float> v = stackalloc float[2];
+            Span<float> dn = stackalloc float[2];
+            Span<float> df = stackalloc float[2];
+            Span<float> tn = stackalloc float[2];
+            Span<float> tf = stackalloc float[2];
 
             amin[0] = a.X;
             amin[1] = a.Y;
@@ -97,14 +86,14 @@ namespace Reaper.Engine.AABB
         }
 
         private static float Sweep(
-            Span<float> amin, 
+            Span<float> amin,
             Span<float> amax,
-            Span<float> bmin, 
+            Span<float> bmin,
             Span<float> bmax,
             Span<float> v,
-            Span<float> dn, 
+            Span<float> dn,
             Span<float> df,
-            Span<float> tn, 
+            Span<float> tn,
             Span<float> tf,
             out Vector2 normal
         )
@@ -112,8 +101,12 @@ namespace Reaper.Engine.AABB
             normal.X = 0;
             normal.Y = 0;
 
+            var n = 0f;
+            var f = 1f;
+
             for (int i = 0; i < 2; i++)
             {
+                // Calculate distance
                 if (v[i] > 0f)
                 {
                     dn[i] = bmin[i] - amax[i];
@@ -125,47 +118,48 @@ namespace Reaper.Engine.AABB
                     df[i] = bmin[i] - amax[i];
                 }
 
-                if (Math.Abs(v[i]) < 0.0001f)
-                {
-                    tn[i] = float.MinValue;
-                    tf[i] = float.MaxValue;
-                }
-                else
+                // Calculate time
+                if (Math.Abs(v[i]) > 0.0001f)
                 {
                     tn[i] = dn[i] / v[i];
                     tf[i] = df[i] / v[i];
                 }
-            }
-
-            float near = Math.Max(tn[0], tn[1]);
-            float far = Math.Min(tf[0], tf[1]);
-
-            if (near > far)
-            {
-                return 1f;
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (tn[i] > 1f)
+                else
                 {
                     tn[i] = float.MinValue;
+                    tf[i] = float.MaxValue;
                 }
-            }
 
-            if (tn[0] < 0f && tn[1] < 0f)
-            {
-                return 1f;
-            }
+                // Merge axis time
+                n = Math.Max(tn[i], n);
+                f = Math.Min(tf[i], f);
 
-            for (int i = 0; i < 2; i++)
-            {
-                if (tn[i] < 0f && (amax[i] < bmin[i] || amin[i] > bmax[i]))
+                // No collision
+                if (n > f)
+                {
+                    return 1f;
+                }
+
+                // No collision
+                if (tn[i] < 0f && amin[i] > bmax[i])
+                {
+                    return 1f;
+                }
+
+                // No collision
+                if (tn[i] > 1f && amax[i] < bmin[i])
                 {
                     return 1f;
                 }
             }
 
+            // No collision
+            if (tn[0] > 1f && tn[1] > 1f)
+            {
+                return 1f;
+            }
+
+            // Calculate normal
             if (tn[0] > tn[1])
             {
                 if (dn[0] < 0f || Math.Abs(dn[0]) < 0.0001f && df[0] < 0f)
@@ -193,7 +187,8 @@ namespace Reaper.Engine.AABB
                 }
             }
 
-            return near;
+            return n;
         }
     }
 }
+

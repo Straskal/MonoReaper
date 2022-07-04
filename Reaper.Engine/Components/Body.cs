@@ -5,7 +5,7 @@ using Reaper.Engine.AABB;
 
 namespace Reaper.Engine.Components
 {
-    public delegate Vector2 CollisionCallback(CollisionInfo hit);
+    public delegate Vector2 CollisionCallback(Hit hit);
 
     public sealed class Body : Box
     {
@@ -20,11 +20,15 @@ namespace Reaper.Engine.Components
             visited.Clear();
             visited.Add(this);
 
-            while (true)
+            var collided = true;
+
+            while (collided)
             {
                 var previousPosition = Entity.Position;
-                var others = Level.Partition.QueryBounds(Bounds).Except(visited);
-                var collided = Collision.TestAABB(this, velocity, others, out var info);
+                var broadphase = Collision.GetBroadphaseRectangle(Bounds.Position, Bounds.Size, velocity);
+                var others = Level.Partition.QueryBounds(broadphase).Except(visited);
+
+                collided = Collision.TestAABB(Bounds, velocity, others, out var info);
 
                 Entity.Position = OriginHelpers.Offset(Entity.Origin, info.Position.X, info.Position.Y, Width, Height);
 

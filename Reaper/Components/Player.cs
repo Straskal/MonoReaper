@@ -19,7 +19,7 @@ namespace Reaper.Components
         private Vector2 faceDirection;
 
         private float drag = 0.85f;
-        private float acceleration = 10f;
+        private float acceleration = 25f;
         private float maxSpeed = 0.85f;
         private Vector2 velocity = Vector2.Zero;
 
@@ -60,10 +60,10 @@ namespace Reaper.Components
 
             body.Move(ref velocity, HandleCollision);
 
-            Animate(velocity);
+            Animate(faceDirection);
         }
 
-        private Vector2 HandleCollision(CollisionInfo info) 
+        private Vector2 HandleCollision(Hit info) 
         {
             if (info.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
             {
