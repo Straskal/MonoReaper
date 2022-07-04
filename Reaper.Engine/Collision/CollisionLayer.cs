@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Reaper.Engine.Collision
+namespace Core.Collision
 {
     [Flags]
     public enum CollisionLayer

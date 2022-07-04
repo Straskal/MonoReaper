@@ -1,4 +1,4 @@
-﻿namespace Reaper.Engine
+﻿namespace Core
 {
     public class AppSettings
     {

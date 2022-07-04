@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Engine.Graphics
+namespace Core.Graphics
 {
     public sealed class Animator : Component
     {

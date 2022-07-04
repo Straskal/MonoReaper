@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Reaper.Engine.Collision;
+﻿using Core.Collision;
+using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine
+namespace Core
 {
     public enum Origin
     {

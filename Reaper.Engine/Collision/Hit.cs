@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Reaper.Engine.Collision
+namespace Core.Collision
 {
     public readonly ref struct Hit
     {

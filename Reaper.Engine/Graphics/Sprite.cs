@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Engine.Graphics
+namespace Core.Graphics
 {
     public class Sprite : Component
     {

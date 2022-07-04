@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
-namespace Reaper.Engine
+namespace Core
 {
     public class PressedAction : InputAction
     {

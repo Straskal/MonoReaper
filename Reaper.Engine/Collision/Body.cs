@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine.Collision
+namespace Core.Collision
 {
     public delegate Vector2 CollisionCallback(Hit hit);
 

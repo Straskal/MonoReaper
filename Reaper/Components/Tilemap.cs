@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Reaper.Engine;
-using Reaper.Engine.Collision;
-using Reaper.Engine.Graphics;
+using Core;
+using Core.Collision;
+using Core.Graphics;
 using System;
 using System.Collections.Generic;
 

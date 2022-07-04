@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine.Collision
+namespace Core.Collision
 {
     public struct RectangleF
     {

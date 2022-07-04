@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Reaper.Engine.Graphics;
+using Core.Graphics;
 
-namespace Reaper.Engine.Collision
+namespace Core.Collision
 {
     public sealed class SpatialPartition
     {

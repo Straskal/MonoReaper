@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Reaper.Engine;
-using Reaper.Engine.Collision;
-using Reaper.Engine.Graphics;
+using Core;
+using Core.Collision;
+using Core.Graphics;
 
 namespace Reaper.Components
 {
@@ -59,14 +59,14 @@ namespace Reaper.Components
             Animate(_direction);
         }
 
-        private Vector2 HandleCollision(Hit info) 
+        private Vector2 HandleCollision(Hit hit) 
         {
-            if (info.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
+            if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
             {
                 App.Current.LoadOgmoLayout(transition.LevelName, transition.SpawnPoint);
             }
 
-            return info.Slide();
+            return hit.Slide();
         }
 
         private void Animate(Vector2 movementInput)

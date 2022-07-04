@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine
+namespace Core
 {
     public static class GameTimeExtensions
     {

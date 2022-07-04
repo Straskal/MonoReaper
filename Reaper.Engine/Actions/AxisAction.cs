@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
-namespace Reaper.Engine
+namespace Core
 { 
     public class AxisAction : InputAction
     {

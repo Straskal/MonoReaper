@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Reaper.Engine.Collision;
-using Reaper.Engine.Graphics;
+using Core.Collision;
+using Core.Graphics;
 
-namespace Reaper.Engine
+namespace Core
 {
     public class Level
     {

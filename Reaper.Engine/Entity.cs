@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine
+namespace Core
 {
     public sealed class Entity
     {
@@ -54,11 +54,6 @@ namespace Reaper.Engine
             component = GetComponent<T>();
 
             return component != null;
-        }
-
-        public void Destroy()
-        {
-            Level.Destroy(this);
         }
     }
 }

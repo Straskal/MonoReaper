@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Reaper.Engine.Graphics
+namespace Core.Graphics
 {
     public static class Renderer
     {

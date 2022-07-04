@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Reaper.Components;
-using Reaper.Engine;
-using Reaper.Engine.Collision;
-using Reaper.Engine.Graphics;
+using Core;
+using Core.Collision;
+using Core.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
