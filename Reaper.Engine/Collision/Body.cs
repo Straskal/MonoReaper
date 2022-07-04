@@ -21,7 +21,7 @@ namespace Reaper.Engine.Collision
 
             while (true)
             {
-                var previousPosition = Entity.Position;
+                //var previousPosition = Entity.Position;
                 var bounds = CalculateBounds();
                 var offsetBounds = bounds.Offset(velocity);
                 var broadphase = bounds.Union(offsetBounds);
@@ -33,9 +33,7 @@ namespace Reaper.Engine.Collision
                 var collided = Sweep.TestAABB(bounds, velocity, others, out var hit);
                 var newPosition = Offset.Create(Entity.Origin, hit.Position.X, hit.Position.Y, Width, Height);
 
-                Entity.Position = newPosition;
-
-                UpdateBBox(previousPosition);
+                MoveTo(newPosition);
 
                 if (!collided) break;
 

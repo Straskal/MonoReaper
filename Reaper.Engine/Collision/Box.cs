@@ -52,6 +52,15 @@ namespace Reaper.Engine.Collision
             UpdateBBox(previousPosition);
         }
 
+        public void MoveTo(Vector2 position) 
+        {
+            var previousPosition = Entity.Position;
+
+            Entity.Position = position;
+
+            UpdateBBox(previousPosition);
+        }
+
         public void UpdateBBox(Vector2 previousPosition)
         {
             if (Entity.IsDestroyed)
