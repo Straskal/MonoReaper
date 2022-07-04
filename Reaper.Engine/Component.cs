@@ -12,8 +12,6 @@ namespace Core
         public bool IsTickEnabled { get; set; } = false;
         public bool IsDrawEnabled { get; set; } = false;
 
-        public virtual void OnAttach() { }
-        public virtual void OnDetach() { }
         public virtual void OnLoad(ContentManager content) { }
         public virtual void OnSpawn() { }
         public virtual void OnDestroy() { }

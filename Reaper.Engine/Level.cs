@@ -65,7 +65,6 @@ namespace Core
         internal void AddComponent(Entity entity, Component component) 
         {
             component.Entity = entity;
-            component.OnAttach();
 
             _components.Add(component);
             _onComponentAdded?.Invoke(entity, component);
@@ -76,7 +75,6 @@ namespace Core
             for (int i = 0; i < components.Count; i++) 
             {
                 components[i].Entity = entity;
-                components[i].OnAttach();
             }
 
             _components.AddRange(components);
@@ -242,7 +240,6 @@ namespace Core
         {
             for (int i = 0; i < _componentsToRemove.Count; i++)
             {
-                _componentsToRemove[i].OnDetach();
                 _componentsToRemove[i].Entity = null;
             }
 
@@ -271,6 +268,12 @@ namespace Core
 
         public virtual void End() 
         {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                _components[i].OnDestroy();
+                _components[i].OnEnd();
+            }
+
             _content.Unload();
         }
     }

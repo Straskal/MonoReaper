@@ -8,7 +8,10 @@ namespace Core
 {
     public class App : Game
     {
-        public static readonly string ContentRoot = "Content";
+        public const string ContentRoot = "Content";
+        public const int ResolutionWidth = 640;
+        public const int ResolutionHeight = 360;
+        public const bool StartFullscreen = false;
 
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public static GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
@@ -18,27 +21,26 @@ namespace Core
         public static float TotalTime { get; private set; }
         public static App Current { get; private set; }
 
-        private bool isDebugging;
+        private bool _isDebugging;
+        private Action _onChangeLevel;
 
-        private Action onChangeLevel;
-
-        public App(AppSettings gameSettings)
+        public App()
         {
             Current = this;
 
             Content.RootDirectory = ContentRoot;
 
-            ViewportWidth = gameSettings.ViewportWidth;
-            ViewportHeight = gameSettings.ViewportHeight;
+            ViewportWidth = ResolutionWidth;
+            ViewportHeight = ResolutionHeight;
 
             Window.AllowUserResizing = false;
             Window.IsBorderless = false;
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
-                IsFullScreen = gameSettings.IsFullscreen,
-                PreferredBackBufferWidth = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
-                PreferredBackBufferHeight = gameSettings.IsFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
+                IsFullScreen = StartFullscreen,
+                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
+                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
                 HardwareModeSwitch = false,
                 SynchronizeWithVerticalRetrace = true
             };
@@ -48,12 +50,12 @@ namespace Core
 
         public void ChangeLevel(Level level)
         {
-            onChangeLevel = () =>
+            _onChangeLevel = () =>
             {
                 CurrentLevel?.End();
                 CurrentLevel = level;
                 CurrentLevel?.Start();
-                onChangeLevel = null;
+                _onChangeLevel = null;
             };
         }
 
@@ -77,7 +79,7 @@ namespace Core
 
         public void ToggleDebug()
         {
-            isDebugging = !isDebugging;
+            _isDebugging = !_isDebugging;
         }
 
         protected override void LoadContent()
@@ -98,14 +100,14 @@ namespace Core
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
             Input.Poll();
-            onChangeLevel?.Invoke();
+            _onChangeLevel?.Invoke();
             CurrentLevel.Tick(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             Renderer.BeginDraw(CurrentLevel?.Camera?.TransformationMatrix ?? Matrix.Identity);
-            CurrentLevel.Draw(isDebugging);
+            CurrentLevel.Draw(_isDebugging);
             Renderer.EndDraw();
         }
     }

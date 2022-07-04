@@ -28,11 +28,6 @@ namespace Core.Collision
             Level.Partition.Remove(this, Entity.Position);
         }
 
-        public override void OnDetach()
-        {
-            Level.Partition.Remove(this, Entity.Position);
-        }
-
         public RectangleF CalculateBounds() 
         {
             return Offset.GetRect(

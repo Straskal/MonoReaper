@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework.Input;
 
 namespace Core
 {
