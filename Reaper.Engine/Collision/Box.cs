@@ -5,7 +5,7 @@ namespace Core.Collision
     public class Box : Component
     {
         // Cached spatial partition data
-        internal readonly int[] PartitionCells = new int[Partition.MAX_BOUNDS_BUCKETS];
+        internal readonly int[] PartitionCells = new int[Partition.MAX_CELLS_PER_BOX];
         internal int PartitionCellCount = 0;
 
         public Box(float width, float height, bool isSolid) : this(width, height, isSolid, 0)

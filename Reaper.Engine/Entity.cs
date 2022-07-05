@@ -56,16 +56,14 @@ namespace Core
             return result;
         }
 
+        public bool TryGetComponent<T>(out T component) where T : class
+        {
+            return (component = GetComponent<T>()) != null;
+        }
+
         public T RequireComponent<T>() where T : class
         {
             return GetComponent<T>() ?? throw new Exception($"Required behavior of type {typeof(T).Name} is missing.");
-        }
-
-        public bool TryGetComponent<T>(out T component) where T : class
-        {
-            component = GetComponent<T>();
-
-            return component != null;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Core.Collision
     public sealed class Partition
     {
         // Each corner (x4) can exist in a different cell.
-        public const int MAX_BOUNDS_BUCKETS = 4;
+        public const int MAX_CELLS_PER_BOX = 4;
 
         private readonly List<Box>[] _cells;
 
@@ -69,9 +69,81 @@ namespace Core.Collision
             Add(box);
         }
 
+        public IEnumerable<Box> QueryBounds(Box box)
+        {
+            var cells = box.PartitionCells;
+            var cellCount = box.PartitionCellCount;
+
+            return UnionResults(cells, cellCount);
+        }
+
         public IEnumerable<Box> QueryBounds(RectangleF bounds)
         {
-            return QueryCells(bounds);
+            Span<int> cells = stackalloc int[MAX_CELLS_PER_BOX];
+            var cellCount = GetOccupyingCells(bounds, cells);
+
+            return UnionResults(cells, cellCount);
+        }
+
+        private IEnumerable<Box> UnionResults(Span<int> cells, int cellCount) 
+        {
+            var results = new HashSet<Box>();
+
+            for (int i = 0; i < cellCount; i++)
+            {
+                if (cells[i] >= 0 && cells[i] < _cells.Length)
+                {
+                    results.UnionWith(_cells[cells[i]]);
+                }
+            }
+
+            return results;
+        }
+
+        private int GetOccupyingCells(RectangleF bounds, Span<int> cells)
+        {
+            var resultLength = 0;
+
+            // Calculate the bucket index for each corner of bounds.
+            var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
+            var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
+
+            var row = y / _cellSize;
+            var col = x / _cellSize;
+
+            row.Floor();
+            col.Floor();
+
+            var index = row * _width + col;
+
+            // Create temp collections for finding distinct bucket indexes.
+            Span<int> cellIndexes = stackalloc int[MAX_CELLS_PER_BOX];
+
+            cellIndexes[0] = (int)index.X;
+            cellIndexes[1] = (int)index.Y;
+            cellIndexes[2] = (int)index.Z;
+            cellIndexes[3] = (int)index.W;
+
+            // Output distinct cell indexes
+            for (int i = 0; i < 4; i++) 
+            {
+                int j = 0;
+
+                for (; j < i; j++)
+                {
+                    if (cellIndexes[j] == cellIndexes[i]) 
+                    {
+                        break;
+                    }
+                }
+
+                if (i == j) 
+                {
+                    cells[resultLength++] = cellIndexes[i];
+                }      
+            }
+
+            return resultLength;
         }
 
         internal void DebugDraw()
@@ -100,115 +172,14 @@ namespace Core.Collision
                     {
                         color = Color.Red * opacity;
                     }
-                    else 
+                    else
                     {
-                        color = Color.Blue* opacity;
+                        color = Color.Blue * opacity;
                     }
 
                     Renderer.DrawRectangle(obj.CalculateBounds().ToXnaRect(), color);
                 }
             }
-        }
-
-        private int Add(Box box, Span<int> cells)
-        {
-            var length = GetOccupyingCells(box.CalculateBounds(), cells);
-
-            for (int i = 0; i < length; i++)
-            {
-                if (cells[i] >= 0 && cells[i] < this._cells.Length)
-                {
-                    _cells[cells[i]].Add(box);
-                }
-            }
-
-            return length;
-        }
-
-        private void Remove(Box box, Vector2 previousPosition, Span<int> buckets)
-        {
-            var bounds = Offset.GetRect(box.Entity.Origin, previousPosition.X, previousPosition.Y, box.Width, box.Height);
-            var length = GetOccupyingCells(bounds, buckets);
-
-            for (int i = 0; i < length; i++)
-            {
-                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
-                {
-                    _cells[buckets[i]].Remove(box);
-                }
-            }
-        }
-
-        private IEnumerable<Box> QueryCells(RectangleF bounds)
-        {
-            var results = new HashSet<Box>();
-            Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
-            var length = GetOccupyingCells(bounds, buckets);
-
-            for (int i = 0; i < length; i++)
-            {
-                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
-                {
-                    results.UnionWith(_cells[buckets[i]]);
-                }
-            }
-
-            return results;
-        }
-
-        private int GetOccupyingCells(RectangleF bounds, Span<int> buckets)
-        {
-            var resultLength = 0;
-
-            // Calculate the bucket index for each corner of bounds.
-            var y = new Vector4(bounds.Top, bounds.Top, bounds.Bottom, bounds.Bottom);
-            var x = new Vector4(bounds.Left, bounds.Right, bounds.Left, bounds.Right);
-
-            var row = y / _cellSize;
-            var col = x / _cellSize;
-
-            row.Floor();
-            col.Floor();
-
-            var index = row * _width + col;
-
-            // Create temp collections for finding distinct bucket indexes.
-            Span<int> bucketIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
-            bucketIndexes[0] = (int)index.X;
-            bucketIndexes[1] = (int)index.Y;
-            bucketIndexes[2] = (int)index.Z;
-            bucketIndexes[3] = (int)index.W;
-
-            Span<int> visitedIndexes = stackalloc int[MAX_BOUNDS_BUCKETS];
-            visitedIndexes.Fill(0);
-
-            bool visited;
-            int bi;
-
-            // Only add distinct bucket indexes to result.
-            for (int i = 0; i < bucketIndexes.Length; i++)
-            {
-                visited = false;
-                bi = bucketIndexes[i];
-
-                for (int j = 0; j < resultLength; j++)
-                {
-                    if (visitedIndexes[j] == bi)
-                    {
-                        visited = true;
-                        break;
-                    }
-                }
-
-                if (!visited)
-                {
-                    visitedIndexes[resultLength] = bi;
-                    buckets[resultLength] = bi;
-                    resultLength++;
-                }
-            }
-
-            return resultLength;
         }
     }
 }

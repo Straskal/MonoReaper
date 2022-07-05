@@ -44,7 +44,7 @@ namespace Core.Collision
                 var offsetBounds = bounds.Offset(velocity);
                 var broadphase = bounds.Union(offsetBounds);
 
-                var others = Level.Partition.QueryBounds(broadphase)
+                var others = Level.Partition.QueryBounds(this)
                     .Where(other => broadphase.Intersects(other.CalculateBounds()))
                     .Where(other => (other.LayerMask | layerMask) == layerMask)
                     .Except(_visited);
