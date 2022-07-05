@@ -1,21 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Core.Graphics
 {
     public class Sprite : Component
     {
-        private readonly string _texturePath;
-
-        public Sprite(string texturePath) : this(texturePath, Rectangle.Empty)
+        public Sprite(Texture2D texture) : this(texture, Rectangle.Empty)
         {
         }
 
-        public Sprite(string texturePath, Rectangle sourceRectangle)
+        public Sprite(Texture2D texture, Rectangle sourceRectangle)
         {
-            _texturePath = texturePath;
-
+            Texture = texture;
             SourceRectangle = sourceRectangle;
             IsTickEnabled = false;
             IsDrawEnabled = true;
@@ -25,11 +21,6 @@ namespace Core.Graphics
         public Effect Effect { get; set; }
         public Rectangle SourceRectangle { get; set; }
         public bool IsMirrored { get; set; }
-
-        public override void OnLoad(ContentManager content)
-        {
-            Texture = content.Load<Texture2D>(_texturePath);
-        }
 
         public override void OnDraw()
         {

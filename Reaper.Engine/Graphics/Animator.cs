@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Core.Graphics
@@ -10,60 +9,63 @@ namespace Core.Graphics
     {
         public class Animation
         {
+            public Animation(string name, Texture2D texture, Rectangle[] frames, float secondsPerFrame, bool loop) 
+            {
+                Name = name;
+                Texture = texture;
+                Frames = frames;
+                SecPerFrame = secondsPerFrame;
+                Loop = loop;
+            }
+
+            public Animation() 
+            {
+            }
+
             public string Name { get; set; }
-            public string ImageFilePath { get; set; }
-            public Texture2D Image { get; set; }
+            public Texture2D Texture { get; set; }
             public Rectangle[] Frames { get; set; }
             public float SecPerFrame { get; set; }
             public bool Loop { get; set; }
-            public Point? Origin { get; set; }
         }
 
-        private readonly Animation[] animations;
+        private readonly Animation[] _animations;
 
-        private Sprite sprite;
-        private float lastFrameTime;
-        private float timer;
+        private Sprite _sprite;
+        private float _lastFrameTime;
+        private float _timer;
 
         public Animator(Animation[] animations)
         {
-            this.animations = animations ?? throw new ArgumentNullException(nameof(animations));
+            _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }
 
         public Animation CurrentAnimation { get; private set; }
         public int CurrentFrame { get; private set; }
         public bool IsFinished { get; private set; }
 
-        public override void OnLoad(ContentManager content)
-        {
-            if (animations.Length > 0)
-            {
-                foreach (var animation in animations)
-                {
-                    animation.Image = content.Load<Texture2D>(animation.ImageFilePath);
-                }
-
-                Play(animations[0].Name);
-            }
-        }
-
         public override void OnSpawn()
         {
-            sprite = Entity.GetComponent<Sprite>();
+            _sprite = Entity.RequireComponent<Sprite>();
+
+            if (_animations.Length > 0)
+            {
+                Play(_animations[0].Name);
+            }
         }
 
         public void Play(string name)
         {
             if (name != CurrentAnimation?.Name || IsFinished)
             {
-                var animation = animations.SingleOrDefault(a => a.Name == name);
+                var animation = _animations.SingleOrDefault(a => a.Name == name);
 
                 if (animation == null)
                 {
                     throw new ArgumentException($"Animation {name} does not exist.");
                 }
 
-                CurrentAnimation = animations.SingleOrDefault(a => a.Name == name);
+                CurrentAnimation = _animations.SingleOrDefault(a => a.Name == name);
                 CurrentFrame = 0;
                 IsFinished = false;
             }
@@ -73,9 +75,9 @@ namespace Core.Graphics
         {
             if (!IsFinished)
             {
-                timer += gameTime.GetDeltaTime();
+                _timer += gameTime.GetDeltaTime();
 
-                if (timer - lastFrameTime > CurrentAnimation.SecPerFrame)
+                if (_timer - _lastFrameTime > CurrentAnimation.SecPerFrame)
                 {
                     if (CurrentAnimation.Loop)
                     {
@@ -87,10 +89,10 @@ namespace Core.Graphics
                         IsFinished = true;
                     }
 
-                    lastFrameTime = timer;
+                    _lastFrameTime = _timer;
 
-                    sprite.Texture = CurrentAnimation.Image;
-                    sprite.SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
+                    _sprite.Texture = CurrentAnimation.Texture;
+                    _sprite.SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
                 }
             }
         }

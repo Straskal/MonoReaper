@@ -34,11 +34,6 @@ namespace Core.Collision
 
         public Vector2 Bounce(ref Vector2 newVelocity)
         {
-            if (!Other.IsSolid)
-            {
-                return Ignore();
-            }
-
             newVelocity = Velocity * RemainingTime;
 
             if (Math.Abs(Normal.X) > 0.0001f)
@@ -56,11 +51,6 @@ namespace Core.Collision
 
         public Vector2 Slide()
         {
-            if (!Other.IsSolid) 
-            {
-                return Ignore();
-            }
-
             var velocity = Velocity;
             var normal = Normal;
             var dot = RemainingTime * (velocity.X * normal.Y + velocity.Y * normal.X);

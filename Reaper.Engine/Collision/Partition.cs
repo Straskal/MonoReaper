@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Core.Graphics;
 
 namespace Core.Collision
 {
-    public sealed class SpatialPartition
+    public sealed class Partition
     {
         // Each corner (x4) can exist in a different cell.
-        private const int MAX_BOUNDS_BUCKETS = 4;
+        public const int MAX_BOUNDS_BUCKETS = 4;
 
         private readonly List<Box>[] _cells;
 
@@ -18,7 +17,7 @@ namespace Core.Collision
         private readonly int _height;
         private readonly int _length;
 
-        internal SpatialPartition(int cellSize, int width, int height)
+        internal Partition(int cellSize, int width, int height)
         {
             _cellSize = cellSize;
             _width = (int)Math.Ceiling((double)width / cellSize);
@@ -33,38 +32,46 @@ namespace Core.Collision
             }
         }
 
-        internal void Add(Box worldObject)
+        internal void Add(Box box)
         {
-            if (worldObject.Layer != CollisionLayer.Pass)
-            {
-                Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
+            var bounds = box.CalculateBounds();
+            var cells = box.PartitionCells;
+            var length = GetOccupyingCells(bounds, cells);
 
-                Add(worldObject, buckets);
+            for (int i = 0; i < length; i++)
+            {
+                if (cells[i] >= 0 && cells[i] < _cells.Length)
+                {
+                    _cells[cells[i]].Add(box);
+                }
+            }
+
+            box.PartitionCellCount = length;
+        }
+
+        internal void Remove(Box box)
+        {
+            var cellCount = box.PartitionCellCount;
+            var cells = box.PartitionCells;
+
+            for (int i = 0; i < cellCount; i++)
+            {
+                if (cells[i] >= 0 && cells[i] < _cells.Length)
+                {
+                    _cells[cells[i]].Remove(box);
+                }
             }
         }
 
-        internal void Remove(Box worldObject, Vector2 previousPosition)
+        internal void Update(Box box)
         {
-            Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
-
-            Remove(worldObject, previousPosition, buckets);
-        }
-
-        internal void Update(Box worldObject, Vector2 previousPosition)
-        {
-            if (worldObject.Entity.Position == previousPosition)
-                return;
-
-            Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];
-
-            Remove(worldObject, previousPosition, buckets);
-
-            Add(worldObject, buckets);
+            Remove(box);
+            Add(box);
         }
 
         public IEnumerable<Box> QueryBounds(RectangleF bounds)
         {
-            return QueryBuckets(bounds).Where(b => b.Layer.HasFlag(CollisionLayer.Overlap));
+            return QueryCells(bounds);
         }
 
         internal void DebugDraw()
@@ -89,17 +96,13 @@ namespace Core.Collision
                 {
                     Color color;
 
-                    switch (obj.Layer)
+                    if (obj.IsSolid)
                     {
-                        case CollisionLayer.Pass:
-                            color = Color.Pink * opacity;
-                            break;
-                        case CollisionLayer.Overlap:
-                            color = Color.Blue * opacity;
-                            break;
-                        default:
-                            color = Color.Red * opacity;
-                            break;
+                        color = Color.Red * opacity;
+                    }
+                    else 
+                    {
+                        color = Color.Blue* opacity;
                     }
 
                     Renderer.DrawRectangle(obj.CalculateBounds().ToXnaRect(), color);
@@ -107,17 +110,19 @@ namespace Core.Collision
             }
         }
 
-        private void Add(Box box, Span<int> buckets)
+        private int Add(Box box, Span<int> cells)
         {
-            var length = GetOccupyingCells(box.CalculateBounds(), buckets);
+            var length = GetOccupyingCells(box.CalculateBounds(), cells);
 
             for (int i = 0; i < length; i++)
             {
-                if (buckets[i] >= 0 && buckets[i] < this._cells.Length)
+                if (cells[i] >= 0 && cells[i] < this._cells.Length)
                 {
-                    _cells[buckets[i]].Add(box);
+                    _cells[cells[i]].Add(box);
                 }
             }
+
+            return length;
         }
 
         private void Remove(Box box, Vector2 previousPosition, Span<int> buckets)
@@ -134,7 +139,7 @@ namespace Core.Collision
             }
         }
 
-        private IEnumerable<Box> QueryBuckets(RectangleF bounds)
+        private IEnumerable<Box> QueryCells(RectangleF bounds)
         {
             var results = new HashSet<Box>();
             Span<int> buckets = stackalloc int[MAX_BOUNDS_BUCKETS];

@@ -7,9 +7,9 @@ namespace Core
     public sealed class Entity
     {
         private readonly List<Component> _components = new();
+        internal List<Component> Components => _components;
 
         public Level Level { get; internal set; }
-        internal List<Component> Components => _components;
         public Vector2 Position { get; set; }
         public Origin Origin { get; set; }
         public bool IsDestroyed { get; internal set; }
@@ -17,6 +17,13 @@ namespace Core
         public Entity(Origin origin = Origin.TopLeft) 
         {
             Origin = origin;
+        }
+
+        public Entity(Origin origin = Origin.TopLeft, params Component[] components)
+        {
+            Origin = origin;
+
+            _components.AddRange(components);
         }
 
         public void AddComponent(Component component)
@@ -35,7 +42,7 @@ namespace Core
 
         public T GetComponent<T>() where T : class
         {
-            var result = default(T);
+            var result = default(T);    
 
             foreach (var component in _components) 
             {

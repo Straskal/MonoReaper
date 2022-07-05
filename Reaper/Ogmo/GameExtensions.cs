@@ -10,6 +10,7 @@ using System.Linq;
 
 using AssetPaths = Reaper.Constants.AssetPaths;
 using LayerNames = Reaper.Constants.Layers;
+using static Reaper.Constants;
 
 namespace Reaper
 {
@@ -76,152 +77,21 @@ namespace Reaper
                     case "Barrel":
 
                         spawned.AddComponent(new Barrel());
-                        spawned.AddComponent(new Sprite("art/common/barrel", new Rectangle(0, 0, 16, 16)));
-                        spawned.AddComponent(new Box(CollisionLayer.Overlap, 16, 16));
                         break;
                     case "LayoutTransition":
 
                         spawned.AddComponent(new LevelTrigger(entity.Values.Level, entity.Values.SpawnPoint));
-                        spawned.AddComponent(new Box(CollisionLayer.Overlap, 16, 16));
+                        spawned.AddComponent(new Box(16, 16, false));
                         break;
                     case "PlayerSpawnPoint":
                         spawned.AddComponent(new Player());
-                        spawned.AddComponent(new Body(12, 16));
-                        spawned.AddComponent(new Sprite("art/player/player"));
-                        spawned.AddComponent(new Animator(new[]
-                        {
-                            new Animator.Animation
-                            {
-                                Name = "idle",
-                                ImageFilePath = "art/player/player",
-                                Loop = true,
-                                SecPerFrame = 0.1f,
-                                Frames = new []
-                                {
-                                    new Rectangle(0, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_down",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 1, 0, 16, 16),
-                                    new Rectangle(16 * 2, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_up",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 3, 0, 16, 16),
-                                    new Rectangle(16 * 4, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_left",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 5, 0, 16, 16),
-                                    new Rectangle(16 * 6, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_right",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 7, 0, 16, 16),
-                                    new Rectangle(16 * 8, 0, 16, 16),
-                                }
-                            },
-                        }));
                         break;
                     case "Blob":
-                        spawned.AddComponent(new Body(12, 16));
-                        spawned.AddComponent(new Sprite("art/player/player"));
-                        spawned.AddComponent(new Animator(new[]
-                        {
-                            new Animator.Animation
-                            {
-                                Name = "idle",
-                                ImageFilePath = "art/player/player",
-                                Loop = true,
-                                SecPerFrame = 0.1f,
-                                Frames = new []
-                                {
-                                    new Rectangle(0, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_down",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 1, 0, 16, 16),
-                                    new Rectangle(16 * 2, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_up",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 3, 0, 16, 16),
-                                    new Rectangle(16 * 4, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_left",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 5, 0, 16, 16),
-                                    new Rectangle(16 * 6, 0, 16, 16),
-                                }
-                            },
-                            new Animator.Animation
-                            {
-                                Name = "walk_right",
-                                ImageFilePath = "art/player/player",
-                                SecPerFrame = 0.1f,
-                                Loop = true,
-                                Frames = new []
-                                {
-                                    new Rectangle(16 * 7, 0, 16, 16),
-                                    new Rectangle(16 * 8, 0, 16, 16),
-                                }
-                            },
-                        }));
                         break;
                 }
 
                 if (spawned != default(Entity))
                 {
-
                     level.Spawn(spawned, new Vector2(entity.X, entity.Y));
                 }
             }

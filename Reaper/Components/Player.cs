@@ -1,11 +1,13 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Core;
 using Core.Collision;
 using Core.Graphics;
-using System.Linq;
-using System.Collections.Generic;
+
+using static Reaper.Constants;
 
 namespace Reaper.Components
 {
@@ -25,10 +27,80 @@ namespace Reaper.Components
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
 
+        public override void OnLoad(ContentManager content)
+        {
+            Fireball.Preload(content);
+
+            var playerTexture = content.Load<Texture2D>("art/player/player");
+
+            Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
+            Entity.AddComponent(new Sprite(playerTexture) { ZOrder = 10 });
+            Entity.AddComponent(_animation = new Animator(new[]
+            {
+                new Animator.Animation
+                {
+                    Name = "idle",
+                    Texture = playerTexture,
+                    Loop = true,
+                    SecPerFrame = 0.1f,
+                    Frames = new []
+                    {
+                        new Rectangle(0, 0, 16, 16),
+                    }
+                },
+                new Animator.Animation
+                {
+                    Name = "walk_down",
+                    Texture = playerTexture,
+                    SecPerFrame = 0.1f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new Rectangle(16 * 1, 0, 16, 16),
+                        new Rectangle(16 * 2, 0, 16, 16),
+                    }
+                },
+                new Animator.Animation
+                {
+                    Name = "walk_up",
+                    Texture = playerTexture,
+                    SecPerFrame = 0.1f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new Rectangle(16 * 3, 0, 16, 16),
+                        new Rectangle(16 * 4, 0, 16, 16),
+                    }
+                },
+                new Animator.Animation
+                {
+                    Name = "walk_left",
+                    Texture = playerTexture,
+                    SecPerFrame = 0.1f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new Rectangle(16 * 5, 0, 16, 16),
+                        new Rectangle(16 * 6, 0, 16, 16),
+                    }
+                },
+                new Animator.Animation
+                {
+                    Name = "walk_right",
+                    Texture = playerTexture,
+                    SecPerFrame = 0.1f,
+                    Loop = true,
+                    Frames = new []
+                    {
+                        new Rectangle(16 * 7, 0, 16, 16),
+                        new Rectangle(16 * 8, 0, 16, 16),
+                    }
+                },
+            }));
+        }
+
         public override void OnSpawn()
         {
-            _body = Entity.RequireComponent<Body>();
-            _animation = Entity.RequireComponent<Animator>();
             _moveX = Input.NewAxisAction(Keys.A, Keys.D);
             _moveY = Input.NewAxisAction(Keys.W, Keys.S);
             _interact = Input.NewPressedAction(Keys.E);
@@ -58,24 +130,16 @@ namespace Reaper.Components
             _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_SPEED, MAX_SPEED);
             _velocity.Y = MathHelper.Clamp(_velocity.Y, -MAX_SPEED, MAX_SPEED);
 
-            _body.Move(ref _velocity, HandleCollision);
+            _body.Move(ref _velocity, EntityLayers.Enemy | EntityLayers.Wall, HandleCollision);
 
             Animate(_direction);
 
             if (_interact.WasPressed())
             {
-                var fireball = new Entity(Origin.Center);
+                var fireball = new Fireball(_direction * 100f * delta);
+                var fireballEntity = new Entity(Origin.Center, fireball);
 
-                fireball.AddComponent(new Projectile(_direction * 100f * gameTime.GetDeltaTime()));
-                fireball.AddComponent(new Particles
-                {
-                    Velocity = -_direction,
-                    AngularVelocity = 10f,
-                    Color = Color.Red,
-                    Time = 1f
-                });
-
-                Level.Spawn(fireball, Entity.Position);
+                Level.Spawn(fireballEntity, _body.CalculateBounds().Center + _direction * 10f);
             }
         }
 
@@ -86,7 +150,12 @@ namespace Reaper.Components
                 App.Current.LoadOgmoLayout(transition.LevelName, transition.SpawnPoint);
             }
 
-            return hit.Slide();
+            if (hit.Other.IsSolid)
+            {
+                return hit.Slide();
+            }
+
+            return hit.Ignore();
         }
 
         private void Animate(Vector2 movementInput)

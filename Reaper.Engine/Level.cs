@@ -27,11 +27,11 @@ namespace Core
             Width = width;
             Height = height;
             Camera = new Camera(this); 
-            Partition = new SpatialPartition(cellSize, width, height);
+            Partition = new Partition(cellSize, width, height);
         }
 
         public Camera Camera { get; }
-        public SpatialPartition Partition { get; }
+        public Partition Partition { get; }
 
         public int Width { get; }
         public int Height { get; }
@@ -72,13 +72,15 @@ namespace Core
 
         internal void AddComponents(Entity entity, List<Component> components)
         {
-            for (int i = 0; i < components.Count; i++) 
+            var copy = new List<Component>(components);
+
+            foreach (var component in copy) 
             {
-                components[i].Entity = entity;
+                component.Entity = entity;
             }
 
-            _components.AddRange(components);
-            _onComponentsAdded?.Invoke(entity, components);
+            _components.AddRange(copy);
+            _onComponentsAdded?.Invoke(entity, copy);
         }
 
         internal void RemoveComponent(Component component) 
@@ -90,7 +92,12 @@ namespace Core
         {
             try
             {
-                var copy = new List<Component>(_components);
+                var components = _components;
+
+                for (int i = 0; i < components.Count; i++)
+                {
+                    components[i].OnLoad(_content);
+                }
 
                 _onComponentAdded = (e, c) =>
                 {
@@ -105,9 +112,9 @@ namespace Core
                     }
                 };
 
-                for (int i = 0; i < copy.Count; i++)
+                for (int i = 0; i < components.Count; i++)
                 {
-                    copy[i].OnLoad(_content);
+                    components[i].OnSpawn();
                 }
 
                 _onComponentAdded = (e, c) =>
@@ -129,9 +136,17 @@ namespace Core
                     }
                 };
 
-                for (int i = 0; i < copy.Count; i++)
+                for (int i = 0; i < components.Count; i++)
                 {
-                    copy[i].OnSpawn();
+                    components[i].OnStart();
+                }
+
+                for (int i = 0; i < components.Count; i++)
+                {
+                    if (components[i].IsDrawEnabled)
+                    {
+                        _componentsToDraw.Add(components[i]);
+                    }
                 }
 
                 _onComponentAdded = (e, c) =>
@@ -140,7 +155,10 @@ namespace Core
                     c.OnSpawn();
                     c.OnStart();
 
-                    _componentsToDraw.Add(c);
+                    if (c.IsDrawEnabled) 
+                    {
+                        _componentsToDraw.Add(c);
+                    }         
                 };
 
                 _onComponentsAdded = (e, c) =>
@@ -162,30 +180,12 @@ namespace Core
 
                     for (int i = 0; i < c.Count; i++)
                     {
-                        if (c[i].IsDrawEnabled) 
+                        if (c[i].IsDrawEnabled)
                         {
                             _componentsToDraw.Add(c[i]);
                         }
                     }
                 };
-
-                for (int i = 0; i < copy.Count; i++)
-                {
-                    copy[i].OnStart();
-                }
-
-                for (int i = 0; i < copy.Count; i++)
-                {
-                    copy[i].OnStart();
-                }
-
-                for (int i = 0; i < copy.Count; i++)
-                {
-                    if (copy[i].IsDrawEnabled)
-                    {
-                        _componentsToDraw.Add(copy[i]);
-                    }
-                }
             }
             catch (StackOverflowException) 
             {

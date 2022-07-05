@@ -9,7 +9,7 @@ namespace Core.Graphics
 {
     public sealed class Particles : Component
     {
-        private struct Particle 
+        private struct Particle
         {
             public Vector2 Position;
             public Vector2 Velocity;
@@ -22,7 +22,6 @@ namespace Core.Graphics
 
         private readonly static Random Rng = new();
 
-        private readonly string _texturePath;
         private readonly List<Particle> _particles = new();
 
         private Texture2D _texture;
@@ -34,48 +33,40 @@ namespace Core.Graphics
             IsDrawEnabled = true;
         }
 
-        public Vector2 Velocity { get; set; }
-        public float AngularVelocity { get; set; } = 10f;
-        public Color Color { get; set; } = Color.Yellow;
-        public float Time { get; set; } = 1f;
-
-        public Particles(string texturePath, Rectangle sourceRectangle) 
+        public Particles(Texture2D texture, Rectangle sourceRectangle) : this()
         {
-            _texturePath = texturePath;
+            _texture = texture;
             _sourceRectangle = sourceRectangle;
-
-            IsTickEnabled = true;
-            IsDrawEnabled = true;
         }
+
+        public Vector2 MaxVelocity { get; set; }
+        public float MaxAngularVelocity { get; set; }
+
+        public int MaxParticles { get; set; } = 10;
+        public Color MinColor { get; set; }
+        public Color MaxColor { get; set; }
+        public float MaxTime { get; set; }
 
         public override void OnLoad(ContentManager content)
         {
-            if (!string.IsNullOrEmpty(_texturePath))
+            if (_texture == null)
             {
-                _texture = content.Load<Texture2D>(_texturePath);
-            }
-            else 
-            {
-                var blank = Renderer.BlankTexture;
-                _texture = blank;
-                _sourceRectangle = new Rectangle(0, 0, blank.Width, blank.Height);
+                _texture = Renderer.BlankTexture;
+                _sourceRectangle = new Rectangle(0, 0, Renderer.BlankTexture.Width, Renderer.BlankTexture.Height);
             }
         }
 
         public override void OnPostTick(GameTime gameTime)
         {
-            var max = 500;
-            var count = _particles.Count;
-            var diff = max - count;
+            var dt = gameTime.GetDeltaTime();
+            var diff = MaxParticles - _particles.Count;
 
-            if (diff > 0) 
+            if (diff > 0)
             {
                 GenerateParticles(1);
             }
 
-            var dt = gameTime.GetDeltaTime();
-
-            for (int i = 0; i < _particles.Count; i++) 
+            for (int i = 0; i < _particles.Count; i++)
             {
                 var particle = _particles[i];
 
@@ -86,14 +77,14 @@ namespace Core.Graphics
                     _particles.RemoveAt(i);
                     i--;
                 }
-                else 
+                else
                 {
-                    particle.Color = Color * (particle.Time / Time);
+                    particle.Color = Color.Lerp(MaxColor, MinColor, particle.Time / MaxTime);
                     particle.Position += particle.Velocity * dt;
                     particle.Angle += particle.AngularVelocity * dt;
 
                     _particles[i] = particle;
-                }   
+                }
             }
         }
 
@@ -103,26 +94,27 @@ namespace Core.Graphics
             {
                 var particle = _particles[i];
 
-                Renderer.Draw(_texture, particle.Position, particle.Color);
+                Renderer.Draw(_texture, _sourceRectangle, particle.Position, particle.Color, false);
             }
         }
 
-        private void GenerateParticles(int count) 
+        private void GenerateParticles(int count)
         {
             Vector2 origin = Entity.Position;
 
-            for (int i = 0; i < count; i++) 
+            for (int i = 0; i < count; i++)
             {
+                float vx = (float)(Rng.NextDouble() * MaxVelocity.X - (MaxVelocity.X / 2));
+                float vy = (float)(Rng.NextDouble() * MaxVelocity.Y - (MaxVelocity.Y / 2));
+
                 var particle = new Particle
                 {
-                    Color = Color,
+                    Color = MinColor,
                     Position = origin,
-                    Velocity = new Vector2(
-                                    1f * (float)(Rng.NextDouble() * 50 - 25),
-                                    1f * (float)(Rng.NextDouble() * 50 - 25)),
+                    Velocity = new Vector2(vx, vy),
                     Angle = 0f,
-                    AngularVelocity = 0.8f * (float)(Rng.NextDouble() * 2 - 1),
-                    Time = Time
+                    AngularVelocity = 0,
+                    Time = MaxTime
                 };
 
                 _particles.Add(particle);

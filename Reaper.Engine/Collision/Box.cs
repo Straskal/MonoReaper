@@ -4,15 +4,24 @@ namespace Core.Collision
 {
     public class Box : Component
     {
-        public Box(CollisionLayer type, float width, float height)
+        // Cached spatial partition data
+        internal readonly int[] PartitionCells = new int[Partition.MAX_BOUNDS_BUCKETS];
+        internal int PartitionCellCount = 0;
+
+        public Box(float width, float height, bool isSolid) : this(width, height, isSolid, 0)
         {
-            Layer = type;
-            Width = width;
-            Height = height;
         }
 
-        public CollisionLayer Layer { get; set; }
-        public bool IsSolid => Layer.HasFlag(CollisionLayer.Solid);
+        public Box(float width, float height, bool isSolid, int layerMask)
+        {
+            Width = width;
+            Height = height;
+            IsSolid = isSolid;
+            LayerMask = layerMask;
+        }
+
+        public bool IsSolid { get; set; }
+        public int LayerMask { get; set; }
 
         public Vector2 Size { get; set; }
         public float Width { get; set; }
@@ -25,7 +34,7 @@ namespace Core.Collision
 
         public override void OnDestroy()
         {
-            Level.Partition.Remove(this, Entity.Position);
+            Level.Partition.Remove(this);
         }
 
         public RectangleF CalculateBounds() 
@@ -38,30 +47,19 @@ namespace Core.Collision
                 Height);
         }
 
-        public void Move(Vector2 direction)
-        {
-            var previousPosition = Entity.Position;
-
-            Entity.Position += direction;
-
-            UpdateBBox(previousPosition);
-        }
-
         public void MoveTo(Vector2 position) 
         {
-            var previousPosition = Entity.Position;
-
             Entity.Position = position;
 
-            UpdateBBox(previousPosition);
+            UpdateBBox();
         }
 
-        public void UpdateBBox(Vector2 previousPosition)
+        public void UpdateBBox()
         {
             if (Entity.IsDestroyed)
                 return;
 
-            Level.Partition.Update(this, previousPosition);
+            Level.Partition.Update(this);
         }
     }
 }

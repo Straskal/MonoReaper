@@ -10,24 +10,43 @@ namespace Core.Collision
     {
         private readonly List<Box> _visited = new();
 
-        public Body(float width, float height) : base(CollisionLayer.Overlap, width, height)
+        public Body(float width, float height, int layerMask) : base(width, height, false, layerMask)
         {
         }
 
+        public Body(float width, float height) : base(width, height, false)
+        {
+        }
+
+        public void Move(Vector2 velocity, CollisionCallback response = null)
+        {
+            Move(ref velocity, int.MaxValue, response);
+        }
+
+        public void Move(Vector2 velocity, int layerMask, CollisionCallback response = null)
+        {
+            Move(ref velocity, layerMask, response);
+        }
+
         public void Move(ref Vector2 velocity, CollisionCallback response = null)
+        {
+            Move(ref velocity, int.MaxValue, response);
+        }
+
+        public void Move(ref Vector2 velocity, int layerMask, CollisionCallback response = null)
         {
             _visited.Clear();
             _visited.Add(this);
 
             while (true)
             {
-                //var previousPosition = Entity.Position;
                 var bounds = CalculateBounds();
                 var offsetBounds = bounds.Offset(velocity);
                 var broadphase = bounds.Union(offsetBounds);
 
                 var others = Level.Partition.QueryBounds(broadphase)
                     .Where(other => broadphase.Intersects(other.CalculateBounds()))
+                    .Where(other => (other.LayerMask | layerMask) == layerMask)
                     .Except(_visited);
 
                 var collided = Sweep.TestAABB(bounds, velocity, others, out var hit);

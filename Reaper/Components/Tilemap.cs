@@ -6,6 +6,7 @@ using Core.Collision;
 using Core.Graphics;
 using System;
 using System.Collections.Generic;
+using static Reaper.Constants;
 
 namespace Reaper.Components
 {
@@ -64,7 +65,7 @@ namespace Reaper.Components
             foreach (var tile in GetTileInfos())
             {
                 var e = new Entity() { Origin = Origin.TopLeft };
-                e.AddComponent(new Box(CollisionLayer.Solid, Data.CellSize, Data.CellSize));
+                e.AddComponent(new Box(Data.CellSize, Data.CellSize, true, EntityLayers.Wall));
 
                 Entity.Level.Spawn(e, tile.Position);
             }
