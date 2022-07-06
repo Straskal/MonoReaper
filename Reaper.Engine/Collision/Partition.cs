@@ -136,11 +136,6 @@ namespace Core.Collision
                 }      
             }
 
-            //if (cells[i] >= 0 && cells[i] < _cells.Length)
-            //{
-            //    _cells[cells[i]].Remove(box);
-            //}
-
             return resultLength;
         }
 
