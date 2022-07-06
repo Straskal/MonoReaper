@@ -8,14 +8,14 @@ namespace Core.Graphics
     {
         public static Texture2D BlankTexture => _texture;
 
-        private static SpriteBatch _batcher;
+        private static SpriteBatch _spriteBatch;
         private static Texture2D _texture;
         private static Effect _effect;
         private static Matrix _transformation;
 
         internal static void Initialize()
         {
-            _batcher = new SpriteBatch(App.Graphics);
+            _spriteBatch = new SpriteBatch(App.Graphics);
             _texture = new Texture2D(App.Graphics, 1, 1);
             _texture.SetData(new[] { Color.White });
         }
@@ -31,7 +31,7 @@ namespace Core.Graphics
 
         private static void PrepareBatch()
         {
-            _batcher.Begin(
+            _spriteBatch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
@@ -46,28 +46,38 @@ namespace Core.Graphics
         {
             HandleEffectChange(null);
 
-            _batcher.Draw(texture, position, color);
+            _spriteBatch.Draw(texture, position, color);
         }
 
         public static void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
 
-            _batcher.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            _spriteBatch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public static void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
         {
             HandleEffectChange(effect);
 
-            _batcher.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            _spriteBatch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public static void DrawRectangle(Rectangle rectangle, Color color)
         {
             HandleEffectChange(null);
 
-            _batcher.Draw(_texture, rectangle, null, color);
+            _spriteBatch.Draw(_texture, rectangle, null, color);
+        }
+
+        public static void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
+        {
+            HandleEffectChange(null);
+
+            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
+            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
         }
 
         private static void HandleEffectChange(Effect effect)
@@ -83,12 +93,12 @@ namespace Core.Graphics
 
         internal static void EndDraw()
         {
-            _batcher.End();
+            _spriteBatch.End();
         }
 
         internal static void Unload()
         {
-            _batcher.Dispose();
+            _spriteBatch.Dispose();
         }
 
         private static void CreateBlackBars()

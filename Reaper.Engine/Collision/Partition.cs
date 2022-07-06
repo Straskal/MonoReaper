@@ -148,8 +148,6 @@ namespace Core.Collision
 
         internal void DebugDraw()
         {
-            const float opacity = 0.3f;
-
             // Draw grid cells.
             for (int i = 0; i < _length; i++)
             {
@@ -157,27 +155,28 @@ namespace Core.Collision
                 var col = i % _width;
                 var x = col * _cellSize;
                 var y = row * _cellSize;
+                var opacity = _cells[i].Count > 0 ? 0.8f : 0.05f;
 
-                Renderer.DrawRectangle(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), Color.Purple * opacity);
+                Renderer.DrawRectangleOutline(new Rectangle(x, y, _cellSize - 1, _cellSize - 1), Color.DarkGray * opacity);
             }
 
             // Draw individual colliders.
             for (int i = 0; i < _length; i++)
             {
-                foreach (var obj in _cells[i])
+                foreach (var box in _cells[i])
                 {
                     Color color;
 
-                    if (obj.IsSolid)
+                    if (box.IsSolid)
                     {
-                        color = Color.Red * opacity;
+                        color = Color.White * 0.8f;
                     }
                     else
                     {
-                        color = Color.Blue * opacity;
+                        color = Color.White * 0.8f;
                     }
 
-                    Renderer.DrawRectangle(obj.CalculateBounds().ToXnaRect(), color);
+                    Renderer.DrawRectangleOutline(box.CalculateBounds().ToXnaRect(), color);
                 }
             }
         }

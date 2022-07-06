@@ -31,7 +31,7 @@ namespace Reaper.Components
             _hurtEffect = content.Load<Effect>("shaders/SolidColor");
 
             Entity.AddComponent(_sprite = new Sprite(texture, new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new Box(16, 16, false, EntityLayers.Enemy));
+            Entity.AddComponent(new Box(16, 16, true, EntityLayers.Enemy));
         }
 
         public override void OnDestroy()
