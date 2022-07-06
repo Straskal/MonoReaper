@@ -253,8 +253,8 @@
       "exportID": "73963553",
       "name": "Door",
       "limit": -1,
-      "size": {"x": 32, "y": 32},
-      "origin": {"x": 16, "y": 16},
+      "size": {"x": 16, "y": 16},
+      "origin": {"x": 8, "y": 16},
       "originAnchored": true,
       "shape": {
         "label": "Rectangle",

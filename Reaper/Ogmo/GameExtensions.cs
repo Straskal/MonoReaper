@@ -74,6 +74,10 @@ namespace Reaper
 
                 switch (entity.Name)
                 {
+                    case "Door":
+
+                        spawned.AddComponent(new Door());
+                        break;
                     case "Barrel":
 
                         spawned.AddComponent(new Barrel());

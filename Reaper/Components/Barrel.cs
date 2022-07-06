@@ -11,6 +11,7 @@ namespace Reaper.Components
 {
     public interface IDamageable 
     {
+        bool Flammable { get; }
         void Damage(int amount);
     }
 
@@ -21,6 +22,8 @@ namespace Reaper.Components
         private Sprite _sprite;
         private Effect _hurtEffect;
         private float _hurtTimer;
+
+        public bool Flammable => true;
 
         public override void OnLoad(ContentManager content)
         {

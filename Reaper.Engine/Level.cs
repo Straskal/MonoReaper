@@ -238,7 +238,11 @@ namespace Core
         {
             for (int i = 0; i < _componentsToRemove.Count; i++)
             {
+                _componentsToRemove[i].OnDestroy();
                 _componentsToRemove[i].Entity = null;
+
+                _components.Remove(_componentsToRemove[i]);
+                _componentsToDraw.Remove(_componentsToRemove[i]);
             }
 
             _componentsToRemove.Clear();

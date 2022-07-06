@@ -55,7 +55,12 @@ namespace Reaper.Components
 
                 if (hit.Other.Entity.TryGetComponent<IDamageable>(out var damageable))
                 {
-                    hit.Other.Entity.AddComponent(new OnFire());
+                    damageable.Damage(1);
+
+                    if (damageable.Flammable) 
+                    {
+                        hit.Other.Entity.AddComponent(new OnFire());
+                    }                 
                 }
 
                 return Vector2.Zero;
