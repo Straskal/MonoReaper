@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Core.Graphics;
+using System.Linq;
 
 namespace Core.Collision
 {
@@ -40,10 +41,7 @@ namespace Core.Collision
 
             for (int i = 0; i < length; i++)
             {
-                if (cells[i] >= 0 && cells[i] < _cells.Length)
-                {
-                    _cells[cells[i]].Add(box);
-                }
+                _cells[cells[i]].Add(box);
             }
 
             box.PartitionCellCount = length;
@@ -56,10 +54,7 @@ namespace Core.Collision
 
             for (int i = 0; i < cellCount; i++)
             {
-                if (cells[i] >= 0 && cells[i] < _cells.Length)
-                {
-                    _cells[cells[i]].Remove(box);
-                }
+                _cells[cells[i]].Remove(box);
             }
         }
 
@@ -87,14 +82,11 @@ namespace Core.Collision
 
         private IEnumerable<Box> UnionResults(Span<int> cells, int cellCount) 
         {
-            var results = new HashSet<Box>();
+            var results = Enumerable.Empty<Box>();
 
             for (int i = 0; i < cellCount; i++)
             {
-                if (cells[i] >= 0 && cells[i] < _cells.Length)
-                {
-                    results.UnionWith(_cells[cells[i]]);
-                }
+                results = results.Union(_cells[cells[i]]);
             }
 
             return results;
@@ -124,24 +116,30 @@ namespace Core.Collision
             cellIndexes[2] = (int)index.Z;
             cellIndexes[3] = (int)index.W;
 
-            // Output distinct cell indexes
+            // Output distinct cell indexes.
             for (int i = 0; i < 4; i++) 
             {
+                int iindex = cellIndexes[i];
                 int j = 0;
 
                 for (; j < i; j++)
                 {
-                    if (cellIndexes[j] == cellIndexes[i]) 
+                    if (cellIndexes[j] == iindex) 
                     {
                         break;
                     }
                 }
 
-                if (i == j) 
+                if (i == j && iindex >= 0 && iindex < _cells.Length) 
                 {
-                    cells[resultLength++] = cellIndexes[i];
+                    cells[resultLength++] = iindex;
                 }      
             }
+
+            //if (cells[i] >= 0 && cells[i] < _cells.Length)
+            //{
+            //    _cells[cells[i]].Remove(box);
+            //}
 
             return resultLength;
         }
