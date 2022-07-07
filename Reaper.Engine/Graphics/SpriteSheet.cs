@@ -25,7 +25,7 @@ namespace Core.Graphics
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }
 
-        public float Speed { get; set; } = 1f;
+        public float Speed { get; set; } = 0.25f;
         public Animation CurrentAnimation => _currentAnimation;
         public int CurrentFrame => _currentFrame;
         public bool IsFinished { get; private set; }
@@ -64,10 +64,7 @@ namespace Core.Graphics
             {
                 _timer += gameTime.GetDeltaTime();
 
-                var numFrames = _currentAnimation.Frames.Length;
-                var frameTime = Speed / numFrames;
-
-                if (_timer > frameTime) 
+                if (_timer > Speed) 
                 {
                     if (_currentAnimation.Loop)
                     {

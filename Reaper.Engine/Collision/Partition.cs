@@ -162,11 +162,11 @@ namespace Core.Collision
 
                     if (box.IsSolid)
                     {
-                        color = Color.White * 0.8f;
+                        color = Color.White * 1f;
                     }
                     else
                     {
-                        color = Color.White * 0.8f;
+                        color = Color.White * 1f;
                     }
 
                     Renderer.DrawRectangleOutline(box.CalculateBounds().ToXnaRect(), color);

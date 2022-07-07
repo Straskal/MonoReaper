@@ -87,8 +87,6 @@ namespace Reaper.Components
                     }
                 },
             }));
-
-            _animation.Speed = 0.5f;
         }
 
         public override void OnSpawn()
