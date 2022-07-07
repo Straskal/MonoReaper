@@ -137,7 +137,7 @@ namespace Reaper.Components
         {
             if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
             {
-                App.Current.LoadOgmoLayout(transition.LevelName, transition.SpawnPoint);
+                App.Current.LoadOgmoLevel(transition.LevelName, transition.SpawnPoint);
             }
 
             if (hit.Other.IsSolid)

@@ -4,7 +4,7 @@
     {
         public static class Layers
         {
-            public const string WorldObjects = "worldobjects";
+            public const string Entities = "worldobjects";
             public const string Solids = "solids";
             public const string Background = "background";
         }
@@ -15,6 +15,7 @@
             public const string Tilesets = "art/tilesets/";
         }
 
+        // Need to re-evaluate the layer support. I feel like this will get out of hand. Maybe not. Dunno.
         public static class BoxLayers 
         {
             public const int None       = 1 << 0;

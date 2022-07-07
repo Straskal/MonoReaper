@@ -11,7 +11,7 @@ namespace Reaper
             using (var game = new App())
             {
                 //game.LoadOgmoLayout("content/layouts/layout1.json");
-                game.LoadOgmoLayout("content/layouts/level_0.json");
+                game.LoadOgmoLevel("content/layouts/level_0.json");
                 //game.LoadOgmoLayout(args[0]);
                 game.Run();
             }
