@@ -6,31 +6,31 @@ namespace Core.Graphics
 {
     public class Sprite : Component
     {
-        private Texture2D _texture;
-
         public Sprite(Texture2D texture) : this(texture, Rectangle.Empty)
         {
         }
 
         public Sprite(Texture2D texture, Rectangle sourceRectangle)
         {
-            _texture = texture;
+            Texture = texture;
             SourceRectangle = sourceRectangle;
             IsTickEnabled = false;
             IsDrawEnabled = true;
         }
 
-        public Texture2D Texture 
+        private Texture2D _texture;
+        public Texture2D Texture
         {
             get => _texture;
-            set 
+            set
             {
-                if (value != null) 
+                if (value != null)
                 {
                     _texture = value;
                 }
             }
         }
+
         public Effect Effect { get; set; }
         public Rectangle SourceRectangle { get; set; }
         public Color Color { get; set; } = Color.White;
@@ -38,7 +38,7 @@ namespace Core.Graphics
 
         public override void OnLoad(ContentManager content)
         {
-            if (_texture == null) 
+            if (_texture == null)
             {
                 _texture = Renderer.BlankTexture;
             }
@@ -46,14 +46,17 @@ namespace Core.Graphics
 
         public override void OnDraw()
         {
-            var offset = Offset.GetVector(
-                Entity.Origin,
-                Entity.Position.X,
-                Entity.Position.Y,
-                SourceRectangle.Width,
-                SourceRectangle.Height);
+            var origin = Entity.Origin;
+            var position = Entity.Position;
+            var sourceRect = SourceRectangle;
+            var offsetPosition = Offset.GetVector(
+                origin,
+                position.X,
+                position.Y,
+                sourceRect.Width,
+                sourceRect.Height);
 
-            Renderer.Draw(_texture, SourceRectangle, new Vector2(offset.X, offset.Y), Color, IsMirrored, Effect);
+            Renderer.Draw(_texture, sourceRect, offsetPosition, Color, IsMirrored, Effect);
         }
     }
 }

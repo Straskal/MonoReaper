@@ -1,47 +1,33 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Core.Graphics
 {
-    public sealed class Animator : Component
+    public sealed class SpriteSheet : Component
     {
         public class Animation
         {
-            public Animation(string name, Texture2D texture, Rectangle[] frames, float secondsPerFrame, bool loop) 
-            {
-                Name = name;
-                Texture = texture;
-                Frames = frames;
-                SecPerFrame = secondsPerFrame;
-                Loop = loop;
-            }
-
-            public Animation() 
-            {
-            }
-
             public string Name { get; set; }
-            public Texture2D Texture { get; set; }
             public Rectangle[] Frames { get; set; }
-            public float SecPerFrame { get; set; }
             public bool Loop { get; set; }
         }
 
         private readonly Animation[] _animations;
 
         private Sprite _sprite;
-        private float _lastFrameTime;
+        private Animation _currentAnimation;
+        private int _currentFrame;
         private float _timer;
 
-        public Animator(Animation[] animations)
+        public SpriteSheet(Animation[] animations)
         {
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }
 
-        public Animation CurrentAnimation { get; private set; }
-        public int CurrentFrame { get; private set; }
+        public float Speed { get; set; } = 1f;
+        public Animation CurrentAnimation => _currentAnimation;
+        public int CurrentFrame => _currentFrame;
         public bool IsFinished { get; private set; }
 
         public override void OnSpawn()
@@ -65,34 +51,37 @@ namespace Core.Graphics
                     throw new ArgumentException($"Animation {name} does not exist.");
                 }
 
-                CurrentAnimation = _animations.SingleOrDefault(a => a.Name == name);
-                CurrentFrame = 0;
+                _currentAnimation = _animations.SingleOrDefault(a => a.Name == name);
+                _currentFrame = 0;
+
                 IsFinished = false;
             }
         }
 
         public override void OnTick(GameTime gameTime)
         {
-            if (!IsFinished)
+            if (!IsFinished) 
             {
                 _timer += gameTime.GetDeltaTime();
 
-                if (_timer - _lastFrameTime > CurrentAnimation.SecPerFrame)
+                var numFrames = _currentAnimation.Frames.Length;
+                var frameTime = Speed / numFrames;
+
+                if (_timer > frameTime) 
                 {
-                    if (CurrentAnimation.Loop)
+                    if (_currentAnimation.Loop)
                     {
-                        CurrentFrame = (CurrentFrame + 1) % CurrentAnimation.Frames.Length;
+                        _currentFrame = (_currentFrame + 1) % _currentAnimation.Frames.Length;
                     }
-                    else if (++CurrentFrame >= CurrentAnimation.Frames.Length)
+                    else if (++_currentFrame >= _currentAnimation.Frames.Length) 
                     {
-                        CurrentFrame--;
+                        _currentFrame--;
+
                         IsFinished = true;
                     }
 
-                    _lastFrameTime = _timer;
-
-                    _sprite.Texture = CurrentAnimation.Texture;
-                    _sprite.SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
+                    _timer = 0;
+                    _sprite.SourceRectangle = _currentAnimation.Frames[_currentFrame];
                 }
             }
         }

@@ -18,7 +18,7 @@ namespace Reaper.Components
         public const float MAX_SPEED = 0.85f;
 
         private Body _body;
-        private Animator _animation;
+        private SpriteSheet _animation;
 
         private AxisAction _moveX;
         private AxisAction _moveY;
@@ -35,24 +35,20 @@ namespace Reaper.Components
 
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
             Entity.AddComponent(new Sprite(playerTexture) { ZOrder = 10 });
-            Entity.AddComponent(_animation = new Animator(new[]
+            Entity.AddComponent(_animation = new SpriteSheet(new[]
             {
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "idle",
-                    Texture = playerTexture,
                     Loop = true,
-                    SecPerFrame = 0.1f,
                     Frames = new []
                     {
                         new Rectangle(0, 0, 16, 16),
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "walk_down",
-                    Texture = playerTexture,
-                    SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
                     {
@@ -60,11 +56,9 @@ namespace Reaper.Components
                         new Rectangle(16 * 2, 0, 16, 16),
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "walk_up",
-                    Texture = playerTexture,
-                    SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
                     {
@@ -72,11 +66,9 @@ namespace Reaper.Components
                         new Rectangle(16 * 4, 0, 16, 16),
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "walk_left",
-                    Texture = playerTexture,
-                    SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
                     {
@@ -84,11 +76,9 @@ namespace Reaper.Components
                         new Rectangle(16 * 6, 0, 16, 16),
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "walk_right",
-                    Texture = playerTexture,
-                    SecPerFrame = 0.1f,
                     Loop = true,
                     Frames = new []
                     {
@@ -97,6 +87,8 @@ namespace Reaper.Components
                     }
                 },
             }));
+
+            _animation.Speed = 0.5f;
         }
 
         public override void OnSpawn()

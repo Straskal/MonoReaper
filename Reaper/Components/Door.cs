@@ -22,14 +22,14 @@ namespace Reaper.Components
                 return;
             }
 
-            Entity.GetComponent<Animator>().Play("open");
+            Entity.GetComponent<SpriteSheet>().Play("open");
 
             isMoving = true;
         }
 
         public override void OnTick(GameTime gameTime)
         {
-            if (isMoving && Entity.GetComponent<Animator>().IsFinished) 
+            if (isMoving && Entity.GetComponent<SpriteSheet>().IsFinished) 
             {
                 isMoving = false;
                 isOpen = true;
@@ -44,24 +44,20 @@ namespace Reaper.Components
 
             Entity.AddComponent(new Box(16, 16, true, EntityLayers.Enemy));
             Entity.AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new Animator(new Animator.Animation[] 
+            Entity.AddComponent(new SpriteSheet(new SpriteSheet.Animation[] 
             {
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "idle",
-                    Texture = texture,
-                    SecPerFrame = 0.1f,
                     Loop = false,
                     Frames = new []
                     {
                         new Rectangle(16 * 0, 0, 16, 16)
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "open",
-                    Texture = texture,
-                    SecPerFrame = 0.1f,
                     Loop = false,
                     Frames = new []
                     {
@@ -72,11 +68,9 @@ namespace Reaper.Components
                         new Rectangle(16 * 4, 0, 16, 16),
                     }
                 },
-                new Animator.Animation
+                new SpriteSheet.Animation
                 {
                     Name = "close",
-                    Texture = texture,
-                    SecPerFrame = 0.1f,
                     Loop = false,
                     Frames = new []
                     {
