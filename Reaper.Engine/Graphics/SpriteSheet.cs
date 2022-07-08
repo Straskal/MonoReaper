@@ -25,7 +25,7 @@ namespace Core.Graphics
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
         }
 
-        public float Speed { get; set; } = 0.25f;
+        public float Speed { get; set; } = 0.25f; // Default to 4 frames per second
         public Animation CurrentAnimation => _currentAnimation;
         public int CurrentFrame => _currentFrame;
         public bool IsFinished { get; private set; }

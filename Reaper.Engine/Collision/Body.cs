@@ -45,8 +45,8 @@ namespace Core.Collision
                 var broadphase = bounds.Union(offsetBounds);
 
                 var others = Level.Partition.QueryBounds(broadphase)
-                    .Where(other => broadphase.Intersects(other.CalculateBounds()))
                     .Where(other => (other.LayerMask | layerMask) == layerMask)
+                    .Where(other => broadphase.Intersects(other.CalculateBounds()))
                     .Except(_visited);
 
                 var collided = Sweep.TestAABB(bounds, velocity, others, out var hit);
