@@ -4,12 +4,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Core.Collision;
 using Core.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Core
 {
     public class Level
     {
-        private readonly ContentManager _content; 
+        protected readonly ContentManager content; 
 
         private readonly List<Entity> _entities = new();
         private readonly List<Entity> _entitiesToDestroy = new();
@@ -22,16 +23,20 @@ namespace Core
 
         public Level(int cellSize, int width, int height)
         {
-            _content = new ContentManager(App.Current.Services, App.ContentRoot);
+            content = new ContentManager(App.Current.Services, App.ContentRoot);
 
             Width = width;
             Height = height;
             Camera = new Camera(this); 
             Partition = new Partition(cellSize, width, height);
+            RenderTexture = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, App.ResolutionWidth, App.ResolutionHeight);
         }
 
         public Camera Camera { get; }
         public Partition Partition { get; }
+        public RenderTarget2D RenderTexture { get; }
+
+        internal List<PostProcessEffect> PostProcessEffects { get; } = new();
 
         public int Width { get; }
         public int Height { get; }
@@ -60,6 +65,11 @@ namespace Core
 
                 _entitiesToDestroy.Add(entity);
             }
+        }
+
+        public void AddPostProcessingEffect(PostProcessEffect effect) 
+        {
+            PostProcessEffects.Add(effect);
         }
 
         internal void AddComponent(Entity entity, Component component) 
@@ -96,19 +106,19 @@ namespace Core
 
                 for (int i = 0; i < components.Count; i++)
                 {
-                    components[i].OnLoad(_content);
+                    components[i].OnLoad(content);
                 }
 
                 _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(_content);
+                    c.OnLoad(content);
                 };
 
                 _onComponentsAdded = (e, c) =>
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(_content);
+                        c[i].OnLoad(content);
                     }
                 };
 
@@ -119,7 +129,7 @@ namespace Core
 
                 _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(_content);
+                    c.OnLoad(content);
                     c.OnSpawn();
                 };
 
@@ -127,7 +137,7 @@ namespace Core
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(_content);
+                        c[i].OnLoad(content);
                     }
 
                     for (int i = 0; i < c.Count; i++)
@@ -151,7 +161,7 @@ namespace Core
 
                 _onComponentAdded = (e, c) =>
                 {
-                    c.OnLoad(_content);
+                    c.OnLoad(content);
                     c.OnSpawn();
                     c.OnStart();
 
@@ -165,7 +175,7 @@ namespace Core
                 {
                     for (int i = 0; i < c.Count; i++)
                     {
-                        c[i].OnLoad(_content);
+                        c[i].OnLoad(content);
                     }
 
                     for (int i = 0; i < c.Count; i++)
@@ -207,6 +217,11 @@ namespace Core
 
             PostTickDestroyEntities();
             PostTickRemoveComponents();
+
+            foreach (var effect in PostProcessEffects) 
+            {
+                effect.OnTick(gameTime);
+            }
         }
 
         private void PostTickDestroyEntities()
@@ -270,13 +285,20 @@ namespace Core
 
         public virtual void End() 
         {
+            RenderTexture.Dispose();
+
+            foreach (var pp in PostProcessEffects) 
+            {
+                pp.Target.Dispose();
+            }
+
             for (int i = 0; i < _components.Count; i++)
             {
                 _components[i].OnDestroy();
                 _components[i].OnEnd();
             }
 
-            _content.Unload();
+            content.Unload();
         }
     }
 }

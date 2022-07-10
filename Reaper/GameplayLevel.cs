@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 using Core;
 
 namespace Reaper
@@ -15,6 +16,17 @@ namespace Reaper
             toggleDebug = Input.NewPressedAction(Keys.OemTilde);
             toggleFullscreen = Input.NewPressedAction(Keys.F);
             quit = Input.NewPressedAction(Keys.Escape);
+        }
+
+        public override void Start()
+        {
+            //var negativeEffect = content.Load<Effect>("shaders/negative");
+            var distortionEffect = content.Load<Effect>("shaders/distortion");
+
+            //AddPostProcessingEffect(new NegativePostProcessEffect(negativeEffect));
+            AddPostProcessingEffect(new DistortionPostProcessingEffect(distortionEffect));
+
+            base.Start();
         }
 
         public override void Tick(GameTime gameTime)

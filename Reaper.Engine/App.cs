@@ -21,6 +21,19 @@ namespace Core
         public static float TotalTime { get; private set; }
         public static App Current { get; private set; }
 
+        public static Matrix ResolutionTransform 
+        {
+            get 
+            {
+                Vector3 resolutionScale;
+                resolutionScale.X = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
+                resolutionScale.Y = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
+                resolutionScale.Z = 1f;
+
+                return Matrix.CreateScale(resolutionScale);
+            }
+        }
+
         private bool _isDebugging;
         private Action _onChangeLevel;
 
@@ -42,8 +55,11 @@ namespace Core
                 PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
                 PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
                 HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = true
+                SynchronizeWithVerticalRetrace = true,
+                PreferMultiSampling = true
             };
+
+            GraphicsDeviceManager.ApplyChanges();
         }
 
         public Level CurrentLevel { get; private set; }
@@ -91,7 +107,11 @@ namespace Core
 
         protected override void UnloadContent()
         {
-            CurrentLevel?.End();
+            if (CurrentLevel != null) 
+            {
+                CurrentLevel.End();
+            }
+            
             Renderer.Unload();
             Content.Unload();
         }
@@ -101,14 +121,35 @@ namespace Core
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
             Input.Poll();
             _onChangeLevel?.Invoke();
-            CurrentLevel.Tick(gameTime);
+            CurrentLevel?.Tick(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.BeginDraw(CurrentLevel?.Camera?.TransformationMatrix ?? Matrix.Identity);
-            CurrentLevel.Draw(_isDebugging);
-            Renderer.EndDraw();
+            if (CurrentLevel != null) 
+            {
+                var currentTarget = CurrentLevel.RenderTexture;
+
+                Graphics.SetRenderTarget(currentTarget);
+                Renderer.BeginDraw(Matrix.Identity);
+                CurrentLevel.Draw(_isDebugging);
+                Renderer.EndDraw();
+
+                foreach (var effect in CurrentLevel.PostProcessEffects) 
+                {
+                    Graphics.SetRenderTarget(effect.Target);
+                    Renderer.BeginDraw(Matrix.Identity);
+                    effect.Draw(CurrentLevel);
+                    Renderer.EndDraw();
+
+                    currentTarget = effect.Target;
+                }
+
+                Graphics.SetRenderTarget(null);
+                Renderer.BeginDraw(CurrentLevel.Camera.TransformationMatrix * ResolutionTransform);
+                Renderer.Draw(currentTarget, Vector2.Zero, Color.White);
+                Renderer.EndDraw();
+            }
         }
     }
 }

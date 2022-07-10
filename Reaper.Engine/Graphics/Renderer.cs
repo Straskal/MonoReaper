@@ -1,29 +1,28 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace Core.Graphics
 {
     public static class Renderer
     {
-        public static Texture2D BlankTexture => _texture;
+        public static Texture2D BlankTexture => _blankTexture;
 
         private static SpriteBatch _spriteBatch;
-        private static Texture2D _texture;
-        private static Effect _effect;
-        private static Matrix _transformation;
+        private static Texture2D _blankTexture;
+        private static Effect _currentEffect;
+        private static Matrix _currentTransformation;
 
         internal static void Initialize()
         {
             _spriteBatch = new SpriteBatch(App.Graphics);
-            _texture = new Texture2D(App.Graphics, 1, 1);
-            _texture.SetData(new[] { Color.White });
+            _blankTexture = new Texture2D(App.Graphics, 1, 1);
+            _blankTexture.SetData(new[] { Color.White });
         }
 
         internal static void BeginDraw(Matrix matrix)
         {
-            _transformation = matrix;
-            _effect = null;
+            _currentTransformation = matrix;
+            _currentEffect = null;
 
             CreateBlackBars();
             PrepareBatch();
@@ -37,14 +36,21 @@ namespace Core.Graphics
                 SamplerState.PointClamp,
                 DepthStencilState.Default,
                 RasterizerState.CullCounterClockwise,
-                _effect,
-                _transformation
+                _currentEffect,
+                _currentTransformation
             );
         }
 
         public static void Draw(Texture2D texture, Vector2 position, Color color)
         {
             HandleEffectChange(null);
+
+            _spriteBatch.Draw(texture, position, color);
+        }
+
+        public static void Draw(Texture2D texture, Vector2 position, Color color, Effect effect)
+        {
+            HandleEffectChange(effect);
 
             _spriteBatch.Draw(texture, position, color);
         }
@@ -67,24 +73,24 @@ namespace Core.Graphics
         {
             HandleEffectChange(null);
 
-            _spriteBatch.Draw(_texture, rectangle, null, color);
+            _spriteBatch.Draw(_blankTexture, rectangle, null, color);
         }
 
         public static void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
         {
             HandleEffectChange(null);
 
-            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
-            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
-            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
-            _spriteBatch.Draw(_texture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
+            _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
+            _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
         }
 
         private static void HandleEffectChange(Effect effect)
         {
-            if (_effect != effect)
+            if (_currentEffect != effect)
             {
-                _effect = effect;
+                _currentEffect = effect;
 
                 EndDraw();
                 PrepareBatch();
@@ -104,7 +110,7 @@ namespace Core.Graphics
         private static void CreateBlackBars()
         {
             App.Graphics.Viewport = GetFullViewport();
-            App.Graphics.Clear(Color.Black);
+            App.Graphics.Clear(Color.Transparent);
             App.Graphics.Viewport = GetLargestVirtualViewport();
         }
 

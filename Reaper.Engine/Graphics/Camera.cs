@@ -1,13 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Core.Graphics
 {
-    /// <summary>
-    /// The layout view is essentially the camera.
-    /// </summary>
-    public class Camera
+    public sealed class Camera
     {
         private readonly Level _level;
 
@@ -42,7 +38,8 @@ namespace Core.Graphics
             get => _position;
             set
             {
-                _position = ClampViewToLayout(value);
+                _position = value;
+                //_position = ClampViewToLayout(value);
                 _offsetPosition = _position + new Vector2(OffsetX, OffsetY);
             }
         }
@@ -82,13 +79,13 @@ namespace Core.Graphics
                 Matrix.CreateRotationZ(Rotation, out _rotationMatrix);
                 Matrix.CreateScale(ref _scale, out _scaleMatrix);
                 Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMatrix);
-                Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
+                //Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
 
                 return _translationMatrix
                     * _rotationMatrix
                     * _scaleMatrix
-                    * _resolutionTranslationMatrix
-                    * _resolutionScaleMatrix;
+                    * _resolutionTranslationMatrix;
+                    //* _resolutionScaleMatrix;
             }
         }
 
