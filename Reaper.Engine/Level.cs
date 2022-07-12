@@ -10,14 +10,28 @@ namespace Core
 {
     public class Level
     {
-        protected readonly ContentManager content; 
+        // Content manager to hold level specific assets
+        protected readonly ContentManager content;
 
+        // Post processing effects
+        protected readonly List<PostProcessingEffect> postProcessingEffects = new();
+
+        // All entities in the level
         private readonly List<Entity> _entities = new();
+
+        // Entities to destroy at the end of the current frame
         private readonly List<Entity> _entitiesToDestroy = new();
+
+        // All components in the level
         private readonly List<Component> _components = new();
+
+        // All components that requested to be drawn
         private readonly List<Component> _componentsToDraw = new();
+
+        // All components to remove at the of the current frame
         private readonly List<Component> _componentsToRemove = new();
 
+        // Component added handlers
         private Action<Entity, Component> _onComponentAdded;
         private Action<Entity, List<Component>> _onComponentsAdded;
 
@@ -27,16 +41,14 @@ namespace Core
 
             Width = width;
             Height = height;
-            Camera = new Camera(this); 
+            Camera = new Camera(this);
+            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, App.ResolutionWidth, App.ResolutionHeight);
             Partition = new Partition(cellSize, width, height);
-            RenderTexture = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, App.ResolutionWidth, App.ResolutionHeight);
         }
 
         public Camera Camera { get; }
+        public RenderTarget2D RenderTarget { get; }
         public Partition Partition { get; }
-        public RenderTarget2D RenderTexture { get; }
-
-        internal List<PostProcessEffect> PostProcessEffects { get; } = new();
 
         public int Width { get; }
         public int Height { get; }
@@ -67,9 +79,9 @@ namespace Core
             }
         }
 
-        public void AddPostProcessingEffect(PostProcessEffect effect) 
+        public void AddPostProcessingEffect(PostProcessingEffect effect) 
         {
-            PostProcessEffects.Add(effect);
+            postProcessingEffects.Add(effect);
         }
 
         internal void AddComponent(Entity entity, Component component) 
@@ -104,11 +116,13 @@ namespace Core
             {
                 var components = _components;
 
+                // Invoke callback on component list and any new additions during this loop.
                 for (int i = 0; i < components.Count; i++)
                 {
                     components[i].OnLoad(content);
                 }
 
+                // After all tracked components are handled, update the component added handlers to invoke the callback.
                 _onComponentAdded = (e, c) =>
                 {
                     c.OnLoad(content);
@@ -218,7 +232,7 @@ namespace Core
             PostTickDestroyEntities();
             PostTickRemoveComponents();
 
-            foreach (var effect in PostProcessEffects) 
+            foreach (var effect in postProcessingEffects) 
             {
                 effect.OnTick(gameTime);
             }
@@ -263,14 +277,37 @@ namespace Core
             _componentsToRemove.Clear();
         }
 
-        public virtual void Draw(bool debug)
+        public virtual Texture2D Draw(bool debug)
         {
             _componentsToDraw.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
+
+            var currentRenderTarget = RenderTarget;
+
+            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
+
+            App.Graphics.FullViewportClear(Color.Transparent);
 
             for (int i = 0; i < _componentsToDraw.Count; i++)
             {
                 _componentsToDraw[i].OnDraw();
             }
+
+            Renderer.EndDraw();
+
+            foreach (var effect in postProcessingEffects)
+            {
+                Renderer.BeginDraw(Camera.TransformationMatrix, effect.Target);
+
+                App.Graphics.FullViewportClear(Color.Transparent);
+
+                effect.OnDraw(this);
+
+                Renderer.EndDraw();
+
+                currentRenderTarget = effect.Target;
+            }
+
+            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
 
             if (debug)
             {
@@ -281,15 +318,19 @@ namespace Core
                     _componentsToDraw[i].OnDebugDraw();
                 }
             }
+
+            Renderer.EndDraw();
+
+            return currentRenderTarget;
         }
 
         public virtual void End() 
         {
-            RenderTexture.Dispose();
+            RenderTarget.Dispose();
 
-            foreach (var pp in PostProcessEffects) 
+            foreach (var pp in postProcessingEffects) 
             {
-                pp.Target.Dispose();
+                pp.Dispose();
             }
 
             for (int i = 0; i < _components.Count; i++)

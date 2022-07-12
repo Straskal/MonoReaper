@@ -6,7 +6,7 @@ using System;
 
 namespace Reaper
 {
-    public sealed class DistortionPostProcessingEffect : PostProcessEffect
+    public sealed class DistortionPostProcessingEffect : PostProcessingEffect
     {
         private readonly Effect _effect;
 
@@ -22,7 +22,7 @@ namespace Reaper
 
         private static float _timer = 0f;
 
-        public DistortionPostProcessingEffect(Effect effect)
+        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, App.ViewportWidth, App.ViewportHeight)
         {
             _effect = effect;
         }
@@ -39,38 +39,34 @@ namespace Reaper
                     _explosion = Vector2.Zero;
                 }
 
-                var thickness = 0.1f;
+                var thickness = 0.001f;
 
                 // Increase size from 0 -> 1
-                var radius = _timer;
+                var radius = _timer * 0.15f;
 
                 // Decrease the force over time
-                var multiplier = 1.5f;
-                var force = 5f;
-                var forceNormalized = MathHelper.SmoothStep(force, 0f, _timer * (multiplier * 2f));
+                var force = 25f;
+                var forceNormalized = MathHelper.SmoothStep(force, 0f, _timer);
 
                 _effect.Parameters["thickness"].SetValue(thickness);
                 _effect.Parameters["force"].SetValue(forceNormalized);
                 _effect.Parameters["center"].SetValue(_explosion);
-                _effect.Parameters["radius"].SetValue(radius * multiplier);
-
-
-                //_effect.Parameters["thickness"].SetValue(0.01f);
-                //_effect.Parameters["force"].SetValue(15f);
-                //_effect.Parameters["center"].SetValue(new Vector2(0.2f, 0.2f));
-                //_effect.Parameters["radius"].SetValue(0.2f);
+                _effect.Parameters["radius"].SetValue(radius);
             }
         }
 
-        public override void Draw(Level level)
+        public override void OnDraw(Level level)
         {
+            _effect.Parameters["resolution"].SetValue(new Vector2(App.ViewportWidth, App.ViewportHeight));
+            _effect.Parameters["view"].SetValue(level.Camera.TransformationMatrix);
+
             if (_explosion == Vector2.Zero) 
             {
-                Renderer.Draw(level.RenderTexture, Vector2.Zero, Color.White);
+                Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.White);
                 return;
             }
 
-            Renderer.Draw(level.RenderTexture, Vector2.Zero, Color.White, _effect);
+            Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.White, _effect);
         }
     }
 }

@@ -7,7 +7,13 @@
 // Render texture sampler
 sampler _sampler;
 
-// Shockwave center
+// Texture resolution
+uniform float2 resolution;
+
+// View matrix
+uniform float4x4 view;
+
+// Shockwave center in world coordinates
 uniform float2 center;
 
 // Shockwave radius
@@ -21,10 +27,12 @@ uniform float thickness;
 
 float4 PixelShaderFunction(float2 uv : TEXCOORD0) : COLOR0
 {	   
-    float2 resolution = float2(640.0, 360.0);
     float ratio = resolution.x / resolution.y;
     
-    float distance = length(float2(uv.x, uv.y / ratio) - center);
+    float4 center4 = float4(center, 0.0, 1.0);
+    float2 centerViewCoords = mul(center4, view).xy / resolution.x;
+    
+    float distance = length(float2(uv.x, uv.y / ratio) - centerViewCoords);
     
     // Outer circle
     float mask = (1.0 - smoothstep(radius - 0.1, radius, distance));
@@ -37,14 +45,13 @@ float4 PixelShaderFunction(float2 uv : TEXCOORD0) : COLOR0
     float2 coords = uv - disp * 0.001;
     
     // Color output
-
     float4 color = tex2D(_sampler, coords);
     
     //color.r = tex2D(_sampler, coords + float2(0.002, 0) * force * mask * 0.01).r;
     //color.g = tex2D(_sampler, coords - 0.002 * force * mask * 0.01).g;
     //color.b = tex2D(_sampler, coords - float2(0.002, 0) * force * mask * 0.01).b;
     
-    // Uncomment to visualize mask
+    // Draw Mask
     //color.rgb = float3(mask, mask, mask);
     
     return color;

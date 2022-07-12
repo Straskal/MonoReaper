@@ -9,8 +9,10 @@ namespace Core
     public class App : Game
     {
         public const string ContentRoot = "Content";
+
         public const int ResolutionWidth = 640;
         public const int ResolutionHeight = 360;
+
         public const bool StartFullscreen = false;
 
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
@@ -52,8 +54,8 @@ namespace Core
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = StartFullscreen,
-                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
-                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
+                PreferredBackBufferWidth = 1000,
+                PreferredBackBufferHeight = 1000,
                 HardwareModeSwitch = false,
                 SynchronizeWithVerticalRetrace = true,
                 PreferMultiSampling = true
@@ -128,26 +130,10 @@ namespace Core
         {
             if (CurrentLevel != null) 
             {
-                var currentTarget = CurrentLevel.RenderTexture;
+                var processedRenderTarget = CurrentLevel.Draw(_isDebugging);
 
-                Graphics.SetRenderTarget(currentTarget);
-                Renderer.BeginDraw(Matrix.Identity);
-                CurrentLevel.Draw(_isDebugging);
-                Renderer.EndDraw();
-
-                foreach (var effect in CurrentLevel.PostProcessEffects) 
-                {
-                    Graphics.SetRenderTarget(effect.Target);
-                    Renderer.BeginDraw(Matrix.Identity);
-                    effect.Draw(CurrentLevel);
-                    Renderer.EndDraw();
-
-                    currentTarget = effect.Target;
-                }
-
-                Graphics.SetRenderTarget(null);
-                Renderer.BeginDraw(CurrentLevel.Camera.TransformationMatrix * ResolutionTransform);
-                Renderer.Draw(currentTarget, Vector2.Zero, Color.White);
+                Renderer.BeginDraw(ResolutionTransform);
+                Renderer.Draw(processedRenderTarget, Vector2.Zero, Color.White);
                 Renderer.EndDraw();
             }
         }

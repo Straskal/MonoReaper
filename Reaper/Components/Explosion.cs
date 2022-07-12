@@ -43,11 +43,15 @@ namespace Reaper.Components
         public override void OnSpawn()
         {
             _sound.Play();
-            DistortionPostProcessingEffect.Explosion = Entity.Position / (new Vector2(App.ViewportWidth, App.ViewportHeight));
         }
 
         public override void OnTick(GameTime gameTime)
         {
+            if (_spriteSheet.CurrentFrame == 1) 
+            {
+                DistortionPostProcessingEffect.Explosion = Entity.Position;
+            }
+
             if (_spriteSheet.IsFinished) 
             {
                 Level.Destroy(Entity);

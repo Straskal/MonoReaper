@@ -7,14 +7,8 @@ namespace Core
     public sealed class Entity
     {
         private readonly List<Component> _components = new();
-        internal List<Component> Components => _components;
 
-        public Level Level { get; internal set; }
-        public Vector2 Position { get; set; }
-        public Origin Origin { get; set; }
-        public bool IsDestroyed { get; internal set; }
-
-        public Entity(Origin origin = Origin.TopLeft) 
+        public Entity(Origin origin = Origin.TopLeft)
         {
             Origin = origin;
         }
@@ -25,6 +19,12 @@ namespace Core
 
             _components.AddRange(components);
         }
+
+        public Level Level { get; internal set; }
+        public Vector2 Position { get; set; }
+        public Origin Origin { get; set; }
+        public bool IsDestroyed { get; internal set; }
+        internal List<Component> Components => _components;
 
         public void AddComponent(Component component)
         {

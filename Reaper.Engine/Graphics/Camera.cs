@@ -10,12 +10,9 @@ namespace Core.Graphics
         private Matrix _translationMatrix = Matrix.Identity;
         private Matrix _rotationMatrix = Matrix.Identity;
         private Matrix _scaleMatrix = Matrix.Identity;
-        private Matrix _resolutionTranslationMatrix = Matrix.Identity;
-        private Matrix _resolutionScaleMatrix = Matrix.Identity;
+
         private Vector3 _translation = Vector3.Zero;
         private Vector3 _scale = Vector3.Zero;
-        private Vector3 _resolution = Vector3.Zero;
-        private Vector3 _resolutionScale = Vector3.Zero;
         private Vector2 _position;
         private Vector2 _offsetPosition;
 
@@ -39,7 +36,7 @@ namespace Core.Graphics
             set
             {
                 _position = value;
-                //_position = ClampViewToLayout(value);
+                //_position = ClampToBounds(value);
                 _offsetPosition = _position + new Vector2(OffsetX, OffsetY);
             }
         }
@@ -56,36 +53,23 @@ namespace Core.Graphics
         {
             get
             {
-                // Offset the view by it's position.
-                _translation.X = (int)Math.Floor(-_offsetPosition.X);
-                _translation.Y = (int)Math.Floor(-_offsetPosition.Y);
+                // Offset the view by it's position / center it.
+                _translation.X = (int)Math.Floor(-_offsetPosition.X) + (Width * 0.5f);
+                _translation.Y = (int)Math.Floor(-_offsetPosition.Y) + (Height * 0.5f);
+                _translation.Z = 0f;
 
                 // Scale the view by it's zoom factor.
                 _scale.X = Zoom;
                 _scale.Y = Zoom;
                 _scale.Z = 1f;
 
-                // Center the view's position relative to it's resolution.
-                _resolution.X = Width * 0.5f;
-                _resolution.Y = Height * 0.5f;
-                _resolution.Z = 0;
-
-                // Scale the view to our virtual resolution.
-                _resolutionScale.X = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
-                _resolutionScale.Y = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
-                _resolutionScale.Z = 1f;
-
                 Matrix.CreateTranslation(ref _translation, out _translationMatrix);
                 Matrix.CreateRotationZ(Rotation, out _rotationMatrix);
                 Matrix.CreateScale(ref _scale, out _scaleMatrix);
-                Matrix.CreateTranslation(ref _resolution, out _resolutionTranslationMatrix);
-                //Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
 
                 return _translationMatrix
                     * _rotationMatrix
-                    * _scaleMatrix
-                    * _resolutionTranslationMatrix;
-                    //* _resolutionScaleMatrix;
+                    * _scaleMatrix;
             }
         }
 
@@ -114,7 +98,7 @@ namespace Core.Graphics
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        private Vector2 ClampViewToLayout(Vector2 position)
+        private Vector2 ClampToBounds(Vector2 position)
         {
             float xMin, xMax, yMin, yMax;
 

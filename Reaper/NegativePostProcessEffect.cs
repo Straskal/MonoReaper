@@ -5,18 +5,18 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Reaper
 {
-    public class NegativePostProcessEffect : PostProcessEffect
+    public class NegativePostProcessEffect : PostProcessingEffect
     {
         private readonly Effect _effect;
 
-        public NegativePostProcessEffect(Effect effect) 
+        public NegativePostProcessEffect(Effect effect) : base(App.Graphics, App.ViewportWidth, App.ViewportHeight)
         {
             _effect = effect;
         }
 
-        public override void Draw(Level level)
+        public override void OnDraw(Level level)
         {
-            Renderer.Draw(level.RenderTexture, Vector2.Zero, Color.Red, _effect);
+            Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.Red, _effect);
         }
     }
 }
