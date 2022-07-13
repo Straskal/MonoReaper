@@ -2,6 +2,7 @@
 using Core.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Reaper.Engine.Graphics;
 
 namespace Reaper
 {
@@ -21,7 +22,7 @@ namespace Reaper
 
         private static float _timer = 0f;
 
-        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, App.ViewportWidth, App.ViewportHeight)
+        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height)
         {
             _effect = effect;
         }
@@ -54,18 +55,18 @@ namespace Reaper
             }
         }
 
-        public override void OnDraw(Level level)
+        public override void OnDraw(Texture2D currentTarget, Matrix transformation)
         {
-            _effect.Parameters["Resolution"].SetValue(new Vector2(App.ViewportWidth, App.ViewportHeight));
-            _effect.Parameters["View"].SetValue(level.Camera.TransformationMatrix);
+            _effect.Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height));
+            _effect.Parameters["View"].SetValue(transformation);
 
             if (_explosion == Vector2.Zero) 
             {
-                Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.White);
+                Renderer.Draw(currentTarget, Vector2.Zero, Color.White);
                 return;
             }
 
-            Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.White, _effect);
+            Renderer.Draw(currentTarget, Vector2.Zero, Color.White, _effect);
         }
     }
 }

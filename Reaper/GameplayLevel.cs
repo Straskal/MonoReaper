@@ -20,10 +20,10 @@ namespace Reaper
 
         public override void Start()
         {
-            //var negativeEffect = content.Load<Effect>("shaders/negative");
+            var negativeEffect = content.Load<Effect>("shaders/negative");
             var distortionEffect = content.Load<Effect>("shaders/distortion");
 
-            //AddPostProcessingEffect(new NegativePostProcessEffect(negativeEffect));
+            AddPostProcessingEffect(new NegativePostProcessEffect(negativeEffect));
             AddPostProcessingEffect(new DistortionPostProcessingEffect(distortionEffect));
 
             base.Start();

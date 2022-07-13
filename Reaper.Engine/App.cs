@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Core.Graphics;
+using Reaper.Engine.Graphics;
 
 namespace Core
 {
@@ -13,7 +14,7 @@ namespace Core
         public const int ResolutionWidth = 640;
         public const int ResolutionHeight = 200;
 
-        public const bool StartFullscreen = false;
+        public const bool StartFullscreen = true;
 
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public static GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
@@ -22,23 +23,6 @@ namespace Core
         public static int ViewportHeight { get; private set; }
         public static float TotalTime { get; private set; }
         public static App Current { get; private set; }
-
-        private static Vector3 _resolutionScale;
-        private static Matrix _resolutionScaleMatrix;
-
-        public static Matrix ResolutionTransform 
-        {
-            get 
-            {
-                _resolutionScale.X = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
-                _resolutionScale.Y = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
-                _resolutionScale.Z = 1f;
-
-                Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
-
-                return _resolutionScaleMatrix;
-            }
-        }
 
         private bool _isDebugging;
         private Action _onChangeLevel;
@@ -58,14 +42,17 @@ namespace Core
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = StartFullscreen,
-                PreferredBackBufferWidth = 1000,
-                PreferredBackBufferHeight = 1000,
+                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
+                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
                 HardwareModeSwitch = false,
                 SynchronizeWithVerticalRetrace = true,
                 PreferMultiSampling = true
             };
 
             GraphicsDeviceManager.ApplyChanges();
+
+            Resolution.Width = ResolutionWidth;
+            Resolution.Height = ResolutionHeight;
         }
 
         public Level CurrentLevel { get; private set; }
@@ -139,7 +126,7 @@ namespace Core
             {
                 var processedRenderTarget = CurrentLevel.Draw(_isDebugging);
 
-                Renderer.BeginDraw(ResolutionTransform);
+                Renderer.BeginDraw(Resolution.PostScaleTransform);
                 Renderer.Draw(processedRenderTarget, Vector2.Zero, Color.White);
                 Renderer.EndDraw();
             }

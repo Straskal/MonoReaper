@@ -19,7 +19,7 @@ namespace Core.Graphics
         {
         }
 
-        public virtual void OnDraw(Level level) 
+        public virtual void OnDraw(Texture2D currentTarget, Matrix transformation) 
         {
         }
 

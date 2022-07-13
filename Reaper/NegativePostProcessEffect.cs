@@ -2,6 +2,7 @@
 using Core.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Reaper.Engine.Graphics;
 
 namespace Reaper
 {
@@ -9,14 +10,14 @@ namespace Reaper
     {
         private readonly Effect _effect;
 
-        public NegativePostProcessEffect(Effect effect) : base(App.Graphics, App.ViewportWidth, App.ViewportHeight)
+        public NegativePostProcessEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height)
         {
             _effect = effect;
         }
 
-        public override void OnDraw(Level level)
+        public override void OnDraw(Texture2D currentTarget, Matrix transformation)
         {
-            Renderer.Draw(level.RenderTarget, Vector2.Zero, Color.Red, _effect);
+            Renderer.Draw(currentTarget, Vector2.Zero, Color.Red, _effect);
         }
     }
 }

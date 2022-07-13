@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Core.Collision;
 using Core.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using Reaper.Engine.Graphics;
 
 namespace Core
 {
@@ -42,7 +43,7 @@ namespace Core
             Width = width;
             Height = height;
             Camera = new Camera(App.ViewportWidth, App.ViewportHeight);
-            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, App.ResolutionWidth, App.ResolutionHeight);
+            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height);
             Partition = new Partition(cellSize, width, height);
         }
 
@@ -283,7 +284,7 @@ namespace Core
 
             var currentRenderTarget = RenderTarget;
 
-            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
+            Renderer.BeginDraw(Camera.TransformationMatrix * Resolution.PreScaleTransform, currentRenderTarget);
 
             App.Graphics.FullViewportClear(Color.Transparent);
 
@@ -300,14 +301,14 @@ namespace Core
 
                 App.Graphics.FullViewportClear(Color.Transparent);
 
-                effect.OnDraw(this);
+                effect.OnDraw(currentRenderTarget, Camera.TransformationMatrix * Resolution.PreScaleTransform);
 
                 Renderer.EndDraw();
 
                 currentRenderTarget = effect.Target;
             }
 
-            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
+            Renderer.BeginDraw(Camera.TransformationMatrix * Resolution.PreScaleTransform, currentRenderTarget);
 
             if (debug)
             {
