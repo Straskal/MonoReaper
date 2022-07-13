@@ -11,7 +11,7 @@ namespace Core
         public const string ContentRoot = "Content";
 
         public const int ResolutionWidth = 640;
-        public const int ResolutionHeight = 360;
+        public const int ResolutionHeight = 200;
 
         public const bool StartFullscreen = false;
 
@@ -23,16 +23,20 @@ namespace Core
         public static float TotalTime { get; private set; }
         public static App Current { get; private set; }
 
+        private static Vector3 _resolutionScale;
+        private static Matrix _resolutionScaleMatrix;
+
         public static Matrix ResolutionTransform 
         {
             get 
             {
-                Vector3 resolutionScale;
-                resolutionScale.X = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
-                resolutionScale.Y = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
-                resolutionScale.Z = 1f;
+                _resolutionScale.X = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
+                _resolutionScale.Y = (float)Graphics.PresentationParameters.BackBufferWidth / ViewportWidth;
+                _resolutionScale.Z = 1f;
 
-                return Matrix.CreateScale(resolutionScale);
+                Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
+
+                return _resolutionScaleMatrix;
             }
         }
 
@@ -121,8 +125,11 @@ namespace Core
         protected override void Update(GameTime gameTime)
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
+
             Input.Poll();
+
             _onChangeLevel?.Invoke();
+
             CurrentLevel?.Tick(gameTime);
         }
 

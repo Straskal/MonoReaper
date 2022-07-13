@@ -41,7 +41,7 @@ namespace Core
 
             Width = width;
             Height = height;
-            Camera = new Camera(this);
+            Camera = new Camera(App.ViewportWidth, App.ViewportHeight);
             RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, App.ResolutionWidth, App.ResolutionHeight);
             Partition = new Partition(cellSize, width, height);
         }
@@ -296,7 +296,7 @@ namespace Core
 
             foreach (var effect in postProcessingEffects)
             {
-                Renderer.BeginDraw(Camera.TransformationMatrix, effect.Target);
+                Renderer.BeginDraw(Matrix.Identity, effect.Target);
 
                 App.Graphics.FullViewportClear(Color.Transparent);
 

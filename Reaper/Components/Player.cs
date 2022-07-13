@@ -138,6 +138,8 @@ namespace Reaper.Components
 
                 Level.Spawn(fireballEntity, _body.CalculateBounds().Center + _direction * 10f);
             }
+
+            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Entity.Position, 0.25f);
         }
 
         private Vector2 HandleCollision(Hit hit)

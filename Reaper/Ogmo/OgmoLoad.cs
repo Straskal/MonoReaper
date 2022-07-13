@@ -22,8 +22,6 @@ namespace Reaper
                 map = JsonConvert.DeserializeObject<OgmoMap>(sr.ReadToEnd());
 
             var level = new GameplayLevel(map.Values.SpatialCellSize, map.Width, map.Height);
-            level.Camera.OffsetX = map.Values.OffsetX;
-            level.Camera.OffsetY = map.Values.OffsetY;
 
             foreach (var layer in map.Layers)
             {

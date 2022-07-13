@@ -2,7 +2,6 @@
 using Core.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace Reaper
 {
@@ -48,17 +47,17 @@ namespace Reaper
                 var force = 25f;
                 var forceNormalized = MathHelper.SmoothStep(force, 0f, _timer);
 
-                _effect.Parameters["thickness"].SetValue(thickness);
-                _effect.Parameters["force"].SetValue(forceNormalized);
-                _effect.Parameters["center"].SetValue(_explosion);
-                _effect.Parameters["radius"].SetValue(radius);
+                _effect.Parameters["Thickness"].SetValue(thickness);
+                _effect.Parameters["Force"].SetValue(forceNormalized);
+                _effect.Parameters["Center"].SetValue(_explosion);
+                _effect.Parameters["Radius"].SetValue(radius);
             }
         }
 
         public override void OnDraw(Level level)
         {
-            _effect.Parameters["resolution"].SetValue(new Vector2(App.ViewportWidth, App.ViewportHeight));
-            _effect.Parameters["view"].SetValue(level.Camera.TransformationMatrix);
+            _effect.Parameters["Resolution"].SetValue(new Vector2(App.ViewportWidth, App.ViewportHeight));
+            _effect.Parameters["View"].SetValue(level.Camera.TransformationMatrix);
 
             if (_explosion == Vector2.Zero) 
             {

@@ -1,64 +1,46 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace Core.Graphics
 {
     public sealed class Camera
     {
-        private readonly Level _level;
+        private Vector3 _translation = Vector3.Zero;
+        private Vector3 _scale = Vector3.Zero;
 
         private Matrix _translationMatrix = Matrix.Identity;
         private Matrix _rotationMatrix = Matrix.Identity;
         private Matrix _scaleMatrix = Matrix.Identity;
 
-        private Vector3 _translation = Vector3.Zero;
-        private Vector3 _scale = Vector3.Zero;
-        private Vector2 _position;
-        private Vector2 _offsetPosition;
-
-        public Camera(Level level)
+        public Camera(int width, int height)
         {
-            _level = level;
-
-            Width = App.ViewportWidth;
-            Height = App.ViewportHeight;
-            Zoom = 1f;
-            Rotation = 0.0f;
-            Position = new Vector2(Width * 0.5f, Height * 0.5f);
+            Width = width;
+            Height = height;
         }
 
-        public float Zoom { get; set; }
-        public float Rotation { get; set; }
-
-        public Vector2 Position
-        {
-            get => _position;
-            set
-            {
-                _position = value;
-                //_position = ClampToBounds(value);
-                _offsetPosition = _position + new Vector2(OffsetX, OffsetY);
-            }
-        }
+        public Vector2 Position { get; set; } = Vector2.Zero;
+        public float Zoom { get; set; } = 1f;
+        public float Rotation { get; set; } = 0f;
+        public int Width { get; }
+        public int Height { get; }
 
         public int Left => (int)(Position.X - Width * 0.5f);
         public int Right => (int)(Position.X + Width * 0.5f);
-
-        public int OffsetX { get; set; }
-        public int OffsetY { get; set; }
-        public int Width { get; }
-        public int Height { get; }
 
         public Matrix TransformationMatrix
         {
             get
             {
-                // Offset the view by it's position / center it.
-                _translation.X = (int)Math.Floor(-_offsetPosition.X) + (Width * 0.5f);
-                _translation.Y = (int)Math.Floor(-_offsetPosition.Y) + (Height * 0.5f);
+                // Move
+                _translation.X = -Position.X;
+                _translation.Y = -Position.Y;
                 _translation.Z = 0f;
 
-                // Scale the view by it's zoom factor.
+                // Center
+                _translation.X += Width * 0.5f;
+                _translation.Y += Height * 0.5f;
+
+                // Zoom
                 _scale.X = Zoom;
                 _scale.Y = Zoom;
                 _scale.Z = 1f;
@@ -73,21 +55,11 @@ namespace Core.Graphics
             }
         }
 
-        /// <summary>
-        /// Converts coordinates in screen space to world space.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
             return Vector2.Transform(position, TransformationMatrix);
         }
 
-        /// <summary>
-        /// Converts coordinates in world space to screen space.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
             return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
@@ -98,36 +70,36 @@ namespace Core.Graphics
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        private Vector2 ClampToBounds(Vector2 position)
-        {
-            float xMin, xMax, yMin, yMax;
+        //private Vector2 ClampToBounds(Vector2 position)
+        //{
+        //    float xMin, xMax, yMin, yMax;
 
-            if (Width >= _level.Width)
-            {
-                xMin = _level.Width * 0.5f;
-                xMax = _level.Width * 0.5f;
-            }
-            else
-            {
-                xMin = Width * 0.5f;
-                xMax = _level.Width - Width * 0.5f;
-            }
+        //    if (Width >= _level.Width)
+        //    {
+        //        xMin = _level.Width * 0.5f;
+        //        xMax = _level.Width * 0.5f;
+        //    }
+        //    else
+        //    {
+        //        xMin = Width * 0.5f;
+        //        xMax = _level.Width - Width * 0.5f;
+        //    }
 
-            if (Height >= _level.Height)
-            {
-                yMin = _level.Height * 0.5f;
-                yMax = _level.Height * 0.5f;
-            }
-            else
-            {
-                yMin = Width * 0.5f;
-                yMax = _level.Height - Height * 0.5f;
-            }
+        //    if (Height >= _level.Height)
+        //    {
+        //        yMin = _level.Height * 0.5f;
+        //        yMax = _level.Height * 0.5f;
+        //    }
+        //    else
+        //    {
+        //        yMin = Width * 0.5f;
+        //        yMax = _level.Height - Height * 0.5f;
+        //    }
 
-            var min = new Vector2(xMin, yMin);
-            var max = new Vector2(xMax, yMax);
+        //    var min = new Vector2(xMin, yMin);
+        //    var max = new Vector2(xMax, yMax);
 
-            return Vector2.Clamp(position, min, max);
-        }
+        //    return Vector2.Clamp(position, min, max);
+        //}
     }
 }
