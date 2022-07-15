@@ -145,6 +145,18 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/SolidColor.fx
 
+#begin Shaders/Negative.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/Negative.fx
+
+#begin Shaders/Distortion.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/Distortion.fx
+
 #begin Art/Player/mage.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -321,3 +333,21 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Common/door_.png
+
+#begin Art/Common/explosion-1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/Common/explosion-1.png
+
+#begin Audio/Explosion4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Explosion4.wav

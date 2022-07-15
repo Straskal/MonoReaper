@@ -1,5 +1,6 @@
 ﻿using Core;
 using System;
+using System.IO;
 
 namespace Reaper
 {
@@ -13,7 +14,14 @@ namespace Reaper
                 //game.LoadOgmoLayout("content/layouts/layout1.json");
                 game.LoadOgmoLevel("content/layouts/level_0.json");
                 //game.LoadOgmoLayout(args[0]);
-                game.Run();
+                try
+                {
+                    game.Run();
+                }
+                catch (Exception e) 
+                {
+                    File.WriteAllText("crash.txt", e.Message);
+                }
             }
         }
     }

@@ -3,14 +3,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Core.Graphics;
+using Reaper.Engine.Graphics;
 
 namespace Core
 {
     public class App : Game
     {
         public const string ContentRoot = "Content";
+
         public const int ResolutionWidth = 640;
-        public const int ResolutionHeight = 360;
+        public const int ResolutionHeight = 200;
+
         public const bool StartFullscreen = false;
 
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
@@ -42,8 +45,13 @@ namespace Core
                 PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
                 PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
                 HardwareModeSwitch = false,
-                SynchronizeWithVerticalRetrace = true
+                SynchronizeWithVerticalRetrace = true,
+                PreferMultiSampling = true
             };
+
+            GraphicsDeviceManager.ApplyChanges();
+
+            Resolution.Initialize(ResolutionWidth, ResolutionHeight, ResolutionScaleMode.PreScale);
         }
 
         public Level CurrentLevel { get; private set; }
@@ -91,7 +99,11 @@ namespace Core
 
         protected override void UnloadContent()
         {
-            CurrentLevel?.End();
+            if (CurrentLevel != null) 
+            {
+                CurrentLevel.End();
+            }
+            
             Renderer.Unload();
             Content.Unload();
         }
@@ -99,16 +111,25 @@ namespace Core
         protected override void Update(GameTime gameTime)
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            Resolution.Calculate();
             Input.Poll();
+
             _onChangeLevel?.Invoke();
-            CurrentLevel.Tick(gameTime);
+
+            CurrentLevel?.Tick(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.BeginDraw(CurrentLevel?.Camera?.TransformationMatrix ?? Matrix.Identity);
-            CurrentLevel.Draw(_isDebugging);
-            Renderer.EndDraw();
+            if (CurrentLevel != null) 
+            {
+                var processedRenderTarget = CurrentLevel.Draw(_isDebugging);
+
+                Renderer.BeginDraw(Resolution.PostScaleTransform);
+                Renderer.Draw(processedRenderTarget, Vector2.Zero, Color.White);
+                Renderer.EndDraw();
+            }
         }
     }
 }

@@ -18,7 +18,8 @@ namespace Reaper.Components
         public const float MAX_SPEED = 0.85f;
 
         private Body _body;
-        private SpriteSheet _animation;
+        private Sprite _sprite;
+        private SpriteSheet _spriteSheet;
 
         private AxisAction _moveX;
         private AxisAction _moveY;
@@ -34,8 +35,8 @@ namespace Reaper.Components
             var playerTexture = content.Load<Texture2D>("art/player/player");
 
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(new Sprite(playerTexture) { ZOrder = 10 });
-            Entity.AddComponent(_animation = new SpriteSheet(new[]
+            Entity.AddComponent(_sprite = new Sprite(playerTexture) { ZOrder = 10 });
+            Entity.AddComponent(_spriteSheet = new SpriteSheet(new[]
             {
                 new SpriteSheet.Animation
                 {
@@ -87,6 +88,10 @@ namespace Reaper.Components
                     }
                 },
             }));
+
+            var negativeEffect = content.Load<Effect>("Shaders/Negative");
+
+            _sprite.Effect = negativeEffect;
         }
 
         public override void OnSpawn()
@@ -108,11 +113,13 @@ namespace Reaper.Components
 
                 _direction = movementInput;
 
-                _animation.CurrentAnimation.Loop = true;
+                // Should pause / unpause instead of changing animation data.
+                // Ideally, we'd never dip into animation properties.
+                _spriteSheet.CurrentAnimation.Loop = true;
             }
             else
             {
-                _animation.CurrentAnimation.Loop = false;
+                _spriteSheet.CurrentAnimation.Loop = false;
             }
 
             _velocity += movementInput * ACCELERATION * delta;
@@ -131,6 +138,8 @@ namespace Reaper.Components
 
                 Level.Spawn(fireballEntity, _body.CalculateBounds().Center + _direction * 10f);
             }
+
+            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Entity.Position, 0.15f);
         }
 
         private Vector2 HandleCollision(Hit hit)
@@ -154,22 +163,22 @@ namespace Reaper.Components
             {
                 if (movementInput.X < 0f)
                 {
-                    _animation.Play("walk_left");
+                    _spriteSheet.Play("walk_left");
                 }
                 else
                 {
-                    _animation.Play("walk_right");
+                    _spriteSheet.Play("walk_right");
                 }
             }
             else
             {
                 if (movementInput.Y < 0f)
                 {
-                    _animation.Play("walk_up");
+                    _spriteSheet.Play("walk_up");
                 }
                 else
                 {
-                    _animation.Play("walk_down");
+                    _spriteSheet.Play("walk_down");
 
                 }
             }
