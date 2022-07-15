@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Reaper.Engine.Graphics;
 
 namespace Core.Graphics
 {
@@ -51,7 +52,8 @@ namespace Core.Graphics
 
                 return _translationMatrix
                     * _rotationMatrix
-                    * _scaleMatrix;
+                    * _scaleMatrix
+                    * Resolution.PreScaleTransform;
             }
         }
 
@@ -64,42 +66,5 @@ namespace Core.Graphics
         {
             return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
         }
-
-        /// <summary>
-        /// Clamps the view to the inside of the layout. If the layout is smaller than the view, then the view is centered.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        //private Vector2 ClampToBounds(Vector2 position)
-        //{
-        //    float xMin, xMax, yMin, yMax;
-
-        //    if (Width >= _level.Width)
-        //    {
-        //        xMin = _level.Width * 0.5f;
-        //        xMax = _level.Width * 0.5f;
-        //    }
-        //    else
-        //    {
-        //        xMin = Width * 0.5f;
-        //        xMax = _level.Width - Width * 0.5f;
-        //    }
-
-        //    if (Height >= _level.Height)
-        //    {
-        //        yMin = _level.Height * 0.5f;
-        //        yMax = _level.Height * 0.5f;
-        //    }
-        //    else
-        //    {
-        //        yMin = Width * 0.5f;
-        //        yMax = _level.Height - Height * 0.5f;
-        //    }
-
-        //    var min = new Vector2(xMin, yMin);
-        //    var max = new Vector2(xMax, yMax);
-
-        //    return Vector2.Clamp(position, min, max);
-        //}
     }
 }

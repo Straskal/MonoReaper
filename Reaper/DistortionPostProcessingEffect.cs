@@ -22,7 +22,7 @@ namespace Reaper
 
         private static float _timer = 0f;
 
-        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height)
+        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight)
         {
             _effect = effect;
         }
@@ -57,7 +57,7 @@ namespace Reaper
 
         public override void OnDraw(Texture2D currentTarget, Matrix transformation)
         {
-            _effect.Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height));
+            _effect.Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
             _effect.Parameters["View"].SetValue(transformation);
 
             if (_explosion == Vector2.Zero) 

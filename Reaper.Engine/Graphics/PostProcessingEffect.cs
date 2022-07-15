@@ -10,18 +10,13 @@ namespace Core.Graphics
 
         public RenderTarget2D Target { get; }
 
-        public PostProcessingEffect(GraphicsDevice graphicsDevice, int width, int height) 
+        public PostProcessingEffect(GraphicsDevice graphicsDevice, int width, int height)
         {
             Target = new RenderTarget2D(graphicsDevice, width, height);
         }
 
-        public virtual void OnTick(GameTime gameTime) 
-        {
-        }
-
-        public virtual void OnDraw(Texture2D currentTarget, Matrix transformation) 
-        {
-        }
+        public virtual void OnTick(GameTime gameTime) { }
+        public virtual void OnDraw(Texture2D currentTarget, Matrix transformation) { }
 
         protected virtual void Dispose(bool disposing)
         {

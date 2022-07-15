@@ -11,40 +11,50 @@ namespace Reaper.Engine.Graphics
 
     public static class Resolution
     {
-        private static Vector3 _resolutionScale;
-        private static Matrix _resolutionScaleMatrix;
+        public static int Width { get; private set; }
+        public static int Height { get; private set; }
+        public static int RenderTargetWidth { get; private set; }
+        public static int RenderTargetHeight { get; private set; }
+        public static ResolutionScaleMode ScaleMode { get; private set; }
+        public static Matrix TransformationMatrix { get; private set; }
+        public static Matrix PreScaleTransform { get; private set; }
+        public static Matrix PostScaleTransform { get; private set; }
 
-        public static ResolutionScaleMode ScaleMode { get; set; } = ResolutionScaleMode.PreScale;
-        public static int Width { get; set; }
-        public static int Height { get; set; }
-
-        public static (int width, int height) RenderTargetResolution 
+        internal static void Initialize(int width, int height, ResolutionScaleMode scaleMode) 
         {
-            get 
+            Width = width;
+            Height = height;
+            ScaleMode = scaleMode;
+
+            if (scaleMode == ResolutionScaleMode.PreScale)
             {
-                return ScaleMode == ResolutionScaleMode.PostScale
-                    ? (Width, Height)
-                    : (App.Graphics.PresentationParameters.BackBufferWidth, App.Graphics.PresentationParameters.BackBufferHeight);
+                RenderTargetWidth = App.Graphics.DisplayMode.Width;
+                RenderTargetHeight = App.Graphics.DisplayMode.Height;
+            }
+            else 
+            {
+                RenderTargetWidth = Width;
+                RenderTargetHeight = Height;
             }
         }
 
-        public static Matrix TransformationMatrix
+        internal static void Calculate() 
         {
-            get
+            var scale = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
+            var resolutionScale = new Vector3(scale, scale, 1f);
+
+            TransformationMatrix = Matrix.CreateScale(resolutionScale);
+
+            if (ScaleMode == ResolutionScaleMode.PreScale)
             {
-                var scale = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
-
-                _resolutionScale.X = scale;
-                _resolutionScale.Y = scale;
-                _resolutionScale.Z = 1f;
-
-                Matrix.CreateScale(ref _resolutionScale, out _resolutionScaleMatrix);
-
-                return _resolutionScaleMatrix;
+                PreScaleTransform = TransformationMatrix;
+                PostScaleTransform = Matrix.Identity;
+            }
+            else
+            {
+                PreScaleTransform = Matrix.Identity;
+                PostScaleTransform = TransformationMatrix;
             }
         }
-
-        public static Matrix PreScaleTransform => ScaleMode == ResolutionScaleMode.PreScale ? TransformationMatrix : Matrix.Identity;
-        public static Matrix PostScaleTransform => ScaleMode == ResolutionScaleMode.PostScale ? TransformationMatrix : Matrix.Identity;
     }
 }

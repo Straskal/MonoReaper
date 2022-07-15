@@ -14,7 +14,7 @@ namespace Core
         public const int ResolutionWidth = 640;
         public const int ResolutionHeight = 200;
 
-        public const bool StartFullscreen = true;
+        public const bool StartFullscreen = false;
 
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public static GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
@@ -51,8 +51,7 @@ namespace Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-            Resolution.Width = ResolutionWidth;
-            Resolution.Height = ResolutionHeight;
+            Resolution.Initialize(ResolutionWidth, ResolutionHeight, ResolutionScaleMode.PreScale);
         }
 
         public Level CurrentLevel { get; private set; }
@@ -113,6 +112,7 @@ namespace Core
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
 
+            Resolution.Calculate();
             Input.Poll();
 
             _onChangeLevel?.Invoke();

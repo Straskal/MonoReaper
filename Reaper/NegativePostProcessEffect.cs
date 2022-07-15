@@ -10,7 +10,7 @@ namespace Reaper
     {
         private readonly Effect _effect;
 
-        public NegativePostProcessEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height)
+        public NegativePostProcessEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight)
         {
             _effect = effect;
         }

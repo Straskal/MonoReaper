@@ -43,7 +43,7 @@ namespace Core
             Width = width;
             Height = height;
             Camera = new Camera(App.ViewportWidth, App.ViewportHeight);
-            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, Resolution.RenderTargetResolution.width, Resolution.RenderTargetResolution.height);
+            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight);
             Partition = new Partition(cellSize, width, height);
         }
 
@@ -284,7 +284,7 @@ namespace Core
 
             var currentRenderTarget = RenderTarget;
 
-            Renderer.BeginDraw(Camera.TransformationMatrix * Resolution.PreScaleTransform, currentRenderTarget);
+            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
 
             App.Graphics.FullViewportClear(Color.Transparent);
 
@@ -301,14 +301,14 @@ namespace Core
 
                 App.Graphics.FullViewportClear(Color.Transparent);
 
-                effect.OnDraw(currentRenderTarget, Camera.TransformationMatrix * Resolution.PreScaleTransform);
+                effect.OnDraw(currentRenderTarget, Camera.TransformationMatrix);
 
                 Renderer.EndDraw();
 
                 currentRenderTarget = effect.Target;
             }
 
-            Renderer.BeginDraw(Camera.TransformationMatrix * Resolution.PreScaleTransform, currentRenderTarget);
+            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
 
             if (debug)
             {
