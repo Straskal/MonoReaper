@@ -1,5 +1,6 @@
-﻿using Reaper.Engine;
+﻿using Core;
 using System;
+using System.IO;
 
 namespace Reaper
 {
@@ -8,23 +9,19 @@ namespace Reaper
         [STAThread]
         static void Main(string[] args)
         {
-            var settings = new GameSettings
+            using (var game = new App())
             {
-                ViewportWidth = 640,
-                ViewportHeight = 360,
-                IsFullscreen = false,
-            };
-
-            using (var game = new MainGame(settings))
-            {
-                game.Singletons.Register(new GameManager(game));
-                game.Singletons.Register(new InputManager(game).SetUpBindings());
-                game.Singletons.Register(new GlobalInputHandler(game));
-                game.Singletons.Register(new Hearts(game));
                 //game.LoadOgmoLayout("content/layouts/layout1.json");
-                game.LoadOgmoLayout("content/layouts/level_0.json");
+                game.LoadOgmoLevel("content/layouts/level_0.json");
                 //game.LoadOgmoLayout(args[0]);
-                game.Run();
+                try
+                {
+                    game.Run();
+                }
+                catch (Exception e) 
+                {
+                    File.WriteAllText("crash.txt", e.Message);
+                }
             }
         }
     }
