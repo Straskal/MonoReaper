@@ -11,7 +11,7 @@ namespace Ldtk
         public static void LoadLevel(this Core.App game, string filename, string spawnPoint = null) 
         {
             var map = game.Content.Load<Adventure.Content.Level>(filename);
-            var level = new GameplayLevel(50, map.Width, map.Height);
+            var level = new GameplayLevel(64, map.Width, map.Height);
             level.LoadEntities(map.Entities);
             foreach (var tileLayer in map.TileLayers) 
             {

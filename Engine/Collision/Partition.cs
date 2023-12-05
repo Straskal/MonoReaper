@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
-using Core.Graphics;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Core.Graphics;
 
 namespace Core.Collision
 {
+    /// <summary>
+    /// This class is used to organize boxes by position for efficient spatial queries.
+    /// </summary>
     public sealed class Partition
     {
+        /// <summary>
+        /// Store boxes in their respective cell.
+        /// </summary>
         private readonly Dictionary<Point, HashSet<Box>> _cells = new();
 
         public Partition(int cellSize)
@@ -13,13 +20,21 @@ namespace Core.Collision
             CellSize = cellSize;
         }
 
+        /// <summary>
+        /// Gets the size of the partitions cells.
+        /// </summary>
         public int CellSize { get; }
 
         internal void Add(Box box)
         {
-            GetQueryCells(box.CalculateBounds(), box.Points);
+            if (box.PartitionCellPoints.Count != 0) 
+            {
+                throw new InvalidOperationException("Cannot add box that is already added to partition.");
+            }
 
-            foreach (var point in box.Points)
+            box.PartitionCellPoints.AddRange(GetCellsForRectangle(box.CalculateBounds()));
+
+            foreach (var point in box.PartitionCellPoints)
             {
                 GetCellAtPoint(point).Add(box);
             }
@@ -27,12 +42,17 @@ namespace Core.Collision
 
         internal void Remove(Box box)
         {
-            GetQueryCells(box.CalculateBounds(), box.Points);
+            if (box.PartitionCellPoints.Count == 0)
+            {
+                throw new InvalidOperationException("Cannot remove box that isn't contained in partition.");
+            }
 
-            foreach (var point in box.Points)
+            foreach (var point in box.PartitionCellPoints)
             {
                 GetCellAtPoint(point).Remove(box);
             }
+
+            box.PartitionCellPoints.Clear();
         }
 
         internal void Update(Box box)
@@ -43,69 +63,50 @@ namespace Core.Collision
 
         public IEnumerable<Box> QueryBounds(RectangleF bounds)
         {
-            var cellPoints = new List<Point>();
-            GetQueryCells(bounds, cellPoints);
-            return UnionResults(cellPoints);
+            return QueryCells(GetCellsForRectangle(bounds));
         }
 
-        public void QueryBounds(RectangleF bounds, HashSet<Box> queryResults)
+        private List<Point> GetCellsForRectangle(RectangleF bounds)
         {
-            queryResults.Clear();
-            var cellPoints = new List<Point>();
-            GetQueryCells(bounds, cellPoints);
-            GetQueryResults(cellPoints, queryResults);
+            var result = new List<Point>();
+            var min = Vector2.Floor(bounds.TopLeft / CellSize).ToPoint();
+            var max = Vector2.Floor(bounds.BottomRight / CellSize).ToPoint();
+            var length = max - min;
+
+            for (int y = 0; y <= length.Y; y++)
+            {
+                for (int x = 0; x <= length.X; x++)
+                {
+                    result.Add(new Point(min.X + x, min.Y + y));
+                }
+            }
+
+            return result;
         }
 
         private HashSet<Box> GetCellAtPoint(Point point)
         {
             if (!_cells.TryGetValue(point, out var cell))
             {
-                cell = new HashSet<Box>();
-                _cells[point] = cell;
+                _cells[point] = cell = new HashSet<Box>();
             }
 
             return cell;
         }
 
-        private void GetQueryResults(List<Point> cellPoints, HashSet<Box> results)
+        private IEnumerable<Box> QueryCells(List<Point> cellPoints)
         {
-            foreach (var point in cellPoints)
-            {
-                if (_cells.TryGetValue(point, out var cell))
-                {
-                    results.UnionWith(cell);
-                }
-            }
-        }
-
-        private IEnumerable<Box> UnionResults(List<Point> cellPoints)
-        {
-            var results = new HashSet<Box>();
+            var result = new HashSet<Box>();
 
             foreach (var point in cellPoints)
             {
                 if (_cells.TryGetValue(point, out var cell))
                 {
-                    results.UnionWith(cell);
+                    result.UnionWith(cell);
                 }
             }
 
-            return results;
-        }
-
-        private void GetQueryCells(RectangleF bounds, List<Point> cells)
-        {
-            var min = Vector2.Floor(bounds.TopLeft / CellSize).ToPoint();
-            var max = Vector2.Floor(bounds.BottomRight / CellSize).ToPoint();
-            var length = max - min;
-
-            for (int i = 0; i <= length.Y; i++)
-            {
-                for (int j = 0; j <= length.X; j++)
-                {
-                    cells.Add(new Point(min.X + j, min.Y + i));
-                }
-            }
+            return result;
         }
 
         internal void DebugDraw()

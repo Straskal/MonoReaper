@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace Core.Collision
 {
-    public static class SweptAlgorithm
+    public static class Sweep
     {
-        public const float CorrectionBuffer = 0.005f;
+        public const float Correction = 0.005f;
 
         public static bool Test(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Hit hit)
         {
@@ -29,7 +29,8 @@ namespace Core.Collision
                         normal: normal,
                         collisionTime: time,
                         // Give buffer so we completely separate the two shapes.
-                        position: rect.Position + velocity * time + (CorrectionBuffer * normal));
+                        position: rect.Position + velocity * time + (Correction * normal)
+                    );
                 }
             }
 

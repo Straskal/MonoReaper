@@ -32,6 +32,7 @@ namespace Core.Collision
         public Vector2 Bounce(ref Vector2 newVelocity)
         {
             newVelocity = Velocity * RemainingTime;
+
             if (Math.Abs(Normal.X) > 0.0001f)
             {
                 newVelocity.X *= -1;
@@ -40,6 +41,7 @@ namespace Core.Collision
             {
                 newVelocity.Y *= -1;
             }
+
             return newVelocity;
         }
 

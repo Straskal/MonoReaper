@@ -1,14 +1,28 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Core.Collision
 {
     public class Box : Component
     {
-        internal List<Point> Points { get; } = new();
+        /// <summary>
+        /// The partition cell points that contain this box.
+        /// These are cached on the box itself to avoid unnecessary lookups in the partition.
+        /// </summary>
+        internal List<Point> PartitionCellPoints { get; } = new();
 
-        public Box(float x, float y, float width, float height) : this(x, y, width, height, 0)
+        public Box(float width, float height)
         {
+            Width = width;
+            Height = height;
+        }
+
+        public Box(float x, float y, float width, float height)
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
         public Box(float x, float y, float width, float height, int layerMask)
@@ -20,12 +34,11 @@ namespace Core.Collision
             LayerMask = layerMask;
         }
 
-        public int LayerMask { get; set; }
-        public Vector2 Size { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
         public float Width { get; set; }
         public float Height { get; set; }
+        public int LayerMask { get; set; }
 
         public override void OnSpawn()
         {
