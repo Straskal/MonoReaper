@@ -14,6 +14,8 @@ namespace Core.Graphics
         {
             Texture = texture;
             SourceRectangle = sourceRectangle;
+
+            IsDrawEnabled = true;
         }
 
         private Texture2D _texture;

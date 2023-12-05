@@ -4,15 +4,34 @@ using Microsoft.Xna.Framework;
 
 namespace Core.Collision
 {
-    public static class Sweep
+    /// <summary>
+    /// This class contains the functions for the AABB Swept collision checking.
+    /// </summary>
+    internal static class Sweep
     {
         public const float Correction = 0.005f;
 
+        /// <summary>
+        /// Test a vector against the given collidable objects. This is a raycast.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="direction"></param>
+        /// <param name="others"></param>
+        /// <param name="hit"></param>
+        /// <returns></returns>
         public static bool Test(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Hit hit)
         {
             return Test(new RectangleF(position.X, position.Y, 0f, 0f), direction, others, out hit);
         }
 
+        /// <summary>
+        /// Test a rectangle against the given collidable objects.
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="velocity"></param>
+        /// <param name="others">The other objects to test against.</param>
+        /// <param name="hit">If there is a collision, hit will be output with all of the collision info.</param>
+        /// <returns>Returns true if there a collision was detected.</returns>
         public static bool Test(RectangleF rect, Vector2 velocity, IEnumerable<Box> others, out Hit hit)
         {
             hit = Hit.Empty;
@@ -28,8 +47,9 @@ namespace Core.Collision
                         velocity: velocity,
                         normal: normal,
                         collisionTime: time,
-                        // Give buffer so we completely separate the two shapes.
-                        position: rect.Position + velocity * time + (Correction * normal)
+                        // If we don't add this correction, boxes can get stuck on corners.
+                        // If we do add this correction, then that can create innacurate collision responses.
+                        position: rect.Position + velocity * time /* + (Correction * normal)*/
                     );
                 }
             }
@@ -47,59 +67,59 @@ namespace Core.Collision
                 return 1f;
             }
 
-            float dnx, dfx;
-            float dny, dfy;
-            float tnx, tfx;
-            float tny, tfy;
+            var dn = Vector2.Zero;
+            var df = Vector2.Zero;
+            var tn = Vector2.Zero;
+            var tf = Vector2.Zero;
 
             // Calculate near and far distance
             if (velocity.X > 0f)
             {
-                dnx = otherBounds.Left - bounds.Right;
-                dfx = otherBounds.Right - bounds.Left;
+                dn.X = otherBounds.Left - bounds.Right;
+                df.X = otherBounds.Right - bounds.Left;
             }
             else
             {
-                dnx = otherBounds.Right - bounds.Left;
-                dfx = otherBounds.Left - bounds.Right;
+                dn.X = otherBounds.Right - bounds.Left;
+                df.X = otherBounds.Left - bounds.Right;
             }
 
             if (velocity.Y > 0f)
             {
-                dny = otherBounds.Top - bounds.Bottom;
-                dfy = otherBounds.Bottom - bounds.Top;
+                dn.Y = otherBounds.Top - bounds.Bottom;
+                df.Y = otherBounds.Bottom - bounds.Top;
             }
             else
             {
-                dny = otherBounds.Bottom - bounds.Top;
-                dfy = otherBounds.Top - bounds.Bottom;
+                dn.Y = otherBounds.Bottom - bounds.Top;
+                df.Y = otherBounds.Top - bounds.Bottom;
             }
 
             // Calculate near and far time
             if (Math.Abs(velocity.X) > 0.001f)
             {
-                tnx = dnx / velocity.X;
-                tfx = dfx / velocity.X;
+                tn.X = dn.X / velocity.X;
+                tf.X = df.X / velocity.X;
             }
             else
             {
-                tnx = float.MinValue;
-                tfx = float.MaxValue;
+                tn.X = float.MinValue;
+                tf.X = float.MaxValue;
             }
 
             if (Math.Abs(velocity.Y) > 0.001f)
             {
-                tny = dny / velocity.Y;
-                tfy = dfy / velocity.Y;
+                tn.Y = dn.Y / velocity.Y;
+                tf.Y = df.Y / velocity.Y;
             }
             else
             {
-                tny = float.MinValue;
-                tfy = float.MaxValue;
+                tn.Y = float.MinValue;
+                tf.Y = float.MaxValue;
             }
 
-            var n = Math.Max(Math.Max(tnx, tny), 0f);
-            var f = Math.Min(Math.Max(tfx, tfy), 1f);
+            var n = Math.Max(Math.Max(tn.X, tn.Y), 0f);
+            var f = Math.Min(Math.Min(tf.X, tf.Y), 1f);
 
             // No collision
             if (n > f)
@@ -108,9 +128,9 @@ namespace Core.Collision
             }
 
             // Calculate normal
-            if (tnx > tny)
+            if (tn.X > tn.Y)
             {
-                if (dnx < 0f)
+                if (dn.X < 0f)
                 {
                     normal.X = 1f;
                     normal.Y = 0f;
@@ -123,7 +143,7 @@ namespace Core.Collision
             }
             else
             {
-                if (dny < 0f)
+                if (dn.Y < 0f)
                 {
                     normal.X = 0f;
                     normal.Y = 1f;

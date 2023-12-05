@@ -20,10 +20,30 @@ namespace Core
             _components.AddRange(components);
         }
 
-        public Level Level { get; internal set; }
-        public Vector2 Position { get; set; }
-        public Origin Origin { get; set; }
-        public bool IsDestroyed { get; internal set; }
+        public Level Level 
+        { 
+            get; 
+            internal set; 
+        }
+
+        public Vector2 Position 
+        { 
+            get; 
+            set; 
+        }
+
+        public Origin Origin 
+        { 
+            get; 
+            set; 
+        }
+
+        public bool IsDestroyed 
+        { 
+            get; 
+            internal set; 
+        }
+
         internal List<Component> Components => _components;
 
         public void AddComponent(Component component)

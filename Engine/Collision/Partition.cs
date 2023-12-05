@@ -111,7 +111,6 @@ namespace Core.Collision
 
         internal void DebugDraw()
         {
-            // Draw grid cells
             foreach (var kvp in _cells)
             {
                 var row = kvp.Key.Y;
@@ -120,18 +119,7 @@ namespace Core.Collision
                 var x = col * CellSize;
                 var opacity = kvp.Value.Count > 0 ? 0.8f : 0.05f;
 
-                Renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize - 1, CellSize - 1), Color.DarkGray * opacity);
-            }
-
-            // Draw individual colliders.
-            foreach (var kvp in _cells)
-            {
-                foreach (var box in kvp.Value)
-                {
-                    Color color;
-                    color = Color.White * 1f;
-                    Renderer.DrawRectangleOutline(box.CalculateBounds().ToXnaRect(), color);
-                }
+                Renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize, CellSize), Color.DarkBlue * opacity);
             }
         }
     }

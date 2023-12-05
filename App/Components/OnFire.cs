@@ -12,6 +12,11 @@ namespace Reaper.Components
         private float _timer;
         private int _hits;
 
+        public OnFire() 
+        {
+            IsUpdateEnabled = true;
+        }
+
         public override void OnLoad(ContentManager content)
         {
             var texture = content.Load<Texture2D>("art/player/fire");

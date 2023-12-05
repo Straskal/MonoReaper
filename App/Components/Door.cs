@@ -42,7 +42,7 @@ namespace Reaper.Components
         {
             var texture = content.Load<Texture2D>("art/common/door_");
 
-            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Wall));
+            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
             Entity.AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
             Entity.AddComponent(new SpriteSheet(new SpriteSheet.Animation[] 
             {

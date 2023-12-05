@@ -18,6 +18,8 @@ namespace Reaper.Components
         public Fireball(Vector2 velocity)
         {
             _velocity = velocity;
+
+            IsUpdateEnabled = true;
         }
 
         private Vector2 _velocity;
@@ -61,7 +63,7 @@ namespace Reaper.Components
 
         public override void OnUpdate(GameTime gameTime)
         {
-            _body.Move(ref _velocity, EntityLayers.Enemy | EntityLayers.Wall, HandleCollision);
+            _body.MoveAndCollide(ref _velocity, EntityLayers.Enemy | EntityLayers.Solid, HandleCollision);
         }
 
         private Vector2 HandleCollision(Hit hit)

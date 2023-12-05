@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework;
 
 namespace Core.Collision
 {
+    /// <summary>
+    /// A rectangle containing floating point position and size.
+    /// </summary>
     public struct RectangleF
     {
         public float X;
@@ -44,9 +47,9 @@ namespace Core.Collision
                 && Top < other.Bottom;
         }
 
-        public readonly RectangleF Offset(Vector2 direction)
+        public readonly RectangleF Union(Vector2 direction)
         {
-            return new(X + direction.X, Y + direction.Y, Width, Height);
+            return Union(new RectangleF(X + direction.X, Y + direction.Y, Width, Height));
         }
 
         public readonly RectangleF Union(RectangleF other)
@@ -57,11 +60,6 @@ namespace Core.Collision
             result.Width = Math.Max(Right, other.Right) - result.X;
             result.Height = Math.Max(Bottom, other.Bottom) - result.Y;
             return result;
-        }
-
-        public readonly RectangleF Project(Vector2 direction) 
-        {
-            return Union(Offset(direction));
         }
 
         public readonly Rectangle ToXnaRect()

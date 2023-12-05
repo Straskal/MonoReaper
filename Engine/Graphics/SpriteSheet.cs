@@ -23,6 +23,8 @@ namespace Core.Graphics
         public SpriteSheet(Animation[] animations)
         {
             _animations = animations ?? throw new ArgumentNullException(nameof(animations));
+
+            IsUpdateEnabled = true;
         }
 
         public float Speed { get; set; } = 0.25f; // Default to 4 frames per second

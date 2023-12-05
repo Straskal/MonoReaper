@@ -7,5 +7,5 @@ namespace Core.Collision
     /// </summary>
     /// <param name="hit"></param>
     /// <returns></returns>
-    public delegate Vector2 CollisionCallback(Hit hit);
+    public delegate Vector2 CollisionResponseCallback(Hit hit);
 }

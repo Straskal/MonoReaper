@@ -9,16 +9,16 @@ using Core.Graphics;
 
 using static Reaper.Constants;
 using Ldtk;
+using Adventure;
 
 namespace Reaper.Components
 {
     public class Player : Component
     {
-        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Wall;
+        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid;
 
-        public const float DRAG = 0.85f;
-        public const float ACCELERATION = 20f;
-        public const float MAX_SPEED = 0.85f;
+        public const float Speed = 1000f;
+        public const float MaxSpeed = 0.85f;
 
         private Body _body;
         private Sprite _sprite;
@@ -30,6 +30,11 @@ namespace Reaper.Components
 
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
+
+        public Player() 
+        {
+            IsUpdateEnabled = true;
+        }
 
         public override void OnLoad(ContentManager content)
         {
@@ -122,12 +127,11 @@ namespace Reaper.Components
                 _spriteSheet.CurrentAnimation.Loop = false;
             }
 
-            _velocity += movementInput * ACCELERATION * delta;
-            _velocity *= DRAG;
-            _velocity.X = MathHelper.Clamp(_velocity.X, -MAX_SPEED, MAX_SPEED);
-            _velocity.Y = MathHelper.Clamp(_velocity.Y, -MAX_SPEED, MAX_SPEED);
+            _velocity = movementInput * Speed * delta;
+            _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
+            _velocity.Y = MathHelper.Clamp(_velocity.Y, -MaxSpeed, MaxSpeed);
 
-            _body.Move(ref _velocity, MovementCollisionLayerMask, HandleCollision);
+            _body.MoveAndCollide(ref _velocity, MovementCollisionLayerMask, HandleCollision);
 
             Animate(_direction);
 
@@ -146,7 +150,7 @@ namespace Reaper.Components
                 App.Current.LoadLevel(transition.LevelName, transition.SpawnPoint);
             }
 
-            if ((hit.Other.LayerMask | EntityLayers.Wall) == EntityLayers.Wall)
+            if (hit.Other.IsSolid())
             {
                 return hit.Slide();
             }

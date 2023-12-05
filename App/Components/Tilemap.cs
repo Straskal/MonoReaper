@@ -47,6 +47,8 @@ namespace Reaper.Components
         public Tilemap(MapData data)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
+
+            IsDrawEnabled = true;
         }
 
         public MapData Data { get; }
@@ -63,7 +65,7 @@ namespace Reaper.Components
 
             foreach (var tile in Data.Tiles)
             {
-                Entity.AddComponent(new Box(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Wall));
+                Entity.AddComponent(new Box(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
             }
         }
 

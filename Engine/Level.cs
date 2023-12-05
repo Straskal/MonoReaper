@@ -10,14 +10,29 @@ using System.Linq;
 
 namespace Core
 {
+    /// <summary>
+    /// This class represents a level in the game.
+    /// </summary>
+    /// <remarks>
+    /// A level contains entities and is responsible for orchestrating callback methods on entity components.
+    /// </remarks>
     public class Level
     {
+        /// <summary>
+        /// The level's very own content manager.
+        /// </summary>
         protected ContentManager Content { get; }
+
+        /// <summary>
+        /// WIP
+        /// </summary>
         protected List<PostProcessingEffect> PostProcessingEffects { get; } = new();
 
         private readonly List<Entity> _entities = new();
         private readonly List<Entity> _entitiesToDestroy = new();
         private readonly List<Component> _components = new();
+        private readonly List<Component> _componentsToUpdate = new();
+        private readonly List<Component> _componentsToDraw = new();
         private readonly List<Component> _componentsToRemove = new();
 
         private delegate void ComponentAddedHandler(Entity entity, params Component[] components);
@@ -33,8 +48,19 @@ namespace Core
             Partition = new Partition(cellSize);
         }
 
+        /// <summary>
+        /// Gets the level's camera.
+        /// </summary>
         public Camera Camera { get; }
+
+        /// <summary>
+        /// Gets the level's render target.
+        /// </summary>
         public RenderTarget2D RenderTarget { get; }
+
+        /// <summary>
+        /// Gets the level's spatial partition.
+        /// </summary>
         public Partition Partition { get; }
 
         public int Width { get; }
@@ -45,19 +71,29 @@ namespace Core
             PostProcessingEffects.Add(effect);
         }
 
+        /// <summary>
+        /// Spawns an entity at the given location.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="position"></param>
         public void Spawn(Entity entity, Vector2 position)
         {
-            entity.Position = position;
-            Spawn(entity);
+            if (entity.Level == null)
+            {
+                entity.Level = this;
+                entity.Position = position;
+                _entities.Add(entity);
+                AddComponents(entity, entity.Components);
+            }    
         }
 
-        public void Spawn(Entity entity)
-        {
-            entity.Level = this;
-            _entities.Add(entity);
-            AddComponents(entity, entity.Components);
-        }
-
+        /// <summary>
+        /// Destroys an entity and removes it from the level.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <remarks>
+        /// The entity destruction is deferred until the end of the current frame.
+        /// </remarks>
         public void Destroy(Entity entity)
         {
             if (!entity.IsDestroyed)
@@ -89,6 +125,10 @@ namespace Core
             _componentsToRemove.Add(component);
         }
 
+        /// <summary>
+        /// Starts the level.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public virtual void Start()
         {
             try
@@ -129,6 +169,16 @@ namespace Core
                 for (int i = 0; i < startComponents.Count; i++)
                 {
                     startComponents[i].OnStart();
+
+                    if (startComponents[i].IsUpdateEnabled) 
+                    {
+                        _componentsToUpdate.Add(startComponents[i]);
+                    }
+
+                    if (startComponents[i].IsDrawEnabled)
+                    {
+                        _componentsToDraw.Add(startComponents[i]);
+                    }
                 }
 
                 _onComponentsAdded = (entity, components) =>
@@ -146,7 +196,17 @@ namespace Core
                     for (int i = 0; i < components.Length; i++)
                     {
                         components[i].OnStart();
-                    }
+
+                        if (components[i].IsUpdateEnabled)
+                        {
+                            _componentsToUpdate.Add(components[i]);
+                        }
+
+                        if (components[i].IsDrawEnabled)
+                        {
+                            _componentsToDraw.Add(components[i]);
+                        }
+                    }       
                 };
             }
             catch (StackOverflowException)
@@ -155,20 +215,24 @@ namespace Core
             }
         }
 
+        /// <summary>
+        /// Updates the level and all of it's entities.
+        /// </summary>
+        /// <param name="gameTime"></param>
         public virtual void Update(GameTime gameTime)
         {
-            for (int i = 0; i < _components.Count; i++)
+            for (int i = 0; i < _componentsToUpdate.Count; i++)
             {
-                _components[i].OnUpdate(gameTime);
+                _componentsToUpdate[i].OnUpdate(gameTime);
             }
 
-            for (int i = 0; i < _components.Count; i++)
+            for (int i = 0; i < _componentsToUpdate.Count; i++)
             {
-                _components[i].OnPostUpdate(gameTime);
+                _componentsToUpdate[i].OnPostUpdate(gameTime);
             }
 
-            PostEntityUpdateDestroyEntities();
-            PostEntityUpdateRemoveComponents();
+            PostUpdateDestroyEntities();
+            PostUpdateRemoveComponents();
 
             foreach (var effect in PostProcessingEffects)
             {
@@ -176,7 +240,7 @@ namespace Core
             }
         }
 
-        private void PostEntityUpdateDestroyEntities()
+        private void PostUpdateDestroyEntities()
         {
             for (int i = 0; i < _entitiesToDestroy.Count; i++)
             {
@@ -188,6 +252,8 @@ namespace Core
                 for (int j = 0; j < _entitiesToDestroy[i].Components.Count; j++)
                 {
                     _components.Remove(_entitiesToDestroy[i].Components[j]);
+                    _componentsToUpdate.Remove(_entitiesToDestroy[i].Components[j]);
+                    _componentsToDraw.Remove(_entitiesToDestroy[i].Components[j]);
                     _componentsToRemove.Remove(_entitiesToDestroy[i].Components[j]);
                 }
 
@@ -197,13 +263,15 @@ namespace Core
             _entitiesToDestroy.Clear();
         }
 
-        private void PostEntityUpdateRemoveComponents()
+        private void PostUpdateRemoveComponents()
         {
             for (int i = 0; i < _componentsToRemove.Count; i++)
             {
                 _componentsToRemove[i].OnDestroy();
                 _componentsToRemove[i].Entity = null;
                 _components.Remove(_componentsToRemove[i]);
+                _componentsToUpdate.Remove(_componentsToRemove[i]);
+                _componentsToDraw.Remove(_componentsToRemove[i]);
             }
 
             _componentsToRemove.Clear();
@@ -212,16 +280,13 @@ namespace Core
         public virtual RenderTarget2D Draw(bool debug)
         {
             _components.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
-
             var currentRenderTarget = RenderTarget;
-
             Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
-
             App.Graphics.FullViewportClear(Color.Transparent);
 
-            for (int i = 0; i < _components.Count; i++)
+            for (int i = 0; i < _componentsToDraw.Count; i++)
             {
-                _components[i].OnDraw();
+                _componentsToDraw[i].OnDraw();
             }
 
             Renderer.EndDraw();
@@ -239,19 +304,21 @@ namespace Core
             //    currentRenderTarget = effect.Target;
             //}
 
-            Renderer.BeginDraw(Camera.TransformationMatrix);
-
-            if (debug)
+            if (debug) 
             {
+                Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
+
                 Partition.DebugDraw();
 
                 for (int i = 0; i < _components.Count; i++)
                 {
                     _components[i].OnDebugDraw();
                 }
+
+                Renderer.EndDraw();
             }
 
-            Renderer.EndDraw();
+
 
             return currentRenderTarget;
         }

@@ -25,6 +25,11 @@ namespace Reaper.Components
 
         public bool Flammable => true;
 
+        public Barrel() 
+        {
+            IsUpdateEnabled = true;
+        }
+
         public override void OnLoad(ContentManager content)
         {
             Phial.Preload(content);
@@ -34,7 +39,7 @@ namespace Reaper.Components
             _hurtEffect = content.Load<Effect>("shaders/SolidColor");
 
             Entity.AddComponent(_sprite = new Sprite(texture, new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Wall));
+            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
         }
 
         public override void OnDestroy()
