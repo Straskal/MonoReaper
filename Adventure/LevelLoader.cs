@@ -35,6 +35,9 @@ namespace Adventure
                     case "Player":
                         spawned.AddComponent(new Player());
                         break;
+                    case "Barrel":
+                        spawned.AddComponent(new Barrel());
+                        break;
                     default:
                         continue;
                 }

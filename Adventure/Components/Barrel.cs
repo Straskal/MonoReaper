@@ -26,28 +26,31 @@ namespace Adventure.Components
 
         public bool Flammable => true;
 
-        public Barrel()
-        {
-            IsUpdateEnabled = true;
-        }
-
         public override void OnLoad(ContentManager content)
         {
+            // Preload loot that drops when barrel is destroyed.
             Phial.Preload(content);
-
-            var texture = content.Load<Texture2D>("art/common/barrel");
-
+            IsUpdateEnabled = true;
             _hurtEffect = content.Load<Effect>("shaders/SolidColor");
-
-            Entity.AddComponent(_sprite = new Sprite(texture, new Rectangle(0, 0, 16, 16)));
+            Entity.AddComponent(_sprite = new Sprite(content.Load<Texture2D>("art/common/barrel"), new Rectangle(0, 0, 16, 16)));
             Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
         }
 
         public override void OnDestroy()
         {
-            var loot = new Entity(Origin.BottomCenter);
-            loot.AddComponent(new Phial());
-            Level.Spawn(loot, Entity.Position);
+            DropLoot();
+        }
+
+        public override void OnUpdate(GameTime gameTime)
+        {
+            float delta = gameTime.GetDeltaTime();
+
+            _hurtTimer -= delta;
+
+            if (_hurtTimer < 0f)
+            {
+                _sprite.Effect = null;
+            }
         }
 
         public void Damage(int amount)
@@ -65,16 +68,11 @@ namespace Adventure.Components
             }
         }
 
-        public override void OnUpdate(GameTime gameTime)
+        private void DropLoot()
         {
-            float delta = gameTime.GetDeltaTime();
-
-            _hurtTimer -= delta;
-
-            if (_hurtTimer < 0f)
-            {
-                _sprite.Effect = null;
-            }
+            var loot = new Entity(Origin.Center);
+            loot.AddComponent(new Phial());
+            Level.Spawn(loot, Entity.Position);
         }
     }
 }

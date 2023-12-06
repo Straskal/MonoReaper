@@ -12,17 +12,13 @@ namespace Adventure.Components
         private IDamageable _damageable;
         private float _timer;
         private int _hits;
-
-        public OnFire()
-        {
-            IsUpdateEnabled = true;
-        }
+        private Particles _particles;
 
         public override void OnLoad(ContentManager content)
         {
-            var texture = content.Load<Texture2D>("art/player/fire");
+            IsUpdateEnabled = true;
 
-            Entity.AddComponent(new Particles(texture, new Rectangle(8, 8, 8, 8))
+            Entity.AddComponent(_particles = new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 MaxVelocity = new Vector2(10f, -50f),
@@ -31,6 +27,7 @@ namespace Adventure.Components
                 MaxColor = Color.White * 0.1f,
                 MaxTime = 0.25f
             });
+
         }
 
         public override void OnStart()
@@ -50,6 +47,7 @@ namespace Adventure.Components
 
                 if (_hits == 3)
                 {
+                    Entity.RemoveComponent(_particles);
                     Entity.RemoveComponent(this);
                 }
                 else

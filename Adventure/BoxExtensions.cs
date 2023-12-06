@@ -7,7 +7,7 @@ namespace Adventure
     {
         public static bool IsSolid(this Box box) 
         {
-            return (box.LayerMask | EntityLayers.Solid) == EntityLayers.Solid;
+            return (box.LayerMask & EntityLayers.Solid) == EntityLayers.Solid;
         }
     }
 }
