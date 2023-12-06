@@ -3,8 +3,11 @@
 ## Projects in solution
 
 `Adventure.Content.Pipeline` contains custom content importers and processors for the content pipeline
+
 `Adventure.Content` contains the contracts for game content and game content readers
+
 `Adventure` contains the game code
+
 `Engine` contains the engine code
 
 ## Running for the first time
