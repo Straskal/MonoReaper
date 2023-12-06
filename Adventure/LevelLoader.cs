@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Adventure.Components;
 using Engine;
+using Engine.Extensions;
 
 namespace Adventure
 {
@@ -9,7 +10,7 @@ namespace Adventure
     {
         public static void LoadLevel(this App game, string filename, string spawnPoint = null)
         {
-            var map = game.Content.Load<Content.Level>(filename);
+            var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
             var level = new GameplayLevel(64, map.Width, map.Height);
             level.LoadEntities(map.Entities);
             foreach (var tileLayer in map.TileLayers)

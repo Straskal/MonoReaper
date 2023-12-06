@@ -4,12 +4,14 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace Adventure.Content.Pipeline.Ldtk
 {
-    [ContentImporter(".ldtkl", DisplayName = "LDTK Level", DefaultProcessor = nameof(LdtkLevelProcessor))]
+    /// <summary>
+    /// Loads a .ldtkl file from json format.
+    /// </summary>
+    [ContentImporter(".ldtkl", DisplayName = "LDTK Level Importer", DefaultProcessor = nameof(LdtkLevelProcessor))]
     public class LdtkLevelImporter : ContentImporter<LdtkLevel>
     {
         public override LdtkLevel Import(string filename, ContentImporterContext context)
         {
-            context.Logger.LogMessage("Importing LDTK Level file: {0}", filename);
             using var sr = new StreamReader(filename);
             return JsonSerializer.Deserialize<LdtkLevel>(sr.ReadToEnd());
         }

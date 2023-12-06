@@ -31,7 +31,10 @@ namespace Engine
         public App()
         {
             Current = this;
-            Content.RootDirectory = ContentRoot;
+            Content = ContentManager = new ContentManagerExtended(Services)
+            {
+                RootDirectory = ContentRoot
+            };
             ViewportWidth = ResolutionWidth;
             ViewportHeight = ResolutionHeight;
             Window.AllowUserResizing = true;
@@ -89,7 +92,6 @@ namespace Engine
 
         protected override void LoadContent()
         {
-            ContentManager = Content;
             LoadInitialLevel?.Invoke();
             Renderer.Initialize();
             base.LoadContent();
