@@ -1,8 +1,9 @@
-﻿using Engine;
-using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Engine;
+using Engine.Extensions;
+using Engine.Graphics;
 
 namespace Adventure.Components
 {

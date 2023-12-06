@@ -1,16 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine
+namespace Engine.Extensions
 {
-    public static class GameTimeExtensions
-    {
-        public static float GetDeltaTime(this GameTime gameTime)
-        {
-            return (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
-    }
-
     public static class GraphicsDeviceExtensions
     {
         public static void LetterboxClear(this GraphicsDevice graphics, int targetWidth, int targetHeight, Color color)

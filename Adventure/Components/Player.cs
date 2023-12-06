@@ -7,6 +7,7 @@ using Engine;
 using Engine.Actions;
 using Engine.Collision;
 using Engine.Graphics;
+using Engine.Extensions;
 
 using static Adventure.Constants;
 

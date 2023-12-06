@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Graphics;
+using Engine.Extensions;
 
 namespace Engine
 {
@@ -10,8 +11,8 @@ namespace Engine
     {
         public const string ContentRoot = "Content";
 
-        public const int ResolutionWidth = 256;
-        public const int ResolutionHeight = 256;
+        public const int ResolutionWidth = 224;
+        public const int ResolutionHeight = 224;
 
         public const bool StartFullscreen = false;
 
