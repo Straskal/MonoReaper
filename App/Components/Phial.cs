@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Core;
-using Core.Graphics;
+using Engine;
+using Engine.Graphics;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     public sealed class Phial : Component
     {
-        public static void Preload(ContentManager content) 
+        public static void Preload(ContentManager content)
         {
             content.Load<Texture2D>("art/common/phial");
         }

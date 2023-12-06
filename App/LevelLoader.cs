@@ -1,19 +1,18 @@
-﻿using Core;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.Xna.Framework;
-using Reaper;
-using Reaper.Components;
+using Adventure.Components;
+using Engine;
 
-namespace Ldtk
+namespace Adventure
 {
     internal static class LevelLoader
     {
-        public static void LoadLevel(this Core.App game, string filename, string spawnPoint = null) 
+        public static void LoadLevel(this App game, string filename, string spawnPoint = null)
         {
-            var map = game.Content.Load<Adventure.Content.Level>(filename);
+            var map = game.Content.Load<Content.Level>(filename);
             var level = new GameplayLevel(64, map.Width, map.Height);
             level.LoadEntities(map.Entities);
-            foreach (var tileLayer in map.TileLayers) 
+            foreach (var tileLayer in map.TileLayers)
             {
                 level.LoadTileLayer(tileLayer);
             }
@@ -21,7 +20,7 @@ namespace Ldtk
             game.ChangeLevel(level);
         }
 
-        private static void LoadEntities(this Level level, Adventure.Content.Entity[] entities)
+        private static void LoadEntities(this Level level, Content.Entity[] entities)
         {
             foreach (var entity in entities)
             {
@@ -44,7 +43,7 @@ namespace Ldtk
             }
         }
 
-        private static void LoadTileLayer(this Level level, Adventure.Content.TileLayer layer, bool solid = true)
+        private static void LoadTileLayer(this Level level, Content.TileLayer layer, bool solid = true)
         {
             var mapData = new Tilemap.MapData
             {

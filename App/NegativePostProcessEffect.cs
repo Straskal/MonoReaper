@@ -1,10 +1,9 @@
-﻿using Core;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Reaper.Engine.Graphics;
 
-namespace Reaper
+namespace Adventure
 {
     public class NegativePostProcessEffect : PostProcessingEffect
     {

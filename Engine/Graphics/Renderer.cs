@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Core.Graphics
+namespace Engine.Graphics
 {
     public static class Renderer
     {
@@ -9,9 +9,6 @@ namespace Core.Graphics
 
         private static SpriteBatch _spriteBatch;
         private static Texture2D _blankTexture;
-        private static RenderTarget2D _currentTarget;
-        private static Effect _currentEffect;
-        private static Matrix _currentTransformation;
 
         internal static void Initialize()
         {
@@ -25,19 +22,17 @@ namespace Core.Graphics
             _spriteBatch.Dispose();
         }
 
-        internal static void BeginDraw(Matrix matrix, RenderTarget2D target = null)
+        internal static void BeginDraw(Matrix matrix)
         {
-            if (_currentTarget != target) 
-            {
-                _currentTarget = target;
-                App.Graphics.SetRenderTarget(target);
-                //App.Graphics.LetterboxClear(App.ViewportWidth, App.ViewportHeight, Color.Transparent);
-            }
-
-            _currentTransformation = matrix;
-            _currentEffect = null;
-
-            Prepare();
+            _spriteBatch.Begin(
+               sortMode: SpriteSortMode.Deferred,
+               blendState: BlendState.AlphaBlend,
+               samplerState: SamplerState.PointClamp,
+               depthStencilState: DepthStencilState.Default,
+               rasterizerState: RasterizerState.CullCounterClockwise,
+               effect: null,
+               transformMatrix: matrix
+           );
         }
 
         internal static void EndDraw()
@@ -47,70 +42,35 @@ namespace Core.Graphics
 
         public static void Draw(Texture2D texture, Vector2 position, Color color)
         {
-            SetEffect(null);
-
             _spriteBatch.Draw(texture, position, color);
         }
 
         public static void Draw(Texture2D texture, Vector2 position, Color color, Effect effect)
         {
-            SetEffect(effect);
-
             _spriteBatch.Draw(texture, position, color);
         }
 
-        public static void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped, Effect effect = null)
+        public static void Draw(Texture2D texture, Rectangle source, Rectangle destination, Color color, bool flipped)
         {
-            SetEffect(effect);
-
             _spriteBatch.Draw(texture, destination, source, color, 0, Vector2.Zero, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
-        public static void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped, Effect effect = null)
+        public static void Draw(Texture2D texture, Rectangle source, Vector2 position, Color color, bool flipped)
         {
-            SetEffect(effect);
-
             _spriteBatch.Draw(texture, position, source, color, 0, Vector2.Zero, Vector2.One, flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
         }
 
         public static void DrawRectangle(Rectangle rectangle, Color color)
         {
-            SetEffect(null);
-
             _spriteBatch.Draw(_blankTexture, rectangle, null, color);
         }
 
         public static void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
         {
-            SetEffect(null);
-
             _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
             _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
             _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
             _spriteBatch.Draw(_blankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
-        }
-
-        private static void Prepare()
-        {
-            _spriteBatch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                DepthStencilState.Default,
-                RasterizerState.CullCounterClockwise,
-                _currentEffect,
-                _currentTransformation
-            );
-        }
-
-        private static void SetEffect(Effect effect)
-        {
-            if (_currentEffect != effect)
-            {
-                _currentEffect = effect;
-                EndDraw();
-                Prepare();
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Reaper
+﻿namespace Adventure
 {
     public static class Constants
     {

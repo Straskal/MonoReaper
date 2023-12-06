@@ -1,12 +1,12 @@
-﻿using Core;
-using Core.Collision;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Collision;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using static Reaper.Constants;
+using static Adventure.Constants;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     public sealed class Door : Component, IDamageable
     {
@@ -17,7 +17,7 @@ namespace Reaper.Components
 
         public void Damage(int amount)
         {
-            if (isOpen) 
+            if (isOpen)
             {
                 return;
             }
@@ -29,7 +29,7 @@ namespace Reaper.Components
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (isMoving && Entity.GetComponent<SpriteSheet>().IsFinished) 
+            if (isMoving && Entity.GetComponent<SpriteSheet>().IsFinished)
             {
                 isMoving = false;
                 isOpen = true;
@@ -44,7 +44,7 @@ namespace Reaper.Components
 
             Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
             Entity.AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new SpriteSheet(new SpriteSheet.Animation[] 
+            Entity.AddComponent(new SpriteSheet(new SpriteSheet.Animation[]
             {
                 new SpriteSheet.Animation
                 {

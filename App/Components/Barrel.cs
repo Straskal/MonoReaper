@@ -1,15 +1,15 @@
-﻿using Core;
-using Core.Collision;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Collision;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-using static Reaper.Constants;
+using static Adventure.Constants;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
-    public interface IDamageable 
+    public interface IDamageable
     {
         bool Flammable { get; }
         void Damage(int amount);
@@ -25,7 +25,7 @@ namespace Reaper.Components
 
         public bool Flammable => true;
 
-        public Barrel() 
+        public Barrel()
         {
             IsUpdateEnabled = true;
         }
@@ -57,7 +57,7 @@ namespace Reaper.Components
             {
                 Level.Destroy(Entity);
             }
-            else 
+            else
             {
                 _sprite.Effect = _hurtEffect;
                 _hurtTimer = 0.1f;

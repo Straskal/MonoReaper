@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// This class is used for moving collidable objects. It contains the logic for collision detection and collision responses.
     /// </summary>
     public sealed class Body : Box
     {
-        public Body(float width, float height) : base(width, height) 
+        public Body(float width, float height) : base(width, height)
         {
         }
 
-        public Body(float width, float height, int layerMask) : base(0, 0, width, height, layerMask) 
+        public Body(float width, float height, int layerMask) : base(0, 0, width, height, layerMask)
         {
         }
 
@@ -42,7 +42,7 @@ namespace Core.Collision
                 foreach (var box in Level.Partition.QueryBounds(broadphaseRectangle))
                 {
                     // Don't check for collisions if the object is filtered out with a layer mask.
-                    if ((box.LayerMask | layerMask) != layerMask) 
+                    if ((box.LayerMask | layerMask) != layerMask)
                     {
                         continue;
                     }
@@ -55,7 +55,7 @@ namespace Core.Collision
 
                     // Do a broadphase collision check on objects so we are only running the sweep logic on potential collisions.
                     // This essentially rules out any other boxes that this body could not possibly collide with.
-                    if (!broadphaseRectangle.Intersects(box.CalculateBounds())) 
+                    if (!broadphaseRectangle.Intersects(box.CalculateBounds()))
                     {
                         continue;
                     }

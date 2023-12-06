@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// A function that handles a collision and returns a new velocity to resolve the collision using the hit helper methods.

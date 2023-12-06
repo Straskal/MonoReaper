@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using System.Text.Json.Serialization;
 
-namespace Adventure.Content.Pipeline
+namespace Adventure.Content.Pipeline.Ldtk
 {
     public sealed class LdtkLayerInstance
     {

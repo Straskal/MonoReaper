@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Core
+namespace Engine
 {
     public sealed class Entity
     {
@@ -20,28 +20,28 @@ namespace Core
             _components.AddRange(components);
         }
 
-        public Level Level 
-        { 
-            get; 
-            internal set; 
+        public Level Level
+        {
+            get;
+            internal set;
         }
 
-        public Vector2 Position 
-        { 
-            get; 
-            set; 
+        public Vector2 Position
+        {
+            get;
+            set;
         }
 
-        public Origin Origin 
-        { 
-            get; 
-            set; 
+        public Origin Origin
+        {
+            get;
+            set;
         }
 
-        public bool IsDestroyed 
-        { 
-            get; 
-            internal set; 
+        public bool IsDestroyed
+        {
+            get;
+            internal set;
         }
 
         internal List<Component> Components => _components;
@@ -62,11 +62,11 @@ namespace Core
 
         public T GetComponent<T>() where T : class
         {
-            var result = default(T);    
+            var result = default(T);
 
-            foreach (var component in _components) 
+            foreach (var component in _components)
             {
-                if (component is T asT) 
+                if (component is T asT)
                 {
                     result = asT;
                     break;

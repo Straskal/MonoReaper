@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using Core.Graphics;
+using Engine;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// This component is used for tracking collidable objects.

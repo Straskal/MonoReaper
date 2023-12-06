@@ -1,23 +1,22 @@
-﻿using Core;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Reaper.Engine.Graphics;
 
-namespace Reaper
+namespace Adventure
 {
     public sealed class DistortionPostProcessingEffect : PostProcessingEffect
     {
         private readonly Effect _effect;
 
         private static Vector2 _explosion;
-        public static Vector2 Explosion 
-        { 
-            set 
-            { 
-                _explosion = value; 
-                _timer = 0f; 
-            } 
+        public static Vector2 Explosion
+        {
+            set
+            {
+                _explosion = value;
+                _timer = 0f;
+            }
         }
 
         private static float _timer = 0f;
@@ -29,11 +28,11 @@ namespace Reaper
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (_explosion != Vector2.Zero) 
+            if (_explosion != Vector2.Zero)
             {
                 _timer += gameTime.GetDeltaTime() * 2f;
 
-                if (_timer > 1f) 
+                if (_timer > 1f)
                 {
                     _timer = 0;
                     _explosion = Vector2.Zero;
@@ -60,7 +59,7 @@ namespace Reaper
             _effect.Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
             _effect.Parameters["View"].SetValue(transformation);
 
-            if (_explosion == Vector2.Zero) 
+            if (_explosion == Vector2.Zero)
             {
                 Renderer.Draw(currentTarget, Vector2.Zero, Color.White);
                 return;

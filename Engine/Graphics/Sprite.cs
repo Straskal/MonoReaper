@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Core.Graphics
+namespace Engine.Graphics
 {
     public class Sprite : Component
     {
@@ -56,7 +57,7 @@ namespace Core.Graphics
                 sourceRect.Width,
                 sourceRect.Height);
 
-            Renderer.Draw(_texture, sourceRect, offsetPosition, Color, IsMirrored, Effect);
+            Renderer.Draw(_texture, sourceRect, offsetPosition, Color, IsMirrored);
         }
     }
 }

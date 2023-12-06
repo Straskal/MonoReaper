@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Engine.Actions;
+using Microsoft.Xna.Framework.Input;
 
-namespace Core
+namespace Engine
 {
     public abstract class InputAction
     {
@@ -24,7 +25,7 @@ namespace Core
     {
         private static readonly InputState state = new();
 
-        internal static void Poll()
+        internal static void Update()
         {
             state.PreviousKeyState = state.KeyState;
             state.PreviousGamePadState = state.GamePadState;

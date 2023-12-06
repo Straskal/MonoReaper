@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
-namespace Core
+namespace Engine.Actions
 {
     public class PressedAction : InputAction
     {

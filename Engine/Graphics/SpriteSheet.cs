@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace Core.Graphics
+namespace Engine.Graphics
 {
     public sealed class SpriteSheet : Component
     {
@@ -62,17 +62,17 @@ namespace Core.Graphics
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (!IsFinished) 
+            if (!IsFinished)
             {
                 _timer += gameTime.GetDeltaTime();
 
-                if (_timer > Speed) 
+                if (_timer > Speed)
                 {
                     if (_currentAnimation.Loop)
                     {
                         _currentFrame = (_currentFrame + 1) % _currentAnimation.Frames.Length;
                     }
-                    else if (++_currentFrame >= _currentAnimation.Frames.Length) 
+                    else if (++_currentFrame >= _currentAnimation.Frames.Length)
                     {
                         _currentFrame--;
 

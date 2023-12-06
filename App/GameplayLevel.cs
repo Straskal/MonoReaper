@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
-using Core;
+using Engine.Actions;
+using Engine;
 
-namespace Reaper
+namespace Adventure
 {
     internal class GameplayLevel : Level
     {
@@ -22,7 +22,7 @@ namespace Reaper
         {
             base.Update(gameTime);
 
-            if (toggleDebug.WasPressed()) 
+            if (toggleDebug.WasPressed())
             {
                 App.Current.ToggleDebug();
             }
@@ -32,7 +32,7 @@ namespace Reaper
                 App.ToggleFullscreen();
             }
 
-            if (quit.WasPressed()) 
+            if (quit.WasPressed())
             {
                 App.Current.Exit();
             }

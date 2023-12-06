@@ -1,10 +1,10 @@
-﻿using Core;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     public sealed class OnFire : Component
     {
@@ -12,7 +12,7 @@ namespace Reaper.Components
         private float _timer;
         private int _hits;
 
-        public OnFire() 
+        public OnFire()
         {
             IsUpdateEnabled = true;
         }
@@ -41,7 +41,7 @@ namespace Reaper.Components
         {
             _timer -= gameTime.GetDeltaTime();
 
-            if (_timer < 0f) 
+            if (_timer < 0f)
             {
                 _damageable?.Damage(1);
 
@@ -51,7 +51,7 @@ namespace Reaper.Components
                 {
                     Entity.RemoveComponent(this);
                 }
-                else 
+                else
                 {
                     _timer = 1f;
                 }

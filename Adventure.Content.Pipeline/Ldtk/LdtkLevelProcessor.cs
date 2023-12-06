@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 
-namespace Adventure.Content.Pipeline
+namespace Adventure.Content.Pipeline.Ldtk
 {
     [ContentProcessor(DisplayName = "LDTK Level")]
     public class LdtkLevelProcessor : ContentProcessor<LdtkLevel, LdtkLevel>

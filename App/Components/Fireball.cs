@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Core;
-using Core.Collision;
-using Core.Graphics;
-
-using static Reaper.Constants;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using Engine;
+using Engine.Collision;
+using Engine.Graphics;
 
-namespace Reaper.Components
+using static Adventure.Constants;
+
+namespace Adventure.Components
 {
     public sealed class Fireball : Component
     {
@@ -29,13 +29,13 @@ namespace Reaper.Components
             set => _velocity = value;
         }
 
-        public static void Preload(ContentManager content) 
+        public static void Preload(ContentManager content)
         {
             content.Load<Texture2D>("art/player/fire");
             content.Load<SoundEffect>("audio/fireball_shoot");
         }
 
-        public static Entity Create(Vector2 velocity) 
+        public static Entity Create(Vector2 velocity)
         {
             return new Entity(Origin.Center, new Fireball(velocity));
         }

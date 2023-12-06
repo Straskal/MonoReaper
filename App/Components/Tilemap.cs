@@ -1,14 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Core;
-using Core.Collision;
-using Core.Graphics;
 using System;
-using System.Collections.Generic;
-using static Reaper.Constants;
+using static Adventure.Constants;
+using Engine;
+using Engine.Graphics;
+using Engine.Collision;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     /// <summary>
     /// The tilemap behavior draws the given data.

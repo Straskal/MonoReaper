@@ -1,68 +1,35 @@
-﻿using Core;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Xml.Linq;
+﻿using Microsoft.Xna.Framework;
 
-namespace Reaper.Engine.Graphics
+namespace Engine.Graphics
 {
-    public enum ResolutionScaleMode 
-    {
-        PreScale,
-        PostScale
-    }
-
     public static class Resolution
     {
-        public static int ScreenWidth { get; set; }
-        public static int ScreenHeight { get; set; }
-        public static int VirtualWidth { get; set; }
-        public static int VirtualHeight { get; set; }
-        public static Viewport Viewport { get; set; }
-        public static float RatioX { get; set; }
-        public static float RatioY { get; set; }
-
         public static int Width { get; private set; }
         public static int Height { get; private set; }
         public static int RenderTargetWidth { get; private set; }
         public static int RenderTargetHeight { get; private set; }
-        public static ResolutionScaleMode ScaleMode { get; private set; }
         public static Matrix TransformationMatrix { get; private set; }
-        public static Matrix PreScaleTransform { get; private set; }
-        public static Matrix PostScaleTransform { get; private set; }
 
-        internal static void Initialize(int width, int height, ResolutionScaleMode scaleMode) 
+        internal static void Initialize(int width, int height)
         {
             Width = width;
             Height = height;
-            ScaleMode = scaleMode;
-
-            if (scaleMode == ResolutionScaleMode.PreScale)
-            {
-                RenderTargetWidth = App.Graphics.DisplayMode.Width;
-                RenderTargetHeight = App.Graphics.DisplayMode.Height;
-            }
-            else 
-            {
-                RenderTargetWidth = Width;
-                RenderTargetHeight = Height;
-            }
+            RenderTargetWidth = App.Graphics.DisplayMode.Width;
+            RenderTargetHeight = App.Graphics.DisplayMode.Height;
         }
 
-        internal static void Calculate() 
+        internal static void Update()
         {
-            var scale = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
+            var scaleX = (float)App.Graphics.PresentationParameters.BackBufferWidth / Width;
+            var scaleY = (float)App.Graphics.PresentationParameters.BackBufferHeight / Height;
 
-            TransformationMatrix = Matrix.CreateScale(scale, scale, 1f);
-
-            if (ScaleMode == ResolutionScaleMode.PreScale)
+            if (scaleY < scaleX)
             {
-                PreScaleTransform = TransformationMatrix;
-                PostScaleTransform = Matrix.Identity;
+                TransformationMatrix = Matrix.CreateScale(scaleY, scaleY, 1f);
             }
             else
             {
-                PreScaleTransform = Matrix.Identity;
-                PostScaleTransform = TransformationMatrix;
+                TransformationMatrix = Matrix.CreateScale(scaleX, scaleX, 1f);
             }
         }
     }

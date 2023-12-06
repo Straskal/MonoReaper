@@ -1,13 +1,13 @@
-﻿using Core;
+﻿using Engine;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     public sealed class LevelTrigger : Component
     {
         public readonly string LevelName;
         public readonly string SpawnPoint;
 
-        public LevelTrigger(string level, string spawnPoint) 
+        public LevelTrigger(string level, string spawnPoint)
         {
             LevelName = level;
             SpawnPoint = spawnPoint;

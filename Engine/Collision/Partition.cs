@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Core.Graphics;
+using Engine.Graphics;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// This class is used to organize boxes by position for efficient spatial queries.
@@ -27,7 +27,7 @@ namespace Core.Collision
 
         internal void Add(Box box)
         {
-            if (box.PartitionCellPoints.Count != 0) 
+            if (box.PartitionCellPoints.Count != 0)
             {
                 throw new InvalidOperationException("Cannot add box that is already added to partition.");
             }
@@ -119,7 +119,7 @@ namespace Core.Collision
                 var x = col * CellSize;
                 var opacity = kvp.Value.Count > 0 ? 0.8f : 0.05f;
 
-                Renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize, CellSize), Color.DarkBlue * opacity);
+                Renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize - 1, CellSize - 1), Color.DarkBlue * opacity);
             }
         }
     }

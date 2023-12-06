@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// This class contains the functions for the AABB Swept collision checking.
@@ -62,7 +62,7 @@ namespace Core.Collision
             normal = Vector2.Zero;
 
             // Do not handle two objects that are already colliding.
-            if (bounds.Intersects(otherBounds)) 
+            if (bounds.Intersects(otherBounds))
             {
                 return 1f;
             }

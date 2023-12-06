@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
-namespace Core
+namespace Engine
 {
     /// <summary>
     /// This is the base class for components.
@@ -29,7 +29,7 @@ namespace Core
         /// <remarks>
         /// Level will only be available if the component has been added to an entity, and that entity has been spawned into a level.
         /// </remarks>
-        public Level Level 
+        public Level Level
         {
             get => Entity.Level;
         }
@@ -37,7 +37,7 @@ namespace Core
         /// <summary>
         /// Gets or sets this components Z ordering for drawing.
         /// </summary>
-        public int ZOrder 
+        public int ZOrder
         {
             get;
             set;
@@ -49,7 +49,7 @@ namespace Core
         /// <remarks>
         /// This property will not change anything once the component has been spawned.
         /// </remarks>
-        public bool IsUpdateEnabled 
+        public bool IsUpdateEnabled
         {
             get;
             set;

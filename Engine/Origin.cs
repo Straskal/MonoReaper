@@ -1,7 +1,7 @@
-﻿using Core.Collision;
+﻿using Engine.Collision;
 using Microsoft.Xna.Framework;
 
-namespace Core
+namespace Engine
 {
     public enum Origin
     {
@@ -16,9 +16,9 @@ namespace Core
         BottomRight
     }
 
-    public static class Offset 
+    public static class Offset
     {
-        public static RectangleF GetRect(Origin origin, float x, float y, float width, float height) 
+        public static RectangleF GetRect(Origin origin, float x, float y, float width, float height)
         {
             RectangleF rect;
             rect.Width = width;
@@ -75,7 +75,7 @@ namespace Core
             return new Vector2(result.X, result.Y);
         }
 
-        public static Vector2 Create(Origin origin, float x, float y, float width, float height) 
+        public static Vector2 Create(Origin origin, float x, float y, float width, float height)
         {
             Vector2 position;
 

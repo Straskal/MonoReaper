@@ -2,10 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Core.Graphics;
-using Reaper.Engine.Graphics;
+using Engine.Graphics;
 
-namespace Core
+namespace Engine
 {
     public class App : Game
     {
@@ -48,7 +47,7 @@ namespace Core
 
             GraphicsDeviceManager.ApplyChanges();
 
-            Resolution.Initialize(ResolutionWidth, ResolutionHeight, ResolutionScaleMode.PreScale);
+            Resolution.Initialize(ResolutionWidth, ResolutionHeight);
         }
 
         public Level CurrentLevel { get; private set; }
@@ -97,7 +96,7 @@ namespace Core
 
         protected override void UnloadContent()
         {
-            CurrentLevel?.End();            
+            CurrentLevel?.End();
             Renderer.Unload();
             Content.Unload();
         }
@@ -105,21 +104,16 @@ namespace Core
         protected override void Update(GameTime gameTime)
         {
             TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
-            Resolution.Calculate();
-            Input.Poll();
+            Resolution.Update();
+            Input.Update();
             _onChangeLevel?.Invoke();
             CurrentLevel?.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            if (CurrentLevel != null) 
-            {
-                var target = CurrentLevel.Draw(_isDebugging);
-                Renderer.BeginDraw(Resolution.PostScaleTransform);
-                Renderer.Draw(target, Vector2.Zero, Color.White);
-                Renderer.EndDraw();
-            }
+            Graphics.LetterboxClear(ResolutionWidth, ResolutionHeight, Color.Black);
+            CurrentLevel?.Draw(_isDebugging);
         }
     }
 }

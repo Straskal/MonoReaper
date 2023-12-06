@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Core.Graphics
+namespace Engine.Graphics
 {
     public sealed class Particles : Component
     {
@@ -16,6 +16,8 @@ namespace Core.Graphics
             internal ParticleSystem(Particles particles)
             {
                 _particles = particles;
+
+                IsUpdateEnabled = true;
             }
 
             public override void OnUpdate(GameTime gameTime)
@@ -56,8 +58,8 @@ namespace Core.Graphics
 
                 for (int i = 0; i < count; i++)
                 {
-                    float vx = (float)(Rng.NextDouble() * _particles.MaxVelocity.X - (_particles.MaxVelocity.X / 2));
-                    float vy = (float)(Rng.NextDouble() * _particles.MaxVelocity.Y - (_particles.MaxVelocity.Y / 2));
+                    float vx = (float)(Rng.NextDouble() * _particles.MaxVelocity.X - _particles.MaxVelocity.X / 2);
+                    float vy = (float)(Rng.NextDouble() * _particles.MaxVelocity.Y - _particles.MaxVelocity.Y / 2);
 
                     var particle = new Particle
                     {
@@ -81,6 +83,8 @@ namespace Core.Graphics
             internal ParticleRenderer(Particles particles)
             {
                 _particles = particles;
+
+                IsDrawEnabled = true;
             }
 
             public override void OnDraw()
@@ -117,6 +121,9 @@ namespace Core.Graphics
         {
             _system = new ParticleSystem(this);
             _renderer = new ParticleRenderer(this);
+
+            IsUpdateEnabled = true;
+            IsDrawEnabled = true;
         }
 
         public Particles(Texture2D texture, Rectangle sourceRectangle) : this()

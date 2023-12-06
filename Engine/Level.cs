@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Core.Collision;
-using Core.Graphics;
-using Reaper.Engine.Graphics;
-using System.Linq;
+using Engine.Graphics;
+using Engine.Collision;
 
-namespace Core
+namespace Engine
 {
     /// <summary>
     /// This class represents a level in the game.
@@ -84,7 +82,7 @@ namespace Core
                 entity.Position = position;
                 _entities.Add(entity);
                 AddComponents(entity, entity.Components);
-            }    
+            }
         }
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace Core
                 {
                     startComponents[i].OnStart();
 
-                    if (startComponents[i].IsUpdateEnabled) 
+                    if (startComponents[i].IsUpdateEnabled)
                     {
                         _componentsToUpdate.Add(startComponents[i]);
                     }
@@ -206,7 +204,7 @@ namespace Core
                         {
                             _componentsToDraw.Add(components[i]);
                         }
-                    }       
+                    }
                 };
             }
             catch (StackOverflowException)
@@ -277,64 +275,42 @@ namespace Core
             _componentsToRemove.Clear();
         }
 
-        public virtual RenderTarget2D Draw(bool debug)
+        public virtual void Draw(bool debug)
         {
-            _components.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
-            var currentRenderTarget = RenderTarget;
-            Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
-            App.Graphics.FullViewportClear(Color.Transparent);
+            _componentsToDraw.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
+
+            Renderer.BeginDraw(Camera.TransformationMatrix);
 
             for (int i = 0; i < _componentsToDraw.Count; i++)
             {
                 _componentsToDraw[i].OnDraw();
             }
 
-            Renderer.EndDraw();
-
-            //foreach (var effect in PostProcessingEffects)
-            //{
-            //    Renderer.BeginDraw(Matrix.Identity, effect.Target);
-
-            //    App.Graphics.FullViewportClear(Color.Transparent);
-
-            //    effect.OnDraw(currentRenderTarget, Camera.TransformationMatrix);
-
-            //    Renderer.EndDraw();
-
-            //    currentRenderTarget = effect.Target;
-            //}
-
-            if (debug) 
+            if (debug)
             {
-                Renderer.BeginDraw(Camera.TransformationMatrix, currentRenderTarget);
-
                 Partition.DebugDraw();
 
                 for (int i = 0; i < _components.Count; i++)
                 {
                     _components[i].OnDebugDraw();
                 }
-
-                Renderer.EndDraw();
             }
 
-
-
-            return currentRenderTarget;
+            Renderer.EndDraw();
         }
 
         public virtual void End()
         {
             RenderTarget.Dispose();
 
-            foreach (var effect in PostProcessingEffects)
+            var components = new List<Component>();
+
+            foreach (var entity in _entities)
             {
-                effect.Dispose();
+                components.AddRange(entity.Components);
             }
 
-            var allComponents = _entities.SelectMany(entity => entity.Components);
-
-            foreach (var component in allComponents) 
+            foreach (var component in components)
             {
                 component.OnEnd();
             }

@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Microsoft.Xna.Framework.Content.Pipeline;
 
-namespace Adventure.Content.Pipeline
+namespace Adventure.Content.Pipeline.Ldtk
 {
     [ContentImporter(".ldtkl", DisplayName = "LDTK Level", DefaultProcessor = nameof(LdtkLevelProcessor))]
     public class LdtkLevelImporter : ContentImporter<LdtkLevel>

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Adventure.Content.Pipeline
+namespace Adventure.Content.Pipeline.Ldtk
 {
     public class LdtkLevel
     {

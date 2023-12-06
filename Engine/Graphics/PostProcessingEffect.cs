@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Core.Graphics
+namespace Engine.Graphics
 {
     public class PostProcessingEffect : IDisposable
     {

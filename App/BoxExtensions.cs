@@ -1,6 +1,5 @@
-﻿using Core.Collision;
-
-using static Reaper.Constants;
+﻿using Engine.Collision;
+using static Adventure.Constants;
 
 namespace Adventure
 {

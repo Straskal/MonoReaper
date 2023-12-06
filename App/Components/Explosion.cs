@@ -1,16 +1,21 @@
-﻿using Core;
-using Core.Graphics;
+﻿using Engine;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Reaper.Components
+namespace Adventure.Components
 {
     public sealed class Explosion : Component
     {
         private SpriteSheet _spriteSheet;
         private SoundEffect _sound;
+
+        public Explosion() 
+        {
+            IsUpdateEnabled = true;
+        }
 
         public override void OnLoad(ContentManager content)
         {
@@ -47,12 +52,12 @@ namespace Reaper.Components
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (_spriteSheet.CurrentFrame == 1) 
+            if (_spriteSheet.CurrentFrame == 1)
             {
                 DistortionPostProcessingEffect.Explosion = Entity.Position;
             }
 
-            if (_spriteSheet.IsFinished) 
+            if (_spriteSheet.IsFinished)
             {
                 Level.Destroy(Entity);
             }

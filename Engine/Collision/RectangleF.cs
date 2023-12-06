@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// A rectangle containing floating point position and size.
@@ -41,9 +41,9 @@ namespace Core.Collision
 
         public readonly bool Intersects(RectangleF other)
         {
-            return other.Left < Right 
-                && Left < other.Right 
-                && other.Top < Bottom 
+            return other.Left < Right
+                && Left < other.Right
+                && other.Top < Bottom
                 && Top < other.Bottom;
         }
 

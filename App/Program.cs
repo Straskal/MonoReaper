@@ -1,7 +1,8 @@
 ﻿
-using Ldtk;
+using Adventure;
+using Engine;
 
-using (var game = new Core.App())
+using (var game = new App())
 {
     //game.LoadOgmoLayout("content/layouts/layout1.json");
     //game.LoadOgmoLevel("content/layouts/level_0.json");

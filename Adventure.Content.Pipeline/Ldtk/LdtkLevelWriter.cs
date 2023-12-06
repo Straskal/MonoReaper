@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Adventure.Content.Pipeline
+namespace Adventure.Content.Pipeline.Ldtk
 {
     [ContentTypeWriter]
     public class LdtkLevelWriter : ContentTypeWriter<LdtkLevel>
@@ -18,7 +18,7 @@ namespace Adventure.Content.Pipeline
 
             var entityLayer = value.LayerInstances.FirstOrDefault(layer => StringComparer.OrdinalIgnoreCase.Equals(layer.Identifier, "entities"));
 
-            if (entityLayer != null) 
+            if (entityLayer != null)
             {
                 output.Write(entityLayer.EntityInstances.Length);
 
@@ -42,7 +42,7 @@ namespace Adventure.Content.Pipeline
                 output.Write(Path.ChangeExtension(tileLayer.TileSetRelativePath, null));
                 output.Write(tileLayer.GridTiles.Length);
 
-                foreach (var tile in tileLayer.GridTiles) 
+                foreach (var tile in tileLayer.GridTiles)
                 {
                     output.Write(new Vector2(tile.Position[0], tile.Position[1]));
                     output.Write(new Vector2(tile.Source[0], tile.Source[1]));

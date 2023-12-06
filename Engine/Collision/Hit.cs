@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Core.Collision
+namespace Engine.Collision
 {
     /// <summary>
     /// This class represents a collision hit and contains some helper methods to resolve the collision.
