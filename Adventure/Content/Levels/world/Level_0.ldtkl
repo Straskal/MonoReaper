@@ -54,22 +54,19 @@
 			"entityInstances": [
 				{
 					"__identifier": "Player",
-					"__grid": [7,8],
+					"__grid": [7,9],
 					"__pivot": [0.5,0.5],
 					"__tags": ["player"],
 					"__tile": { "tilesetUid": 2, "x": 80, "y": 240, "w": 16, "h": 16 },
 					"__smartColor": "#1671E7",
 					"__worldX": 112,
-					"__worldY": 128,
+					"__worldY": 144,
 					"iid": "18fc0230-8990-11ee-aec4-5fda94fd190c",
 					"width": 16,
 					"height": 16,
 					"defUid": 1,
-					"px": [112,128],
-					"fieldInstances": [{ "__identifier": "Player", "__type": "LocalEnum.EntityType", "__value": "Player", "__tile": null, "defUid": 8, "realEditorValues": [{
-						"id": "V_String",
-						"params": ["Player"]
-					}] }]
+					"px": [112,144],
+					"fieldInstances": []
 				},
 				{
 					"__identifier": "Barrel",
