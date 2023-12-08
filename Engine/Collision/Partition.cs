@@ -61,7 +61,12 @@ namespace Engine.Collision
             Add(box);
         }
 
-        public IEnumerable<Box> QueryBounds(RectangleF bounds)
+        public IEnumerable<Box> Query(Vector2 position)
+        {
+            return QueryCells(GetCellsForRectangle(new RectangleF(position.X, position.Y, 1, 1)));
+        }
+
+        public IEnumerable<Box> Query(RectangleF bounds)
         {
             return QueryCells(GetCellsForRectangle(bounds));
         }

@@ -21,8 +21,8 @@ namespace Adventure.Components
             Entity.AddComponent(_particles = new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
-                MaxVelocity = new Vector2(10f, -50f),
-                MaxAngularVelocity = 10f,
+                Velocity = new Vector2(10f, -50f),
+                AngularVelocity = 10f,
                 MinColor = Color.White,
                 MaxColor = Color.White * 0.1f,
                 MaxTime = 0.25f

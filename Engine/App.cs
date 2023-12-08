@@ -10,49 +10,39 @@ namespace Engine
     public class App : Game
     {
         public const string ContentRoot = "Content";
-
-        public const int ResolutionWidth = 224;
-        public const int ResolutionHeight = 224;
-
         public const bool StartFullscreen = false;
-
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public static GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
-        public static ContentManager ContentManager { get; private set; }
-        public static int ViewportWidth { get; private set; }
-        public static int ViewportHeight { get; private set; }
         public static float TotalTime { get; private set; }
-        public static App Current { get; private set; }
+        public static App Instance { get; private set; }
 
         private bool _isDebugging;
         private Action _onChangeLevel;
         public Action LoadInitialLevel { get; set; }
 
-        public App()
+        public App(int targetResolutionWidth, int targetResolutionHeight)
         {
-            Current = this;
-            Content = ContentManager = new ContentManagerExtended(Services)
-            {
-                RootDirectory = ContentRoot
-            };
-            ViewportWidth = ResolutionWidth;
-            ViewportHeight = ResolutionHeight;
+            ResolutionWidth = targetResolutionWidth;
+            ResolutionHeight = targetResolutionHeight;
+
+            Instance = this;
+            Content = new ContentManagerExtended(Services, ContentRoot);
             Window.AllowUserResizing = true;
             Window.IsBorderless = false;
             IsMouseVisible = true;
-
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = StartFullscreen,
-                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ViewportWidth,
-                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ViewportHeight,
+                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ResolutionWidth,
+                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ResolutionHeight,
                 HardwareModeSwitch = false
             };
-
             GraphicsDeviceManager.ApplyChanges();
-
-            Resolution.Initialize(ResolutionWidth, ResolutionHeight);
         }
+
+        public int ResolutionWidth { get; }
+        public int ResolutionHeight { get; }
+        public Random Random { get; } = new();
 
         public Level CurrentLevel { get; private set; }
 
@@ -67,7 +57,7 @@ namespace Engine
             };
         }
 
-        public static void ToggleFullscreen()
+        public void ToggleFullscreen()
         {
             GraphicsDeviceManager.ToggleFullScreen();
 
@@ -78,8 +68,8 @@ namespace Engine
             }
             else
             {
-                GraphicsDeviceManager.PreferredBackBufferWidth = ViewportWidth;
-                GraphicsDeviceManager.PreferredBackBufferHeight = ViewportHeight;
+                GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
+                GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
             }
 
             GraphicsDeviceManager.ApplyChanges();
@@ -92,15 +82,16 @@ namespace Engine
 
         protected override void LoadContent()
         {
+            Resolution.Initialize(ResolutionWidth, ResolutionHeight);
+            Renderer.Initialize(GraphicsDevice);
             LoadInitialLevel?.Invoke();
-            Renderer.Initialize();
             base.LoadContent();
         }
 
         protected override void UnloadContent()
         {
             CurrentLevel?.End();
-            Renderer.Unload();
+            Renderer.Deinitialize();
             Content.Unload();
         }
 
@@ -115,8 +106,13 @@ namespace Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            Graphics.LetterboxClear(ResolutionWidth, ResolutionHeight, Color.Black);
+            Renderer.SetRenderTarget(CurrentLevel?.RenderTarget);
+            Renderer.LetterboxClear();
             CurrentLevel?.Draw(_isDebugging);
+            Renderer.SetRenderTarget(null);
+            Renderer.BeginDraw(Resolution.RenderTargetUpscalingMatrix);
+            Renderer.Draw(CurrentLevel?.RenderTarget, Vector2.Zero);
+            Renderer.EndDraw();
         }
     }
 }

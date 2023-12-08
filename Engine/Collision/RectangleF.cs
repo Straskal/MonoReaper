@@ -47,6 +47,11 @@ namespace Engine.Collision
                 && Top < other.Bottom;
         }
 
+        public readonly bool Contains(Vector2 position) 
+        {
+            return position.X >= Left && position.X <= Right && position.Y >= Top && position.Y <= Bottom;
+        }
+
         public readonly RectangleF Union(Vector2 direction)
         {
             return Union(new RectangleF(X + direction.X, Y + direction.Y, Width, Height));

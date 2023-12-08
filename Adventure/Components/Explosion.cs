@@ -9,7 +9,7 @@ namespace Adventure.Components
 {
     public sealed class Explosion : Component
     {
-        private SpriteSheet _spriteSheet;
+        private AnimatedSprite _spriteSheet;
         private SoundEffect _sound;
 
         public Explosion() 
@@ -19,17 +19,12 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            var playerTexture = content.Load<Texture2D>("art/common/explosion-1");
-
             _sound = content.Load<SoundEffect>("audio/explosion4");
 
-            Entity.AddComponent(new Sprite(playerTexture) { ZOrder = 10 });
-            Entity.AddComponent(_spriteSheet = new SpriteSheet(new[]
+            Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/common/explosion-1"), new[]
             {
-                new SpriteSheet.Animation
+                new Animation("idle")
                 {
-                    Name = "idle",
-                    Loop = false,
                     Frames = new []
                     {
                         new Rectangle(32 * 0, 0, 32, 32),
@@ -42,7 +37,10 @@ namespace Adventure.Components
                     }
                 }
             })
-            { Speed = 0.1f });
+            { 
+                Speed = 0.1f, 
+                ZOrder = 10 
+            });
         }
 
         public override void OnSpawn()

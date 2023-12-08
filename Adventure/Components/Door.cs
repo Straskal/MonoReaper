@@ -22,14 +22,14 @@ namespace Adventure.Components
                 return;
             }
 
-            Entity.GetComponent<SpriteSheet>().Play("open");
+            Entity.GetComponent<AnimatedSprite>().Play("open");
 
             isMoving = true;
         }
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (isMoving && Entity.GetComponent<SpriteSheet>().IsFinished)
+            if (isMoving && Entity.GetComponent<AnimatedSprite>().IsFinished)
             {
                 isMoving = false;
                 isOpen = true;
@@ -40,25 +40,18 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            var texture = content.Load<Texture2D>("art/common/door_");
-
             Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
-            Entity.AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new SpriteSheet(new SpriteSheet.Animation[]
+            Entity.AddComponent(new AnimatedSprite(content.Load<Texture2D>("art/common/door_"), new Animation[]
             {
-                new SpriteSheet.Animation
+                new Animation("idle")
                 {
-                    Name = "idle",
-                    Loop = false,
                     Frames = new []
                     {
                         new Rectangle(16 * 0, 0, 16, 16)
                     }
                 },
-                new SpriteSheet.Animation
+                new Animation("open")
                 {
-                    Name = "open",
-                    Loop = false,
                     Frames = new []
                     {
                         new Rectangle(16 * 0, 0, 16, 16),
@@ -68,10 +61,8 @@ namespace Adventure.Components
                         new Rectangle(16 * 4, 0, 16, 16),
                     }
                 },
-                new SpriteSheet.Animation
+                new Animation("close")
                 {
-                    Name = "close",
-                    Loop = false,
                     Frames = new []
                     {
                         new Rectangle(16 * 4, 0, 16, 16),

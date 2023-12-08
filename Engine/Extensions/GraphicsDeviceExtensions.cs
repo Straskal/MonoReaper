@@ -5,6 +5,22 @@ namespace Engine.Extensions
 {
     public static class GraphicsDeviceExtensions
     {
+        public static void FullViewportClear(this GraphicsDevice graphics, Color color)
+        {
+            var screenWidth = graphics.PresentationParameters.BackBufferWidth;
+            var screenHeight = graphics.PresentationParameters.BackBufferHeight;
+
+            graphics.Viewport = new Viewport
+            {
+                X = 0,
+                Y = 0,
+                Width = screenWidth,
+                Height = screenHeight
+            };
+
+            graphics.Clear(color);
+        }
+
         public static void LetterboxClear(this GraphicsDevice graphics, int targetWidth, int targetHeight, Color color)
         {
             var screenWidth = graphics.PresentationParameters.BackBufferWidth;

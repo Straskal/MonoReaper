@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Graphics;
 using Engine.Collision;
@@ -19,7 +18,7 @@ namespace Engine
         /// <summary>
         /// The level's very own content manager.
         /// </summary>
-        protected ContentManager Content { get; }
+        protected ContentManagerExtended Content { get; }
 
         /// <summary>
         /// WIP
@@ -36,13 +35,15 @@ namespace Engine
         private delegate void ComponentAddedHandler(Entity entity, params Component[] components);
         private ComponentAddedHandler _onComponentsAdded;
 
+        private bool _componentsToDrawNeedsSort = false;
+
         public Level(int cellSize, int width, int height)
         {
-            Content = new ContentManager(App.Current.Services, App.ContentRoot);
+            Content = new ContentManagerExtended(App.Instance.Services, App.ContentRoot);
             Width = width;
             Height = height;
-            Camera = new Camera(App.ViewportWidth, App.ViewportHeight);
-            RenderTarget = new RenderTarget2D(App.GraphicsDeviceManager.GraphicsDevice, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight);
+            Camera = new Camera(Resolution.Width, Resolution.Height);
+            RenderTarget = new RenderTarget2D(App.Instance.GraphicsDevice, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight);
             Partition = new Partition(cellSize);
         }
 
@@ -203,6 +204,7 @@ namespace Engine
                         if (components[i].IsDrawEnabled)
                         {
                             _componentsToDraw.Add(components[i]);
+                            _componentsToDrawNeedsSort = true;
                         }
                     }
                 };
@@ -277,7 +279,11 @@ namespace Engine
 
         public virtual void Draw(bool debug)
         {
-            _componentsToDraw.Sort((x, y) => x.ZOrder.CompareTo(y.ZOrder));
+            if (_componentsToDrawNeedsSort)
+            {
+                _componentsToDraw.Sort(SortDrawableComponents);
+                _componentsToDrawNeedsSort = false;
+            }
 
             Renderer.BeginDraw(Camera.TransformationMatrix);
 
@@ -297,6 +303,11 @@ namespace Engine
             }
 
             Renderer.EndDraw();
+        }
+
+        private static int SortDrawableComponents(Component a, Component b)
+        {
+            return Comparer<int>.Default.Compare(a.ZOrder, b.ZOrder);
         }
 
         public virtual void End()

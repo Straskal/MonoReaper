@@ -72,7 +72,7 @@ namespace Adventure.Components
         {
             foreach (var tile in Data.Tiles)
             {
-                Renderer.Draw(Data.Texture, tile.Source, tile.Position, Color.White, false);
+                Renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
             }
         }
 

@@ -8,7 +8,7 @@ namespace Engine
     /// </summary>
     public sealed class ContentManagerExtended : ContentManager
     {
-        public ContentManagerExtended(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ContentManagerExtended(IServiceProvider serviceProvider, string rootDirectory) : base(serviceProvider, rootDirectory)
         {
         }
 

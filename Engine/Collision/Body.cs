@@ -39,7 +39,7 @@ namespace Engine.Collision
                 var bounds = CalculateBounds();
                 var broadphaseRectangle = bounds.Union(velocity);
 
-                foreach (var box in Level.Partition.QueryBounds(broadphaseRectangle))
+                foreach (var box in Level.Partition.Query(broadphaseRectangle))
                 {
                     // Don't check for collisions if the object is filtered out with a layer mask.
                     if ((box.LayerMask | layerMask) != layerMask)

@@ -5,20 +5,18 @@ namespace Adventure.Components
 {
     internal class PlayerAnimations
     {
-        public static readonly SpriteSheet.Animation[] Frames = new[]
+        public static readonly Animation[] Frames = new[]
             {
-                new SpriteSheet.Animation
+                new Animation("idle")
                 {
-                    Name = "idle",
                     Loop = true,
                     Frames = new []
                     {
                         new Rectangle(0, 0, 16, 16),
                     }
 },
-                new SpriteSheet.Animation
+                new Animation("walk_down")
                 {
-                    Name = "walk_down",
                     Loop = true,
                     Frames = new[]
                     {
@@ -26,9 +24,8 @@ namespace Adventure.Components
                         new Rectangle(16 * 2, 0, 16, 16),
                     }
                 },
-                new SpriteSheet.Animation
+                new Animation("walk_up")
                 {
-                    Name = "walk_up",
                     Loop = true,
                     Frames = new[]
                     {
@@ -36,9 +33,8 @@ namespace Adventure.Components
                         new Rectangle(16 * 4, 0, 16, 16),
                     }
                 },
-                new SpriteSheet.Animation
+                new Animation("walk_left")
                 {
-                    Name = "walk_left",
                     Loop = true,
                     Frames = new[]
                     {
@@ -46,9 +42,8 @@ namespace Adventure.Components
                         new Rectangle(16 * 6, 0, 16, 16),
                     }
                 },
-                new SpriteSheet.Animation
+                new Animation("walk_right")
                 {
-                    Name = "walk_right",
                     Loop = true,
                     Frames = new[]
                     {

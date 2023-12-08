@@ -314,6 +314,13 @@
 /processorParam:Quality=Best
 /build:Audio/pickup_key.wav
 
+#begin Fonts/File.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/File.spritefont;Fonts/Font.spritefont
+
 #begin Levels/world/Level_0.ldtkl
 /importer:LdtkLevelImporter
 /processor:LdtkLevelProcessor

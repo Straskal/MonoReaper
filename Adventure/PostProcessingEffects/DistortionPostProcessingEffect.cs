@@ -1,18 +1,16 @@
-﻿using Engine;
-using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Extensions;
+using Engine.Graphics;
 
 namespace Adventure
 {
     public sealed class DistortionPostProcessingEffect : PostProcessingEffect
     {
-        private readonly Effect _effect;
-
         private static Vector2 _explosion;
         public static Vector2 Explosion
         {
+            get => _explosion;
             set
             {
                 _explosion = value;
@@ -22,9 +20,8 @@ namespace Adventure
 
         private static float _timer = 0f;
 
-        public DistortionPostProcessingEffect(Effect effect) : base(App.Graphics, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight)
+        public DistortionPostProcessingEffect(Effect effect) : base(effect)
         {
-            _effect = effect;
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -48,25 +45,13 @@ namespace Adventure
                 var force = 25f;
                 var forceNormalized = MathHelper.SmoothStep(force, 0f, _timer);
 
-                _effect.Parameters["Thickness"].SetValue(thickness);
-                _effect.Parameters["Force"].SetValue(forceNormalized);
-                _effect.Parameters["Center"].SetValue(_explosion);
-                _effect.Parameters["Radius"].SetValue(radius);
+                Parameters["Thickness"].SetValue(thickness);
+                Parameters["Force"].SetValue(forceNormalized);
+                Parameters["Center"].SetValue(_explosion);
+                Parameters["Radius"].SetValue(radius); 
+                Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
+                //Parameters["View"].SetValue(transformation);
             }
-        }
-
-        public override void OnDraw(Texture2D currentTarget, Matrix transformation)
-        {
-            _effect.Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
-            _effect.Parameters["View"].SetValue(transformation);
-
-            if (_explosion == Vector2.Zero)
-            {
-                Renderer.Draw(currentTarget, Vector2.Zero, Color.White);
-                return;
-            }
-
-            Renderer.Draw(currentTarget, Vector2.Zero, Color.White, _effect);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Adventure.Components
         public const float MaxSpeed = 0.85f;
 
         private Body _body;
-        private SpriteSheet _spriteSheet;
+        private AnimatedSprite _spriteSheet;
 
         private AxisAction _moveX;
         private AxisAction _moveY;
@@ -42,8 +42,7 @@ namespace Adventure.Components
             Fireball.Preload(content);
 
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(new Sprite(content.Load<Texture2D>("art/player/player")));
-            Entity.AddComponent(_spriteSheet = new SpriteSheet(PlayerAnimations.Frames));
+            Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/player/player"), PlayerAnimations.Frames));
         }
 
         public override void OnSpawn()
@@ -100,7 +99,7 @@ namespace Adventure.Components
         {
             if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
             {
-                App.Current.LoadLevel(transition.LevelName, transition.SpawnPoint);
+                App.Instance.LoadLevel(transition.LevelName, transition.SpawnPoint);
             }
 
             if (hit.Other.IsSolid())
