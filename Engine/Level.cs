@@ -285,8 +285,6 @@ namespace Engine
                 _componentsToDrawNeedsSort = false;
             }
 
-            Renderer.BeginDraw(Camera.TransformationMatrix);
-
             for (int i = 0; i < _componentsToDraw.Count; i++)
             {
                 _componentsToDraw[i].OnDraw();
@@ -301,8 +299,6 @@ namespace Engine
                     _components[i].OnDebugDraw();
                 }
             }
-
-            Renderer.EndDraw();
         }
 
         private static int SortDrawableComponents(Component a, Component b)

@@ -321,6 +321,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/File.spritefont;Fonts/Font.spritefont
 
+#begin Fonts/Pixels.ttf
+/copy:Fonts/Pixels.ttf
+
 #begin Levels/world/Level_0.ldtkl
 /importer:LdtkLevelImporter
 /processor:LdtkLevelProcessor

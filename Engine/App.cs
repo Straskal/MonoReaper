@@ -11,9 +11,8 @@ namespace Engine
     {
         public const string ContentRoot = "Content";
         public const bool StartFullscreen = false;
-        public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public static GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
-        public static float TotalTime { get; private set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+        public GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
         public static App Instance { get; private set; }
 
         private bool _isDebugging;
@@ -22,14 +21,17 @@ namespace Engine
 
         public App(int targetResolutionWidth, int targetResolutionHeight)
         {
+            Instance = this;
             ResolutionWidth = targetResolutionWidth;
             ResolutionHeight = targetResolutionHeight;
 
-            Instance = this;
             Content = new ContentManagerExtended(Services, ContentRoot);
+
             Window.AllowUserResizing = true;
             Window.IsBorderless = false;
+
             IsMouseVisible = true;
+
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = StartFullscreen,
@@ -37,6 +39,7 @@ namespace Engine
                 PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ResolutionHeight,
                 HardwareModeSwitch = false
             };
+
             GraphicsDeviceManager.ApplyChanges();
         }
 
@@ -97,7 +100,6 @@ namespace Engine
 
         protected override void Update(GameTime gameTime)
         {
-            TotalTime = (float)gameTime.TotalGameTime.TotalSeconds;
             Resolution.Update();
             Input.Update();
             _onChangeLevel?.Invoke();
@@ -106,12 +108,20 @@ namespace Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetRenderTarget(CurrentLevel?.RenderTarget);
+            if (CurrentLevel == null) 
+            {
+                return;
+            }
+
+            Renderer.SetRenderTarget(CurrentLevel.RenderTarget);
             Renderer.LetterboxClear();
-            CurrentLevel?.Draw(_isDebugging);
+            Renderer.BeginDraw(CurrentLevel.Camera.TransformationMatrix);
+            CurrentLevel.Draw(_isDebugging);
+            Renderer.EndDraw();
             Renderer.SetRenderTarget(null);
+            Renderer.FullViewportClear();
             Renderer.BeginDraw(Resolution.RenderTargetUpscalingMatrix);
-            Renderer.Draw(CurrentLevel?.RenderTarget, Vector2.Zero);
+            Renderer.Draw(CurrentLevel.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
         }
     }

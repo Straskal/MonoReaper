@@ -61,10 +61,8 @@ namespace Adventure
                 {
                     if (box.CalculateBounds().Contains(mouseWorldPosition)) 
                     {
-                        Renderer.BeginDraw(Camera.TransformationMatrix);
                         Renderer.DrawRectangle(box.CalculateBounds().ToXnaRect(), new Color(Color.Blue, 0.2f));
                         Renderer.DrawString(_spriteFont, box.CalculateBounds().Position.ToString(), mouseWorldPosition, Color.White);
-                        Renderer.EndDraw();
                         break;
                     }
                 }

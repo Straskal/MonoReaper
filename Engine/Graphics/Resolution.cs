@@ -77,8 +77,8 @@ namespace Engine.Graphics
 
             if (ScaleMode == ResolutionScaleMode.Camera)
             {
-                RenderTargetWidth = App.Graphics.DisplayMode.Width;
-                RenderTargetHeight = App.Graphics.DisplayMode.Height;
+                RenderTargetWidth = App.Instance.Graphics.DisplayMode.Width;
+                RenderTargetHeight = App.Instance.Graphics.DisplayMode.Height;
             }
             else 
             {
@@ -92,8 +92,8 @@ namespace Engine.Graphics
         /// </summary>
         internal static void Update()
         {
-            var backBufferWidth = App.Graphics.PresentationParameters.BackBufferWidth;
-            var backBufferHeight = App.Graphics.PresentationParameters.BackBufferHeight;
+            var backBufferWidth = App.Instance.Graphics.PresentationParameters.BackBufferWidth;
+            var backBufferHeight = App.Instance.Graphics.PresentationParameters.BackBufferHeight;
 
             if (!(backBufferWidth == _previousBackBufferWidth && backBufferHeight == _previousBackBufferHeight)) 
             {
