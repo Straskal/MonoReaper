@@ -157,8 +157,8 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += App.Instance.Graphics.Viewport.X;
-            position.Y += App.Instance.Graphics.Viewport.Y;
+            position.X += Resolution.LetterboxViewport.X;
+            position.Y += Resolution.LetterboxViewport.Y;
 
             return Vector2.Transform(position, TransformationMatrix);
         }
@@ -170,10 +170,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= App.Instance.Graphics.Viewport.X;
-            position.Y -= App.Instance.Graphics.Viewport.Y;
+            position.X -= Resolution.LetterboxViewport.X;
+            position.Y -= Resolution.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * Resolution.RenderTargetUpscalingMatrix));
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Engine.Graphics
         public Animation(string name) 
         {
             Name = name;
-            NameHashCode = GetNameHashcode(name);
+            NameHashCode = GetNameHashCode(name);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Engine.Graphics
         /// <remarks>
         /// This will return a new hashcode every time the program is run.
         /// </remarks>
-        public static int GetNameHashcode(string animationName)
+        public static int GetNameHashCode(string animationName)
         {
             return HashCode.Combine(animationName);
         }

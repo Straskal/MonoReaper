@@ -1,41 +1,36 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Extensions
 {
     public static class GraphicsDeviceExtensions
     {
-        public static void FullViewportClear(this GraphicsDevice graphics, Color color)
+        /// <summary>
+        /// Returns the displays full viewport
+        /// </summary>
+        /// <param name="graphics"></param>
+        /// <returns></returns>
+        public static Viewport GetFullViewport(this GraphicsDevice graphics)
         {
-            var screenWidth = graphics.PresentationParameters.BackBufferWidth;
-            var screenHeight = graphics.PresentationParameters.BackBufferHeight;
-
-            graphics.Viewport = new Viewport
+            return new Viewport
             {
                 X = 0,
                 Y = 0,
-                Width = screenWidth,
-                Height = screenHeight
+                Width = graphics.PresentationParameters.BackBufferWidth,
+                Height = graphics.PresentationParameters.BackBufferHeight
             };
-
-            graphics.Clear(color);
         }
 
-        public static void LetterboxClear(this GraphicsDevice graphics, int targetWidth, int targetHeight, Color color)
+        /// <summary>
+        /// Returns the displays letterbox viewport
+        /// </summary>
+        /// <param name="graphics"></param>
+        /// <param name="targetWidth"></param>
+        /// <param name="targetHeight"></param>
+        /// <returns></returns>
+        public static Viewport GetLetterboxViewport(this GraphicsDevice graphics, int targetWidth, int targetHeight) 
         {
             var screenWidth = graphics.PresentationParameters.BackBufferWidth;
             var screenHeight = graphics.PresentationParameters.BackBufferHeight;
-
-            graphics.Viewport = new Viewport
-            {
-                X = 0,
-                Y = 0,
-                Width = screenWidth,
-                Height = screenHeight
-            };
-
-            graphics.Clear(color);
-
             var targetRatio = targetWidth / (float)targetHeight;
             var width = screenWidth;
             var height = (int)(screenWidth / targetRatio + 0.5f);
@@ -46,7 +41,7 @@ namespace Engine.Extensions
                 width = (int)(height * targetRatio + 0.5f);
             }
 
-            graphics.Viewport = new Viewport
+            return new Viewport
             {
                 X = screenWidth / 2 - width / 2,
                 Y = screenHeight / 2 - height / 2,

@@ -1,46 +1,26 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Engine.Extensions;
 
 namespace Engine.Graphics
 {
     public static class Resolution
     {
         /// <summary>
-        /// Resolution scale mode affects when resolution upscaling happens.
-        /// </summary>
-        public enum ResolutionScaleMode 
-        {
-            /// <summary>
-            /// Renderable items are upscaled and drawn to a display resolution render target.
-            /// </summary>
-            /// <remarks>
-            /// This makes for smoother looking pixels, but floating point imprecisions can cause artifacts.
-            /// </remarks>
-            Camera,
-
-            /// <summary>
-            /// Renderable items are drawn to a target resolution render target, which is upscaled when drawn to the screen.
-            /// </summary>
-            /// <remarks>
-            /// This is a more accurate pixel perfect rendering, but the upscale can result in jitter for low resolutions.
-            /// </remarks>
-            RenderTarget
-        }
-
-        /// <summary>
         /// Gets the resolution scale mode.
         /// </summary>
-        public static ResolutionScaleMode ScaleMode { get; private set; } = ResolutionScaleMode.Camera;
+        public static ResolutionScaleMode ScaleMode { get; internal set; } = ResolutionScaleMode.RenderTarget;
 
         /// <summary>
         /// Gets the target resolution width
         /// </summary>
-        public static int Width { get; private set; }
+        public static int Width { get; internal set; }
 
         /// <summary>
         /// Gets the target resolution height
         /// </summary>
-        public static int Height { get; private set; }
+        public static int Height { get; internal set; }
 
         /// <summary>
         /// Gets the intended width for render targets
@@ -51,6 +31,26 @@ namespace Engine.Graphics
         /// Gets the intended height for render targets
         /// </summary>
         public static int RenderTargetHeight { get; private set; }
+
+        /// <summary>
+        /// Gets the resolution full viewport
+        /// </summary>
+        public static Viewport FullViewport { get; private set; }
+
+        /// <summary>
+        /// Gets the resolution letterbox viewport
+        /// </summary>
+        public static Viewport LetterboxViewport { get; private set; }
+
+        /// <summary>
+        /// Gets the camera viewport
+        /// </summary>
+        public static Viewport CameraViewport { get; private set; }
+
+        /// <summary>
+        /// Gets the render target viewport
+        /// </summary>
+        public static Viewport RenderTargetViewport { get; private set; }
 
         /// <summary>
         /// Transformation intended to be applied to entities at the time of drawing them.
@@ -70,11 +70,8 @@ namespace Engine.Graphics
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        internal static void Initialize(int width, int height)
+        internal static void Initialize()
         {
-            Width = width;
-            Height = height;
-
             if (ScaleMode == ResolutionScaleMode.Camera)
             {
                 RenderTargetWidth = App.Instance.Graphics.DisplayMode.Width;
@@ -82,8 +79,8 @@ namespace Engine.Graphics
             }
             else 
             {
-                RenderTargetWidth = width;
-                RenderTargetHeight = height;
+                RenderTargetWidth = Width;
+                RenderTargetHeight = Height;
             }
         }
 
@@ -103,15 +100,22 @@ namespace Engine.Graphics
                 var scale = Math.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
                 var transformationMatrix = Matrix.CreateScale(scale, scale, 1f);
 
+                FullViewport = App.Instance.Graphics.GetFullViewport();
+                LetterboxViewport = App.Instance.Graphics.GetLetterboxViewport(Width, Height);
+
                 if (ScaleMode == ResolutionScaleMode.Camera)
                 {
                     CameraUpscalingMatrix = transformationMatrix;
                     RenderTargetUpscalingMatrix = Matrix.Identity;
+                    CameraViewport = LetterboxViewport;
+                    RenderTargetViewport = FullViewport;
                 }
                 else
                 {
                     CameraUpscalingMatrix = Matrix.Identity;
                     RenderTargetUpscalingMatrix = transformationMatrix;
+                    CameraViewport = FullViewport;
+                    RenderTargetViewport = LetterboxViewport;
                 }
             }
         }

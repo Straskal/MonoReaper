@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Extensions;
 
 namespace Engine.Graphics
 {
@@ -41,25 +40,26 @@ namespace Engine.Graphics
         /// Sets the current render target on the graphics device.
         /// </summary>
         /// <param name="renderTarget2D"></param>
-        public static void SetRenderTarget(RenderTarget2D renderTarget2D)
+        public static void SetTarget(RenderTarget2D renderTarget2D)
         {
             _graphicsDevice.SetRenderTarget(renderTarget2D);
         }
 
         /// <summary>
-        /// Clears the entire viewport.
+        /// Sets the graphics device viewport
         /// </summary>
-        public static void FullViewportClear() 
+        /// <param name="viewport"></param>
+        public static void SetViewport(Viewport viewport) 
         {
-            _graphicsDevice.FullViewportClear(Color.Black);
+            _graphicsDevice.Viewport = viewport;
         }
 
         /// <summary>
-        /// Clears the entire viewport and sets the viewport to user letterbox or pillarbox.
+        /// Clears the current render target
         /// </summary>
-        public static void LetterboxClear()
+        public static void Clear() 
         {
-            _graphicsDevice.LetterboxClear(Resolution.Width, Resolution.Height, Color.Black);
+            _graphicsDevice.Clear(Color.Black);
         }
 
         public static void BeginDraw()

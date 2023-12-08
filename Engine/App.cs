@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Graphics;
-using Engine.Extensions;
 
 namespace Engine
 {
@@ -19,11 +17,15 @@ namespace Engine
         private Action _onChangeLevel;
         public Action LoadInitialLevel { get; set; }
 
-        public App(int targetResolutionWidth, int targetResolutionHeight)
+        public App(int targetResolutionWidth, int targetResolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
             Instance = this;
             ResolutionWidth = targetResolutionWidth;
             ResolutionHeight = targetResolutionHeight;
+
+            Resolution.Width = targetResolutionWidth;
+            Resolution.Height = targetResolutionHeight;
+            Resolution.ScaleMode = resolutionScaleMode;
 
             Content = new ContentManagerExtended(Services, ContentRoot);
 
@@ -85,7 +87,7 @@ namespace Engine
 
         protected override void LoadContent()
         {
-            Resolution.Initialize(ResolutionWidth, ResolutionHeight);
+            Resolution.Initialize();
             Renderer.Initialize(GraphicsDevice);
             LoadInitialLevel?.Invoke();
             base.LoadContent();
@@ -113,13 +115,15 @@ namespace Engine
                 return;
             }
 
-            Renderer.SetRenderTarget(CurrentLevel.RenderTarget);
-            Renderer.LetterboxClear();
+            Renderer.SetTarget(CurrentLevel.RenderTarget);
+            Renderer.SetViewport(Resolution.CameraViewport);
+            Renderer.Clear();
             Renderer.BeginDraw(CurrentLevel.Camera.TransformationMatrix);
             CurrentLevel.Draw(_isDebugging);
             Renderer.EndDraw();
-            Renderer.SetRenderTarget(null);
-            Renderer.FullViewportClear();
+            Renderer.SetTarget(null);
+            Renderer.SetViewport(Resolution.RenderTargetViewport);
+            Renderer.Clear();
             Renderer.BeginDraw(Resolution.RenderTargetUpscalingMatrix);
             Renderer.Draw(CurrentLevel.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
