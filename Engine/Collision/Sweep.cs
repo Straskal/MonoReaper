@@ -49,7 +49,7 @@ namespace Engine.Collision
                         collisionTime: time,
                         // If we don't add this correction, boxes can get stuck on corners.
                         // If we do add this correction, then that can create innacurate collision responses.
-                        position: rect.Position + velocity * time /* + (Correction * normal)*/
+                        position: rect.Position + velocity * time + (Correction * normal)
                     );
                 }
             }
