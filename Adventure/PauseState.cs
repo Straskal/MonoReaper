@@ -39,7 +39,7 @@ namespace Adventure
         {
             SpriteFont = Application.Content.Load<SpriteFont>("Fonts/Font");
 
-            _buttonRectangle = new Rectangle(100, 150, 50, 20);
+            _buttonRectangle = new Rectangle(100, 150, 75, 20);
             _buttonColor = Color.Blue;
         }
 
@@ -65,7 +65,8 @@ namespace Adventure
 
                 if (_buttonActive && Mouse.GetState().LeftButton == ButtonState.Released)
                 {
-                    Application.Exit();
+                    Application.Stack.PopAll();
+                    Application.Stack.Push(new MainMenuState(Application));
                 }
             }
 
@@ -91,7 +92,7 @@ namespace Adventure
             renderer.DrawRectangle(new Rectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight), new Color(Color.Black, 0.4f));
             renderer.DrawString(SpriteFont, "Paused", new Vector2(100, 100), Color.White);
             renderer.DrawRectangle(_buttonRectangle, _buttonColor);
-            renderer.DrawString(SpriteFont, "Exit", new Vector2(_buttonRectangle.X, _buttonRectangle.Y), Color.Black);
+            renderer.DrawString(SpriteFont, "Main menu", new Vector2(_buttonRectangle.X, _buttonRectangle.Y), Color.Black);
             renderer.EndDraw();
         }
     }
