@@ -5,6 +5,9 @@ using Engine.Extensions;
 
 namespace Engine.Graphics
 {
+    /// <summary>
+    /// The virtual resolution that handles scaling and viewport logic
+    /// </summary>
     public sealed class VirtualResolution : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
@@ -104,6 +107,9 @@ namespace Engine.Graphics
             private set;
         }
 
+        /// <summary>
+        /// Updates the resolution to match any window changes. TODO: This could probably just be wired up to the window size changed event.
+        /// </summary>
         public void Update()
         {
             var backBufferWidth = _graphicsDevice.PresentationParameters.BackBufferWidth;
