@@ -130,7 +130,7 @@ namespace Engine.Collision
             // Calculate normal
             if (tn.X > tn.Y)
             {
-                if (dn.X < 0f)
+                if (dn.X < 0f || Math.Abs(dn.X) < 0.0001f && df.X < 0f)
                 {
                     normal.X = 1f;
                     normal.Y = 0f;
@@ -143,7 +143,7 @@ namespace Engine.Collision
             }
             else
             {
-                if (dn.Y < 0f)
+                if (dn.Y < 0f || Math.Abs(dn.Y) < 0.0001f && df.Y < 0f)
                 {
                     normal.X = 0f;
                     normal.Y = 1f;
