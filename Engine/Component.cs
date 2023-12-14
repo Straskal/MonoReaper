@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace Engine
@@ -126,11 +127,11 @@ namespace Engine
         /// <summary>
         /// This method is called once at the end of each frame.
         /// </summary>
-        public virtual void OnDraw() { }
+        public virtual void OnDraw(Renderer renderer, GameTime gameTime) { }
 
         /// <summary>
         /// This method is called once at the end of each frame.
         /// </summary>
-        public virtual void OnDebugDraw() { }
+        public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime) { }
     }
 }

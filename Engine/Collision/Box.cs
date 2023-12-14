@@ -121,9 +121,9 @@ namespace Engine.Collision
             Level.Partition.Update(this);
         }
 
-        public override void OnDebugDraw()
+        public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
-            Renderer.DrawRectangleOutline(CalculateBounds().ToXnaRect(), Color.White);
+            renderer.DrawRectangleOutline(CalculateBounds().ToXnaRect(), Color.White);
         }
     }
 }

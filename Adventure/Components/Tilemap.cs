@@ -68,11 +68,11 @@ namespace Adventure.Components
             }
         }
 
-        public override void OnDraw()
+        public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
             foreach (var tile in Data.Tiles)
             {
-                Renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
+                renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
             }
         }
 

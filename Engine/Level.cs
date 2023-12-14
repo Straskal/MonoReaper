@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Engine.Graphics;
 using Engine.Collision;
 
@@ -13,12 +12,23 @@ namespace Engine
     /// <remarks>
     /// A level contains entities and is responsible for orchestrating callback methods on entity components.
     /// </remarks>
-    public class Level
+    public class Level : GameState
     {
+        public enum LoadStatus
+        {
+            NotStarted,
+            Loading,
+            Loaded
+        }
+
         /// <summary>
         /// The level's very own content manager.
         /// </summary>
-        protected ContentManagerExtended Content { get; }
+        protected ContentManagerExtended Content 
+        { 
+            get;
+            private set;
+        }
 
         /// <summary>
         /// WIP
@@ -36,14 +46,14 @@ namespace Engine
         private ComponentAddedHandler _onComponentsAdded;
 
         private bool _componentsToDrawNeedsSort = false;
+        private Coroutine _loadCoroutine;
 
-        public Level(int cellSize, int width, int height)
+        public Level(App application, int cellSize, int width, int height) : base(application)
         {
-            Content = new ContentManagerExtended(App.Instance.Services, App.ContentRoot);
+            Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
             Width = width;
             Height = height;
-            Camera = new Camera(Resolution.Width, Resolution.Height);
-            RenderTarget = new RenderTarget2D(App.Instance.GraphicsDevice, Resolution.RenderTargetWidth, Resolution.RenderTargetHeight);
+            Camera = new Camera(application.Resolution);
             Partition = new Partition(cellSize);
         }
 
@@ -53,17 +63,34 @@ namespace Engine
         public Camera Camera { get; }
 
         /// <summary>
-        /// Gets the level's render target.
-        /// </summary>
-        public RenderTarget2D RenderTarget { get; }
-
-        /// <summary>
         /// Gets the level's spatial partition.
         /// </summary>
         public Partition Partition { get; }
 
-        public int Width { get; }
-        public int Height { get; }
+        /// <summary>
+        /// Gets the level's width in pixels
+        /// </summary>
+        public int Width
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the level's height in pixels
+        /// </summary>
+        public int Height
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the level's loading status
+        /// </summary>
+        public LoadStatus Status
+        {
+            get;
+            private set;
+        }
 
         public void AddPostProcessingEffect(PostProcessingEffect effect)
         {
@@ -102,6 +129,11 @@ namespace Engine
             }
         }
 
+        /// <summary>
+        /// Adds the given component to the level
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="component"></param>
         internal void AddComponent(Entity entity, Component component)
         {
             component.Entity = entity;
@@ -109,6 +141,11 @@ namespace Engine
             _onComponentsAdded?.Invoke(entity, component);
         }
 
+        /// <summary>
+        /// Adds the given components to the level
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="components"></param>
         internal void AddComponents(Entity entity, List<Component> components)
         {
             foreach (var component in components)
@@ -119,108 +156,48 @@ namespace Engine
             _onComponentsAdded?.Invoke(entity, components.ToArray());
         }
 
+        /// <summary>
+        /// Removes the given component from the level
+        /// </summary>
+        /// <param name="component"></param>
         internal void RemoveComponent(Component component)
         {
             _componentsToRemove.Add(component);
         }
 
-        /// <summary>
-        /// Starts the level.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public virtual void Start()
+        public override void Start()
         {
-            try
+            if (Status.Equals(LoadStatus.NotStarted))
             {
-                var startComponents = _components;
-
-                for (int i = 0; i < startComponents.Count; i++)
-                {
-                    startComponents[i].OnLoad(Content);
-                }
-
-                _onComponentsAdded = (entity, components) =>
-                {
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnLoad(Content);
-                    }
-                };
-
-                for (int i = 0; i < startComponents.Count; i++)
-                {
-                    startComponents[i].OnSpawn();
-                }
-
-                _onComponentsAdded = (entity, components) =>
-                {
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnLoad(Content);
-                    }
-
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnSpawn();
-                    }
-                };
-
-                for (int i = 0; i < startComponents.Count; i++)
-                {
-                    startComponents[i].OnStart();
-
-                    if (startComponents[i].IsUpdateEnabled)
-                    {
-                        _componentsToUpdate.Add(startComponents[i]);
-                    }
-
-                    if (startComponents[i].IsDrawEnabled)
-                    {
-                        _componentsToDraw.Add(startComponents[i]);
-                    }
-                }
-
-                _onComponentsAdded = (entity, components) =>
-                {
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnLoad(Content);
-                    }
-
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnSpawn();
-                    }
-
-                    for (int i = 0; i < components.Length; i++)
-                    {
-                        components[i].OnStart();
-
-                        if (components[i].IsUpdateEnabled)
-                        {
-                            _componentsToUpdate.Add(components[i]);
-                        }
-
-                        if (components[i].IsDrawEnabled)
-                        {
-                            _componentsToDraw.Add(components[i]);
-                            _componentsToDrawNeedsSort = true;
-                        }
-                    }
-                };
-            }
-            catch (StackOverflowException)
-            {
-                throw new InvalidOperationException("A component either spawns itself when it's initialized or there is a circular spawn thing going on..");
+                _loadCoroutine = Application.StartCoroutine(Load());
             }
         }
 
-        /// <summary>
-        /// Updates the level and all of it's entities.
-        /// </summary>
-        /// <param name="gameTime"></param>
-        public virtual void Update(GameTime gameTime)
+        public override void Stop()
         {
+            Application.StopCoroutine(_loadCoroutine);
+
+            var components = new List<Component>();
+            foreach (var entity in _entities)
+            {
+                components.AddRange(entity.Components);
+            }
+
+            foreach (var component in components)
+            {
+                component.OnEnd();
+            }
+
+            Content.Unload();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
             for (int i = 0; i < _componentsToUpdate.Count; i++)
             {
                 _componentsToUpdate[i].OnUpdate(gameTime);
@@ -238,6 +215,118 @@ namespace Engine
             {
                 effect.OnUpdate(gameTime);
             }
+        }        
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
+            if (_componentsToDrawNeedsSort)
+            {
+                _componentsToDraw.Sort(SortDrawableComponents);
+                _componentsToDrawNeedsSort = false;
+            }
+
+            renderer.BeginDraw(Camera.TransformationMatrix);
+
+            for (int i = 0; i < _componentsToDraw.Count; i++)
+            {
+                _componentsToDraw[i].OnDraw(renderer, gameTime);
+            }
+
+            renderer.EndDraw();
+        }
+
+        /// <summary>
+        /// Preload the level over multiple frames
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator Load()
+        {
+            Status = LoadStatus.Loading;
+
+            var startComponents = _components;
+
+            for (int i = 0; i < _components.Count; i++)
+            {
+                _components[i].OnLoad(Content);
+                yield return null;
+            }
+
+            _onComponentsAdded = (entity, components) =>
+            {
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnLoad(Content);
+                }
+            };
+
+            for (int i = 0; i < startComponents.Count; i++)
+            {
+                startComponents[i].OnSpawn();
+            }
+
+            _onComponentsAdded = (entity, components) =>
+            {
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnLoad(Content);
+                }
+
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnSpawn();
+                }
+            };
+
+            for (int i = 0; i < startComponents.Count; i++)
+            {
+                startComponents[i].OnStart();
+
+                if (startComponents[i].IsUpdateEnabled)
+                {
+                    _componentsToUpdate.Add(startComponents[i]);
+                }
+
+                if (startComponents[i].IsDrawEnabled)
+                {
+                    _componentsToDraw.Add(startComponents[i]);
+                }
+            }
+
+            _onComponentsAdded = (entity, components) =>
+            {
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnLoad(Content);
+                }
+
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnSpawn();
+                }
+
+                for (int i = 0; i < components.Length; i++)
+                {
+                    components[i].OnStart();
+
+                    if (components[i].IsUpdateEnabled)
+                    {
+                        _componentsToUpdate.Add(components[i]);
+                    }
+
+                    if (components[i].IsDrawEnabled)
+                    {
+                        _componentsToDraw.Add(components[i]);
+                        _componentsToDrawNeedsSort = true;
+                    }
+                }
+            };
+
+            Status = LoadStatus.Loaded;
         }
 
         private void PostUpdateDestroyEntities()
@@ -277,52 +366,9 @@ namespace Engine
             _componentsToRemove.Clear();
         }
 
-        public virtual void Draw(bool debug)
-        {
-            if (_componentsToDrawNeedsSort)
-            {
-                _componentsToDraw.Sort(SortDrawableComponents);
-                _componentsToDrawNeedsSort = false;
-            }
-
-            for (int i = 0; i < _componentsToDraw.Count; i++)
-            {
-                _componentsToDraw[i].OnDraw();
-            }
-
-            if (debug)
-            {
-                Partition.DebugDraw();
-
-                for (int i = 0; i < _components.Count; i++)
-                {
-                    _components[i].OnDebugDraw();
-                }
-            }
-        }
-
         private static int SortDrawableComponents(Component a, Component b)
         {
             return Comparer<int>.Default.Compare(a.ZOrder, b.ZOrder);
-        }
-
-        public virtual void End()
-        {
-            RenderTarget.Dispose();
-
-            var components = new List<Component>();
-
-            foreach (var entity in _entities)
-            {
-                components.AddRange(entity.Components);
-            }
-
-            foreach (var component in components)
-            {
-                component.OnEnd();
-            }
-
-            Content.Unload();
         }
     }
 }

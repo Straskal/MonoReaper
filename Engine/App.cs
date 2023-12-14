@@ -1,102 +1,135 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Engine.Graphics;
 
 namespace Engine
 {
     public class App : Game
     {
-        public const string ContentRoot = "Content";
-        public const bool StartFullscreen = false;
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public GraphicsDevice Graphics => GraphicsDeviceManager.GraphicsDevice;
+        /// <summary>
+        /// Gets the single instance of App
+        /// </summary>
         public static App Instance { get; private set; }
 
-        private bool _isDebugging;
-        private Action _onChangeLevel;
-        public Action LoadInitialLevel { get; set; }
+        private readonly CoroutineRunner _coroutineRunner = new();
 
         public App(int targetResolutionWidth, int targetResolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
             Instance = this;
             ResolutionWidth = targetResolutionWidth;
             ResolutionHeight = targetResolutionHeight;
+            ResolutionScaleMode = resolutionScaleMode;
+            Content = new ContentManagerExtended(Services, "Content");
+            Stack = new GameStateStack(this);
 
-            Resolution.Width = targetResolutionWidth;
-            Resolution.Height = targetResolutionHeight;
-            Resolution.ScaleMode = resolutionScaleMode;
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager.HardwareModeSwitch = false;
 
-            Content = new ContentManagerExtended(Services, ContentRoot);
-
-            Window.AllowUserResizing = true;
-            Window.IsBorderless = false;
-
+#if DEBUG
+            GraphicsDeviceManager.IsFullScreen = false;
+            GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
             IsMouseVisible = true;
-
-            GraphicsDeviceManager = new GraphicsDeviceManager(this)
-            {
-                IsFullScreen = StartFullscreen,
-                PreferredBackBufferWidth = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width : ResolutionWidth,
-                PreferredBackBufferHeight = StartFullscreen ? GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height : ResolutionHeight,
-                HardwareModeSwitch = false
-            };
-
-            GraphicsDeviceManager.ApplyChanges();
+#else
+            GraphicsDeviceManager.IsFullScreen = true;
+            IsMouseVisible = false;
+#endif
         }
 
-        public int ResolutionWidth { get; }
-        public int ResolutionHeight { get; }
-        public Random Random { get; } = new();
-
-        public Level CurrentLevel { get; private set; }
-
-        public void ChangeLevel(Level level)
+        /// <summary>
+        /// Gets the target resolution width
+        /// </summary>
+        public int ResolutionWidth
         {
-            _onChangeLevel = () =>
-            {
-                CurrentLevel?.End();
-                CurrentLevel = level;
-                CurrentLevel?.Start();
-                _onChangeLevel = null;
-            };
+            get;
         }
 
-        public void ToggleFullscreen()
+        /// <summary>
+        /// Gets the target resolution height
+        /// </summary>
+        public int ResolutionHeight
         {
-            GraphicsDeviceManager.ToggleFullScreen();
-
-            if (GraphicsDeviceManager.IsFullScreen)
-            {
-                GraphicsDeviceManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                GraphicsDeviceManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            }
-            else
-            {
-                GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
-                GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
-            }
-
-            GraphicsDeviceManager.ApplyChanges();
+            get;
         }
 
-        public void ToggleDebug()
+        public ResolutionScaleMode ResolutionScaleMode 
         {
-            _isDebugging = !_isDebugging;
+            get;
         }
 
-        protected override void LoadContent()
+        /// <summary>
+        /// Gets the graphics device manager
+        /// </summary>
+        public GraphicsDeviceManager GraphicsDeviceManager
         {
-            Resolution.Initialize();
-            Renderer.Initialize(GraphicsDevice);
-            LoadInitialLevel?.Invoke();
-            base.LoadContent();
+            get;
+        }
+
+        /// <summary>
+        /// Gets the virtual resolution
+        /// </summary>
+        public VirtualResolution Resolution
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the renderer
+        /// </summary>
+        public Renderer Renderer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the game state stack
+        /// </summary>
+        public GameStateStack Stack
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the instance of random
+        /// </summary>
+        public Random Random
+        {
+            get;
+        } = new();
+
+        /// <summary>
+        /// Starts and returns a coroutine created with the given enumerator.
+        /// </summary>
+        /// <param name="enumerator"></param>
+        /// <returns></returns>
+        public Coroutine StartCoroutine(IEnumerator enumerator) 
+        {
+            return _coroutineRunner.StartCoroutine(enumerator);
+        }
+
+        /// <summary>
+        /// Stops the given coroutine.
+        /// </summary>
+        /// <param name="coroutine"></param>
+        public void StopCoroutine(Coroutine coroutine) 
+        {
+            _coroutineRunner.StopCoroutine(coroutine);
+        }
+
+        protected override void Initialize()
+        {
+            Resolution = new VirtualResolution(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
+            Renderer = new Renderer(GraphicsDevice);
+            base.Initialize();
         }
 
         protected override void UnloadContent()
         {
-            CurrentLevel?.End();
-            Renderer.Deinitialize();
+            Resolution.Dispose();
+            Renderer.Dispose();
             Content.Unload();
         }
 
@@ -104,28 +137,21 @@ namespace Engine
         {
             Resolution.Update();
             Input.Update();
-            _onChangeLevel?.Invoke();
-            CurrentLevel?.Update(gameTime);
+            _coroutineRunner.Update();
+            Stack.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            if (CurrentLevel == null) 
-            {
-                return;
-            }
-
-            Renderer.SetTarget(CurrentLevel.RenderTarget);
-            Renderer.SetViewport(Resolution.CameraViewport);
+            Renderer.SetTarget(Resolution.RenderTarget);
+            Renderer.SetViewport(Resolution.FullViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(CurrentLevel.Camera.TransformationMatrix);
-            CurrentLevel.Draw(_isDebugging);
-            Renderer.EndDraw();
+            Stack.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
-            Renderer.SetViewport(Resolution.RenderTargetViewport);
+            Renderer.SetViewport(Resolution.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(Resolution.RenderTargetUpscalingMatrix);
-            Renderer.Draw(CurrentLevel.RenderTarget, Vector2.Zero);
+            Renderer.BeginDraw(Resolution.ViewportScaleMatrix);
+            Renderer.Draw(Resolution.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
         }
     }

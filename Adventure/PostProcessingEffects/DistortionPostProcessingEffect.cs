@@ -45,11 +45,11 @@ namespace Adventure
                 var force = 25f;
                 var forceNormalized = MathHelper.SmoothStep(force, 0f, _timer);
 
-                Parameters["Thickness"].SetValue(thickness);
-                Parameters["Force"].SetValue(forceNormalized);
-                Parameters["Center"].SetValue(_explosion);
-                Parameters["Radius"].SetValue(radius); 
-                Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
+                //Parameters["Thickness"].SetValue(thickness);
+                //Parameters["Force"].SetValue(forceNormalized);
+                //Parameters["Center"].SetValue(_explosion);
+                //Parameters["Radius"].SetValue(radius); 
+                //Parameters["Resolution"].SetValue(new Vector2(Resolution.RenderTargetWidth, Resolution.RenderTargetHeight));
                 //Parameters["View"].SetValue(transformation);
             }
         }

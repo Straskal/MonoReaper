@@ -81,7 +81,7 @@ namespace Engine.Graphics
             _texture ??= Renderer.BlankTexture;
         }
 
-        public override void OnDraw()
+        public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
             var offsetPosition = Offset.GetVector(
                 Entity.Origin,
@@ -90,7 +90,7 @@ namespace Engine.Graphics
                 SourceRectangle.Width,
                 SourceRectangle.Height);
 
-            Renderer.Draw(_texture, offsetPosition, SourceRectangle, Color, SpriteEffects, Effect);
+            renderer.Draw(_texture, offsetPosition, SourceRectangle, Color, SpriteEffects, Effect);
         }
     }
 }
