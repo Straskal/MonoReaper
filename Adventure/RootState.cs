@@ -34,7 +34,9 @@ namespace Adventure
             _resetAction = Input.NewPressedAction(Keys.Space);
             _pauseState = new PauseState(Application);
 
-            LoadlevelWithoutTransition();
+            Stack.Push(new MainMenuState(Application));
+
+            //LoadlevelWithoutTransition();
         }
 
         public override void Update(GameTime gameTime)
