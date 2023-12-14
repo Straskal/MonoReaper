@@ -4,6 +4,14 @@ using Engine.Graphics;
 
 namespace Engine
 {
+    /// <summary>
+    /// A game state represents the current screens that the player can see.
+    /// </summary>
+    /// <remarks>
+    /// Game states are placed onto a stack. An example of usage is game -> pause screen -> settings screen -> audio settings screen
+    /// States placed on top get to decide if the states below can update and or draw.
+    /// The root state placed into the stack can never be popped.
+    /// </remarks>
     public abstract class GameState
     {
         public GameState(App application) 
