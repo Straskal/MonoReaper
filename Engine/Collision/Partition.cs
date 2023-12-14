@@ -114,7 +114,7 @@ namespace Engine.Collision
             return result;
         }
 
-        internal void DebugDraw()
+        internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             foreach (var kvp in _cells)
             {
@@ -124,7 +124,7 @@ namespace Engine.Collision
                 var x = col * CellSize;
                 var opacity = kvp.Value.Count > 0 ? 0.8f : 0.05f;
 
-                Renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize - 1, CellSize - 1), Color.DarkBlue * opacity);
+                renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize - 1, CellSize - 1), Color.DarkBlue * opacity);
             }
         }
     }

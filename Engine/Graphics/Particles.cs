@@ -130,11 +130,11 @@ namespace Engine.Graphics
             }
         }
 
-        public override void OnDraw()
+        public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
             foreach (var particle in _particles) 
             {
-                Renderer.Draw(_texture, particle.Position, _sourceRectangle, particle.Color);
+                renderer.Draw(_texture, particle.Position, _sourceRectangle, particle.Color);
             }
         }
 

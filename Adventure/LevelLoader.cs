@@ -8,17 +8,16 @@ namespace Adventure
 {
     internal static class LevelLoader
     {
-        public static void LoadLevel(this App game, string filename, string spawnPoint = null)
+        public static Level LoadLevel(this App game, string filename, string spawnPoint = null)
         {
             var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
-            var level = new GameplayLevel(64, map.Width, map.Height);
+            var level = new Level(64, map.Width, map.Height);
             level.LoadEntities(map.Entities);
             foreach (var tileLayer in map.TileLayers)
             {
                 level.LoadTileLayer(tileLayer);
             }
-            game.Content.UnloadAsset(filename);
-            game.ChangeLevel(level);
+            return level;
         }
 
         private static void LoadEntities(this Level level, Content.Entity[] entities)

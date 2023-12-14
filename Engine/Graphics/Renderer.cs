@@ -6,12 +6,12 @@ namespace Engine.Graphics
     /// <summary>
     /// This class contains all draw functions as well as graphics device functions.
     /// </summary>
-    public static class Renderer
+    public class Renderer
     {
-        private static GraphicsDevice _graphicsDevice;
-        private static SpriteBatch _spriteBatch;
-        private static Matrix _transformationMatrix;
-        private static Effect _effect;
+        private GraphicsDevice _graphicsDevice;
+        private SpriteBatch _spriteBatch;
+        private Matrix _transformationMatrix;
+        private Effect _effect;
 
         /// <summary>
         /// A blank 1px x 1px white texture. Used for drawing rectangles and missing textures.
@@ -22,15 +22,16 @@ namespace Engine.Graphics
             private set;
         }
 
-        internal static void Initialize(GraphicsDevice graphicsDevice)
+        public Renderer(GraphicsDevice graphicsDevice) 
         {
             _graphicsDevice = graphicsDevice;
             _spriteBatch = new SpriteBatch(graphicsDevice);
+
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
             BlankTexture.SetData(new[] { Color.White });
         }
 
-        internal static void Deinitialize()
+        internal void Dispose()
         {
             _spriteBatch.Dispose();
             BlankTexture.Dispose();
@@ -40,7 +41,7 @@ namespace Engine.Graphics
         /// Sets the current render target on the graphics device.
         /// </summary>
         /// <param name="renderTarget2D"></param>
-        public static void SetTarget(RenderTarget2D renderTarget2D)
+        public void SetTarget(RenderTarget2D renderTarget2D)
         {
             _graphicsDevice.SetRenderTarget(renderTarget2D);
         }
@@ -49,7 +50,7 @@ namespace Engine.Graphics
         /// Sets the graphics device viewport
         /// </summary>
         /// <param name="viewport"></param>
-        public static void SetViewport(Viewport viewport) 
+        public void SetViewport(Viewport viewport) 
         {
             _graphicsDevice.Viewport = viewport;
         }
@@ -57,88 +58,88 @@ namespace Engine.Graphics
         /// <summary>
         /// Clears the current render target
         /// </summary>
-        public static void Clear() 
+        public void Clear() 
         {
             _graphicsDevice.Clear(Color.Black);
         }
 
-        public static void BeginDraw()
+        public void BeginDraw()
         {
             _transformationMatrix = Matrix.Identity;
             BeginSpriteBatch();
         }
 
-        public static void BeginDraw(Matrix transformationMatrix)
+        public void BeginDraw(Matrix transformationMatrix)
         {
             _transformationMatrix = transformationMatrix;
             BeginSpriteBatch();
         }
 
-        public static void EndDraw()
+        public void EndDraw()
         {
             _transformationMatrix = default;
             _effect = null;
             EndSpriteBatch();
         }
 
-        public static void Draw(Texture2D texture, Vector2 position)
+        public void Draw(Texture2D texture, Vector2 position)
         {
             Draw(texture, position, null, Color.White, SpriteEffects.None, null);
         }
 
-        public static void Draw(Texture2D texture, Vector2 position, Rectangle? source)
+        public void Draw(Texture2D texture, Vector2 position, Rectangle? source)
         {
             Draw(texture, position, source, Color.White, SpriteEffects.None, null);
         }
 
-        public static void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color)
+        public void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color)
         {
             Draw(texture, position, source, color, SpriteEffects.None, null);
         }
 
-        public static void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color, SpriteEffects spriteEffects)
+        public void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color, SpriteEffects spriteEffects)
         {
             Draw(texture, position, source, color, spriteEffects, null);
         }
 
-        public static void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color, SpriteEffects spriteEffects, Effect effect)
+        public void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color, SpriteEffects spriteEffects, Effect effect)
         {
             SwapEffectIfNeeded(effect);
             _spriteBatch.Draw(texture, position, source, color, 0f, Vector2.Zero, Vector2.One, spriteEffects, 0);
         }
 
-        public static void Draw(Texture2D texture, Rectangle destination, Rectangle source)
+        public void Draw(Texture2D texture, Rectangle destination, Rectangle source)
         {
             Draw(texture, destination, source, Color.White, SpriteEffects.None, null);
         }
 
-        public static void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color)
+        public void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color)
         {
             Draw(texture, destination, source, color, SpriteEffects.None, null);
         }
 
-        public static void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color, SpriteEffects spriteEffects)
+        public void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color, SpriteEffects spriteEffects)
         {
             Draw(texture, destination, source, color, spriteEffects, null);
         }
 
-        public static void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color, SpriteEffects spriteEffects, Effect effect)
+        public void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color, SpriteEffects spriteEffects, Effect effect)
         {
             SwapEffectIfNeeded(effect);
             _spriteBatch.Draw(texture, destination, source, color, 0f, Vector2.Zero, spriteEffects, 0);
         }
 
-        public static void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color)
+        public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color)
         {
             _spriteBatch.DrawString(spriteFont, text, position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
-        public static void DrawRectangle(Rectangle rectangle, Color color)
+        public void DrawRectangle(Rectangle rectangle, Color color)
         {
             _spriteBatch.Draw(BlankTexture, rectangle, color);
         }
 
-        public static void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
+        public void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
         {
             // Top
             _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
@@ -154,7 +155,7 @@ namespace Engine.Graphics
         /// Check if the given effect changes the current effect. If so, flush the current batch and then start a new one with the new effect.
         /// </summary>
         /// <param name="effect"></param>
-        private static void SwapEffectIfNeeded(Effect effect) 
+        private void SwapEffectIfNeeded(Effect effect) 
         {
             if (_effect != effect)
             {
@@ -164,7 +165,7 @@ namespace Engine.Graphics
             }
         }
 
-        private static void BeginSpriteBatch() 
+        private void BeginSpriteBatch() 
         {
             _spriteBatch.Begin(
                  sortMode: SpriteSortMode.Deferred,
@@ -176,7 +177,7 @@ namespace Engine.Graphics
                  transformMatrix: _transformationMatrix);
         }
 
-        private static void EndSpriteBatch()
+        private void EndSpriteBatch()
         {
             _spriteBatch.End();
         }

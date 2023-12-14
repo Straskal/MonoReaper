@@ -147,6 +147,7 @@ namespace Engine.Graphics
         {
             CurrentAnimation = animation;
             CurrentFrame = 0;
+            //SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
             IsFinished = false;
         }
     }

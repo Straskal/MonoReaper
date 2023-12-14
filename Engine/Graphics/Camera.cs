@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Graphics
 {
@@ -7,50 +8,23 @@ namespace Engine.Graphics
     /// </summary>
     public sealed class Camera
     {
-        /// <summary>
-        /// Translation influenced by camera position
-        /// </summary>
+        private readonly VirtualResolution _resolutionHandler;
+
         private Vector3 _translation;
-
-        /// <summary>
-        /// Scale influenced by camera zoom
-        /// </summary>
         private Vector3 _scale;
-
-        /// <summary>
-        /// Translation to center based on virtual resolution
-        /// </summary>
         private Vector3 _center;
-
-        /// <summary>
-        /// Created from translation vector
-        /// </summary>
         private Matrix _translationMatrix;
-
-        /// <summary>
-        /// Created from camera rotation
-        /// </summary>
         private Matrix _rotationMatrix;
-
-        /// <summary>
-        /// Created from scale vector
-        /// </summary>
         private Matrix _scaleMatrix;
-
-        /// <summary>
-        /// Created from resolution translation vector
-        /// </summary>
         private Matrix _centerTranslationMatrix;
-
-        /// <summary>
-        /// Track property changes so we don't unnecessarily recalculate the transformation matrix every frame.
-        /// </summary>
         private bool _isDirty;
 
-        public Camera(int width, int height) 
+        public Camera(VirtualResolution virtualResolution) 
         {
-            Width = width;
-            Height = height;
+            _resolutionHandler = virtualResolution;
+            
+            Width = virtualResolution.Width;
+            Height = virtualResolution.Height;
         }
 
         /// <summary>
@@ -67,6 +41,11 @@ namespace Engine.Graphics
         public int Height
         {
             get;
+        }
+
+        public Viewport Viewport 
+        {
+            get => _resolutionHandler.CameraViewport;
         }
 
         private Vector2 _position;
@@ -142,7 +121,13 @@ namespace Engine.Graphics
                     Matrix.CreateScale(ref _scale, out _scaleMatrix);
                     Matrix.CreateTranslation(ref _center, out _centerTranslationMatrix);
 
-                    _transformationMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix * _centerTranslationMatrix * Resolution.CameraUpscalingMatrix;
+                    _transformationMatrix = 
+                        _translationMatrix * 
+                        _rotationMatrix * 
+                        _scaleMatrix * 
+                        _centerTranslationMatrix * 
+                        _resolutionHandler.ScaleTransformationMatrix;
+
                     _isDirty = false;
                 }
 
@@ -157,10 +142,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += Resolution.LetterboxViewport.X;
-            position.Y += Resolution.LetterboxViewport.Y;
+            position.X += _resolutionHandler.LetterboxViewport.X;
+            position.Y += _resolutionHandler.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, TransformationMatrix);
+            return Vector2.Transform(position, TransformationMatrix * _resolutionHandler.RenderTargetScaleMatrix);
         }
 
         /// <summary>
@@ -170,10 +155,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= Resolution.LetterboxViewport.X;
-            position.Y -= Resolution.LetterboxViewport.Y;
+            position.X -= _resolutionHandler.LetterboxViewport.X;
+            position.Y -= _resolutionHandler.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * Resolution.RenderTargetUpscalingMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _resolutionHandler.RenderTargetScaleMatrix));
         }
     }
 }
