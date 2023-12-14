@@ -1,10 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Engine.Graphics;
 
 namespace Engine
 {
     public abstract class GameState
     {
+        public GameState(App application) 
+        {
+            Application = application ?? throw new ArgumentNullException(nameof(application));
+        }
+
         /// <summary>
         /// Gets whether or not the state below should update
         /// </summary>
@@ -27,7 +33,6 @@ namespace Engine
         public App Application 
         {
             get;
-            internal set;
         }
 
         public GameStateStack Stack 

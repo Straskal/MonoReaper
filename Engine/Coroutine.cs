@@ -13,6 +13,15 @@ namespace Engine
         }
 
         /// <summary>
+        /// Returns true if the coroutine has finished
+        /// </summary>
+        public bool IsFinished 
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Returns true when the coroutine is finished.
         /// </summary>
         /// <returns></returns>
@@ -24,6 +33,7 @@ namespace Engine
 
                 if (_routines.Count == 0)
                 {
+                    IsFinished = true;
                     return true;
                 }
             }

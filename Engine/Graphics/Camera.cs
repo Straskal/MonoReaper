@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Graphics
 {
@@ -41,11 +40,6 @@ namespace Engine.Graphics
         public int Height
         {
             get;
-        }
-
-        public Viewport Viewport 
-        {
-            get => _resolutionHandler.CameraViewport;
         }
 
         private Vector2 _position;
@@ -126,7 +120,7 @@ namespace Engine.Graphics
                         _rotationMatrix * 
                         _scaleMatrix * 
                         _centerTranslationMatrix * 
-                        _resolutionHandler.ScaleTransformationMatrix;
+                        _resolutionHandler.RendererScaleMatrix;
 
                     _isDirty = false;
                 }
@@ -145,7 +139,7 @@ namespace Engine.Graphics
             position.X += _resolutionHandler.LetterboxViewport.X;
             position.Y += _resolutionHandler.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, TransformationMatrix * _resolutionHandler.RenderTargetScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix * _resolutionHandler.ViewportScaleMatrix);
         }
 
         /// <summary>
@@ -158,7 +152,7 @@ namespace Engine.Graphics
             position.X -= _resolutionHandler.LetterboxViewport.X;
             position.Y -= _resolutionHandler.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _resolutionHandler.RenderTargetScaleMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _resolutionHandler.ViewportScaleMatrix));
         }
     }
 }

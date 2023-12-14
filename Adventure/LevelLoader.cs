@@ -11,7 +11,7 @@ namespace Adventure
         public static Level LoadLevel(this App game, string filename, string spawnPoint = null)
         {
             var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
-            var level = new Level(64, map.Width, map.Height);
+            var level = new Level(game, 64, map.Width, map.Height);
             level.LoadEntities(map.Entities);
             foreach (var tileLayer in map.TileLayers)
             {

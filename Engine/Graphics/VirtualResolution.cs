@@ -1,18 +1,18 @@
-﻿using Engine.Extensions;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using Engine.Extensions;
 
 namespace Engine.Graphics
 {
-    public sealed class VirtualResolution
+    public sealed class VirtualResolution : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
 
         private int _previousBackBufferWidth;
         private int _previousBackBufferHeight;
 
-        public VirtualResolution(GraphicsDevice graphicsDevice, int targetWidth, int targetHeight, ResolutionScaleMode resolutionScaleMode) 
+        public VirtualResolution(GraphicsDevice graphicsDevice, int targetWidth, int targetHeight, ResolutionScaleMode resolutionScaleMode)
         {
             _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 
@@ -20,83 +20,88 @@ namespace Engine.Graphics
             Height = targetHeight;
             ScaleMode = resolutionScaleMode;
 
-            switch (resolutionScaleMode) 
+            int renderTargetWidth;
+            int renderTargetHeight;
+
+            switch (resolutionScaleMode)
             {
-                case ResolutionScaleMode.Camera:
-                    RenderTargetWidth = graphicsDevice.DisplayMode.Width;
-                    RenderTargetHeight = graphicsDevice.DisplayMode.Height;
+                case ResolutionScaleMode.Renderer:
+                    renderTargetWidth = graphicsDevice.DisplayMode.Width;
+                    renderTargetHeight = graphicsDevice.DisplayMode.Height;
                     break;
-                case ResolutionScaleMode.RenderTarget:
-                    RenderTargetWidth = targetWidth;
-                    RenderTargetHeight = targetHeight;
+                case ResolutionScaleMode.Viewport:
+                default:
+                    renderTargetWidth = targetWidth;
+                    renderTargetHeight = targetHeight;
                     break;
             }
+
+            RenderTarget = new RenderTarget2D(graphicsDevice, renderTargetWidth, renderTargetHeight);
         }
 
+        /// <summary>
+        /// Gets target resolution width
+        /// </summary>
         public int Width
         {
             get;
         }
 
+        /// <summary>
+        /// Gets the target resolution height
+        /// </summary>
         public int Height
         {
             get;
         }
 
-        public int RenderTargetWidth
-        {
-            get;
-        }
-
-        public int RenderTargetHeight
-        {
-            get;
-        }
-
+        /// <summary>
+        /// Gets the resolution scale mode
+        /// </summary>
         public ResolutionScaleMode ScaleMode
         {
             get;
         }
 
-        public Viewport FullViewport 
+        public RenderTarget2D RenderTarget
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the full display viewport
+        /// </summary>
+        public Viewport FullViewport
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the scaled, letterbox or pillarbox viewport
+        /// </summary>
         public Viewport LetterboxViewport
         {
             get;
             private set;
         }
 
-        public Viewport CameraViewport
+        /// <summary>
+        /// Gets the renderer scale matrix
+        /// </summary>
+        public Matrix RendererScaleMatrix
         {
             get;
             private set;
         }
 
-        public Viewport RenderTargetViewport
+        /// <summary>
+        /// Gets the viewport scale matrix
+        /// </summary>
+        public Matrix ViewportScaleMatrix
         {
             get;
             private set;
-        }
-
-        public Matrix ScaleTransformationMatrix
-        {
-            get;
-            private set;
-        }
-
-        public Matrix RenderTargetScaleMatrix
-        {
-            get;
-            private set;
-        }
-
-        public RenderTarget2D CreateRenderTarget() 
-        {
-            return new RenderTarget2D(_graphicsDevice, RenderTargetWidth, RenderTargetHeight);
         }
 
         public void Update()
@@ -115,21 +120,49 @@ namespace Engine.Graphics
                 FullViewport = _graphicsDevice.GetFullViewport();
                 LetterboxViewport = _graphicsDevice.GetLetterboxViewport(Width, Height);
 
-                if (ScaleMode == ResolutionScaleMode.Camera)
+                switch (ScaleMode)
                 {
-                    ScaleTransformationMatrix = transformationMatrix;
-                    RenderTargetScaleMatrix = Matrix.Identity;
-                    CameraViewport = LetterboxViewport;
-                    RenderTargetViewport = FullViewport;
-                }
-                else
-                {
-                    ScaleTransformationMatrix = Matrix.Identity;
-                    RenderTargetScaleMatrix = transformationMatrix;
-                    CameraViewport = FullViewport;
-                    RenderTargetViewport = LetterboxViewport;
+                    case ResolutionScaleMode.Renderer:
+                        RendererScaleMatrix = transformationMatrix;
+                        ViewportScaleMatrix = Matrix.Identity;
+                        break;
+                    case ResolutionScaleMode.Viewport:
+                        RendererScaleMatrix = Matrix.Identity;
+                        ViewportScaleMatrix = transformationMatrix;
+                        break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Transforms a world position to screen position.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector2 ToScreen(Vector2 position)
+        {
+            position.X += LetterboxViewport.X;
+            position.Y += LetterboxViewport.Y;
+
+            return Vector2.Transform(position, ViewportScaleMatrix);
+        }
+
+        /// <summary>
+        /// Transforms a screen position to world position.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector2 ToVirtualScreen(Vector2 position)
+        {
+            position.X -= LetterboxViewport.X;
+            position.Y -= LetterboxViewport.Y;
+
+            return Vector2.Transform(position, Matrix.Invert(ViewportScaleMatrix));
+        }
+
+        public void Dispose()
+        {
+            RenderTarget.Dispose();
         }
     }
 }

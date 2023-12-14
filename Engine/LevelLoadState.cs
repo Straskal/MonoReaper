@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Engine
 {
@@ -8,7 +7,7 @@ namespace Engine
     /// </summary>
     public class LevelLoadState : GameState
     {
-        public LevelLoadState(Level level) 
+        public LevelLoadState(App application, Level level) : base(application)
         {
             Level = level;
         }
@@ -21,33 +20,28 @@ namespace Engine
             get;
         }
 
-        /// <summary>
-        /// Returns true if the the level finished loading
-        /// </summary>
-        public bool IsFinishedLoading 
-        {
-            get;
-            private set;
-        }
-
         public override void Start()
         {
-            Application.StartCoroutine(LoadLevel());
+            Level.Start();
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (IsFinishedLoading) 
+            if (Level.Status == Level.LoadStatus.Loaded && CanStartNextLevel()) 
             {
                 Application.Stack.Pop(this);
                 Application.Stack.Push(Level);
             }
         }
 
-        private IEnumerator LoadLevel() 
+        /// <summary>
+        /// Returns true if the next level can be start.
+        /// </summary>
+        /// <remarks>This returns true by default, but can be used to delay the level loading.</remarks>
+        /// <returns></returns>
+        protected virtual bool CanStartNextLevel() 
         {
-            yield return Level.Load();
-            IsFinishedLoading = true;
+            return true;
         }
     }
 }

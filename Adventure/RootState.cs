@@ -5,6 +5,10 @@ using Engine.Actions;
 
 namespace Adventure
 {
+    /// <summary>
+    /// The root state acts as the entry point to the application and overall game controller.
+    /// The root state cannot be popped from the stack.
+    /// </summary>
     internal class RootState : GameState
     {
         private PressedAction _toggleFullscreenAction;
@@ -15,6 +19,10 @@ namespace Adventure
         // Cache pause state.
         private PauseState _pauseState;
 
+        public RootState(App application) : base(application)
+        {
+        }
+
         public override void Start()
         {
             Application.Window.Title = "Adventure Game 2000";
@@ -24,11 +32,9 @@ namespace Adventure
             _quitAction = Input.NewPressedAction(Keys.Escape);
             _pauseAction = Input.NewPressedAction(Keys.P);
             _resetAction = Input.NewPressedAction(Keys.Space);
-            _pauseState = new PauseState();
+            _pauseState = new PauseState(Application);
 
-            // Push the first level onto the stack.
-            Stack.Push(new LevelLoadState(LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
-            //Stack.Push(LevelLoader.LoadLevel(Application, "Levels/world/level_0"));
+            LoadlevelWithoutTransition();
         }
 
         public override void Update(GameTime gameTime)
@@ -49,7 +55,7 @@ namespace Adventure
                 if (Stack.Top is Level level) 
                 {
                     Stack.Pop(level);
-                    Stack.Push(new LevelLoadState(LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
+                    LoadlevelWithTransition();
                 }
             }
 
@@ -64,6 +70,18 @@ namespace Adventure
                     Stack.Push(_pauseState);
                 }              
             }
+        }
+
+        private void LoadlevelWithoutTransition()
+        {
+            // If a level is pushed directly to the stack without a transition, it will just wait to update and draw until it's finished loading.
+            Stack.Push(LevelLoader.LoadLevel(Application, "Levels/world/level_0"));
+        }
+
+        private void LoadlevelWithTransition()
+        {
+            // If a level is loaded with a transition, the transition gets to decice when the level is pushed to the stack.
+            Stack.Push(new LevelTransitionState(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
         }
     }
 }

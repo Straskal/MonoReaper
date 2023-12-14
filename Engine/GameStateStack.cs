@@ -37,7 +37,6 @@ namespace Engine
             _stackOperations.Enqueue(() => 
             {
                 _stack.Add(gameState);
-                gameState.Application = _application;
                 gameState.Start();
             });
         }
@@ -57,9 +56,22 @@ namespace Engine
                 }
 
                 gameState.Stop();
-                gameState.Application = null;
-
                 _stack.Remove(gameState);
+            });
+        }
+
+        /// <summary>
+        /// Pops all states, except for the root state, from the stack
+        /// </summary>
+        public void PopAll()
+        {
+            _stackOperations.Enqueue(() =>
+            {
+                while (_stack.Count > 1) 
+                {
+                    _stack.Last().Stop();
+                    _stack.Remove(_stack.Last());
+                }
             });
         }
 

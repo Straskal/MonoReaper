@@ -14,10 +14,21 @@ namespace Engine
     /// </remarks>
     public class Level : GameState
     {
+        public enum LoadStatus
+        {
+            NotStarted,
+            Loading,
+            Loaded
+        }
+
         /// <summary>
         /// The level's very own content manager.
         /// </summary>
-        protected ContentManagerExtended Content { get; }
+        protected ContentManagerExtended Content 
+        { 
+            get;
+            private set;
+        }
 
         /// <summary>
         /// WIP
@@ -35,13 +46,14 @@ namespace Engine
         private ComponentAddedHandler _onComponentsAdded;
 
         private bool _componentsToDrawNeedsSort = false;
+        private Coroutine _loadCoroutine;
 
-        public Level(int cellSize, int width, int height)
+        public Level(App application, int cellSize, int width, int height) : base(application)
         {
-            Content = new ContentManagerExtended(App.Instance.Services, App.Instance.Content.RootDirectory);
+            Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
             Width = width;
             Height = height;
-            Camera = new Camera(App.Instance.VirtualResolution);
+            Camera = new Camera(application.Resolution);
             Partition = new Partition(cellSize);
         }
 
@@ -55,8 +67,30 @@ namespace Engine
         /// </summary>
         public Partition Partition { get; }
 
-        public int Width { get; }
-        public int Height { get; }
+        /// <summary>
+        /// Gets the level's width in pixels
+        /// </summary>
+        public int Width
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the level's height in pixels
+        /// </summary>
+        public int Height
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Gets the level's loading status
+        /// </summary>
+        public LoadStatus Status
+        {
+            get;
+            private set;
+        }
 
         public void AddPostProcessingEffect(PostProcessingEffect effect)
         {
@@ -95,6 +129,11 @@ namespace Engine
             }
         }
 
+        /// <summary>
+        /// Adds the given component to the level
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="component"></param>
         internal void AddComponent(Entity entity, Component component)
         {
             component.Entity = entity;
@@ -102,6 +141,11 @@ namespace Engine
             _onComponentsAdded?.Invoke(entity, component);
         }
 
+        /// <summary>
+        /// Adds the given components to the level
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="components"></param>
         internal void AddComponents(Entity entity, List<Component> components)
         {
             foreach (var component in components)
@@ -112,42 +156,104 @@ namespace Engine
             _onComponentsAdded?.Invoke(entity, components.ToArray());
         }
 
+        /// <summary>
+        /// Removes the given component from the level
+        /// </summary>
+        /// <param name="component"></param>
         internal void RemoveComponent(Component component)
         {
             _componentsToRemove.Add(component);
+        }
+
+        public override void Start()
+        {
+            if (Status.Equals(LoadStatus.NotStarted))
+            {
+                _loadCoroutine = Application.StartCoroutine(Load());
+            }
+        }
+
+        public override void Stop()
+        {
+            Application.StopCoroutine(_loadCoroutine);
+
+            var components = new List<Component>();
+            foreach (var entity in _entities)
+            {
+                components.AddRange(entity.Components);
+            }
+
+            foreach (var component in components)
+            {
+                component.OnEnd();
+            }
+
+            Content.Unload();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _componentsToUpdate.Count; i++)
+            {
+                _componentsToUpdate[i].OnUpdate(gameTime);
+            }
+
+            for (int i = 0; i < _componentsToUpdate.Count; i++)
+            {
+                _componentsToUpdate[i].OnPostUpdate(gameTime);
+            }
+
+            PostUpdateDestroyEntities();
+            PostUpdateRemoveComponents();
+
+            foreach (var effect in PostProcessingEffects)
+            {
+                effect.OnUpdate(gameTime);
+            }
+        }        
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
+            if (_componentsToDrawNeedsSort)
+            {
+                _componentsToDraw.Sort(SortDrawableComponents);
+                _componentsToDrawNeedsSort = false;
+            }
+
+            renderer.BeginDraw(Camera.TransformationMatrix);
+
+            for (int i = 0; i < _componentsToDraw.Count; i++)
+            {
+                _componentsToDraw[i].OnDraw(renderer, gameTime);
+            }
+
+            renderer.EndDraw();
         }
 
         /// <summary>
         /// Preload the level over multiple frames
         /// </summary>
         /// <returns></returns>
-        public IEnumerator Load()
+        private IEnumerator Load()
         {
+            Status = LoadStatus.Loading;
+
+            var startComponents = _components;
+
             for (int i = 0; i < _components.Count; i++)
             {
                 _components[i].OnLoad(Content);
                 yield return null;
-            }
-
-            _onComponentsAdded = (entity, components) =>
-            {
-                for (int i = 0; i < components.Length; i++)
-                {
-                    components[i].OnLoad(Content);
-                }
-            };
-        }
-
-        /// <summary>
-        /// Starts the level.
-        /// </summary>
-        public override void Start()
-        {
-            var startComponents = _components;
-
-            for (int i = 0; i < startComponents.Count; i++)
-            {
-                _components[i].OnLoad(Content);
             }
 
             _onComponentsAdded = (entity, components) =>
@@ -219,31 +325,8 @@ namespace Engine
                     }
                 }
             };
-        }
 
-        /// <summary>
-        /// Updates the level and all of it's entities.
-        /// </summary>
-        /// <param name="gameTime"></param>
-        public override void Update(GameTime gameTime)
-        {
-            for (int i = 0; i < _componentsToUpdate.Count; i++)
-            {
-                _componentsToUpdate[i].OnUpdate(gameTime);
-            }
-
-            for (int i = 0; i < _componentsToUpdate.Count; i++)
-            {
-                _componentsToUpdate[i].OnPostUpdate(gameTime);
-            }
-
-            PostUpdateDestroyEntities();
-            PostUpdateRemoveComponents();
-
-            foreach (var effect in PostProcessingEffects)
-            {
-                effect.OnUpdate(gameTime);
-            }
+            Status = LoadStatus.Loaded;
         }
 
         private void PostUpdateDestroyEntities()
@@ -283,44 +366,9 @@ namespace Engine
             _componentsToRemove.Clear();
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
-        {
-            if (_componentsToDrawNeedsSort)
-            {
-                _componentsToDraw.Sort(SortDrawableComponents);
-                _componentsToDrawNeedsSort = false;
-            }
-
-            renderer.BeginDraw(Camera.TransformationMatrix);
-
-            for (int i = 0; i < _componentsToDraw.Count; i++)
-            {
-                _componentsToDraw[i].OnDraw(renderer, gameTime);
-            }
-
-            renderer.EndDraw();
-        }
-
         private static int SortDrawableComponents(Component a, Component b)
         {
             return Comparer<int>.Default.Compare(a.ZOrder, b.ZOrder);
-        }
-
-        public override void Stop()
-        {
-            var components = new List<Component>();
-
-            foreach (var entity in _entities)
-            {
-                components.AddRange(entity.Components);
-            }
-
-            foreach (var component in components)
-            {
-                component.OnEnd();
-            }
-
-            Content.Unload();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Engine.Graphics;
 using System.Collections;
+using Microsoft.Xna.Framework;
+using Engine.Graphics;
 
 namespace Engine
 {
@@ -70,7 +69,7 @@ namespace Engine
         /// <summary>
         /// Gets the virtual resolution
         /// </summary>
-        public VirtualResolution VirtualResolution
+        public VirtualResolution Resolution
         {
             get;
             private set;
@@ -80,15 +79,6 @@ namespace Engine
         /// Gets the renderer
         /// </summary>
         public Renderer Renderer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the game's render target
-        /// </summary>
-        public RenderTarget2D RenderTarget 
         {
             get;
             private set;
@@ -131,38 +121,37 @@ namespace Engine
 
         protected override void Initialize()
         {
-            VirtualResolution = new VirtualResolution(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
+            Resolution = new VirtualResolution(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
             Renderer = new Renderer(GraphicsDevice);
-            RenderTarget = VirtualResolution.CreateRenderTarget();
             base.Initialize();
         }
 
         protected override void UnloadContent()
         {
-            RenderTarget.Dispose();
+            Resolution.Dispose();
             Renderer.Dispose();
             Content.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            VirtualResolution.Update();
+            Resolution.Update();
             Input.Update();
-            Stack.Update(gameTime);
             _coroutineRunner.Update();
+            Stack.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetTarget(RenderTarget);
-            Renderer.SetViewport(VirtualResolution.CameraViewport);
+            Renderer.SetTarget(Resolution.RenderTarget);
+            Renderer.SetViewport(Resolution.FullViewport);
             Renderer.Clear();
             Stack.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
-            Renderer.SetViewport(VirtualResolution.RenderTargetViewport);
+            Renderer.SetViewport(Resolution.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(VirtualResolution.RenderTargetScaleMatrix);
-            Renderer.Draw(RenderTarget, Vector2.Zero);
+            Renderer.BeginDraw(Resolution.ViewportScaleMatrix);
+            Renderer.Draw(Resolution.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
         }
     }
