@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace Engine
 {
+    /// <summary>
+    /// A coroutine runs logic over multiple frames.
+    /// </summary>
+    /// <remarks>
+    /// Coroutines are an alternative to multithreading. Instead of running logic concurrently, it runs logic over multiple frames.
+    /// </remarks>
     public sealed class Coroutine
     {
         private readonly Stack<IEnumerator> _routines = new();
