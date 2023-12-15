@@ -55,7 +55,7 @@ namespace Adventure
         private void DrawLoadingAnimation(Renderer renderer) 
         {
             renderer.BeginDraw();
-            renderer.DrawString(SharedContent.Font, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
+            renderer.DrawString(SharedContent.Fonts.Default, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
             renderer.EndDraw();
         }
     }

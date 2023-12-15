@@ -34,7 +34,7 @@ namespace Engine
 
         private delegate void ComponentAddedHandler(Entity entity, params Component[] components);
         private ComponentAddedHandler _onComponentsAdded;
-        private bool _isZSortNeeded = false;
+        private bool _sortComponents = false;
         private Coroutine _loadCoroutine;
 
         public Level(App application, int cellSize, int width, int height) : base(application)
@@ -110,7 +110,7 @@ namespace Engine
         /// <param name="position"></param>
         public void Spawn(Component component, Vector2 position)
         {
-            if (component.Entity == null) 
+            if (component.Entity == null)
             {
                 var entity = new Entity(Origin.Center);
                 entity.AddComponent(component);
@@ -144,6 +144,7 @@ namespace Engine
             component.Entity = entity;
             _components.Add(component);
             _onComponentsAdded?.Invoke(entity, component);
+            _sortComponents = true;
         }
 
         /// <summary>
@@ -159,6 +160,7 @@ namespace Engine
             }
             _components.AddRange(components);
             _onComponentsAdded?.Invoke(entity, components.ToArray());
+            _sortComponents = true;
         }
 
         /// <summary>
@@ -210,7 +212,7 @@ namespace Engine
             Status = LoadStatus.Loaded;
         }
 
-        private IEnumerator LoadComponentsRoutine() 
+        private IEnumerator LoadComponentsRoutine()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -227,7 +229,7 @@ namespace Engine
             };
         }
 
-        private void SpawnComponents() 
+        private void SpawnComponents()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -248,7 +250,7 @@ namespace Engine
             };
         }
 
-        private void StartComponents() 
+        private void StartComponents()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -274,7 +276,7 @@ namespace Engine
             };
         }
 
-        private void UpdateComponents(GameTime gameTime) 
+        private void UpdateComponents(GameTime gameTime)
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -356,10 +358,10 @@ namespace Engine
 
         private void SortComponentsIfNeeded()
         {
-            if (_isZSortNeeded)
+            if (_sortComponents)
             {
                 _components.Sort(SortComponentsByZOrder);
-                _isZSortNeeded = false;
+                _sortComponents = false;
             }
         }
 

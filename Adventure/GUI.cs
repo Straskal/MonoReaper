@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Engine.Graphics;
+using Engine;
 
 namespace Adventure
 {
@@ -20,12 +21,10 @@ namespace Adventure
 
         private static int _hoverId;
         private static int _activeId;
-        private static Vector2 _mouse;
         private static bool _mouseDown;
 
         public static void Start()
         {
-            _mouse = BackBuffer.Unproject(Mouse.GetState().Position.ToVector2());
             _mouseDown = Mouse.GetState().LeftButton == ButtonState.Pressed;
             _hoverId = 0;
         }
@@ -44,7 +43,7 @@ namespace Adventure
         {
             var checkboxRectangle = new Rectangle(x, y, 10, 10);
 
-            if (checkboxRectangle.Contains(_mouse))
+            if (checkboxRectangle.Contains(Input.MousePosition))
             {
                 _hoverId = id;
 
@@ -80,12 +79,12 @@ namespace Adventure
         {
             var pressed = false;
             Color color;
-            var size = SharedContent.Font.MeasureString(text);
+            var size = SharedContent.Fonts.Default.MeasureString(text);
             size.Round();
             var buttonRectangle = new Rectangle(x, y, (int)size.X, (int)size.Y);
             buttonRectangle.Inflate(5, 0);
 
-            if (buttonRectangle.Contains(_mouse))
+            if (buttonRectangle.Contains(Input.MousePosition))
             {
                 _hoverId = id;
 
@@ -124,7 +123,7 @@ namespace Adventure
             }
 
             Renderer.DrawRectangle(buttonRectangle, color);
-            Renderer.DrawString(SharedContent.Font, text, new Vector2(x, y), Color.Black);
+            Renderer.DrawString(SharedContent.Fonts.Default, text, new Vector2(x, y), Color.Black);
 
             if (pressed) 
             {

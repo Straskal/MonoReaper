@@ -9,7 +9,7 @@ namespace Engine.Graphics
     public class Renderer
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly BackBuffer _virtualScreen;
+        private readonly BackBuffer _backBuffer;
         private readonly SpriteBatch _spriteBatch;
 
         private Matrix _transformationMatrix;
@@ -24,10 +24,10 @@ namespace Engine.Graphics
             private set;
         }
 
-        public Renderer(GraphicsDevice graphicsDevice, BackBuffer virtualScreen) 
+        public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer) 
         {
             _graphicsDevice = graphicsDevice;
-            _virtualScreen = virtualScreen;
+            _backBuffer = backBuffer;
             _spriteBatch = new SpriteBatch(graphicsDevice);
 
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
@@ -68,7 +68,7 @@ namespace Engine.Graphics
 
         public void BeginDraw()
         {
-            _transformationMatrix = _virtualScreen.RendererScaleMatrix;
+            _transformationMatrix = _backBuffer.RendererScaleMatrix;
             BeginSpriteBatch();
         }
 

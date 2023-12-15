@@ -14,16 +14,16 @@ namespace Adventure
         {
             renderer.BeginDraw();
             DrawGameTitle(renderer);
-            DrawButtons(renderer);
+            DrawButtons();
             renderer.EndDraw();
         }
 
         private static void DrawGameTitle(Renderer renderer)
         {
-            renderer.DrawString(SharedContent.Font, "Super great game 2000", new Vector2(50f, 10f), Color.White);
+            renderer.DrawString(SharedContent.Fonts.Default, "Super great game 2000", new Vector2(50f, 10f), Color.White);
         }
 
-        private void DrawButtons(Renderer renderer) 
+        private void DrawButtons() 
         {
             GUI.Start();
 

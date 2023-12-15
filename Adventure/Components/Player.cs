@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Engine;
 using Engine.Collision;
@@ -30,7 +29,7 @@ namespace Adventure.Components
         public override void OnLoad(ContentManager content)
         {
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Gfx.Player, PlayerAnimations.Frames));
+            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Graphics.Player, PlayerAnimations.Frames));
         }
 
         public override void OnStart()

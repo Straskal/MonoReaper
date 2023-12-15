@@ -29,10 +29,8 @@ namespace Engine
             GraphicsDeviceManager.IsFullScreen = false;
             GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
-            IsMouseVisible = true;
 #else
             GraphicsDeviceManager.IsFullScreen = true;
-            IsMouseVisible = false;
 #endif
         }
 
@@ -124,7 +122,7 @@ namespace Engine
         protected override void Update(GameTime gameTime)
         {
             BackBuffer.Update();
-            Input.Update();
+            Input.Update(BackBuffer);
             Coroutines.Update();
             Screens.Update(gameTime);
         }
