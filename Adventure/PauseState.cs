@@ -19,14 +19,19 @@ namespace Adventure
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             renderer.BeginDraw();
-            renderer.DrawRectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight, new Color(Color.Black, 0.4f));
-            renderer.DrawString(SharedContent.Font, "Paused", 100f, 100f, Color.White);
+            DrawOverlay(renderer);
             GUI.Start();
             if (GUI.PrimaryButton(1, "Main menu", 100, 150))
             {
                 Application.Stack.SetTop(new MainMenuState(Application));
             }
             renderer.EndDraw();
+        }
+
+        private void DrawOverlay(Renderer renderer) 
+        {
+            renderer.DrawRectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight, new Color(Color.Black, 0.4f));
+            renderer.DrawString(SharedContent.Font, "Paused", 100f, 100f, Color.White);
         }
     }
 }
