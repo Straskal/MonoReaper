@@ -70,6 +70,15 @@ namespace Engine.Graphics
             private set; 
         }
 
+        /// <summary>
+        /// Gets or sets whether the animated sprite is paused
+        /// </summary>
+        public bool IsPaused 
+        {
+            get;
+            set;
+        }
+
         public override void OnSpawn()
         {
             Play(_animations[0].Name);
@@ -111,6 +120,11 @@ namespace Engine.Graphics
 
         public override void OnUpdate(GameTime gameTime)
         {
+            if (IsPaused) 
+            {
+                return;
+            }
+
             if (IsFinished) 
             {
                 return;
@@ -145,7 +159,7 @@ namespace Engine.Graphics
         {
             CurrentAnimation = animation;
             CurrentFrame = 0;
-            //SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
+            SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
             IsFinished = false;
         }
     }

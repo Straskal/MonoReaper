@@ -22,7 +22,7 @@ namespace Adventure.Components
         public const float MaxSpeed = 0.85f;
 
         private Body _body;
-        private AnimatedSprite _spriteSheet;
+        private AnimatedSprite _sprite;
 
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
@@ -30,7 +30,12 @@ namespace Adventure.Components
         public override void OnLoad(ContentManager content)
         {
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(_spriteSheet = new AnimatedSprite(SharedContent.Gfx.Player, PlayerAnimations.Frames));
+            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Gfx.Player, PlayerAnimations.Frames));
+        }
+
+        public override void OnStart()
+        {
+            Level.Camera.Position = Entity.Position;
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -45,7 +50,7 @@ namespace Adventure.Components
                 movementInput.Normalize();
             }
 
-            _spriteSheet.CurrentAnimation.Loop = movementLength > 0f;
+            _sprite.IsPaused = movementLength == 0f;
             _direction = movementLength > 0f ? movementInput : _direction;
             _velocity = movementInput * Speed * deltaTime;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
@@ -96,22 +101,22 @@ namespace Adventure.Components
             {
                 if (_direction.X < 0f)
                 {
-                    _spriteSheet.Play("walk_left");
+                    _sprite.Play("walk_left");
                 }
                 else
                 {
-                    _spriteSheet.Play("walk_right");
+                    _sprite.Play("walk_right");
                 }
             }
             else
             {
                 if (_direction.Y < 0f)
                 {
-                    _spriteSheet.Play("walk_up");
+                    _sprite.Play("walk_up");
                 }
                 else
                 {
-                    _spriteSheet.Play("walk_down");
+                    _sprite.Play("walk_down");
 
                 }
             }

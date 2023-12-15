@@ -37,7 +37,7 @@ namespace Engine.Graphics
         public bool Loop
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
