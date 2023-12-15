@@ -180,7 +180,7 @@ namespace Engine
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            SortDrawablesIfNeeded();
+            SortComponentsIfNeeded();
             renderer.BeginDraw(Camera.TransformationMatrix);
             DrawComponents(renderer, gameTime);
             renderer.EndDraw();
@@ -339,16 +339,16 @@ namespace Engine
             _componentsToRemove.Clear();
         }
 
-        private void SortDrawablesIfNeeded()
+        private void SortComponentsIfNeeded()
         {
             if (_isZSortNeeded)
             {
-                _components.Sort(SortDrawableComponents);
+                _components.Sort(SortComponentsByZOrder);
                 _isZSortNeeded = false;
             }
         }
 
-        private static int SortDrawableComponents(Component a, Component b)
+        private static int SortComponentsByZOrder(Component a, Component b)
         {
             return Comparer<int>.Default.Compare(a.ZOrder, b.ZOrder);
         }
