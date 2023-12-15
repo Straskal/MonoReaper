@@ -21,7 +21,11 @@ namespace Adventure
             renderer.BeginDraw();
             DrawOverlay(renderer);
             GUI.Start();
-            if (GUI.PrimaryButton(1, "Main menu", 100, 150))
+            if (GUI.PrimaryButton(1, "Resume", 100, 150))
+            {
+                Application.Stack.Pop(this);
+            }
+            if (GUI.DangerButton(2, "Main menu", 100, 180))
             {
                 Application.Stack.SetTop(new MainMenuState(Application));
             }

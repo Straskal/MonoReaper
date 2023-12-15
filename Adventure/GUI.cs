@@ -65,9 +65,8 @@ namespace Adventure
             }
             else if (_activeId == id)
             {
-                id = 0;
+                _activeId = 0;
             }
-
 
             if (_hoverId == id)
             {
