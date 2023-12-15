@@ -45,11 +45,6 @@ namespace Adventure.Components
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (_spriteSheet.CurrentFrame == 1)
-            {
-                DistortionPostProcessingEffect.Explosion = Entity.Position;
-            }
-
             if (_spriteSheet.IsFinished)
             {
                 Level.Destroy(Entity);
