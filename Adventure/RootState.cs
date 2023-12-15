@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
@@ -53,24 +54,15 @@ namespace Adventure
         private void LoadSharedContent()
         {
             SharedContent.Font = Application.Content.Load<SpriteFont>("Fonts/Font");
+            SharedContent.Gfx.Player = Application.Content.Load<Texture2D>("art/player/player");
+            SharedContent.Gfx.Fire = Application.Content.Load<Texture2D>("art/player/fire");
+            SharedContent.Sfx.Shoot = Application.Content.Load<SoundEffect>("audio/fireball_shoot");
         }
 
         private void LoadGUI() 
         {
             GUI.Renderer = Application.Renderer;
             GUI.Screen = Application.Screen;
-        }
-
-        private void LoadlevelWithoutTransition()
-        {
-            // If a level is pushed directly to the stack without a transition, it will just wait to update and draw until it's finished loading.
-            Stack.Push(LevelLoader.LoadLevel(Application, "Levels/world/level_0"));
-        }
-
-        private void LoadlevelWithTransition()
-        {
-            // If a level is loaded with a transition, the transition gets to decice when the level is pushed to the stack.
-            Stack.Push(new LevelTransitionState(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
         }
     }
 }

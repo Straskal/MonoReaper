@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using Engine;
 using Engine.Collision;
@@ -14,35 +13,19 @@ namespace Adventure.Components
     {
         private Body _body;
         private SoundEffect _sound;
+        private Vector2 _velocity;
 
         public Fireball(Vector2 velocity)
         {
             _velocity = velocity;
         }
 
-        private Vector2 _velocity;
-        public Vector2 Velocity
-        {
-            get => _velocity;
-            set => _velocity = value;
-        }
-
-        public static void Preload(ContentManager content)
-        {
-            content.Load<Texture2D>("art/player/fire");
-            content.Load<SoundEffect>("audio/fireball_shoot");
-        }
-
-        public static Entity Create(Vector2 velocity)
-        {
-            return new Entity(Origin.Center, new Fireball(velocity));
-        }
-
         public override void OnLoad(ContentManager content)
         {
-            _sound = content.Load<SoundEffect>("audio/fireball_shoot");
+            _sound = SharedContent.Sfx.Shoot;
+
             Entity.AddComponent(_body = new Body(4, 4, EntityLayers.PlayerProjectile));
-            Entity.AddComponent(new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
+            Entity.AddComponent(new Particles(SharedContent.Gfx.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(25f),
@@ -67,13 +50,12 @@ namespace Adventure.Components
         private Vector2 HandleCollision(Hit hit)
         {
             Level.Destroy(Entity);
-            var entity = new Entity(Origin.Center);
-            entity.AddComponent(new Explosion());
-            Level.Spawn(entity, Entity.Position);
+            Level.Spawn(new Explosion(), Entity.Position);
 
             if (hit.Other.Entity.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.Damage(1);
+
                 if (damageable.Flammable)
                 {
                     hit.Other.Entity.AddComponent(new OnFire());

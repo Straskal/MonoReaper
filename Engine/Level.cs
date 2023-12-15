@@ -104,6 +104,21 @@ namespace Engine
         }
 
         /// <summary>
+        /// Creates a new entity for the given component and spawns it
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="position"></param>
+        public void Spawn(Component component, Vector2 position)
+        {
+            if (component.Entity == null) 
+            {
+                var entity = new Entity(Origin.Center);
+                entity.AddComponent(component);
+                Spawn(entity, position);
+            }
+        }
+
+        /// <summary>
         /// Destroys an entity and removes it from the level.
         /// </summary>
         /// <param name="entity"></param>

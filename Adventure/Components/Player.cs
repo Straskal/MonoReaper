@@ -29,9 +29,8 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            Fireball.Preload(content);
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/player/player"), PlayerAnimations.Frames));
+            Entity.AddComponent(_spriteSheet = new AnimatedSprite(SharedContent.Gfx.Player, PlayerAnimations.Frames));
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -72,7 +71,7 @@ namespace Adventure.Components
         {
             if (Input.IsKeyPressed(Keys.E))
             {
-                Level.Spawn(Fireball.Create(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
+                Level.Spawn(new Fireball(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
             }
         }
 
