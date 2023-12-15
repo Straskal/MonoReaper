@@ -44,7 +44,7 @@ namespace Adventure
                 {
                     Screens.Pop(_pauseState);
                 }
-                else
+                else if (Screens.Top is Level)
                 {
                     Screens.Push(_pauseState);
                 }
