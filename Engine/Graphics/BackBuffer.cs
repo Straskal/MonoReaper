@@ -168,7 +168,7 @@ namespace Engine.Graphics
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector2 ToScreen(Vector2 position)
+        public Vector2 Project(Vector2 position)
         {
             position.X += LetterboxViewport.X;
             position.Y += LetterboxViewport.Y;
@@ -181,7 +181,7 @@ namespace Engine.Graphics
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public Vector2 ToVirtualScreen(Vector2 position)
+        public Vector2 Unproject(Vector2 position)
         {
             position.X -= LetterboxViewport.X;
             position.Y -= LetterboxViewport.Y;

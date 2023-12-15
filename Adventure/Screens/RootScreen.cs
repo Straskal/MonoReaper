@@ -62,7 +62,7 @@ namespace Adventure
         private void LoadGUI() 
         {
             GUI.Renderer = Application.Renderer;
-            GUI.Screen = Application.BackBuffer;
+            GUI.BackBuffer = Application.BackBuffer;
         }
     }
 }

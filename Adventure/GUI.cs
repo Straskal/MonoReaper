@@ -6,7 +6,7 @@ namespace Adventure
 {
     internal static class GUI
     {
-        public static BackBuffer Screen
+        public static BackBuffer BackBuffer
         {
             get;
             set;
@@ -25,7 +25,7 @@ namespace Adventure
 
         public static void Start()
         {
-            _mouse = Screen.ToVirtualScreen(Mouse.GetState().Position.ToVector2());
+            _mouse = BackBuffer.Unproject(Mouse.GetState().Position.ToVector2());
             _mouseDown = Mouse.GetState().LeftButton == ButtonState.Pressed;
             _hoverId = 0;
         }
