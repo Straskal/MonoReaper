@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Engine;
-using Engine.Actions;
 using Microsoft.Xna.Framework.Graphics;
+using Engine;
 
 namespace Adventure
 {
@@ -12,13 +11,11 @@ namespace Adventure
     /// </summary>
     internal class RootState : GameState
     {
-        private PressedAction _toggleFullscreenAction;
-        private PressedAction _quitAction;
-        private PressedAction _resetAction;
-        private PauseState _pauseState;
+        private readonly PauseState _pauseState;
 
         public RootState(App application) : base(application)
         {
+            _pauseState = new PauseState(application);
         }
 
         public override void Start()
@@ -27,36 +24,20 @@ namespace Adventure
             Application.Window.AllowUserResizing = true;
 
             LoadSharedContent();
-
-            GUI.Renderer = Application.Renderer;
-            GUI.Screen = Application.Screen;
-
-            _toggleFullscreenAction = Input.NewPressedAction(Keys.F);
-            _quitAction = Input.NewPressedAction(Keys.Escape);
-            _resetAction = Input.NewPressedAction(Keys.Space);
-            _pauseState = new PauseState(Application);
+            LoadGUI();
 
             Stack.Push(new MainMenuState(Application));
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (_toggleFullscreenAction.WasPressed())
+            if (Input.IsKeyPressed(Keys.F))
             {
                 Application.GraphicsDeviceManager.ToggleFullScreen();
                 Application.GraphicsDeviceManager.ApplyChanges();
             }
 
-            if (_resetAction.WasPressed())
-            {
-                if (Stack.Top is Level level)
-                {
-                    Stack.Pop(level);
-                    LoadlevelWithTransition();
-                }
-            }
-
-            if (_quitAction.WasPressed())
+            if (Input.IsKeyPressed(Keys.Escape))
             {
                 if (Stack.Top == _pauseState)
                 {
@@ -72,6 +53,12 @@ namespace Adventure
         private void LoadSharedContent()
         {
             SharedContent.Font = Application.Content.Load<SpriteFont>("Fonts/Font");
+        }
+
+        private void LoadGUI() 
+        {
+            GUI.Renderer = Application.Renderer;
+            GUI.Screen = Application.Screen;
         }
 
         private void LoadlevelWithoutTransition()

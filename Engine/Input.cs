@@ -1,62 +1,54 @@
-﻿using Engine.Actions;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Engine
 {
-    public abstract class InputAction
-    {
-        protected readonly InputState inputState;
-
-        public InputAction(InputState state)
-        {
-            inputState = state;
-        }
-    }
-
-    public class InputState
-    {
-        public KeyboardState KeyState { get; set; }
-        public KeyboardState PreviousKeyState { get; set; }
-        public GamePadState GamePadState { get; set; }
-        public GamePadState PreviousGamePadState { get; set; }
-    }
-
     public static class Input
     {
-        private static readonly InputState state = new();
+        private static KeyboardState KeyState;
+        private static KeyboardState PreviousKeyState;
 
         internal static void Update()
         {
-            state.PreviousKeyState = state.KeyState;
-            state.PreviousGamePadState = state.GamePadState;
-            state.KeyState = Keyboard.GetState();
-            state.GamePadState = GamePad.GetState(0);
+            PreviousKeyState = KeyState;
+            KeyState = Keyboard.GetState();
         }
 
-        public static PressedAction NewPressedAction()
+        public static bool IsKeyDown(Keys key) 
         {
-            var action = new PressedAction(state);
-            return action;
+            return KeyState.IsKeyDown(key);
         }
 
-        public static PressedAction NewPressedAction(Keys key)
+        public static bool IsKeyUp(Keys key)
         {
-            var action = new PressedAction(state);
-            action.AddKey(key);
-            return action;
+            return KeyState.IsKeyUp(key);
         }
 
-        public static AxisAction NewAxisAction()
+        public static bool IsKeyPressed(Keys key)
         {
-            var action = new AxisAction(state);
-            return action;
+            return PreviousKeyState.IsKeyUp(key) && KeyState.IsKeyDown(key);
         }
 
-        public static AxisAction NewAxisAction(Keys x, Keys y)
+        public static float GetAxis(Keys negative, Keys positive)
         {
-            var action = new AxisAction(state);
-            action.AddKeys(x, y);
-            return action;
+            var result = 0f;
+
+            if (IsKeyDown(negative)) 
+            {
+                result -= 1f;
+            }
+
+            if (IsKeyDown(positive))
+            {
+                result += 1f;
+            }
+
+            return result;
+        }
+
+        public static Vector2 GetVector(Keys left, Keys right, Keys up, Keys down)
+        {
+            return new Vector2(GetAxis(left, right), GetAxis(up, down));
         }
     }
 }

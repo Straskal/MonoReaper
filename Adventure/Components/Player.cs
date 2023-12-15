@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Engine;
-using Engine.Actions;
 using Engine.Collision;
 using Engine.Graphics;
 using Engine.Extensions;
@@ -25,33 +24,20 @@ namespace Adventure.Components
         private Body _body;
         private AnimatedSprite _spriteSheet;
 
-        private AxisAction _moveX;
-        private AxisAction _moveY;
-        private PressedAction _interact;
-
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
 
         public override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
             Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/player/player"), PlayerAnimations.Frames));
-        }
-
-        public override void OnSpawn()
-        {
-            // Input management is going to change. Having to create actions is annoying.
-            _moveX = Input.NewAxisAction(Keys.A, Keys.D);
-            _moveY = Input.NewAxisAction(Keys.W, Keys.S);
-            _interact = Input.NewPressedAction(Keys.E);
         }
 
         public override void OnUpdate(GameTime gameTime)
         {
             var deltaTime = gameTime.GetDeltaTime();
-            var movementInput = new Vector2(_moveX.GetAxis(), _moveY.GetAxis());
+            var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
             var movementLength = movementInput.LengthSquared();
 
             // Normalize movement input so that the player doesn't travel faster diagonally.
@@ -84,7 +70,7 @@ namespace Adventure.Components
 
         private void HandleInteractInput(float deltaTime) 
         {
-            if (_interact.WasPressed())
+            if (Input.IsKeyPressed(Keys.E))
             {
                 Level.Spawn(Fireball.Create(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
             }
