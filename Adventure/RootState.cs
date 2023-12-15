@@ -28,6 +28,9 @@ namespace Adventure
 
             LoadSharedContent();
 
+            GUI.Renderer = Application.Renderer;
+            GUI.Screen = Application.Screen;
+
             _toggleFullscreenAction = Input.NewPressedAction(Keys.F);
             _quitAction = Input.NewPressedAction(Keys.Escape);
             _resetAction = Input.NewPressedAction(Keys.Space);
