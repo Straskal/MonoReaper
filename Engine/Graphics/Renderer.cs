@@ -8,8 +8,10 @@ namespace Engine.Graphics
     /// </summary>
     public class Renderer
     {
-        private GraphicsDevice _graphicsDevice;
-        private SpriteBatch _spriteBatch;
+        private readonly GraphicsDevice _graphicsDevice;
+        private readonly BackBuffer _virtualScreen;
+        private readonly SpriteBatch _spriteBatch;
+
         private Matrix _transformationMatrix;
         private Effect _effect;
 
@@ -22,9 +24,10 @@ namespace Engine.Graphics
             private set;
         }
 
-        public Renderer(GraphicsDevice graphicsDevice) 
+        public Renderer(GraphicsDevice graphicsDevice, BackBuffer virtualScreen) 
         {
             _graphicsDevice = graphicsDevice;
+            _virtualScreen = virtualScreen;
             _spriteBatch = new SpriteBatch(graphicsDevice);
 
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
@@ -65,7 +68,7 @@ namespace Engine.Graphics
 
         public void BeginDraw()
         {
-            _transformationMatrix = Matrix.Identity;
+            _transformationMatrix = _virtualScreen.RendererScaleMatrix;
             BeginSpriteBatch();
         }
 
@@ -129,6 +132,11 @@ namespace Engine.Graphics
             _spriteBatch.Draw(texture, destination, source, color, 0f, Vector2.Zero, spriteEffects, 0);
         }
 
+        public void DrawString(SpriteFont spriteFont, string text, float x, float y, Color color)
+        {
+            _spriteBatch.DrawString(spriteFont, text, new Vector2(x, y), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+        }
+
         public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color)
         {
             _spriteBatch.DrawString(spriteFont, text, position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
@@ -139,16 +147,21 @@ namespace Engine.Graphics
             _spriteBatch.Draw(BlankTexture, rectangle, color);
         }
 
-        public void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
+        public void DrawRectangle(int x, int y, int width, int height, Color color)
+        {
+            _spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
+        }
+
+        public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
             // Top
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color);
             // Left
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color);
             // Right
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color);
             // Bottom
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth - 1, lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color);
         }
 
         /// <summary>

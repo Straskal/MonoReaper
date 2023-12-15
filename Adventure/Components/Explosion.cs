@@ -12,11 +12,6 @@ namespace Adventure.Components
         private AnimatedSprite _spriteSheet;
         private SoundEffect _sound;
 
-        public Explosion() 
-        {
-            IsUpdateEnabled = true;
-        }
-
         public override void OnLoad(ContentManager content)
         {
             _sound = content.Load<SoundEffect>("audio/explosion4");
@@ -50,11 +45,6 @@ namespace Adventure.Components
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (_spriteSheet.CurrentFrame == 1)
-            {
-                DistortionPostProcessingEffect.Explosion = Entity.Position;
-            }
-
             if (_spriteSheet.IsFinished)
             {
                 Level.Destroy(Entity);

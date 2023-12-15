@@ -94,9 +94,6 @@ namespace Engine.Graphics
                 _texture = Renderer.BlankTexture;
                 _sourceRectangle = new Rectangle(0, 0, Renderer.BlankTexture.Width, Renderer.BlankTexture.Height);
             }
-
-            IsUpdateEnabled = true;
-            IsDrawEnabled = true;
         }
 
         public override void OnUpdate(GameTime gameTime)

@@ -29,7 +29,6 @@ namespace Adventure.Components
         {
             // Preload loot that drops when barrel is destroyed.
             Phial.Preload(content);
-            IsUpdateEnabled = true;
             _hurtEffect = content.Load<Effect>("shaders/SolidColor");
             Entity.AddComponent(_sprite = new Sprite(content.Load<Texture2D>("art/common/barrel"), new Rectangle(0, 0, 16, 16)));
             Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));

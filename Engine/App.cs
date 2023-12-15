@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections;
 using Microsoft.Xna.Framework;
 using Engine.Graphics;
 
 namespace Engine
 {
+    /// <summary>
+    /// The main runner for the game.
+    /// </summary>
     public class App : Game
     {
         /// <summary>
         /// Gets the single instance of App
         /// </summary>
         public static App Instance { get; private set; }
-
-        private readonly CoroutineRunner _coroutineRunner = new();
 
         public App(int targetResolutionWidth, int targetResolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
@@ -21,7 +21,6 @@ namespace Engine
             ResolutionHeight = targetResolutionHeight;
             ResolutionScaleMode = resolutionScaleMode;
             Content = new ContentManagerExtended(Services, "Content");
-            Stack = new GameStateStack(this);
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
@@ -67,9 +66,25 @@ namespace Engine
         }
 
         /// <summary>
+        /// Gets the game state stack
+        /// </summary>
+        public ScreenStack Screens
+        {
+            get;
+        } = new();
+
+        /// <summary>
+        /// Gets the coroutine runner
+        /// </summary>
+        public CoroutineRunner Coroutines
+        {
+            get;
+        } = new();
+
+        /// <summary>
         /// Gets the virtual resolution
         /// </summary>
-        public VirtualResolution Resolution
+        public BackBuffer BackBuffer
         {
             get;
             private set;
@@ -85,14 +100,6 @@ namespace Engine
         }
 
         /// <summary>
-        /// Gets the game state stack
-        /// </summary>
-        public GameStateStack Stack
-        {
-            get;
-        }
-
-        /// <summary>
         /// Gets the instance of random
         /// </summary>
         public Random Random
@@ -100,58 +107,39 @@ namespace Engine
             get;
         } = new();
 
-        /// <summary>
-        /// Starts and returns a coroutine created with the given enumerator.
-        /// </summary>
-        /// <param name="enumerator"></param>
-        /// <returns></returns>
-        public Coroutine StartCoroutine(IEnumerator enumerator) 
-        {
-            return _coroutineRunner.StartCoroutine(enumerator);
-        }
-
-        /// <summary>
-        /// Stops the given coroutine.
-        /// </summary>
-        /// <param name="coroutine"></param>
-        public void StopCoroutine(Coroutine coroutine) 
-        {
-            _coroutineRunner.StopCoroutine(coroutine);
-        }
-
         protected override void Initialize()
         {
-            Resolution = new VirtualResolution(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
-            Renderer = new Renderer(GraphicsDevice);
+            BackBuffer = new BackBuffer(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
+            Renderer = new Renderer(GraphicsDevice, BackBuffer);
             base.Initialize();
         }
 
         protected override void UnloadContent()
         {
-            Resolution.Dispose();
+            BackBuffer.Dispose();
             Renderer.Dispose();
             Content.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            Resolution.Update();
+            BackBuffer.Update();
             Input.Update();
-            _coroutineRunner.Update();
-            Stack.Update(gameTime);
+            Coroutines.Update();
+            Screens.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetTarget(Resolution.RenderTarget);
-            Renderer.SetViewport(Resolution.FullViewport);
+            Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
+            Renderer.SetViewport(BackBuffer.FullViewport);
             Renderer.Clear();
-            Stack.Draw(Renderer, gameTime);
+            Screens.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
-            Renderer.SetViewport(Resolution.LetterboxViewport);
+            Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(Resolution.ViewportScaleMatrix);
-            Renderer.Draw(Resolution.RenderTarget, Vector2.Zero);
+            Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
+            Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
         }
     }

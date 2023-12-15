@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Engine;
-using Engine.Graphics;
 using Microsoft.Xna.Framework;
+using Engine.Graphics;
 
 namespace Engine.Collision
 {

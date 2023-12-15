@@ -1,6 +1,6 @@
-﻿using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Engine.Graphics;
 
 namespace Engine
 {
@@ -39,30 +39,6 @@ namespace Engine
         /// Gets or sets this components Z ordering for drawing.
         /// </summary>
         public int ZOrder
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets whether the component needs to receive update callbacks.
-        /// </summary>
-        /// <remarks>
-        /// This property will not change anything once the component has been spawned.
-        /// </remarks>
-        public bool IsUpdateEnabled
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets whether the component needs to receive draw callbacks.
-        /// </summary>
-        /// <remarks>
-        /// This property will not change anything once the component has been spawned.
-        /// </remarks>
-        public bool IsDrawEnabled
         {
             get;
             set;

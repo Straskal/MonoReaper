@@ -16,7 +16,7 @@ namespace Engine
         /// </summary>
         /// <param name="enumerator"></param>
         /// <returns></returns>
-        public Coroutine StartCoroutine(IEnumerator enumerator) 
+        internal Coroutine Start(IEnumerator enumerator) 
         {
             var coroutine = new Coroutine(enumerator);
             _coroutines.Add(coroutine);
@@ -27,7 +27,7 @@ namespace Engine
         /// Stops the given coroutine.
         /// </summary>
         /// <param name="coroutine"></param>
-        public void StopCoroutine(Coroutine coroutine) 
+        public void Stop(Coroutine coroutine) 
         {
             _coroutinesToRemove.Add(coroutine);
         }
@@ -35,7 +35,7 @@ namespace Engine
         /// <summary>
         /// Updates all internal coroutines.
         /// </summary>
-        public void Update() 
+        internal void Update() 
         {
             for (int i = 0; i < _coroutines.Count; i++) 
             {
