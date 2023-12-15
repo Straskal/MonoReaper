@@ -29,8 +29,6 @@ namespace Engine.Graphics
             }            
 
             _animations = animations.ToArray();
-
-            IsUpdateEnabled = true;
         }
 
         /// <summary>

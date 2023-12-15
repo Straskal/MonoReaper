@@ -10,7 +10,7 @@ namespace Engine
     /// <remarks>
     /// Entities are composed of components, which hold the actual game and rendering logic.
     /// </remarks>
-    public sealed class Entity
+    public class Entity
     {
         public Entity(Origin origin = Origin.TopLeft)
         {

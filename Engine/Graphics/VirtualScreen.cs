@@ -6,40 +6,40 @@ using Engine.Extensions;
 namespace Engine.Graphics
 {
     /// <summary>
-    /// The virtual resolution that handles scaling and viewport logic
+    /// The virtual screen that handles scaling logic for the target resolution.
     /// </summary>
-    public sealed class VirtualResolution : IDisposable
+    public sealed class VirtualScreen : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
 
         private int _previousBackBufferWidth;
         private int _previousBackBufferHeight;
 
-        public VirtualResolution(GraphicsDevice graphicsDevice, int targetWidth, int targetHeight, ResolutionScaleMode resolutionScaleMode)
+        public VirtualScreen(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
         {
             _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 
-            Width = targetWidth;
-            Height = targetHeight;
-            ScaleMode = resolutionScaleMode;
+            Width = width;
+            Height = height;
+            ScaleMode = scaleMode;
 
-            int renderTargetWidth;
-            int renderTargetHeight;
+            int virtualBufferWidth;
+            int virtualBufferHeight;
 
-            switch (resolutionScaleMode)
+            switch (scaleMode)
             {
                 case ResolutionScaleMode.Renderer:
-                    renderTargetWidth = graphicsDevice.DisplayMode.Width;
-                    renderTargetHeight = graphicsDevice.DisplayMode.Height;
+                    virtualBufferWidth = graphicsDevice.DisplayMode.Width;
+                    virtualBufferHeight = graphicsDevice.DisplayMode.Height;
                     break;
                 case ResolutionScaleMode.Viewport:
                 default:
-                    renderTargetWidth = targetWidth;
-                    renderTargetHeight = targetHeight;
+                    virtualBufferWidth = width;
+                    virtualBufferHeight = height;
                     break;
             }
 
-            RenderTarget = new RenderTarget2D(graphicsDevice, renderTargetWidth, renderTargetHeight);
+            VirtualBackBuffer = new RenderTarget2D(graphicsDevice, virtualBufferWidth, virtualBufferHeight);
         }
 
         /// <summary>
@@ -66,7 +66,10 @@ namespace Engine.Graphics
             get;
         }
 
-        public RenderTarget2D RenderTarget
+        /// <summary>
+        /// Gets the virtual backbuffer render target
+        /// </summary>
+        public RenderTarget2D VirtualBackBuffer
         {
             get;
         }
@@ -90,6 +93,24 @@ namespace Engine.Graphics
         }
 
         /// <summary>
+        /// Gets the screen's scale matrix
+        /// </summary>
+        public Matrix ScaleMatrix 
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the screen's inverted scale matrix
+        /// </summary>
+        public Matrix InvertedScaleMatrix 
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets the renderer scale matrix
         /// </summary>
         public Matrix RendererScaleMatrix
@@ -101,14 +122,14 @@ namespace Engine.Graphics
         /// <summary>
         /// Gets the viewport scale matrix
         /// </summary>
-        public Matrix ViewportScaleMatrix
+        public Matrix VirtualBackBufferScaleMatrix
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Updates the resolution to match any window changes. TODO: This could probably just be wired up to the window size changed event.
+        /// Updates the virtual screen resolution to match the window size.
         /// </summary>
         public void Update()
         {
@@ -121,27 +142,29 @@ namespace Engine.Graphics
                 _previousBackBufferHeight = backBufferHeight;
 
                 var scale = Math.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
-                var transformationMatrix = Matrix.CreateScale(scale, scale, 1f);
 
+                ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
+                InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
                 FullViewport = _graphicsDevice.GetFullViewport();
                 LetterboxViewport = _graphicsDevice.GetLetterboxViewport(Width, Height);
 
                 switch (ScaleMode)
                 {
                     case ResolutionScaleMode.Renderer:
-                        RendererScaleMatrix = transformationMatrix;
-                        ViewportScaleMatrix = Matrix.Identity;
+                        RendererScaleMatrix = ScaleMatrix;
+                        VirtualBackBufferScaleMatrix = Matrix.Identity;
                         break;
                     case ResolutionScaleMode.Viewport:
+                    default:
                         RendererScaleMatrix = Matrix.Identity;
-                        ViewportScaleMatrix = transformationMatrix;
+                        VirtualBackBufferScaleMatrix = ScaleMatrix;
                         break;
                 }
             }
         }
 
         /// <summary>
-        /// Transforms a virtual screen position to screen position.
+        /// Transforms a virtual screen position to screen position
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -150,11 +173,11 @@ namespace Engine.Graphics
             position.X += LetterboxViewport.X;
             position.Y += LetterboxViewport.Y;
 
-            return Vector2.Transform(position, ViewportScaleMatrix);
+            return Vector2.Transform(position, ScaleMatrix);
         }
 
         /// <summary>
-        /// Transforms a virtual screen position to screen position.
+        /// Transforms a screen position to a virtual screen position
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -163,12 +186,12 @@ namespace Engine.Graphics
             position.X -= LetterboxViewport.X;
             position.Y -= LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(ViewportScaleMatrix));
+            return Vector2.Transform(position, InvertedScaleMatrix);
         }
 
         public void Dispose()
         {
-            RenderTarget.Dispose();
+            VirtualBackBuffer.Dispose();
         }
     }
 }

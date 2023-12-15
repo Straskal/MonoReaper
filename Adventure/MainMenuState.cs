@@ -19,14 +19,14 @@ namespace Adventure
 
         public override void Update(GameTime gameTime)
         {
-            _mousePosition = Application.Resolution.ToVirtualScreen(Mouse.GetState().Position.ToVector2());
+            _mousePosition = Application.Screen.ToVirtualScreen(Mouse.GetState().Position.ToVector2());
             _mouseDown = Mouse.GetState().LeftButton == ButtonState.Pressed;        
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             _hotId = 0;
-            renderer.BeginDraw(Application.Resolution.RendererScaleMatrix);
+            renderer.BeginDraw();
             DrawGameTitle(renderer);
             DrawButtons(renderer);
             renderer.EndDraw();

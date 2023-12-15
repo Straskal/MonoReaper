@@ -46,8 +46,6 @@ namespace Adventure.Components
         public Tilemap(MapData data)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
-
-            IsDrawEnabled = true;
         }
 
         public MapData Data { get; }

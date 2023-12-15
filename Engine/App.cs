@@ -4,6 +4,9 @@ using Engine.Graphics;
 
 namespace Engine
 {
+    /// <summary>
+    /// The main runner for the game.
+    /// </summary>
     public class App : Game
     {
         /// <summary>
@@ -81,7 +84,7 @@ namespace Engine
         /// <summary>
         /// Gets the virtual resolution
         /// </summary>
-        public VirtualResolution Resolution
+        public VirtualScreen Screen
         {
             get;
             private set;
@@ -106,21 +109,21 @@ namespace Engine
 
         protected override void Initialize()
         {
-            Resolution = new VirtualResolution(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
-            Renderer = new Renderer(GraphicsDevice);
+            Screen = new VirtualScreen(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
+            Renderer = new Renderer(GraphicsDevice, Screen);
             base.Initialize();
         }
 
         protected override void UnloadContent()
         {
-            Resolution.Dispose();
+            Screen.Dispose();
             Renderer.Dispose();
             Content.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            Resolution.Update();
+            Screen.Update();
             Input.Update();
             Coroutines.Update();
             Stack.Update(gameTime);
@@ -128,15 +131,15 @@ namespace Engine
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetTarget(Resolution.RenderTarget);
-            Renderer.SetViewport(Resolution.FullViewport);
+            Renderer.SetTarget(Screen.VirtualBackBuffer);
+            Renderer.SetViewport(Screen.FullViewport);
             Renderer.Clear();
             Stack.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
-            Renderer.SetViewport(Resolution.LetterboxViewport);
+            Renderer.SetViewport(Screen.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(Resolution.ViewportScaleMatrix);
-            Renderer.Draw(Resolution.RenderTarget, Vector2.Zero);
+            Renderer.BeginDraw(Screen.VirtualBackBufferScaleMatrix);
+            Renderer.Draw(Screen.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
         }
     }

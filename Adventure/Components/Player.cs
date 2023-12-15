@@ -32,11 +32,6 @@ namespace Adventure.Components
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
 
-        public Player()
-        {
-            IsUpdateEnabled = true;
-        }
-
         public override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);

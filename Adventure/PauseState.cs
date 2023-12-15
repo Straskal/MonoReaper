@@ -24,12 +24,6 @@ namespace Adventure
             get => true;
         }
 
-        public SpriteFont SpriteFont
-        {
-            get;
-            private set;
-        }
-
         private Rectangle _buttonRectangle;
         private Color _buttonColor;
         private bool _buttonHot;
@@ -37,8 +31,6 @@ namespace Adventure
 
         public override void Start()
         {
-            SpriteFont = Application.Content.Load<SpriteFont>("Fonts/Font");
-
             _buttonRectangle = new Rectangle(100, 150, 75, 20);
             _buttonColor = Color.Blue;
         }
@@ -46,7 +38,7 @@ namespace Adventure
         public override void Update(GameTime gameTime)
         {
             var mousePosition = Mouse.GetState().Position;
-            var screenPosition = Application.Resolution.ToVirtualScreen(mousePosition.ToVector2());
+            var screenPosition = Application.Screen.ToVirtualScreen(mousePosition.ToVector2());
 
             _buttonColor = Color.LightBlue;
             _buttonHot = false;
@@ -88,11 +80,11 @@ namespace Adventure
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            renderer.BeginDraw(Application.Resolution.RendererScaleMatrix);
-            renderer.DrawRectangle(new Rectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight), new Color(Color.Black, 0.4f));
-            renderer.DrawString(SpriteFont, "Paused", new Vector2(100, 100), Color.White);
+            renderer.BeginDraw();
+            renderer.DrawRectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight, new Color(Color.Black, 0.4f));
+            renderer.DrawString(SharedContent.Font, "Paused", 100f, 100f, Color.White);
             renderer.DrawRectangle(_buttonRectangle, _buttonColor);
-            renderer.DrawString(SpriteFont, "Main menu", new Vector2(_buttonRectangle.X, _buttonRectangle.Y), Color.Black);
+            renderer.DrawString(SharedContent.Font, "Main menu", _buttonRectangle.X, _buttonRectangle.Y, Color.Black);
             renderer.EndDraw();
         }
     }

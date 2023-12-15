@@ -12,11 +12,6 @@ namespace Adventure.Components
         private AnimatedSprite _spriteSheet;
         private SoundEffect _sound;
 
-        public Explosion() 
-        {
-            IsUpdateEnabled = true;
-        }
-
         public override void OnLoad(ContentManager content)
         {
             _sound = content.Load<SoundEffect>("audio/explosion4");

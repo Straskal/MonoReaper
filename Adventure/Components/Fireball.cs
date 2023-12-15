@@ -18,8 +18,6 @@ namespace Adventure.Components
         public Fireball(Vector2 velocity)
         {
             _velocity = velocity;
-
-            IsUpdateEnabled = true;
         }
 
         private Vector2 _velocity;

@@ -16,8 +16,6 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            IsUpdateEnabled = true;
-
             Entity.AddComponent(_particles = new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,

@@ -7,11 +7,8 @@ using Engine.Collision;
 namespace Engine
 {
     /// <summary>
-    /// This class represents a level in the game.
+    /// This class represents a level in the game, which handles tracking entities and components.
     /// </summary>
-    /// <remarks>
-    /// A level contains entities and is responsible for orchestrating callback methods on entity components.
-    /// </remarks>
     public class Level : GameState
     {
         public enum LoadStatus
@@ -22,30 +19,22 @@ namespace Engine
         }
 
         /// <summary>
-        /// The level's very own content manager.
+        /// A content manager for level specific content. The content will be unloaded when the level is ended.
         /// </summary>
-        protected ContentManagerExtended Content 
-        { 
+        protected ContentManagerExtended Content
+        {
             get;
             private set;
         }
 
-        /// <summary>
-        /// WIP
-        /// </summary>
-        protected List<PostProcessingEffect> PostProcessingEffects { get; } = new();
-
         private readonly List<Entity> _entities = new();
         private readonly List<Entity> _entitiesToDestroy = new();
         private readonly List<Component> _components = new();
-        private readonly List<Component> _componentsToUpdate = new();
-        private readonly List<Component> _componentsToDraw = new();
         private readonly List<Component> _componentsToRemove = new();
 
         private delegate void ComponentAddedHandler(Entity entity, params Component[] components);
         private ComponentAddedHandler _onComponentsAdded;
-
-        private bool _componentsToDrawNeedsSort = false;
+        private bool _isZSortNeeded = false;
         private Coroutine _loadCoroutine;
 
         public Level(App application, int cellSize, int width, int height) : base(application)
@@ -53,19 +42,25 @@ namespace Engine
             Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
             Width = width;
             Height = height;
-            Camera = new Camera(application.Resolution);
+            Camera = new Camera(application.Screen);
             Partition = new Partition(cellSize);
         }
 
         /// <summary>
         /// Gets the level's camera.
         /// </summary>
-        public Camera Camera { get; }
+        public Camera Camera
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets the level's spatial partition.
         /// </summary>
-        public Partition Partition { get; }
+        public Partition Partition
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets the level's width in pixels
@@ -90,11 +85,6 @@ namespace Engine
         {
             get;
             private set;
-        }
-
-        public void AddPostProcessingEffect(PostProcessingEffect effect)
-        {
-            PostProcessingEffects.Add(effect);
         }
 
         /// <summary>
@@ -127,26 +117,6 @@ namespace Engine
                 entity.IsDestroyed = true;
                 _entitiesToDestroy.Add(entity);
             }
-        }
-
-        /// <summary>
-        /// Returns the first instance of a component of the given type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T Find<T>() where T : Component
-        {
-            var result = default(T);
-
-            foreach (var component in _components) 
-            {
-                if (component is T t) 
-                {
-                    return t;
-                }
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -187,7 +157,7 @@ namespace Engine
 
         public override void Start()
         {
-            if (Status.Equals(LoadStatus.NotStarted))
+            if (Status == LoadStatus.NotStarted)
             {
                 _loadCoroutine = Application.Coroutines.Start(LoadRoutine());
             }
@@ -196,70 +166,37 @@ namespace Engine
         public override void Stop()
         {
             Application.Coroutines.Stop(_loadCoroutine);
-
-            var components = new List<Component>();
-            foreach (var entity in _entities)
-            {
-                components.AddRange(entity.Components);
-            }
-
-            foreach (var component in components)
-            {
-                component.OnEnd();
-            }
-
+            EndComponents();
             Content.Unload();
         }
 
         public override void Update(GameTime gameTime)
         {
-            for (int i = 0; i < _componentsToUpdate.Count; i++)
-            {
-                _componentsToUpdate[i].OnUpdate(gameTime);
-            }
-
-            for (int i = 0; i < _componentsToUpdate.Count; i++)
-            {
-                _componentsToUpdate[i].OnPostUpdate(gameTime);
-            }
-
-            PostUpdateDestroyEntities();
-            PostUpdateRemoveComponents();
-
-            foreach (var effect in PostProcessingEffects)
-            {
-                effect.OnUpdate(gameTime);
-            }
-        }        
+            UpdateComponents(gameTime);
+            PostUpdateComponents(gameTime);
+            ProcessDestroyedEntities();
+            ProcessRemovedComponents();
+        }
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            if (_componentsToDrawNeedsSort)
-            {
-                _componentsToDraw.Sort(SortDrawableComponents);
-                _componentsToDrawNeedsSort = false;
-            }
-
+            SortDrawablesIfNeeded();
             renderer.BeginDraw(Camera.TransformationMatrix);
-
-            for (int i = 0; i < _componentsToDraw.Count; i++)
-            {
-                _componentsToDraw[i].OnDraw(renderer, gameTime);
-            }
-
+            DrawComponents(renderer, gameTime);
             renderer.EndDraw();
         }
 
-        /// <summary>
-        /// Preload the level over multiple frames
-        /// </summary>
-        /// <returns></returns>
         private IEnumerator LoadRoutine()
         {
             Status = LoadStatus.Loading;
+            yield return LoadComponentsRoutine();
+            SpawnComponents();
+            StartComponents();
+            Status = LoadStatus.Loaded;
+        }
 
-            var startComponents = _components;
-
+        private IEnumerator LoadComponentsRoutine() 
+        {
             for (int i = 0; i < _components.Count; i++)
             {
                 _components[i].OnLoad(Content);
@@ -273,10 +210,13 @@ namespace Engine
                     components[i].OnLoad(Content);
                 }
             };
+        }
 
-            for (int i = 0; i < startComponents.Count; i++)
+        private void SpawnComponents() 
+        {
+            for (int i = 0; i < _components.Count; i++)
             {
-                startComponents[i].OnSpawn();
+                _components[i].OnSpawn();
             }
 
             _onComponentsAdded = (entity, components) =>
@@ -291,20 +231,13 @@ namespace Engine
                     components[i].OnSpawn();
                 }
             };
+        }
 
-            for (int i = 0; i < startComponents.Count; i++)
+        private void StartComponents() 
+        {
+            for (int i = 0; i < _components.Count; i++)
             {
-                startComponents[i].OnStart();
-
-                if (startComponents[i].IsUpdateEnabled)
-                {
-                    _componentsToUpdate.Add(startComponents[i]);
-                }
-
-                if (startComponents[i].IsDrawEnabled)
-                {
-                    _componentsToDraw.Add(startComponents[i]);
-                }
+                _components[i].OnStart();
             }
 
             _onComponentsAdded = (entity, components) =>
@@ -322,58 +255,97 @@ namespace Engine
                 for (int i = 0; i < components.Length; i++)
                 {
                     components[i].OnStart();
-
-                    if (components[i].IsUpdateEnabled)
-                    {
-                        _componentsToUpdate.Add(components[i]);
-                    }
-
-                    if (components[i].IsDrawEnabled)
-                    {
-                        _componentsToDraw.Add(components[i]);
-                        _componentsToDrawNeedsSort = true;
-                    }
                 }
             };
-
-            Status = LoadStatus.Loaded;
         }
 
-        private void PostUpdateDestroyEntities()
+        private void UpdateComponents(GameTime gameTime) 
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                _components[i].OnUpdate(gameTime);
+            }
+        }
+
+        private void PostUpdateComponents(GameTime gameTime)
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                _components[i].OnPostUpdate(gameTime);
+            }
+        }
+
+        private void DrawComponents(Renderer renderer, GameTime gameTime)
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                _components[i].OnDraw(renderer, gameTime);
+            }
+        }
+
+        private void EndComponents()
+        {
+            var components = new List<Component>();
+            foreach (var entity in _entities)
+            {
+                components.AddRange(entity.Components);
+            }
+
+            foreach (var component in components)
+            {
+                component.OnEnd();
+            }
+        }
+
+        private void ProcessDestroyedEntities()
         {
             for (int i = 0; i < _entitiesToDestroy.Count; i++)
             {
-                for (int j = 0; j < _entitiesToDestroy[i].Components.Count; j++)
+                var entity = _entitiesToDestroy[i];
+                var components = entity.Components;
+
+                for (int j = 0; j < components.Count; j++)
                 {
-                    _entitiesToDestroy[i].Components[j].OnDestroy();
+                    components[j].OnDestroy();
                 }
 
-                for (int j = 0; j < _entitiesToDestroy[i].Components.Count; j++)
+                for (int j = 0; j < components.Count; j++)
                 {
-                    _components.Remove(_entitiesToDestroy[i].Components[j]);
-                    _componentsToUpdate.Remove(_entitiesToDestroy[i].Components[j]);
-                    _componentsToDraw.Remove(_entitiesToDestroy[i].Components[j]);
-                    _componentsToRemove.Remove(_entitiesToDestroy[i].Components[j]);
+                    components[j].OnEnd();
                 }
 
-                _entities.Remove(_entitiesToDestroy[i]);
+                for (int j = 0; j < components.Count; j++)
+                {
+                    _components[i].Entity = null;
+                    _components.Remove(components[j]);
+                    _componentsToRemove.Remove(components[j]);
+                }
+
+                _entities.Remove(entity);
             }
 
             _entitiesToDestroy.Clear();
         }
 
-        private void PostUpdateRemoveComponents()
+        private void ProcessRemovedComponents()
         {
             for (int i = 0; i < _componentsToRemove.Count; i++)
             {
-                _componentsToRemove[i].OnDestroy();
+                _componentsToRemove[i].OnEnd();
                 _componentsToRemove[i].Entity = null;
                 _components.Remove(_componentsToRemove[i]);
-                _componentsToUpdate.Remove(_componentsToRemove[i]);
-                _componentsToDraw.Remove(_componentsToRemove[i]);
             }
 
             _componentsToRemove.Clear();
+        }
+
+        private void SortDrawablesIfNeeded()
+        {
+            if (_isZSortNeeded)
+            {
+                _components.Sort(SortDrawableComponents);
+                _isZSortNeeded = false;
+            }
         }
 
         private static int SortDrawableComponents(Component a, Component b)

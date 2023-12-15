@@ -16,11 +16,8 @@ namespace Engine.Graphics
 
         public Sprite(Texture2D texture, Rectangle sourceRectangle)
         {
-            ArgumentNullException.ThrowIfNull(texture, nameof(texture));
-
-            Texture = texture;
+            Texture = texture ?? throw new ArgumentNullException(nameof(texture));
             SourceRectangle = sourceRectangle;
-            IsDrawEnabled = true;
         }
 
         private Texture2D _texture;
@@ -43,34 +40,34 @@ namespace Engine.Graphics
         /// <summary>
         /// Gets or sets the sprite's effect
         /// </summary>
-        public Effect Effect 
-        { 
-            get; 
-            set; 
+        public Effect Effect
+        {
+            get;
+            set;
         }
 
         /// <summary>
         /// Gets or sets the sprites rectangle
         /// </summary>
-        public Rectangle SourceRectangle 
+        public Rectangle SourceRectangle
         {
-            get; 
-            set; 
+            get;
+            set;
         }
 
         /// <summary>
         /// Gets or sets the sprites color
         /// </summary>
-        public Color Color 
-        { 
-            get; 
-            set; 
+        public Color Color
+        {
+            get;
+            set;
         } = Color.White;
 
         /// <summary>
         /// Gets or sets the sprite's sprite effects.
         /// </summary>
-        public SpriteEffects SpriteEffects 
+        public SpriteEffects SpriteEffects
         {
             get;
             set;

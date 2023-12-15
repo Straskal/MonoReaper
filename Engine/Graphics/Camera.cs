@@ -7,7 +7,7 @@ namespace Engine.Graphics
     /// </summary>
     public sealed class Camera
     {
-        private readonly VirtualResolution _resolutionHandler;
+        private readonly VirtualScreen _virtualScreen;
 
         private Vector3 _translation;
         private Vector3 _scale;
@@ -18,28 +18,9 @@ namespace Engine.Graphics
         private Matrix _centerTranslationMatrix;
         private bool _isDirty;
 
-        public Camera(VirtualResolution virtualResolution) 
+        public Camera(VirtualScreen virtualScreen)
         {
-            _resolutionHandler = virtualResolution;
-            
-            Width = virtualResolution.Width;
-            Height = virtualResolution.Height;
-        }
-
-        /// <summary>
-        /// Gets the camera's width
-        /// </summary>
-        public int Width 
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the camera's height
-        /// </summary>
-        public int Height
-        {
-            get;
+            _virtualScreen = virtualScreen;
         }
 
         private Vector2 _position;
@@ -106,8 +87,8 @@ namespace Engine.Graphics
                     _scale.Y = Zoom;
                     _scale.Z = 1f;
 
-                    _center.X = Width * 0.5f;
-                    _center.Y = Height * 0.5f;
+                    _center.X = _virtualScreen.Width * 0.5f;
+                    _center.Y = _virtualScreen.Height * 0.5f;
                     _center.Z = 0f;
 
                     Matrix.CreateTranslation(ref _translation, out _translationMatrix);
@@ -115,13 +96,7 @@ namespace Engine.Graphics
                     Matrix.CreateScale(ref _scale, out _scaleMatrix);
                     Matrix.CreateTranslation(ref _center, out _centerTranslationMatrix);
 
-                    _transformationMatrix = 
-                        _translationMatrix * 
-                        _rotationMatrix * 
-                        _scaleMatrix * 
-                        _centerTranslationMatrix * 
-                        _resolutionHandler.RendererScaleMatrix;
-
+                    _transformationMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix * _centerTranslationMatrix * _virtualScreen.RendererScaleMatrix;
                     _isDirty = false;
                 }
 
@@ -136,10 +111,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += _resolutionHandler.LetterboxViewport.X;
-            position.Y += _resolutionHandler.LetterboxViewport.Y;
+            position.X += _virtualScreen.LetterboxViewport.X;
+            position.Y += _virtualScreen.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, TransformationMatrix * _resolutionHandler.ViewportScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix * _virtualScreen.VirtualBackBufferScaleMatrix);
         }
 
         /// <summary>
@@ -149,10 +124,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= _resolutionHandler.LetterboxViewport.X;
-            position.Y -= _resolutionHandler.LetterboxViewport.Y;
+            position.X -= _virtualScreen.LetterboxViewport.X;
+            position.Y -= _virtualScreen.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _resolutionHandler.ViewportScaleMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _virtualScreen.VirtualBackBufferScaleMatrix));
         }
     }
 }
