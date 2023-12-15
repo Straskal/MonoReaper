@@ -9,7 +9,7 @@ namespace Engine.Graphics
     public class Renderer
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly VirtualScreen _virtualScreen;
+        private readonly BackBuffer _virtualScreen;
         private readonly SpriteBatch _spriteBatch;
 
         private Matrix _transformationMatrix;
@@ -24,7 +24,7 @@ namespace Engine.Graphics
             private set;
         }
 
-        public Renderer(GraphicsDevice graphicsDevice, VirtualScreen virtualScreen) 
+        public Renderer(GraphicsDevice graphicsDevice, BackBuffer virtualScreen) 
         {
             _graphicsDevice = graphicsDevice;
             _virtualScreen = virtualScreen;

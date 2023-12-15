@@ -4,9 +4,9 @@ using Engine.Graphics;
 
 namespace Adventure
 {
-    internal class PauseState : GameState
+    internal class PauseScreen : Screen
     {
-        public PauseState(App application) : base(application)
+        public PauseScreen(App application) : base(application)
         {
         }
 
@@ -23,11 +23,11 @@ namespace Adventure
             GUI.Start();
             if (GUI.PrimaryButton(1, "Resume", 100, 150))
             {
-                Application.Stack.Pop(this);
+                Application.Screens.Pop(this);
             }
             if (GUI.PrimaryButton(3, "Main menu", 100, 180))
             {
-                Application.Stack.SetTop(new MainMenuState(Application));
+                Application.Screens.SetTop(new MainMenuScreen(Application));
             }
             renderer.EndDraw();
         }

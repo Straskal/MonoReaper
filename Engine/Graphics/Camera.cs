@@ -7,7 +7,7 @@ namespace Engine.Graphics
     /// </summary>
     public sealed class Camera
     {
-        private readonly VirtualScreen _virtualScreen;
+        private readonly BackBuffer _virtualScreen;
 
         private Vector3 _translation;
         private Vector3 _scale;
@@ -18,7 +18,7 @@ namespace Engine.Graphics
         private Matrix _centerTranslationMatrix;
         private bool _isDirty;
 
-        public Camera(VirtualScreen virtualScreen)
+        public Camera(BackBuffer virtualScreen)
         {
             _virtualScreen = virtualScreen;
         }

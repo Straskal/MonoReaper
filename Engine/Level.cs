@@ -9,7 +9,7 @@ namespace Engine
     /// <summary>
     /// This class represents a level in the game, which handles tracking entities and components.
     /// </summary>
-    public class Level : GameState
+    public class Level : Screen
     {
         public enum LoadStatus
         {
@@ -42,7 +42,7 @@ namespace Engine
             Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
             Width = width;
             Height = height;
-            Camera = new Camera(application.Screen);
+            Camera = new Camera(application.BackBuffer);
             Partition = new Partition(cellSize);
         }
 

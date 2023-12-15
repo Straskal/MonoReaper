@@ -68,7 +68,7 @@ namespace Engine
         /// <summary>
         /// Gets the game state stack
         /// </summary>
-        public GameStateStack Stack
+        public ScreenStack Screens
         {
             get;
         } = new();
@@ -84,7 +84,7 @@ namespace Engine
         /// <summary>
         /// Gets the virtual resolution
         /// </summary>
-        public VirtualScreen Screen
+        public BackBuffer BackBuffer
         {
             get;
             private set;
@@ -109,37 +109,37 @@ namespace Engine
 
         protected override void Initialize()
         {
-            Screen = new VirtualScreen(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
-            Renderer = new Renderer(GraphicsDevice, Screen);
+            BackBuffer = new BackBuffer(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
+            Renderer = new Renderer(GraphicsDevice, BackBuffer);
             base.Initialize();
         }
 
         protected override void UnloadContent()
         {
-            Screen.Dispose();
+            BackBuffer.Dispose();
             Renderer.Dispose();
             Content.Unload();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            Screen.Update();
+            BackBuffer.Update();
             Input.Update();
             Coroutines.Update();
-            Stack.Update(gameTime);
+            Screens.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetTarget(Screen.VirtualBackBuffer);
-            Renderer.SetViewport(Screen.FullViewport);
+            Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
+            Renderer.SetViewport(BackBuffer.FullViewport);
             Renderer.Clear();
-            Stack.Draw(Renderer, gameTime);
+            Screens.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
-            Renderer.SetViewport(Screen.LetterboxViewport);
+            Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(Screen.VirtualBackBufferScaleMatrix);
-            Renderer.Draw(Screen.VirtualBackBuffer, Vector2.Zero);
+            Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
+            Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
         }
     }

@@ -8,14 +8,14 @@ namespace Engine.Graphics
     /// <summary>
     /// The virtual screen that handles scaling logic for the target resolution.
     /// </summary>
-    public sealed class VirtualScreen : IDisposable
+    public sealed class BackBuffer : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
 
         private int _previousBackBufferWidth;
         private int _previousBackBufferHeight;
 
-        public VirtualScreen(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
+        public BackBuffer(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
         {
             _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Adventure
 {
-    internal class LevelTransitionState : LevelLoadingState
+    internal class LevelTransitionScreen : LevelLoadingScreen
     {
         private const float ArtificialDelayTime = 2f;
         private const float EllipsisTime = 0.3f; 
@@ -15,7 +15,7 @@ namespace Adventure
         private int _ellipsisCount;
         private string _ellipsis;
 
-        public LevelTransitionState(App application, Level level) : base(application, level)
+        public LevelTransitionScreen(App application, Level level) : base(application, level)
         {
         }
 
