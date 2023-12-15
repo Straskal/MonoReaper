@@ -316,7 +316,7 @@ namespace Engine
 
                 for (int j = 0; j < components.Count; j++)
                 {
-                    _components[i].Entity = null;
+                    components[j].Entity = null;
                     _components.Remove(components[j]);
                     _componentsToRemove.Remove(components[j]);
                 }
