@@ -4,9 +4,9 @@ using Engine.Graphics;
 
 namespace Adventure
 {
-    internal class MainMenuState : GameState
+    internal class MainMenuScreen : Screen
     {
-        public MainMenuState(App application) : base(application)
+        public MainMenuScreen(App application) : base(application)
         {
         }
 
@@ -29,7 +29,7 @@ namespace Adventure
 
             if (GUI.PrimaryButton(1, "Start", 100, 120)) 
             {
-                Stack.SetTop(new LevelTransitionState(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
+                Screens.SetTop(new LevelTransitionScreen(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
             }
 
             if (GUI.DangerButton(2, "Exit", 100, 150))

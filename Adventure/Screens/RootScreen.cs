@@ -10,13 +10,13 @@ namespace Adventure
     /// The root state acts as the entry point to the application and overall game controller.
     /// The root state cannot be popped from the stack.
     /// </summary>
-    internal class RootState : GameState
+    internal class RootScreen : Screen
     {
-        private readonly PauseState _pauseState;
+        private readonly PauseScreen _pauseState;
 
-        public RootState(App application) : base(application)
+        public RootScreen(App application) : base(application)
         {
-            _pauseState = new PauseState(application);
+            _pauseState = new PauseScreen(application);
         }
 
         public override void Start()
@@ -27,7 +27,7 @@ namespace Adventure
             LoadSharedContent();
             LoadGUI();
 
-            Stack.Push(new MainMenuState(Application));
+            Screens.Push(new MainMenuScreen(Application));
         }
 
         public override void Update(GameTime gameTime)
@@ -40,13 +40,13 @@ namespace Adventure
 
             if (Input.IsKeyPressed(Keys.Escape))
             {
-                if (Stack.Top == _pauseState)
+                if (Screens.Top == _pauseState)
                 {
-                    Stack.Pop(_pauseState);
+                    Screens.Pop(_pauseState);
                 }
-                else
+                else if (Screens.Top is Level)
                 {
-                    Stack.Push(_pauseState);
+                    Screens.Push(_pauseState);
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace Adventure
         private void LoadGUI() 
         {
             GUI.Renderer = Application.Renderer;
-            GUI.Screen = Application.Screen;
+            GUI.Screen = Application.BackBuffer;
         }
     }
 }

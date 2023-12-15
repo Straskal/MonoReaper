@@ -7,7 +7,7 @@ namespace Engine.Graphics
     /// </summary>
     public sealed class Camera
     {
-        private readonly VirtualScreen _virtualScreen;
+        private readonly BackBuffer _backBuffer;
 
         private Vector3 _translation;
         private Vector3 _scale;
@@ -18,9 +18,9 @@ namespace Engine.Graphics
         private Matrix _centerTranslationMatrix;
         private bool _isDirty;
 
-        public Camera(VirtualScreen virtualScreen)
+        public Camera(BackBuffer backBuffer)
         {
-            _virtualScreen = virtualScreen;
+            _backBuffer = backBuffer;
         }
 
         private Vector2 _position;
@@ -87,8 +87,8 @@ namespace Engine.Graphics
                     _scale.Y = Zoom;
                     _scale.Z = 1f;
 
-                    _center.X = _virtualScreen.Width * 0.5f;
-                    _center.Y = _virtualScreen.Height * 0.5f;
+                    _center.X = _backBuffer.Width * 0.5f;
+                    _center.Y = _backBuffer.Height * 0.5f;
                     _center.Z = 0f;
 
                     Matrix.CreateTranslation(ref _translation, out _translationMatrix);
@@ -96,7 +96,7 @@ namespace Engine.Graphics
                     Matrix.CreateScale(ref _scale, out _scaleMatrix);
                     Matrix.CreateTranslation(ref _center, out _centerTranslationMatrix);
 
-                    _transformationMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix * _centerTranslationMatrix * _virtualScreen.RendererScaleMatrix;
+                    _transformationMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix * _centerTranslationMatrix * _backBuffer.RendererScaleMatrix;
                     _isDirty = false;
                 }
 
@@ -111,10 +111,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += _virtualScreen.LetterboxViewport.X;
-            position.Y += _virtualScreen.LetterboxViewport.Y;
+            position.X += _backBuffer.LetterboxViewport.X;
+            position.Y += _backBuffer.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, TransformationMatrix * _virtualScreen.VirtualBackBufferScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix * _backBuffer.VirtualBackBufferScaleMatrix);
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace Engine.Graphics
         /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= _virtualScreen.LetterboxViewport.X;
-            position.Y -= _virtualScreen.LetterboxViewport.Y;
+            position.X -= _backBuffer.LetterboxViewport.X;
+            position.Y -= _backBuffer.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _virtualScreen.VirtualBackBufferScaleMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _backBuffer.VirtualBackBufferScaleMatrix));
         }
     }
 }

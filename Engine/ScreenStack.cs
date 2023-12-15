@@ -12,45 +12,45 @@ namespace Engine
     /// <remarks>
     /// States are updated top down, and are drawn bottom up. The root state is always updated and drawn.
     /// </remarks>
-    public sealed class GameStateStack
+    public sealed class ScreenStack
     {
-        private readonly List<GameState> _stack = new();
+        private readonly List<Screen> _stack = new();
         private readonly Queue<Action> _stackOperations = new();
 
         /// <summary>
         /// Gets the game state at the top of the stack
         /// </summary>
-        public GameState Top => _stack.LastOrDefault();
+        public Screen Top => _stack.LastOrDefault();
 
         /// <summary>
         /// Returns the root state
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetRoot<T>() where T : GameState 
+        public T GetRoot<T>() where T : Screen 
         {
             return _stack[0] as T;
         }
 
         /// <summary>
-        /// Pushes a state onto the top of the stack
+        /// Pushes the given screen onto the top of the stack
         /// </summary>
-        /// <param name="gameState"></param>
-        public void Push(GameState gameState) 
+        /// <param name="screen"></param>
+        public void Push(Screen screen) 
         {
             _stackOperations.Enqueue(() => 
             {
-                _stack.Add(gameState);
-                gameState.Start();
+                _stack.Add(screen);
+                screen.Start();
             });
         }
 
         /// <summary>
-        /// Pops the given state off of the stack
+        /// Pops the given screen off of the stack
         /// </summary>
-        /// <param name="gameState"></param>
+        /// <param name="screen"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Pop(GameState gameState) 
+        public void Pop(Screen screen) 
         {
             _stackOperations.Enqueue(() =>
             {
@@ -59,13 +59,13 @@ namespace Engine
                     throw new InvalidOperationException("The root state cannot be popped from the stack");
                 }
 
-                gameState.Stop();
-                _stack.Remove(gameState);
+                screen.Stop();
+                _stack.Remove(screen);
             });
         }
 
         /// <summary>
-        /// Pops all states, except for the root state, from the stack
+        /// Pops all screens, except for the root screen, from the stack
         /// </summary>
         public void PopAll()
         {
@@ -80,10 +80,10 @@ namespace Engine
         }
 
         /// <summary>
-        /// Pops all states from the stack and pushes the given state to the top
+        /// Pops all screens from the stack and pushes the given screen to the top
         /// </summary>
-        /// <param name="gameState"></param>
-        public void SetTop(GameState gameState) 
+        /// <param name="screen"></param>
+        public void SetTop(Screen screen) 
         {
             _stackOperations.Enqueue(() =>
             {
@@ -93,8 +93,8 @@ namespace Engine
                     _stack.Remove(_stack.Last());
                 }
 
-                _stack.Add(gameState);
-                gameState.Start();
+                _stack.Add(screen);
+                screen.Start();
             });
         }
 

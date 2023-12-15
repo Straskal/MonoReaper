@@ -6,7 +6,7 @@ namespace Adventure
 {
     internal static class GUI
     {
-        public static VirtualScreen Screen
+        public static BackBuffer Screen
         {
             get;
             set;
