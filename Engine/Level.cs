@@ -189,6 +189,11 @@ namespace Engine
 
         public override void Update(GameTime gameTime)
         {
+            if (!_loadCoroutine.IsFinished) 
+            {
+                return;
+            }
+
             UpdateComponents(gameTime);
             PostUpdateComponents(gameTime);
             ProcessDestroyedEntities();
@@ -197,6 +202,11 @@ namespace Engine
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
             SortComponentsIfNeeded();
             renderer.BeginDraw(Camera.TransformationMatrix);
             DrawComponents(renderer, gameTime);
