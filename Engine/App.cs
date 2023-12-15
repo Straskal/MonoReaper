@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Microsoft.Xna.Framework;
 using Engine.Graphics;
 
@@ -12,8 +11,6 @@ namespace Engine
         /// </summary>
         public static App Instance { get; private set; }
 
-        private readonly CoroutineRunner _coroutineRunner = new();
-
         public App(int targetResolutionWidth, int targetResolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
             Instance = this;
@@ -21,7 +18,6 @@ namespace Engine
             ResolutionHeight = targetResolutionHeight;
             ResolutionScaleMode = resolutionScaleMode;
             Content = new ContentManagerExtended(Services, "Content");
-            Stack = new GameStateStack(this);
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
@@ -67,6 +63,22 @@ namespace Engine
         }
 
         /// <summary>
+        /// Gets the game state stack
+        /// </summary>
+        public GameStateStack Stack
+        {
+            get;
+        } = new();
+
+        /// <summary>
+        /// Gets the coroutine runner
+        /// </summary>
+        public CoroutineRunner Coroutines
+        {
+            get;
+        } = new();
+
+        /// <summary>
         /// Gets the virtual resolution
         /// </summary>
         public VirtualResolution Resolution
@@ -85,39 +97,12 @@ namespace Engine
         }
 
         /// <summary>
-        /// Gets the game state stack
-        /// </summary>
-        public GameStateStack Stack
-        {
-            get;
-        }
-
-        /// <summary>
         /// Gets the instance of random
         /// </summary>
         public Random Random
         {
             get;
         } = new();
-
-        /// <summary>
-        /// Starts and returns a coroutine created with the given enumerator.
-        /// </summary>
-        /// <param name="enumerator"></param>
-        /// <returns></returns>
-        public Coroutine StartCoroutine(IEnumerator enumerator) 
-        {
-            return _coroutineRunner.StartCoroutine(enumerator);
-        }
-
-        /// <summary>
-        /// Stops the given coroutine.
-        /// </summary>
-        /// <param name="coroutine"></param>
-        public void StopCoroutine(Coroutine coroutine) 
-        {
-            _coroutineRunner.StopCoroutine(coroutine);
-        }
 
         protected override void Initialize()
         {
@@ -137,7 +122,7 @@ namespace Engine
         {
             Resolution.Update();
             Input.Update();
-            _coroutineRunner.Update();
+            Coroutines.Update();
             Stack.Update(gameTime);
         }
 

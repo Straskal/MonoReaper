@@ -130,6 +130,26 @@ namespace Engine
         }
 
         /// <summary>
+        /// Returns the first instance of a component of the given type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T Find<T>() where T : Component
+        {
+            var result = default(T);
+
+            foreach (var component in _components) 
+            {
+                if (component is T t) 
+                {
+                    return t;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Adds the given component to the level
         /// </summary>
         /// <param name="entity"></param>
@@ -169,13 +189,13 @@ namespace Engine
         {
             if (Status.Equals(LoadStatus.NotStarted))
             {
-                _loadCoroutine = Application.StartCoroutine(Load());
+                _loadCoroutine = Application.Coroutines.Start(LoadRoutine());
             }
         }
 
         public override void Stop()
         {
-            Application.StopCoroutine(_loadCoroutine);
+            Application.Coroutines.Stop(_loadCoroutine);
 
             var components = new List<Component>();
             foreach (var entity in _entities)
@@ -193,11 +213,6 @@ namespace Engine
 
         public override void Update(GameTime gameTime)
         {
-            if (!_loadCoroutine.IsFinished)
-            {
-                return;
-            }
-
             for (int i = 0; i < _componentsToUpdate.Count; i++)
             {
                 _componentsToUpdate[i].OnUpdate(gameTime);
@@ -219,11 +234,6 @@ namespace Engine
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            if (!_loadCoroutine.IsFinished)
-            {
-                return;
-            }
-
             if (_componentsToDrawNeedsSort)
             {
                 _componentsToDraw.Sort(SortDrawableComponents);
@@ -244,7 +254,7 @@ namespace Engine
         /// Preload the level over multiple frames
         /// </summary>
         /// <returns></returns>
-        private IEnumerator Load()
+        private IEnumerator LoadRoutine()
         {
             Status = LoadStatus.Loading;
 

@@ -14,19 +14,23 @@ namespace Engine
     /// </remarks>
     public sealed class GameStateStack
     {
-        private readonly App _application;
         private readonly List<GameState> _stack = new();
         private readonly Queue<Action> _stackOperations = new();
-
-        public GameStateStack(App application) 
-        {
-            _application = application;
-        }
 
         /// <summary>
         /// Gets the game state at the top of the stack
         /// </summary>
         public GameState Top => _stack.LastOrDefault();
+
+        /// <summary>
+        /// Returns the root state
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetRoot<T>() where T : GameState 
+        {
+            return _stack[0] as T;
+        }
 
         /// <summary>
         /// Pushes a state onto the top of the stack
@@ -72,6 +76,25 @@ namespace Engine
                     _stack.Last().Stop();
                     _stack.Remove(_stack.Last());
                 }
+            });
+        }
+
+        /// <summary>
+        /// Pops all states from the stack and pushes the given state to the top
+        /// </summary>
+        /// <param name="gameState"></param>
+        public void SetTop(GameState gameState) 
+        {
+            _stackOperations.Enqueue(() =>
+            {
+                while (_stack.Count > 1)
+                {
+                    _stack.Last().Stop();
+                    _stack.Remove(_stack.Last());
+                }
+
+                _stack.Add(gameState);
+                gameState.Start();
             });
         }
 

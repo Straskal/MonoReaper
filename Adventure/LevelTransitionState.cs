@@ -2,16 +2,14 @@
 using Engine.Extensions;
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Adventure
 {
-    internal class LevelTransitionState : LevelLoadState
+    internal class LevelTransitionState : LevelLoadingState
     {
-        private const float ArtificialDelayMs = 3f;
-        private const float EllipsisMs = 0.3f; 
+        private const float ArtificialDelayTime = 2f;
+        private const float EllipsisTime = 0.3f; 
 
-        private SpriteFont _spriteFont;
         private float _artificalDelayTimer;
         private float _ellipsisTimer;
         private int _ellipsisCount;
@@ -21,18 +19,32 @@ namespace Adventure
         {
         }
 
-        public override void Start()
-        {
-            _spriteFont = Application.Content.Load<SpriteFont>("Fonts/Font");
-            base.Start();
-        }
-
         public override void Update(GameTime gameTime)
         {
+            UpdateDelayTimer(gameTime);
+            UpdateLoadingEllipsis(gameTime);
             base.Update(gameTime);
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            DrawLoadingAnimation(renderer);
+            base.Draw(renderer, gameTime);
+        }
+
+        protected override bool CanStartNextLevel()
+        {
+            return _artificalDelayTimer >= ArtificialDelayTime;
+        }
+
+        private void UpdateDelayTimer(GameTime gameTime) 
+        {
             _artificalDelayTimer += gameTime.GetDeltaTime();
-            _ellipsisTimer += gameTime.GetDeltaTime();
-            if (_ellipsisTimer >= EllipsisMs) 
+        }
+
+        private void UpdateLoadingEllipsis(GameTime gameTime) 
+        {
+            if ((_ellipsisTimer += gameTime.GetDeltaTime()) >= EllipsisTime)
             {
                 _ellipsisTimer = 0;
                 _ellipsisCount = (_ellipsisCount + 1) % 4;
@@ -40,16 +52,11 @@ namespace Adventure
             }
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
+        private void DrawLoadingAnimation(Renderer renderer) 
         {
             renderer.BeginDraw(Application.Resolution.RendererScaleMatrix);
-            renderer.DrawString(_spriteFont, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
+            renderer.DrawString(SharedContent.Font, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
             renderer.EndDraw();
-        }
-
-        protected override bool CanStartNextLevel()
-        {
-            return _artificalDelayTimer >= ArtificialDelayMs;
         }
     }
 }

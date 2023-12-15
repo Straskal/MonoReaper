@@ -141,7 +141,7 @@ namespace Engine.Graphics
         }
 
         /// <summary>
-        /// Transforms a world position to screen position.
+        /// Transforms a virtual screen position to screen position.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
@@ -154,7 +154,7 @@ namespace Engine.Graphics
         }
 
         /// <summary>
-        /// Transforms a screen position to world position.
+        /// Transforms a virtual screen position to screen position.
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>

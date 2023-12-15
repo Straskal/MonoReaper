@@ -40,7 +40,6 @@ namespace Engine
                 if (_routines.Count == 0)
                 {
                     IsFinished = true;
-                    return true;
                 }
             }
             else if (_routines.Peek().Current is IEnumerator enumerator) 
@@ -48,7 +47,7 @@ namespace Engine
                 _routines.Push(enumerator);
             }
 
-            return false;
+            return IsFinished;
         }
     }
 }

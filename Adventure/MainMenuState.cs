@@ -1,24 +1,13 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Engine;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Engine;
 using Engine.Graphics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Adventure
 {
     internal class MainMenuState : GameState
     {
-        // Font
-        private SpriteFont _spriteFont;
-
-        // Buttons
-        private Rectangle _startGameButton;
-        private Color _startGameButtonColor;
-        private Rectangle _quitButton;
-        private Color _quitButtonColor;
-
-        // UI state
         private int _hotId = -1;
         private int _activeId = -1;
         private Vector2 _mousePosition;
@@ -26,11 +15,6 @@ namespace Adventure
 
         public MainMenuState(App application) : base(application)
         {
-        }
-
-        public override void Start()
-        {
-            _spriteFont = Application.Content.Load<SpriteFont>("Fonts/Font");
         }
 
         public override void Update(GameTime gameTime)
@@ -41,23 +25,29 @@ namespace Adventure
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            renderer.BeginDraw(Application.Resolution.RendererScaleMatrix);
             _hotId = 0;
+            renderer.BeginDraw(Application.Resolution.RendererScaleMatrix);
+            DrawGameTitle(renderer);
+            DrawButtons(renderer);
+            renderer.EndDraw();
+        }
 
-            renderer.DrawString(_spriteFont, "Super great game 2000", new Vector2(50f, 10f), Color.White);
+        private void DrawGameTitle(Renderer renderer) 
+        {
+            renderer.DrawString(SharedContent.Font, "Super great game 2000", new Vector2(50f, 10f), Color.White);
+        }
 
-            if (Button(1, "Start", new Rectangle(100, 120, 50, 20), Color.Blue, Color.LightBlue, Color.DarkBlue, renderer)) 
+        private void DrawButtons(Renderer renderer) 
+        {
+            if (Button(1, "Start", new Rectangle(100, 120, 50, 20), Color.Blue, Color.LightBlue, Color.DarkBlue, renderer))
             {
-                Stack.PopAll();
-                Stack.Push(new LevelTransitionState(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
+                Stack.SetTop(new LevelTransitionState(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
             }
 
             if (Button(2, "Exit", new Rectangle(100, 150, 50, 20), Color.Red, Color.Pink, Color.DarkRed, renderer))
             {
                 Application.Exit();
             }
-
-            renderer.EndDraw();
         }
 
         private bool Button(int id, string text, Rectangle bounds, Color normal, Color hot, Color active, Renderer renderer) 
@@ -104,7 +94,7 @@ namespace Adventure
             }
 
             renderer.DrawRectangle(bounds, color);
-            renderer.DrawString(_spriteFont, text, new Vector2(bounds.X, bounds.Y), Color.Black);
+            renderer.DrawString(SharedContent.Font, text, new Vector2(bounds.X, bounds.Y), Color.Black);
 
             return pressed;
         }

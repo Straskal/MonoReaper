@@ -5,9 +5,9 @@ namespace Engine
     /// <summary>
     /// A state that loads a level.
     /// </summary>
-    public class LevelLoadState : GameState
+    public class LevelLoadingState : GameState
     {
-        public LevelLoadState(App application, Level level) : base(application)
+        public LevelLoadingState(App application, Level level) : base(application)
         {
             Level = level;
         }
@@ -22,6 +22,7 @@ namespace Engine
 
         public override void Start()
         {
+            // Kick off the level load.
             Level.Start();
         }
 
@@ -29,8 +30,7 @@ namespace Engine
         {
             if (Level.Status == Level.LoadStatus.Loaded && CanStartNextLevel()) 
             {
-                Application.Stack.Pop(this);
-                Application.Stack.Push(Level);
+                Application.Stack.SetTop(Level);
             }
         }
 
