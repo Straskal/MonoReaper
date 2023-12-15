@@ -152,16 +152,16 @@ namespace Engine.Graphics
             _spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
         }
 
-        public void DrawRectangleOutline(Rectangle rectangle, Color color, int lineWidth = 1)
+        public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
             // Top
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color);
             // Left
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color);
             // Right
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color);
             // Bottom
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth - 1, lineWidth), color);
+            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color);
         }
 
         /// <summary>

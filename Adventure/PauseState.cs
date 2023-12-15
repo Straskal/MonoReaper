@@ -25,7 +25,7 @@ namespace Adventure
             {
                 Application.Stack.Pop(this);
             }
-            if (GUI.DangerButton(2, "Main menu", 100, 180))
+            if (GUI.PrimaryButton(3, "Main menu", 100, 180))
             {
                 Application.Stack.SetTop(new MainMenuState(Application));
             }
@@ -34,7 +34,7 @@ namespace Adventure
 
         private void DrawOverlay(Renderer renderer) 
         {
-            renderer.DrawRectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight, new Color(Color.Black, 0.4f));
+            renderer.DrawRectangle(0, 0, Application.ResolutionWidth, Application.ResolutionHeight, new Color(Color.Black, 0.6f));
             renderer.DrawString(SharedContent.Font, "Paused", 100f, 100f, Color.White);
         }
     }

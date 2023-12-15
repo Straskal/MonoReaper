@@ -32,12 +32,48 @@ namespace Adventure
 
         public static bool PrimaryButton(int id, string text, int x, int y)
         {
-            return Button(id, text, x, y, Color.Blue, Color.LightBlue, Color.DarkBlue);
+            return Button(id, text, x, y, Color.LightBlue, Color.White, Color.CadetBlue);
         }
 
         public static bool DangerButton(int id, string text, int x, int y)
         {
             return Button(id, text, x, y, Color.Red, Color.Pink, Color.DarkRed);
+        }
+
+        public static bool Checkbox(int id, bool isChecked, int x, int y)
+        {
+            var checkboxRectangle = new Rectangle(x, y, 10, 10);
+
+            if (checkboxRectangle.Contains(_mouse))
+            {
+                _hoverId = id;
+
+                if (_mouseDown)
+                {
+                    _activeId = id;
+                }
+
+                if (_activeId == id && !_mouseDown)
+                {
+                    isChecked = !isChecked; 
+                    _activeId = 0;
+                }
+            }
+            else if (_activeId == id)
+            {
+                _activeId = 0;
+            }
+
+            if (isChecked)
+            {
+                Renderer.DrawRectangle(checkboxRectangle, Color.White);
+            }
+            else 
+            {
+                Renderer.DrawRectangleOutline(checkboxRectangle, Color.White);
+            }
+
+            return isChecked;
         }
 
         public static bool Button(int id, string text, int x, int y, Color idle, Color hover, Color active)
@@ -89,7 +125,6 @@ namespace Adventure
 
             Renderer.DrawRectangle(buttonRectangle, color);
             Renderer.DrawString(SharedContent.Font, text, new Vector2(x, y), Color.Black);
-
 
             if (pressed) 
             {
