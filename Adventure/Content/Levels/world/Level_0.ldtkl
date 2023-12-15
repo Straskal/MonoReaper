@@ -131,6 +131,22 @@
 					"defUid": 10,
 					"px": [56,168],
 					"fieldInstances": []
+				},
+				{
+					"__identifier": "Spikes",
+					"__grid": [9,9],
+					"__pivot": [0,0],
+					"__tags": [],
+					"__tile": { "tilesetUid": 2, "x": 0, "y": 96, "w": 16, "h": 16 },
+					"__smartColor": "#D77643",
+					"__worldX": 144,
+					"__worldY": 144,
+					"iid": "675d29d0-8990-11ee-85a1-e778cc9718e8",
+					"width": 16,
+					"height": 16,
+					"defUid": 11,
+					"px": [144,144],
+					"fieldInstances": []
 				}
 			]
 		},

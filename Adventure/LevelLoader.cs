@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Microsoft.Xna.Framework;
-using Adventure.Components;
+﻿using Adventure.Components;
 using Engine;
 using Engine.Extensions;
+using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Adventure
 {
@@ -37,6 +37,9 @@ namespace Adventure
                         break;
                     case "Barrel":
                         spawned.AddComponent(new Barrel());
+                        break;
+                    case "Spikes":
+                        spawned.AddComponent(new Spikes());
                         break;
                     default:
                         continue;
