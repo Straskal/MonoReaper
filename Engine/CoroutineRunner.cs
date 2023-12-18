@@ -35,7 +35,7 @@ namespace Engine
         /// <summary>
         /// Updates all internal coroutines.
         /// </summary>
-        internal void Update() 
+        public void Update() 
         {
             for (int i = 0; i < _coroutines.Count; i++) 
             {

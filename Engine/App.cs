@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.Xna.Framework;
 using Engine.Graphics;
 
@@ -72,14 +73,6 @@ namespace Engine
         } = new();
 
         /// <summary>
-        /// Gets the coroutine runner
-        /// </summary>
-        public CoroutineRunner Coroutines
-        {
-            get;
-        } = new();
-
-        /// <summary>
         /// Gets the virtual resolution
         /// </summary>
         public BackBuffer BackBuffer
@@ -101,6 +94,14 @@ namespace Engine
         /// Gets the instance of random
         /// </summary>
         public Random Random
+        {
+            get;
+        } = new();
+
+        /// <summary>
+        /// Gets the coroutine runner
+        /// </summary>
+        internal CoroutineRunner Coroutines
         {
             get;
         } = new();
@@ -139,6 +140,15 @@ namespace Engine
             Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
             Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
+        }
+        public Coroutine StartCoroutine(IEnumerator routine)
+        {
+            return Coroutines.Start(routine);
+        }
+
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            Coroutines.Stop(coroutine);
         }
     }
 }
