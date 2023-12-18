@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Input;
 using Engine;
 using Engine.Collision;
 using Engine.Graphics;
-using Engine.Extensions;
 
 using static Adventure.Constants;
 

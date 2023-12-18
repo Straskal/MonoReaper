@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
 using Engine.Collision;
-using Engine.Extensions;
 using Engine.Graphics;
 
 using static Adventure.Constants;
