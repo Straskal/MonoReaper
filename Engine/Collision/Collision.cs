@@ -1,17 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace Engine.Collision
 {
     /// <summary>
     /// This class represents a collision hit and contains some helper methods to resolve the collision.
     /// </summary>
-    public readonly ref struct Hit
+    public readonly ref struct Collision
     {
         /// <summary>
         /// The other object involved in the collision.
         /// </summary>
-        public readonly Box Other;
+        public readonly Box Box;
 
         /// <summary>
         /// The velocity that the moving object is traveling at.
@@ -44,11 +44,11 @@ namespace Engine.Collision
         /// <summary>
         /// An empty hit.
         /// </summary>
-        public static Hit Empty => new(null, Vector2.Zero, Vector2.Zero, 1f, Vector2.Zero);
+        public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, 1f, Vector2.Zero);
 
-        public Hit(Box other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
+        public Collision(Box other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
-            Other = other;
+            Box = other;
             Velocity = velocity;
             Normal = normal;
             Time = collisionTime;
@@ -78,20 +78,20 @@ namespace Engine.Collision
         /// <remarks>
         /// This method is intended to be used as a response to a collision.
         /// </remarks>
-        public Vector2 Bounce(ref Vector2 newVelocity)
+        public Vector2 Bounce()
         {
-            newVelocity = Velocity * RemainingTime;
+            var result = Velocity * RemainingTime;
 
             if (Math.Abs(Normal.X) > 0.0001f)
             {
-                newVelocity.X *= -1;
+                result.X *= -1;
             }
             if (Math.Abs(Normal.Y) > 0.0001f)
             {
-                newVelocity.Y *= -1;
+                result.Y *= -1;
             }
 
-            return newVelocity;
+            return result;
         }
 
         /// <summary>
@@ -105,9 +105,9 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Slide()
         {
-            var dot = Velocity.X * Normal.Y + Velocity.Y * Normal.X;
+            var inverseNormal = new Vector2(Normal.Y, Normal.X);
 
-            return new Vector2(Normal.Y, Normal.X) * RemainingTime * dot;
+            return inverseNormal * Velocity * inverseNormal * RemainingTime;
         }
     }
 }

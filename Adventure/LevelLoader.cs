@@ -38,6 +38,9 @@ namespace Adventure
                     case "Barrel":
                         spawned.AddComponent(new Barrel());
                         break;
+                    case "LevelTrigger":
+                        spawned.AddComponent(new LevelTrigger("", 16, 16));
+                        break;
                     default:
                         continue;
                 }
@@ -62,13 +65,10 @@ namespace Adventure
                 IsSolid = solid
             };
 
-            var entity = new Entity();
-            var tilemap = new Tilemap(mapData)
+            var entity = new Entity(new Tilemap(mapData) { ZOrder = -100 })
             {
-                ZOrder = -100
+                Origin = Origin.TopLeft
             };
-
-            entity.AddComponent(tilemap);
             level.Spawn(entity, Vector2.Zero);
         }
     }

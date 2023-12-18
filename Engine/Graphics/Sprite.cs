@@ -80,14 +80,13 @@ namespace Engine.Graphics
 
         public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
-            var offsetPosition = Offset.GetVector(
-                Entity.Origin,
+            var origin = Entity.Origin.Tranform(
                 Entity.Position.X,
                 Entity.Position.Y,
                 SourceRectangle.Width,
                 SourceRectangle.Height);
 
-            renderer.Draw(_texture, offsetPosition, SourceRectangle, Color, SpriteEffects, Effect);
+            renderer.Draw(_texture, origin.Position, SourceRectangle, Color, SpriteEffects, Effect);
         }
     }
 }

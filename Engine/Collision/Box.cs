@@ -7,15 +7,10 @@ namespace Engine.Collision
     /// <summary>
     /// This component is used for tracking collidable objects.
     /// </summary>
-    /// <remarks>
-    /// When a box component is attached to an entity, the entity's position should not be directly updated.
-    /// Instead, Box methods should be used to move an entity because they also update tracking in the level's spatial partition.
-    /// </remarks>
     public class Box : Component
     {
         /// <summary>
         /// The partition cell points that contain this box.
-        /// These are cached on the box itself to avoid unnecessary lookups in the partition.
         /// </summary>
         internal List<Point> PartitionCellPoints { get; } = new();
 
@@ -41,6 +36,8 @@ namespace Engine.Collision
             Height = height;
             LayerMask = layerMask;
         }
+
+        public event CollidedWithCallback CollidedWith;
 
         /// <summary>
         /// Gets or sets the box's X position relative to the entity.
@@ -86,7 +83,7 @@ namespace Engine.Collision
         /// <returns></returns>
         public RectangleF CalculateBounds()
         {
-            return Offset.GetRect(Entity.Origin, Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
+            return Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
         }
 
         /// <summary>
@@ -105,7 +102,7 @@ namespace Engine.Collision
         /// <param name="position"></param>
         public void MoveTo(Vector2 position)
         {
-            Entity.Position = Offset.Create(Entity.Origin, position.X, position.Y, Width, Height);
+            Entity.Position = Entity.Origin.Invert(position.X, position.Y, Width, Height).Position;
             UpdateBBox();
         }
 
@@ -123,6 +120,11 @@ namespace Engine.Collision
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
             renderer.DrawRectangleOutline(CalculateBounds().ToXnaRect(), Color.White);
+        }
+
+        internal void NotifyCollidedWith(Body body, Collision collision) 
+        {
+            CollidedWith?.Invoke(body, collision);
         }
     }
 }

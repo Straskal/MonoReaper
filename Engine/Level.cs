@@ -112,8 +112,7 @@ namespace Engine
         {
             if (component.Entity == null)
             {
-                var entity = new Entity(Origin.Center);
-                entity.AddComponent(component);
+                var entity = new Entity(component);
                 Spawn(entity, position);
             }
         }
