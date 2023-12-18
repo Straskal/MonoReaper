@@ -69,7 +69,6 @@ namespace Adventure.Components
 
         private void DropLoot()
         {
-            Level.Spawn(new Phial(), Entity.Position);
         }
     }
 }

@@ -32,10 +32,10 @@ namespace Adventure
             base.Draw(renderer, gameTime);
         }
 
-        protected override bool CanStartNextLevel()
-        {
-            return _artificalDelayTimer >= ArtificialDelayTime;
-        }
+        //protected override bool CanStartNextLevel()
+        //{
+        //    return _artificalDelayTimer >= ArtificialDelayTime;
+        //}
 
         private void UpdateDelayTimer(GameTime gameTime) 
         {

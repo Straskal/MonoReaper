@@ -8,11 +8,12 @@ namespace Adventure
 {
     internal static class LevelLoader
     {
-        public static Level LoadLevel(this App game, string filename, string spawnPoint = null)
+        public static Level LoadLevel(this App game, string filename, string spawnPointId = null)
         {
+            spawnPointId ??= "Default";
             var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
             var level = new Level(game, 64, map.Width, map.Height);
-            level.LoadEntities(map.Entities);
+            level.LoadEntities(map.Entities, spawnPointId);
             foreach (var tileLayer in map.TileLayers)
             {
                 level.LoadTileLayer(tileLayer);
@@ -20,32 +21,31 @@ namespace Adventure
             return level;
         }
 
-        private static void LoadEntities(this Level level, Content.Entity[] entities)
+        private static void LoadEntities(this Level level, Content.Entity[] entities, string spawnPointId)
         {
             foreach (var entity in entities)
             {
-                var spawned = new Entity
-                {
-                    // Unsure about supporting origin. Would everything as center be alright?
-                    Origin = Origin.Center
-                };
-
                 switch (entity.Type)
                 {
-                    case "Player":
-                        spawned.AddComponent(new Player());
+                    case "PlayerSpawn":
+                        if (entity.Fields.GetString("Id")?.Equals(spawnPointId) == true) 
+                        {
+                            level.Spawn(new Player(), entity.Position);
+                        }         
                         break;
                     case "Barrel":
-                        spawned.AddComponent(new Barrel());
+                        level.Spawn(new Barrel(), entity.Position);
                         break;
                     case "LevelTrigger":
-                        spawned.AddComponent(new LevelTrigger("", 16, 16));
+                        var levelTriggerEntity = new Entity(new LevelTrigger(entity.Width, entity.Height, entity.Fields))
+                        {
+                            Origin = Origin.TopLeft 
+                        };
+                        level.Spawn(levelTriggerEntity, entity.Position);
                         break;
                     default:
                         continue;
                 }
-
-                level.Spawn(spawned, entity.Position);
             }
         }
 

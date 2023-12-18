@@ -20,8 +20,17 @@ namespace Adventure.Content.Readers
                 {
                     Name = input.ReadString(),
                     Type = input.ReadString(),
-                    Position = input.ReadVector2()
+                    Position = input.ReadVector2(),
+                    Width = input.ReadInt32(),
+                    Height = input.ReadInt32()
                 };
+
+                var fieldCount = input.ReadInt32();
+
+                for (int j = 0; j < fieldCount; j++) 
+                {
+                    level.Entities[i].Fields.Add(input.ReadString(), input.ReadString());
+                }
             }
 
             level.TileLayers = new TileLayer[input.ReadInt32()];

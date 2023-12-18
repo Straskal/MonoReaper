@@ -34,7 +34,10 @@ namespace Adventure.Content.Pipeline.Ldtk
                 {
                     Name = entity.Id,
                     Type = entity.Id,
-                    Position = new Vector2(entity.Position[0], entity.Position[1])
+                    Width = entity.Width,
+                    Height = entity.Height,
+                    Position = new Vector2(entity.Position[0], entity.Position[1]),
+                    Fields = new EntityFields(entity.FieldInstances.ToDictionary(x => x.Id, x => ProcessFieldValue(x.Id, x.Value)))
                 })).ToArray();
         }
 
@@ -54,6 +57,17 @@ namespace Adventure.Content.Pipeline.Ldtk
                         Source = new Vector2(tile.Source[0], tile.Source[1])
                     }).ToArray()
                 }).ToArray();
+        }
+
+        private static string ProcessFieldValue(string name, string value) 
+        {
+            // Remove .ldtkl extension from level paths for the content manager
+            if (StringComparer.OrdinalIgnoreCase.Equals(name, "LevelPath")) 
+            {
+                return Path.ChangeExtension(value, null);
+            }
+
+            return value;
         }
     }
 }

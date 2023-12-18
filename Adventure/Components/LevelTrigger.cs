@@ -1,5 +1,7 @@
 ﻿using Engine;
 using Engine.Collision;
+using Adventure.Content;
+
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -8,21 +10,26 @@ namespace Adventure.Components
     {
         private Box _box;
 
-        public LevelTrigger(string level, int width, int height)
+        public LevelTrigger(int width, int height, EntityFields fields)
         {
-            LevelName = level;
+            // Concat should be in the level reader.
+            LevelPath = "Levels/" + fields.GetString("LevelPath");
+            SpawnPointId = fields.GetString("PlayerSpawnId");
             Width = width;
             Height = height;
         }
 
-        public string LevelName { get; }
+        public string LevelPath { get; }
+        public string SpawnPointId { get; }
         public int Width { get; }
         public int Height { get; }
 
         public override void OnSpawn()
         {
-            Entity.AddComponent(_box = new Box(Width, Height));
-            _box.LayerMask = BoxLayers.Interactable;
+            Entity.AddComponent(_box = new Box(Width, Height) 
+            {
+                LayerMask = BoxLayers.Interactable
+            });
         }
 
         public override void OnStart()
@@ -37,7 +44,7 @@ namespace Adventure.Components
 
         private void OnCollidedWith(Body body, Collision collision) 
         {
-            Level.Screens.SetTop(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, "Levels/world/level_0")));
+            Level.Screens.SetTop(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
         }
     }
 }

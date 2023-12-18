@@ -22,6 +22,15 @@ namespace Adventure.Content.Pipeline.Writers
                 output.Write(entity.Name);
                 output.Write(entity.Type);
                 output.Write(entity.Position);
+                output.Write(entity.Width);
+                output.Write(entity.Height);
+                output.Write(entity.Fields.Count);
+
+                foreach (var kvp in entity.Fields) 
+                {
+                    output.Write(kvp.Key);
+                    output.Write(kvp.Value);
+                }
             }
 
             output.Write(value.TileLayers.Length);

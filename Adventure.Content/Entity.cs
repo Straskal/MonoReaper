@@ -7,5 +7,8 @@ namespace Adventure.Content
         public string Name { get; set; }
         public string Type { get; set; }
         public Vector2 Position { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public EntityFields Fields { get; set; } = new EntityFields();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Adventure.Content.Pipeline.Ldtk
 {
@@ -9,5 +10,14 @@ namespace Adventure.Content.Pipeline.Ldtk
 
         [JsonPropertyName("px")]
         public int[] Position { get; set; }
+
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
+
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
+
+        [JsonPropertyName("fieldInstances")]
+        public FieldInstance[] FieldInstances { get; set; } = Array.Empty<FieldInstance>();
     }
 }
