@@ -4,14 +4,13 @@ using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
     public sealed class Spikes : Component
     {
-        private readonly Body _body;
+        private Box _box;
 
         private AnimatedSprite _spriteSheet;
 
@@ -20,10 +19,18 @@ namespace Adventure.Components
         public override void OnLoad(ContentManager content)
         {
             Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/common/spikes"), SpikeAnimations.Frames));
-            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
+            Entity.AddComponent(_box = new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Enemy));
         }
 
-        public override void OnDestroy() => throw new NotImplementedException();
+        public override void OnStart()
+        {
+            _box.CollidedWith += OnCollidedWith;
+        }
+
+        public override void OnEnd()
+        {
+            _box.CollidedWith -= OnCollidedWith;
+        }
 
         public override void OnUpdate(GameTime gameTime)
         {
@@ -50,6 +57,18 @@ namespace Adventure.Components
             else if (_animationTimer >= 3f * animationSpeed)
             {
                 _animationTimer = 0f;
+            }
+        }
+
+        private void OnCollidedWith(Body body, Collision collision)
+        {
+            if (body.LayerMask == EntityLayers.Player)
+            {
+
+            }
+            if (body.Entity.TryGetComponent<IDamageable>(out var damageable))
+            {
+                damageable.Damage(1);
             }
         }
     }
