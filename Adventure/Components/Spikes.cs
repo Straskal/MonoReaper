@@ -1,6 +1,5 @@
 ﻿using Engine;
 using Engine.Collision;
-using Engine.Extensions;
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -12,8 +11,7 @@ namespace Adventure.Components
 {
     public sealed class Spikes : Component
     {
-        private Body _body;
-
+        private readonly Body _body;
 
         private AnimatedSprite _spriteSheet;
 
@@ -21,7 +19,6 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            IsUpdateEnabled = true;
             Entity.AddComponent(_spriteSheet = new AnimatedSprite(content.Load<Texture2D>("art/common/spikes"), SpikeAnimations.Frames));
             Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
         }
@@ -31,21 +28,6 @@ namespace Adventure.Components
         public override void OnUpdate(GameTime gameTime)
         {
             Animate(gameTime);
-        }
-
-        private Vector2 HandleCollision(Hit hit)
-        {
-            if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
-            {
-                App.Instance.LoadLevel(transition.LevelName, transition.SpawnPoint);
-            }
-
-            if (hit.Other.IsSolid())
-            {
-                return hit.Slide();
-            }
-
-            return hit.Ignore();
         }
 
         private void Animate(GameTime gameTime)

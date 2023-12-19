@@ -60,7 +60,10 @@ namespace Adventure
                         };
                         break;
                     case "Spikes":
-                        spawned.AddComponent(new Spikes());
+                        yield return new Entity(new Spikes())
+                        {
+                            Position = entityData.Position
+                        };
                         break;
                     default:
                         continue;
