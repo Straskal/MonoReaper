@@ -44,7 +44,10 @@ namespace Adventure.Components
 
         private void OnCollidedWith(Body body, Collision collision) 
         {
-            Level.Screens.SetTop(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
+            if (body.LayerMask == EntityLayers.Player) 
+            {
+                Level.Screens.SetTop(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
+            }
         }
     }
 }
