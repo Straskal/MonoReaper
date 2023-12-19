@@ -88,6 +88,15 @@ namespace Engine
         }
 
         /// <summary>
+        /// Spawns the given entity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void Spawn(Entity entity)
+        {
+            Spawn(entity, entity.Position);
+        }
+
+        /// <summary>
         /// Spawns an entity at the given location.
         /// </summary>
         /// <param name="entity"></param>

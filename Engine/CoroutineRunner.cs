@@ -16,7 +16,7 @@ namespace Engine
         /// </summary>
         /// <param name="enumerator"></param>
         /// <returns></returns>
-        internal Coroutine Start(IEnumerator enumerator) 
+        public Coroutine Start(IEnumerator enumerator) 
         {
             var coroutine = new Coroutine(enumerator);
             _coroutines.Add(coroutine);

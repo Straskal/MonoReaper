@@ -18,6 +18,6 @@ namespace Adventure.Content.Pipeline.Ldtk
         public int Height { get; set; }
 
         [JsonPropertyName("fieldInstances")]
-        public FieldInstance[] FieldInstances { get; set; } = Array.Empty<FieldInstance>();
+        public LdtkFieldInstance[] FieldInstances { get; set; } = Array.Empty<LdtkFieldInstance>();
     }
 }

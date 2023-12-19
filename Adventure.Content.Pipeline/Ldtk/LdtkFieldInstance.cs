@@ -2,7 +2,7 @@
 
 namespace Adventure.Content.Pipeline.Ldtk
 {
-    public sealed class FieldInstance
+    public sealed class LdtkFieldInstance
     {
         [JsonPropertyName("__identifier")]
         public string Id { get; set; }

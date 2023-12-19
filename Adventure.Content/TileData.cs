@@ -2,7 +2,7 @@
 
 namespace Adventure.Content
 {
-    public sealed class Tile
+    public sealed class TileData
     {
         public Vector2 Position { get; set; }
         public Vector2 Source { get; set; }

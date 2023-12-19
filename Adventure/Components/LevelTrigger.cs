@@ -10,13 +10,13 @@ namespace Adventure.Components
     {
         private Box _box;
 
-        public LevelTrigger(int width, int height, EntityFields fields)
+        public LevelTrigger(EntityData entityData)
         {
             // Concat should be in the level reader.
-            LevelPath = "Levels/" + fields.GetString("LevelPath");
-            SpawnPointId = fields.GetString("PlayerSpawnId");
-            Width = width;
-            Height = height;
+            LevelPath = "Levels/" + entityData.Fields.GetString("LevelPath");
+            SpawnPointId = entityData.Fields.GetString("PlayerSpawnId");
+            Width = entityData.Width;
+            Height = entityData.Height;
         }
 
         public string LevelPath { get; }

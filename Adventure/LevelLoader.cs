@@ -1,46 +1,63 @@
-﻿using System.Linq;
-using Microsoft.Xna.Framework;
-using Adventure.Components;
+﻿using Adventure.Components;
+using Adventure.Content;
 using Engine;
+using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Adventure
 {
     internal static class LevelLoader
     {
-        public static Level LoadLevel(this App game, string filename, string spawnPointId = null)
+        public static readonly int PartitionCellSize = 64;
+
+        public static Level LoadLevel(this App game, string filename, string playerSpawnId = null)
         {
-            spawnPointId ??= "Default";
-            var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
-            var level = new Level(game, 64, map.Width, map.Height);
-            level.LoadEntities(map.Entities, spawnPointId);
-            foreach (var tileLayer in map.TileLayers)
+            playerSpawnId ??= "Default";
+
+            var levelData = game.Content.LoadWithoutCaching<LevelData>(filename);
+            var level = new Level(game, PartitionCellSize, levelData.Width, levelData.Height);
+
+            foreach (var entity in GetEntitiesFromLevelData(levelData, playerSpawnId))
             {
-                level.LoadTileLayer(tileLayer);
+                level.Spawn(entity);
             }
+
+            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
+            {
+                level.Spawn(tileMapEntity);
+            }
+
             return level;
         }
 
-        private static void LoadEntities(this Level level, Content.Entity[] entities, string spawnPointId)
+        private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData, string playerSpawnId)
         {
-            foreach (var entity in entities)
+            foreach (var entityData in levelData.Entities)
             {
-                switch (entity.Type)
+                switch (entityData.Type)
                 {
                     case "PlayerSpawn":
-                        if (entity.Fields.GetString("Id")?.Equals(spawnPointId) == true) 
+                        if (entityData.Fields.GetString("Id")?.Equals(playerSpawnId) == true)
                         {
-                            level.Spawn(new Player(), entity.Position);
-                        }         
+                            yield return new Entity(new Player())
+                            {
+                                Position = entityData.Position
+                            };
+                        }
                         break;
                     case "Barrel":
-                        level.Spawn(new Barrel(), entity.Position);
+                        yield return new Entity(new Barrel())
+                        {
+                            Position = entityData.Position
+                        };
                         break;
                     case "LevelTrigger":
-                        var levelTriggerEntity = new Entity(new LevelTrigger(entity.Width, entity.Height, entity.Fields))
+                        yield return new Entity(new LevelTrigger(entityData))
                         {
-                            Origin = Origin.TopLeft 
+                            Origin = Origin.TopLeft,
+                            Position = entityData.Position
                         };
-                        level.Spawn(levelTriggerEntity, entity.Position);
                         break;
                     default:
                         continue;
@@ -48,27 +65,29 @@ namespace Adventure
             }
         }
 
-        private static void LoadTileLayer(this Level level, Content.TileLayer layer, bool solid = true)
+        private static IEnumerable<Entity> GetTilemapEntitiesFromLevelData(LevelData levelData)
         {
-            var mapData = new Tilemap.MapData
+            foreach (var tileLayerData in levelData.TileLayers)
             {
-                CellSize = layer.TileWidth,
-                CellsX = layer.TileWidth,
-                CellsY = layer.TileHeight,
-                TilesetFilePath = layer.TileSetRelativePath.Substring(3),
-                Tiles = layer.Tiles.Select(tile => new Tilemap.TileInfo
+                var mapData = new Tilemap.MapData
                 {
-                    Source = new Rectangle((int)tile.Source.X, (int)tile.Source.Y, layer.TileWidth, layer.TileWidth),
-                    Position = tile.Position
-                }).ToArray(),
-                IsSolid = solid
-            };
+                    CellSize = tileLayerData.TileWidth,
+                    CellsX = tileLayerData.TileWidth,
+                    CellsY = tileLayerData.TileHeight,
+                    TilesetFilePath = tileLayerData.TileSetRelativePath.Substring(3),
+                    Tiles = tileLayerData.Tiles.Select(tile => new Tilemap.TileInfo
+                    {
+                        Source = new Rectangle((int)tile.Source.X, (int)tile.Source.Y, tileLayerData.TileWidth, tileLayerData.TileWidth),
+                        Position = tile.Position
+                    }).ToArray(),
+                    IsSolid = true
+                };
 
-            var entity = new Entity(new Tilemap(mapData) { ZOrder = -100 })
-            {
-                Origin = Origin.TopLeft
-            };
-            level.Spawn(entity, Vector2.Zero);
+                yield return new Entity(new Tilemap(mapData) { ZOrder = -100 })
+                {
+                    Origin = Origin.TopLeft
+                };
+            }
         }
     }
 }

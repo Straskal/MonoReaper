@@ -2,13 +2,13 @@
 
 namespace Adventure.Content
 {
-    public sealed class EntityFields : Dictionary<string, string>
+    public sealed class EntityDataFields : Dictionary<string, string>
     {
-        public EntityFields() : base()
+        public EntityDataFields() : base()
         {
         }
 
-        public EntityFields(Dictionary<string, string> keyValuePairs) : base(keyValuePairs)
+        public EntityDataFields(Dictionary<string, string> keyValuePairs) : base(keyValuePairs)
         {
         }
 

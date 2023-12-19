@@ -2,21 +2,21 @@
 
 namespace Adventure.Content.Readers
 {
-    public class LevelReader : ContentTypeReader<Level>
+    public class LevelDataReader : ContentTypeReader<LevelData>
     {
-        protected override Level Read(ContentReader input, Level existingInstance)
+        protected override LevelData Read(ContentReader input, LevelData existingInstance)
         {
-            var level = new Level
+            var level = new LevelData
             {
                 Name = input.ReadString(),
                 Width = input.ReadInt32(),
                 Height = input.ReadInt32(),
-                Entities = new Entity[input.ReadInt32()]
+                Entities = new EntityData[input.ReadInt32()]
             };
 
             for (int i = 0; i < level.Entities.Length; i++)
             {
-                level.Entities[i] = new Entity
+                level.Entities[i] = new EntityData
                 {
                     Name = input.ReadString(),
                     Type = input.ReadString(),
@@ -33,22 +33,22 @@ namespace Adventure.Content.Readers
                 }
             }
 
-            level.TileLayers = new TileLayer[input.ReadInt32()];
+            level.TileLayers = new TileLayerData[input.ReadInt32()];
 
             for (int i = 0; i < level.TileLayers.Length; i++)
             {
-                level.TileLayers[i] = new TileLayer
+                level.TileLayers[i] = new TileLayerData
                 {
                     IsSolid = input.ReadBoolean(),
                     TileWidth = input.ReadInt32(),
                     TileHeight = input.ReadInt32(),
                     TileSetRelativePath = input.ReadString(),
-                    Tiles = new Tile[input.ReadInt32()]
+                    Tiles = new TileData[input.ReadInt32()]
                 };
 
                 for (int j = 0; j < level.TileLayers[i].Tiles.Length; j++)
                 {
-                    level.TileLayers[i].Tiles[j] = new Tile
+                    level.TileLayers[i].Tiles[j] = new TileData
                     {
                         Position = input.ReadVector2(),
                         Source = input.ReadVector2()
