@@ -34,7 +34,7 @@ namespace Engine
 
         private delegate void ComponentAddedHandler(Entity entity, params Component[] components);
         private ComponentAddedHandler _onComponentsAdded;
-        private bool _isZSortNeeded = false;
+        private bool _sortComponents = false;
         private Coroutine _loadCoroutine;
 
         public Level(App application, int cellSize, int width, int height) : base(application)
@@ -88,6 +88,15 @@ namespace Engine
         }
 
         /// <summary>
+        /// Spawns the given entity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void Spawn(Entity entity)
+        {
+            Spawn(entity, entity.Position);
+        }
+
+        /// <summary>
         /// Spawns an entity at the given location.
         /// </summary>
         /// <param name="entity"></param>
@@ -110,10 +119,9 @@ namespace Engine
         /// <param name="position"></param>
         public void Spawn(Component component, Vector2 position)
         {
-            if (component.Entity == null) 
+            if (component.Entity == null)
             {
-                var entity = new Entity(Origin.Center);
-                entity.AddComponent(component);
+                var entity = new Entity(component);
                 Spawn(entity, position);
             }
         }
@@ -144,6 +152,7 @@ namespace Engine
             component.Entity = entity;
             _components.Add(component);
             _onComponentsAdded?.Invoke(entity, component);
+            _sortComponents = true;
         }
 
         /// <summary>
@@ -159,6 +168,7 @@ namespace Engine
             }
             _components.AddRange(components);
             _onComponentsAdded?.Invoke(entity, components.ToArray());
+            _sortComponents = true;
         }
 
         /// <summary>
@@ -187,6 +197,11 @@ namespace Engine
 
         public override void Update(GameTime gameTime)
         {
+            if (!_loadCoroutine.IsFinished) 
+            {
+                return;
+            }
+
             UpdateComponents(gameTime);
             PostUpdateComponents(gameTime);
             ProcessDestroyedEntities();
@@ -195,6 +210,11 @@ namespace Engine
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
+            if (!_loadCoroutine.IsFinished)
+            {
+                return;
+            }
+
             SortComponentsIfNeeded();
             renderer.BeginDraw(Camera.TransformationMatrix);
             DrawComponents(renderer, gameTime);
@@ -210,7 +230,7 @@ namespace Engine
             Status = LoadStatus.Loaded;
         }
 
-        private IEnumerator LoadComponentsRoutine() 
+        private IEnumerator LoadComponentsRoutine()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -227,7 +247,7 @@ namespace Engine
             };
         }
 
-        private void SpawnComponents() 
+        private void SpawnComponents()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -248,7 +268,7 @@ namespace Engine
             };
         }
 
-        private void StartComponents() 
+        private void StartComponents()
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -274,7 +294,7 @@ namespace Engine
             };
         }
 
-        private void UpdateComponents(GameTime gameTime) 
+        private void UpdateComponents(GameTime gameTime)
         {
             for (int i = 0; i < _components.Count; i++)
             {
@@ -356,10 +376,10 @@ namespace Engine
 
         private void SortComponentsIfNeeded()
         {
-            if (_isZSortNeeded)
+            if (_sortComponents)
             {
                 _components.Sort(SortComponentsByZOrder);
-                _isZSortNeeded = false;
+                _sortComponents = false;
             }
         }
 

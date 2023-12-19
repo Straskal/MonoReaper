@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Audio;
 using Engine;
 using Engine.Collision;
 using Engine.Graphics;
@@ -12,7 +11,6 @@ namespace Adventure.Components
     public sealed class Fireball : Component
     {
         private Body _body;
-        private SoundEffect _sound;
         private Vector2 _velocity;
 
         public Fireball(Vector2 velocity)
@@ -22,10 +20,8 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            _sound = SharedContent.Sfx.Shoot;
-
             Entity.AddComponent(_body = new Body(4, 4, EntityLayers.PlayerProjectile));
-            Entity.AddComponent(new Particles(SharedContent.Gfx.Fire, new Rectangle(8, 8, 8, 8))
+            Entity.AddComponent(new Particles(SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(25f),
@@ -39,7 +35,7 @@ namespace Adventure.Components
 
         public override void OnSpawn()
         {
-            _sound.Play();
+            SharedContent.Sounds.Shoot.Play();
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -47,22 +43,22 @@ namespace Adventure.Components
             _body.MoveAndCollide(ref _velocity, EntityLayers.Enemy | EntityLayers.Solid, HandleCollision);
         }
 
-        private Vector2 HandleCollision(Hit hit)
+        private Vector2 HandleCollision(Collision collision)
         {
             Level.Destroy(Entity);
             Level.Spawn(new Explosion(), Entity.Position);
 
-            if (hit.Other.Entity.TryGetComponent<IDamageable>(out var damageable))
+            if (collision.Box.Entity.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.Damage(1);
 
                 if (damageable.Flammable)
                 {
-                    hit.Other.Entity.AddComponent(new OnFire());
+                    collision.Box.Entity.AddComponent(new OnFire());
                 }
             }
 
-            return hit.Ignore();
+            return collision.Ignore();
         }
     }
 }

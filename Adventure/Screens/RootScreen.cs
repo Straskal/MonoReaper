@@ -12,17 +12,18 @@ namespace Adventure
     /// </summary>
     internal class RootScreen : Screen
     {
-        private readonly PauseScreen _pauseState;
+        private readonly PauseScreen _pauseScreen;
 
         public RootScreen(App application) : base(application)
         {
-            _pauseState = new PauseScreen(application);
+            _pauseScreen = new PauseScreen(application);
         }
 
         public override void Start()
         {
             Application.Window.Title = "Adventure Game 2000";
             Application.Window.AllowUserResizing = true;
+            Application.IsMouseVisible = true;
 
             LoadSharedContent();
             LoadGUI();
@@ -40,23 +41,23 @@ namespace Adventure
 
             if (Input.IsKeyPressed(Keys.Escape))
             {
-                if (Screens.Top == _pauseState)
+                if (Screens.Top == _pauseScreen)
                 {
-                    Screens.Pop(_pauseState);
+                    Screens.Pop(_pauseScreen);
                 }
                 else if (Screens.Top is Level)
                 {
-                    Screens.Push(_pauseState);
+                    Screens.Push(_pauseScreen);
                 }
             }
         }
 
         private void LoadSharedContent()
         {
-            SharedContent.Font = Application.Content.Load<SpriteFont>("Fonts/Font");
-            SharedContent.Gfx.Player = Application.Content.Load<Texture2D>("art/player/player");
-            SharedContent.Gfx.Fire = Application.Content.Load<Texture2D>("art/player/fire");
-            SharedContent.Sfx.Shoot = Application.Content.Load<SoundEffect>("audio/fireball_shoot");
+            SharedContent.Fonts.Default = Application.Content.Load<SpriteFont>("Fonts/Font");
+            SharedContent.Graphics.Player = Application.Content.Load<Texture2D>("Art/Player/Player");
+            SharedContent.Graphics.Fire = Application.Content.Load<Texture2D>("Art/Player/Fire");
+            SharedContent.Sounds.Shoot = Application.Content.Load<SoundEffect>("Audio/fireball_shoot");
         }
 
         private void LoadGUI() 

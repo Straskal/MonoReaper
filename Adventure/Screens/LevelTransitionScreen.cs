@@ -1,5 +1,4 @@
 ﻿using Engine;
-using Engine.Extensions;
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -8,7 +7,7 @@ namespace Adventure
     internal class LevelTransitionScreen : LevelLoadingScreen
     {
         private const float ArtificialDelayTime = 2f;
-        private const float EllipsisTime = 0.3f; 
+        private const float EllipsisTime = 0.3f;
 
         private float _artificalDelayTimer;
         private float _ellipsisTimer;
@@ -37,12 +36,12 @@ namespace Adventure
             return _artificalDelayTimer >= ArtificialDelayTime;
         }
 
-        private void UpdateDelayTimer(GameTime gameTime) 
+        private void UpdateDelayTimer(GameTime gameTime)
         {
             _artificalDelayTimer += gameTime.GetDeltaTime();
         }
 
-        private void UpdateLoadingEllipsis(GameTime gameTime) 
+        private void UpdateLoadingEllipsis(GameTime gameTime)
         {
             if ((_ellipsisTimer += gameTime.GetDeltaTime()) >= EllipsisTime)
             {
@@ -52,10 +51,10 @@ namespace Adventure
             }
         }
 
-        private void DrawLoadingAnimation(Renderer renderer) 
+        private void DrawLoadingAnimation(Renderer renderer)
         {
             renderer.BeginDraw();
-            renderer.DrawString(SharedContent.Font, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
+            renderer.DrawString(SharedContent.Fonts.Default, "Loading" + _ellipsis, new Vector2(100, 100), Color.White);
             renderer.EndDraw();
         }
     }

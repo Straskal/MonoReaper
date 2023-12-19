@@ -2,10 +2,9 @@
 
 namespace Adventure.Content
 {
-    public sealed class Entity
+    public sealed class TileData
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
         public Vector2 Position { get; set; }
+        public Vector2 Source { get; set; }
     }
 }

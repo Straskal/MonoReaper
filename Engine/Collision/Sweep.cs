@@ -19,7 +19,7 @@ namespace Engine.Collision
         /// <param name="others"></param>
         /// <param name="hit"></param>
         /// <returns></returns>
-        public static bool Test(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Hit hit)
+        public static bool Test(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Collision hit)
         {
             return Test(new RectangleF(position.X, position.Y, 0f, 0f), direction, others, out hit);
         }
@@ -30,19 +30,19 @@ namespace Engine.Collision
         /// <param name="rect"></param>
         /// <param name="velocity"></param>
         /// <param name="others">The other objects to test against.</param>
-        /// <param name="hit">If there is a collision, hit will be output with all of the collision info.</param>
+        /// <param name="collision">If there is a collision, hit will be output with all of the collision info.</param>
         /// <returns>Returns true if there a collision was detected.</returns>
-        public static bool Test(RectangleF rect, Vector2 velocity, IEnumerable<Box> others, out Hit hit)
+        public static bool Test(RectangleF rect, Vector2 velocity, IEnumerable<Box> others, out Collision collision)
         {
-            hit = Hit.Empty;
+            collision = Collision.Empty;
 
             foreach (var other in others)
             {
-                var time = Perform(rect, other.CalculateBounds(), velocity, out var normal);
+                var time = SweptAabbAabb(rect, other.CalculateBounds(), velocity, out var normal);
 
-                if (time < hit.Time)
+                if (time < collision.Time)
                 {
-                    hit = new Hit(
+                    collision = new Collision(
                         other: other,
                         velocity: velocity,
                         normal: normal,
@@ -54,10 +54,10 @@ namespace Engine.Collision
                 }
             }
 
-            return hit.Time < 1f;
+            return collision.Time < 1f;
         }
 
-        private static float Perform(RectangleF bounds, RectangleF otherBounds, Vector2 velocity, out Vector2 normal)
+        private static float SweptAabbAabb(RectangleF bounds, RectangleF otherBounds, Vector2 velocity, out Vector2 normal)
         {
             normal = Vector2.Zero;
 

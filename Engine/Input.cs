@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Engine.Graphics;
 
 namespace Engine
 {
@@ -8,11 +9,13 @@ namespace Engine
         private static KeyboardState KeyState;
         private static KeyboardState PreviousKeyState;
 
-        internal static void Update()
+        internal static void Update(BackBuffer backBuffer)
         {
-            PreviousKeyState = KeyState;
-            KeyState = Keyboard.GetState();
+            UpdateKeyboardState();
+            UpdateMouseState(backBuffer);
         }
+
+        public static Vector2 MousePosition { get; private set; }
 
         public static bool IsKeyDown(Keys key) 
         {
@@ -49,6 +52,17 @@ namespace Engine
         public static Vector2 GetVector(Keys left, Keys right, Keys up, Keys down)
         {
             return new Vector2(GetAxis(left, right), GetAxis(up, down));
+        }
+
+        private static void UpdateKeyboardState() 
+        {
+            PreviousKeyState = KeyState;
+            KeyState = Keyboard.GetState();
+        }
+
+        private static void UpdateMouseState(BackBuffer backBuffer) 
+        {
+            MousePosition = backBuffer.Unproject(Mouse.GetState().Position.ToVector2());
         }
     }
 }

@@ -41,20 +41,16 @@ namespace Engine.Collision
 
                 foreach (var box in Level.Partition.Query(broadphaseRectangle))
                 {
-                    // Don't check for collisions if the object is filtered out with a layer mask.
                     if ((box.LayerMask | layerMask) != layerMask)
                     {
                         continue;
                     }
 
-                    // Don't collide with objects that we've already collided with this frame.
                     if (visited.Contains(box))
                     {
                         continue;
                     }
 
-                    // Do a broadphase collision check on objects so we are only running the sweep logic on potential collisions.
-                    // This essentially rules out any other boxes that this body could not possibly collide with.
                     if (!broadphaseRectangle.Intersects(box.CalculateBounds()))
                     {
                         continue;
@@ -63,20 +59,16 @@ namespace Engine.Collision
                     potentialCollisions.Add(box);
                 }
 
-                // Run the narrow collision sweep test on all potential collisions.
-                if (!Sweep.Test(bounds, velocity, potentialCollisions, out var hit))
+                if (!Sweep.Test(bounds, velocity, potentialCollisions, out var collision))
                 {
-                    // If no collisions are detected, just move the object using the given velocity.
                     Move(velocity);
                     break;
                 }
 
-                // If a collision is detected, mark the collided object as visited and set the object's position to the hit position.
-                visited.Add(hit.Other);
-                MoveTo(hit.Position);
-
-                // Run the collision response to get the new velocity.
-                velocity = response.Invoke(hit);
+                visited.Add(collision.Box);
+                MoveTo(collision.Position);
+                velocity = response.Invoke(collision);
+                collision.Box.NotifyCollidedWith(this, collision);
             }
         }
     }

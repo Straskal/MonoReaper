@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.Xna.Framework;
 using Engine.Graphics;
 
@@ -29,10 +30,8 @@ namespace Engine
             GraphicsDeviceManager.IsFullScreen = false;
             GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
-            IsMouseVisible = true;
 #else
             GraphicsDeviceManager.IsFullScreen = true;
-            IsMouseVisible = false;
 #endif
         }
 
@@ -74,14 +73,6 @@ namespace Engine
         } = new();
 
         /// <summary>
-        /// Gets the coroutine runner
-        /// </summary>
-        public CoroutineRunner Coroutines
-        {
-            get;
-        } = new();
-
-        /// <summary>
         /// Gets the virtual resolution
         /// </summary>
         public BackBuffer BackBuffer
@@ -107,6 +98,14 @@ namespace Engine
             get;
         } = new();
 
+        /// <summary>
+        /// Gets the coroutine runner
+        /// </summary>
+        internal CoroutineRunner Coroutines
+        {
+            get;
+        } = new();
+
         protected override void Initialize()
         {
             BackBuffer = new BackBuffer(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
@@ -124,7 +123,7 @@ namespace Engine
         protected override void Update(GameTime gameTime)
         {
             BackBuffer.Update();
-            Input.Update();
+            Input.Update(BackBuffer);
             Coroutines.Update();
             Screens.Update(gameTime);
         }
@@ -141,6 +140,15 @@ namespace Engine
             Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
             Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
+        }
+        public Coroutine StartCoroutine(IEnumerator routine)
+        {
+            return Coroutines.Start(routine);
+        }
+
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            Coroutines.Stop(coroutine);
         }
     }
 }

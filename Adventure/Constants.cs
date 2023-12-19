@@ -9,6 +9,7 @@
             public const int Enemy = 1 << 2;
             public const int Damageable = 1 << 3;
             public const int Wall = 1 << 4;
+            public const int Interactable = 1 << 5;
         }
 
         public static class EntityLayers

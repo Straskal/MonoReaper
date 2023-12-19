@@ -1,6 +1,5 @@
 ﻿using Engine;
 using Engine.Collision;
-using Engine.Extensions;
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -68,9 +67,6 @@ namespace Adventure.Components
 
         private void DropLoot()
         {
-            var loot = new Entity(Origin.Center);
-            loot.AddComponent(new Phial());
-            Level.Spawn(loot, Entity.Position);
         }
     }
 }

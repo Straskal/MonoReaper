@@ -1,12 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Engine;
 using Engine.Collision;
 using Engine.Graphics;
-using Engine.Extensions;
 
 using static Adventure.Constants;
 
@@ -16,7 +14,7 @@ namespace Adventure.Components
     {
         // When the player is moving, it should collide with enemies and solid entities.
         // Could also eventually add other layers here. Like health pickups, interactables, hazards, etc..
-        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid;
+        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
 
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.85f;
@@ -30,7 +28,7 @@ namespace Adventure.Components
         public override void OnLoad(ContentManager content)
         {
             Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Gfx.Player, PlayerAnimations.Frames));
+            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Graphics.Player, PlayerAnimations.Frames));
         }
 
         public override void OnStart()
@@ -80,19 +78,14 @@ namespace Adventure.Components
             }
         }
 
-        private Vector2 HandleCollision(Hit hit)
+        private static Vector2 HandleCollision(Collision collision)
         {
-            if (hit.Other.Entity.TryGetComponent<LevelTrigger>(out var transition))
+            if (collision.Box.IsSolid())
             {
-                App.Instance.LoadLevel(transition.LevelName, transition.SpawnPoint);
+                return collision.Slide();
             }
 
-            if (hit.Other.IsSolid())
-            {
-                return hit.Slide();
-            }
-
-            return hit.Ignore();
+            return collision.Ignore();
         }
 
         private void Animate()

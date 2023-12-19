@@ -1,42 +1,63 @@
 ﻿using Adventure.Components;
+using Adventure.Content;
 using Engine;
-using Engine.Extensions;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Adventure
 {
     internal static class LevelLoader
     {
-        public static Level LoadLevel(this App game, string filename, string spawnPoint = null)
+        public static readonly int PartitionCellSize = 64;
+
+        public static Level LoadLevel(this App game, string filename, string playerSpawnId = null)
         {
-            var map = game.Content.LoadWithoutCaching<Content.Level>(filename);
-            var level = new Level(game, 64, map.Width, map.Height);
-            level.LoadEntities(map.Entities);
-            foreach (var tileLayer in map.TileLayers)
+            playerSpawnId ??= "Default";
+
+            var levelData = game.Content.LoadWithoutCaching<LevelData>(filename);
+            var level = new Level(game, PartitionCellSize, levelData.Width, levelData.Height);
+
+            foreach (var entity in GetEntitiesFromLevelData(levelData, playerSpawnId))
             {
-                level.LoadTileLayer(tileLayer);
+                level.Spawn(entity);
             }
+
+            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
+            {
+                level.Spawn(tileMapEntity);
+            }
+
             return level;
         }
 
-        private static void LoadEntities(this Level level, Content.Entity[] entities)
+        private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData, string playerSpawnId)
         {
-            foreach (var entity in entities)
+            foreach (var entityData in levelData.Entities)
             {
-                var spawned = new Entity
+                switch (entityData.Type)
                 {
-                    // Unsure about supporting origin. Would everything as center be alright?
-                    Origin = Origin.Center
-                };
-
-                switch (entity.Type)
-                {
-                    case "Player":
-                        spawned.AddComponent(new Player());
+                    case "PlayerSpawn":
+                        if (entityData.Fields.GetString("Id")?.Equals(playerSpawnId) == true)
+                        {
+                            yield return new Entity(new Player())
+                            {
+                                Position = entityData.Position
+                            };
+                        }
                         break;
                     case "Barrel":
-                        spawned.AddComponent(new Barrel());
+                        yield return new Entity(new Barrel())
+                        {
+                            Position = entityData.Position
+                        };
+                        break;
+                    case "LevelTrigger":
+                        yield return new Entity(new LevelTrigger(entityData))
+                        {
+                            Origin = Origin.TopLeft,
+                            Position = entityData.Position
+                        };
                         break;
                     case "Spikes":
                         spawned.AddComponent(new Spikes());
@@ -44,35 +65,32 @@ namespace Adventure
                     default:
                         continue;
                 }
-
-                level.Spawn(spawned, entity.Position);
             }
         }
 
-        private static void LoadTileLayer(this Level level, Content.TileLayer layer, bool solid = true)
+        private static IEnumerable<Entity> GetTilemapEntitiesFromLevelData(LevelData levelData)
         {
-            var mapData = new Tilemap.MapData
+            foreach (var tileLayerData in levelData.TileLayers)
             {
-                CellSize = layer.TileWidth,
-                CellsX = layer.TileWidth,
-                CellsY = layer.TileHeight,
-                TilesetFilePath = layer.TileSetRelativePath.Substring(3),
-                Tiles = layer.Tiles.Select(tile => new Tilemap.TileInfo
+                var mapData = new Tilemap.MapData
                 {
-                    Source = new Rectangle((int)tile.Source.X, (int)tile.Source.Y, layer.TileWidth, layer.TileWidth),
-                    Position = tile.Position
-                }).ToArray(),
-                IsSolid = solid
-            };
+                    CellSize = tileLayerData.TileWidth,
+                    CellsX = tileLayerData.TileWidth,
+                    CellsY = tileLayerData.TileHeight,
+                    TilesetFilePath = tileLayerData.TileSetRelativePath.Substring(3),
+                    Tiles = tileLayerData.Tiles.Select(tile => new Tilemap.TileInfo
+                    {
+                        Source = new Rectangle((int)tile.Source.X, (int)tile.Source.Y, tileLayerData.TileWidth, tileLayerData.TileWidth),
+                        Position = tile.Position
+                    }).ToArray(),
+                    IsSolid = true
+                };
 
-            var entity = new Entity();
-            var tilemap = new Tilemap(mapData)
-            {
-                ZOrder = -100
-            };
-
-            entity.AddComponent(tilemap);
-            level.Spawn(entity, Vector2.Zero);
+                yield return new Entity(new Tilemap(mapData) { ZOrder = -100 })
+                {
+                    Origin = Origin.TopLeft
+                };
+            }
         }
     }
 }
