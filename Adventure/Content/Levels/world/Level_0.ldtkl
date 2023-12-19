@@ -200,6 +200,22 @@
 							"params": ["Down"]
 						}] }
 					]
+				},
+				{
+					"__identifier": "Spikes",
+					"__grid": [7,7],
+					"__pivot": [0,0],
+					"__tags": [],
+					"__tile": { "tilesetUid": 2, "x": 0, "y": 96, "w": 16, "h": 16 },
+					"__smartColor": "#D77643",
+					"__worldX": 128,
+					"__worldY": 128,
+					"iid": "08e3fdf0-8990-11ee-a1ce-0914d225c666",
+					"width": 16,
+					"height": 16,
+					"defUid": 21,
+					"px": [112,112],
+					"fieldInstances": []
 				}
 			]
 		},

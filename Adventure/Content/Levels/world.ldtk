@@ -11,7 +11,7 @@
 	"iid": "56f09020-8990-11ee-aec4-3b79584501d3",
 	"jsonVersion": "1.4.1",
 	"appBuildId": 471015,
-	"nextUid": 21,
+	"nextUid": 22,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -384,6 +384,40 @@
 					"tilesetUid": null
 				}
 			]
+		},
+		{
+			"identifier": "Spikes",
+			"uid": 21,
+			"tags": [],
+			"exportToToc": false,
+			"doc": null,
+			"width": 16,
+			"height": 16,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 0.08,
+			"lineOpacity": 0,
+			"hollow": false,
+			"color": "#D77643",
+			"renderMode": "Tile",
+			"showName": true,
+			"tilesetId": 2,
+			"tileRenderMode": "FitInside",
+			"tileRect": { "tilesetUid": 2, "x": 0, "y": 96, "w": 16, "h": 16 },
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
