@@ -88,6 +88,15 @@ namespace Engine
         }
 
         /// <summary>
+        /// Spawns the given entity
+        /// </summary>
+        /// <param name="entity"></param>
+        public void Spawn(Entity entity)
+        {
+            Spawn(entity, entity.Position);
+        }
+
+        /// <summary>
         /// Spawns an entity at the given location.
         /// </summary>
         /// <param name="entity"></param>
@@ -112,8 +121,7 @@ namespace Engine
         {
             if (component.Entity == null)
             {
-                var entity = new Entity(Origin.Center);
-                entity.AddComponent(component);
+                var entity = new Entity(component);
                 Spawn(entity, position);
             }
         }

@@ -43,22 +43,22 @@ namespace Adventure.Components
             _body.MoveAndCollide(ref _velocity, EntityLayers.Enemy | EntityLayers.Solid, HandleCollision);
         }
 
-        private Vector2 HandleCollision(Hit hit)
+        private Vector2 HandleCollision(Collision collision)
         {
             Level.Destroy(Entity);
             Level.Spawn(new Explosion(), Entity.Position);
 
-            if (hit.Other.Entity.TryGetComponent<IDamageable>(out var damageable))
+            if (collision.Box.Entity.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.Damage(1);
 
                 if (damageable.Flammable)
                 {
-                    hit.Other.Entity.AddComponent(new OnFire());
+                    collision.Box.Entity.AddComponent(new OnFire());
                 }
             }
 
-            return hit.Ignore();
+            return collision.Ignore();
         }
     }
 }

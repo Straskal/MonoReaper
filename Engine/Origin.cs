@@ -1,126 +1,88 @@
-﻿using Engine.Collision;
-using Microsoft.Xna.Framework;
-
-namespace Engine
+﻿namespace Engine
 {
-    public enum Origin
+    /// <summary>
+    /// Base class for origin transform implementations
+    /// </summary>
+    public abstract class Origin
     {
-        TopLeft,
-        TopCenter,
-        TopRight,
-        CenterLeft,
-        Center,
-        CenterRight,
-        BottomLeft,
-        BottomCenter,
-        BottomRight
-    }
-
-    public static class Offset
-    {
-        public static RectangleF GetRect(Origin origin, float x, float y, float width, float height)
+        public static Origin TopLeft 
         {
-            RectangleF rect;
-            rect.Width = width;
-            rect.Height = height;
+            get;
+        } = new TopLeftOrigin();
 
-            switch (origin)
-            {
-                case Origin.TopLeft:
-                default:
-                    rect.X = x;
-                    rect.Y = y;
-                    break;
-                case Origin.TopCenter:
-                    rect.X = x - rect.Width / 2;
-                    rect.Y = y;
-                    break;
-                case Origin.TopRight:
-                    rect.X = x - rect.Width;
-                    rect.Y = y;
-                    break;
-                case Origin.CenterLeft:
-                    rect.X = x;
-                    rect.Y = y - rect.Height / 2;
-                    break;
-                case Origin.Center:
-                    rect.X = x - rect.Width / 2;
-                    rect.Y = y - rect.Height / 2;
-                    break;
-                case Origin.CenterRight:
-                    rect.X = x - rect.Width;
-                    rect.Y = y - rect.Height / 2;
-                    break;
-                case Origin.BottomLeft:
-                    rect.X = x;
-                    rect.Y = y - rect.Height;
-                    break;
-                case Origin.BottomCenter:
-                    rect.X = x - rect.Width / 2;
-                    rect.Y = y - rect.Height;
-                    break;
-                case Origin.BottomRight:
-                    rect.X = x - rect.Width;
-                    rect.Y = y - rect.Height;
-                    break;
-            }
+        public static Origin Center 
+        { 
+            get;
+        } = new CenterOrigin();
 
-            return rect;
+        /// <summary>
+        /// Applies the origin to the given rectangle
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        public abstract RectangleF Transform(RectangleF rectangle);
+
+        /// <summary>
+        /// Unapplies the origin from the given rectangle
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
+        public abstract RectangleF Invert(RectangleF rectangle);
+
+        /// <summary>
+        /// Applies the origin to the given rectangle
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public RectangleF Tranform(float x, float y, float width, float height)
+        {
+            return Transform(new RectangleF(x, y, width, height));
         }
 
-        public static Vector2 GetVector(Origin origin, float x, float y, float width, float height)
+        /// <summary>
+        /// Unapplies the origin from the given rectangle
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public RectangleF Invert(float x, float y, float width, float height)
         {
-            var result = GetRect(origin, x, y, width, height);
-
-            return new Vector2(result.X, result.Y);
+            return Invert(new RectangleF(x, y, width, height));
         }
 
-        public static Vector2 Create(Origin origin, float x, float y, float width, float height)
+        private class TopLeftOrigin : Origin
         {
-            Vector2 position;
-
-            switch (origin)
+            public override RectangleF Transform(RectangleF rectangle)
             {
-                case Origin.TopLeft:
-                default:
-                    position.X = x;
-                    position.Y = y;
-                    break;
-                case Origin.TopCenter:
-                    position.X = x + width / 2;
-                    position.Y = y;
-                    break;
-                case Origin.TopRight:
-                    position.X = x + width;
-                    position.Y = y;
-                    break;
-                case Origin.CenterLeft:
-                    position.X = x;
-                    position.Y = y + height / 2;
-                    break;
-                case Origin.Center:
-                    position.X = x + width / 2;
-                    position.Y = y + height / 2;
-                    break;
-                case Origin.CenterRight:
-                    position.X = x + width;
-                    position.Y = y + height / 2;
-                    break;
-                case Origin.BottomLeft:
-                    position.X = x;
-                    position.Y = y + height;
-                    break;
-                case Origin.BottomCenter:
-                    position.X = x + width / 2;
-                    position.Y = y + height;
-                    break;
-                case Origin.BottomRight:
-                    position.X = x + width;
-                    position.Y = y + height;
-                    break;
+                return rectangle;
             }
 
-            return position;
+            public override RectangleF Invert(RectangleF rectangle)
+            {
+                return rectangle;
+            }
+        }
+
+        private class CenterOrigin : Origin
+        {
+            public override RectangleF Transform(RectangleF rectangle)
+            {
+                rectangle.X -= rectangle.Width * 0.5f;
+                rectangle.Y -= rectangle.Height * 0.5f;
+                return rectangle;
+            }
+
+            public override RectangleF Invert(RectangleF rectangle)
+            {
+                rectangle.X += rectangle.Width * 0.5f;
+                rectangle.Y += rectangle.Height * 0.5f;
+                return rectangle;
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Content;
 
-namespace Engine.Extensions
+namespace Engine
 {
     public static class ContentManagerExtensions
     {

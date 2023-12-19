@@ -12,14 +12,8 @@ namespace Engine
     /// </remarks>
     public class Entity
     {
-        public Entity(Origin origin = Origin.TopLeft)
+        public Entity(params Component[] components)
         {
-            Origin = origin;
-        }
-
-        public Entity(Origin origin = Origin.TopLeft, params Component[] components)
-        {
-            Origin = origin;
             Components.AddRange(components);
         }
 
@@ -55,8 +49,8 @@ namespace Engine
         public Origin Origin
         {
             get;
-            set;
-        }
+            init;
+        } = Origin.Center;
 
         /// <summary>
         /// True if the entity has been destroyed

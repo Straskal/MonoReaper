@@ -8,11 +8,11 @@
 		"appVersion": "1.4.1",
 		"url": "https://ldtk.io"
 	},
-	"identifier": "Level_0",
-	"iid": "56f0de40-8990-11ee-aec4-89c30acbeb3e",
-	"uid": 0,
+	"identifier": "Level_1",
+	"iid": "a517c642-8990-11ee-b026-3b1046b89e7b",
+	"uid": 15,
 	"worldX": 16,
-	"worldY": 16,
+	"worldY": -240,
 	"worldDepth": 0,
 	"pxWid": 256,
 	"pxHei": 256,
@@ -39,8 +39,8 @@
 			"__pxTotalOffsetY": 0,
 			"__tilesetDefUid": null,
 			"__tilesetRelPath": null,
-			"iid": "0cb1f390-8990-11ee-aec4-97a1424c9fc3",
-			"levelId": 0,
+			"iid": "a517ed50-8990-11ee-b026-a37d6f482453",
+			"levelId": 15,
 			"layerDefUid": 4,
 			"pxOffsetX": 0,
 			"pxOffsetY": 0,
@@ -54,20 +54,20 @@
 			"entityInstances": [
 				{
 					"__identifier": "PlayerSpawn",
-					"__grid": [7,10],
+					"__grid": [9,12],
 					"__pivot": [0.5,0.5],
 					"__tags": [ "Player", "Damageable" ],
 					"__tile": { "tilesetUid": 2, "x": 80, "y": 240, "w": 16, "h": 16 },
 					"__smartColor": "#1671E7",
-					"__worldX": 128,
-					"__worldY": 176,
-					"iid": "18fc0230-8990-11ee-aec4-5fda94fd190c",
+					"__worldX": 160,
+					"__worldY": -48,
+					"iid": "a517ed51-8990-11ee-b026-c1498e58f3f7",
 					"width": 16,
 					"height": 16,
 					"defUid": 1,
-					"px": [112,160],
+					"px": [144,192],
 					"fieldInstances": [
-						{ "__identifier": "Id", "__type": "String", "__value": "Default", "__tile": null, "defUid": 18, "realEditorValues": [] },
+						{ "__identifier": "Id", "__type": "String", "__value": "Default", "__tile": null, "defUid": 18, "realEditorValues": [null] },
 						{ "__identifier": "FaceDirection", "__type": "LocalEnum.FaceDirection", "__value": "Up", "__tile": null, "defUid": 17, "realEditorValues": [{
 							"id": "V_String",
 							"params": ["Up"]
@@ -75,131 +75,77 @@
 					]
 				},
 				{
-					"__identifier": "Barrel",
-					"__grid": [8,4],
-					"__pivot": [0.5,0.5],
-					"__tags": ["Damageable"],
-					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
-					"__smartColor": "#BE4A2F",
-					"__worldX": 152,
-					"__worldY": 88,
-					"iid": "a6cb4760-8990-11ee-a969-8dcaf35a8f6e",
-					"width": 16,
-					"height": 16,
-					"defUid": 10,
-					"px": [136,72],
-					"fieldInstances": []
-				},
-				{
-					"__identifier": "Barrel",
-					"__grid": [9,4],
-					"__pivot": [0.5,0.5],
-					"__tags": ["Damageable"],
-					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
-					"__smartColor": "#BE4A2F",
-					"__worldX": 168,
-					"__worldY": 88,
-					"iid": "a8fb46c0-8990-11ee-a969-b100af1e9a19",
-					"width": 16,
-					"height": 16,
-					"defUid": 10,
-					"px": [152,72],
-					"fieldInstances": []
-				},
-				{
-					"__identifier": "Barrel",
-					"__grid": [8,12],
-					"__pivot": [0.5,0.5],
-					"__tags": ["Damageable"],
-					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
-					"__smartColor": "#BE4A2F",
-					"__worldX": 152,
-					"__worldY": 216,
-					"iid": "a9c96c30-8990-11ee-a969-3317bf9e489b",
-					"width": 16,
-					"height": 16,
-					"defUid": 10,
-					"px": [136,200],
-					"fieldInstances": []
-				},
-				{
-					"__identifier": "Barrel",
-					"__grid": [3,10],
-					"__pivot": [0.5,0.5],
-					"__tags": ["Damageable"],
-					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
-					"__smartColor": "#BE4A2F",
-					"__worldX": 72,
-					"__worldY": 184,
-					"iid": "ab42ecd0-8990-11ee-a969-b3e0871a8c7c",
-					"width": 16,
-					"height": 16,
-					"defUid": 10,
-					"px": [56,168],
-					"fieldInstances": []
-				},
-				{
 					"__identifier": "LevelTrigger",
-					"__grid": [8,3],
+					"__grid": [8,13],
 					"__pivot": [0,0],
 					"__tags": ["Triggers"],
 					"__tile": null,
 					"__smartColor": "#437BD7",
 					"__worldX": 144,
-					"__worldY": 64,
-					"iid": "fa4d6490-8990-11ee-b026-9515fbc5b16f",
+					"__worldY": -32,
+					"iid": "a517ed56-8990-11ee-b026-7dc264c28891",
 					"width": 32,
 					"height": 16,
 					"defUid": 11,
-					"px": [128,48],
+					"px": [128,208],
 					"fieldInstances": [
-						{ "__identifier": "LevelPath", "__type": "FilePath", "__value": "world/Level_1.ldtkl", "__tile": null, "defUid": 13, "realEditorValues": [{
+						{ "__identifier": "LevelPath", "__type": "FilePath", "__value": "world/Level_0.ldtkl", "__tile": null, "defUid": 13, "realEditorValues": [{
 							"id": "V_String",
-							"params": ["world/Level_1.ldtkl"]
+							"params": ["world/Level_0.ldtkl"]
 						}] },
-						{ "__identifier": "PlayerSpawnId", "__type": "String", "__value": "Default", "__tile": null, "defUid": 20, "realEditorValues": [] }
+						{ "__identifier": "PlayerSpawnId", "__type": "String", "__value": "Level1", "__tile": null, "defUid": 20, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Level1"]
+						}] }
 					]
 				},
 				{
 					"__identifier": "Barrel",
-					"__grid": [12,7],
+					"__grid": [5,4],
+					"__pivot": [0.5,0.5],
+					"__tags": ["Damageable"],
+					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
+					"__smartColor": "#BE4A2F",
+					"__worldX": 104,
+					"__worldY": -168,
+					"iid": "cf53d8e0-8990-11ee-b026-bb9f915ba7ac",
+					"width": 16,
+					"height": 16,
+					"defUid": 10,
+					"px": [88,72],
+					"fieldInstances": []
+				},
+				{
+					"__identifier": "Barrel",
+					"__grid": [10,4],
+					"__pivot": [0.5,0.5],
+					"__tags": ["Damageable"],
+					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
+					"__smartColor": "#BE4A2F",
+					"__worldX": 184,
+					"__worldY": -168,
+					"iid": "d01246e0-8990-11ee-b026-531445ad4c7d",
+					"width": 16,
+					"height": 16,
+					"defUid": 10,
+					"px": [168,72],
+					"fieldInstances": []
+				},
+				{
+					"__identifier": "Barrel",
+					"__grid": [12,9],
 					"__pivot": [0.5,0.5],
 					"__tags": ["Damageable"],
 					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
 					"__smartColor": "#BE4A2F",
 					"__worldX": 216,
-					"__worldY": 136,
-					"iid": "0f03d270-8990-11ee-b026-0b8fec7d9ce5",
+					"__worldY": -88,
+					"iid": "d09c1050-8990-11ee-b026-079903578885",
 					"width": 16,
 					"height": 16,
 					"defUid": 10,
-					"px": [200,120],
+					"px": [200,152],
 					"fieldInstances": []
-				},
-				{
-					"__identifier": "PlayerSpawn",
-					"__grid": [8,5],
-					"__pivot": [0.5,0.5],
-					"__tags": [ "Player", "Damageable" ],
-					"__tile": { "tilesetUid": 2, "x": 80, "y": 240, "w": 16, "h": 16 },
-					"__smartColor": "#1671E7",
-					"__worldX": 152,
-					"__worldY": 104,
-					"iid": "09f0e520-8990-11ee-b026-29e55bb9568a",
-					"width": 16,
-					"height": 16,
-					"defUid": 1,
-					"px": [136,88],
-					"fieldInstances": [
-						{ "__identifier": "Id", "__type": "String", "__value": "Level1", "__tile": null, "defUid": 18, "realEditorValues": [{
-							"id": "V_String",
-							"params": ["Level1"]
-						}] },
-						{ "__identifier": "FaceDirection", "__type": "LocalEnum.FaceDirection", "__value": "Down", "__tile": null, "defUid": 17, "realEditorValues": [{
-							"id": "V_String",
-							"params": ["Down"]
-						}] }
-					]
 				}
 			]
 		},
@@ -214,8 +160,8 @@
 			"__pxTotalOffsetY": 0,
 			"__tilesetDefUid": null,
 			"__tilesetRelPath": null,
-			"iid": "1beb3440-8990-11ee-bcbc-97328ea74f16",
-			"levelId": 0,
+			"iid": "a517ed58-8990-11ee-b026-e9d0ecf933a9",
+			"levelId": 15,
 			"layerDefUid": 6,
 			"pxOffsetX": 0,
 			"pxOffsetY": 0,
@@ -248,8 +194,8 @@
 			"__pxTotalOffsetY": 0,
 			"__tilesetDefUid": 5,
 			"__tilesetRelPath": "../Art/Tilesets/dungeonset.png",
-			"iid": "0ac5db00-8990-11ee-aec4-359fac505f97",
-			"levelId": 0,
+			"iid": "a517ed59-8990-11ee-b026-dbe1fea69949",
+			"levelId": 15,
 			"layerDefUid": 3,
 			"pxOffsetX": 0,
 			"pxOffsetY": 0,
@@ -276,8 +222,10 @@
 				{ "px": [48,48], "src": [48,0], "f": 0, "t": 3, "d": [51], "a": 1 },
 				{ "px": [64,48], "src": [48,0], "f": 0, "t": 3, "d": [52], "a": 1 },
 				{ "px": [80,48], "src": [48,0], "f": 0, "t": 3, "d": [53], "a": 1 },
-				{ "px": [96,48], "src": [64,0], "f": 0, "t": 4, "d": [54], "a": 1 },
+				{ "px": [96,48], "src": [48,0], "f": 0, "t": 3, "d": [54], "a": 1 },
 				{ "px": [112,48], "src": [48,0], "f": 0, "t": 3, "d": [55], "a": 1 },
+				{ "px": [128,48], "src": [48,0], "f": 0, "t": 3, "d": [56], "a": 1 },
+				{ "px": [144,48], "src": [48,0], "f": 0, "t": 3, "d": [57], "a": 1 },
 				{ "px": [160,48], "src": [48,0], "f": 0, "t": 3, "d": [58], "a": 1 },
 				{ "px": [176,48], "src": [48,0], "f": 0, "t": 3, "d": [59], "a": 1 },
 				{ "px": [192,48], "src": [48,0], "f": 0, "t": 3, "d": [60], "a": 1 },
@@ -306,8 +254,6 @@
 				{ "px": [80,208], "src": [16,32], "f": 0, "t": 17, "d": [213], "a": 1 },
 				{ "px": [96,208], "src": [16,32], "f": 0, "t": 17, "d": [214], "a": 1 },
 				{ "px": [112,208], "src": [16,32], "f": 0, "t": 17, "d": [215], "a": 1 },
-				{ "px": [128,208], "src": [16,32], "f": 0, "t": 17, "d": [216], "a": 1 },
-				{ "px": [144,208], "src": [16,32], "f": 0, "t": 17, "d": [217], "a": 1 },
 				{ "px": [160,208], "src": [16,32], "f": 0, "t": 17, "d": [218], "a": 1 },
 				{ "px": [176,208], "src": [16,32], "f": 0, "t": 17, "d": [219], "a": 1 },
 				{ "px": [192,208], "src": [16,32], "f": 0, "t": 17, "d": [220], "a": 1 },
@@ -316,5 +262,5 @@
 			"entityInstances": []
 		}
 	],
-	"__neighbours": [{ "levelIid": "a517c642-8990-11ee-b026-3b1046b89e7b", "dir": "n" }]
+	"__neighbours": [{ "levelIid": "56f0de40-8990-11ee-aec4-89c30acbeb3e", "dir": "s" }]
 }

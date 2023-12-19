@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Extensions
+namespace Engine
 {
     public static class GraphicsDeviceExtensions
     {

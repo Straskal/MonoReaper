@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Engine.Collision
+namespace Engine
 {
     /// <summary>
     /// A rectangle containing floating point position and size.

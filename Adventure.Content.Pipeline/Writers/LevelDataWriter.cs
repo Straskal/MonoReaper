@@ -8,9 +8,9 @@ namespace Adventure.Content.Pipeline.Writers
     /// Writes a Level to xnb format.
     /// </summary>
     [ContentTypeWriter]
-    public class LevelWriter : ContentTypeWriter<Level>
+    public class LevelDataWriter : ContentTypeWriter<LevelData>
     {
-        protected override void Write(ContentWriter output, Level value)
+        protected override void Write(ContentWriter output, LevelData value)
         {
             output.Write(value.Name);
             output.Write(value.Width);
@@ -22,6 +22,15 @@ namespace Adventure.Content.Pipeline.Writers
                 output.Write(entity.Name);
                 output.Write(entity.Type);
                 output.Write(entity.Position);
+                output.Write(entity.Width);
+                output.Write(entity.Height);
+                output.Write(entity.Fields.Count);
+
+                foreach (var kvp in entity.Fields) 
+                {
+                    output.Write(kvp.Key);
+                    output.Write(kvp.Value);
+                }
             }
 
             output.Write(value.TileLayers.Length);
@@ -44,12 +53,12 @@ namespace Adventure.Content.Pipeline.Writers
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)
         {
-            return typeof(Level).AssemblyQualifiedName;
+            return typeof(LevelData).AssemblyQualifiedName;
         }
 
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return typeof(LevelReader).AssemblyQualifiedName;
+            return typeof(LevelDataReader).AssemblyQualifiedName;
         }
     }
 }
