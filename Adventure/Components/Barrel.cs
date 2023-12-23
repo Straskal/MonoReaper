@@ -15,7 +15,7 @@ namespace Adventure.Components
         void Damage(int amount);
     }
 
-    public sealed class Barrel : Component, IDamageable
+    public sealed class Barrel : Entity, IDamageable
     {
         private int health = 3;
 
@@ -29,9 +29,11 @@ namespace Adventure.Components
         {
             // Preload loot that drops when barrel is destroyed.
             Phial.Preload(content);
+
             _hurtEffect = content.Load<Effect>("shaders/SolidColor");
-            Entity.AddComponent(_sprite = new Sprite(content.Load<Texture2D>("art/common/barrel"), new Rectangle(0, 0, 16, 16)));
-            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
+
+            AddComponent(_sprite = new Sprite(content.Load<Texture2D>("art/common/barrel"), new Rectangle(0, 0, 16, 16)));
+            AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
         }
 
         public override void OnDestroy()
@@ -57,7 +59,7 @@ namespace Adventure.Components
 
             if (health < 0)
             {
-                Level.Destroy(Entity);
+                Level.Destroy(this);
             }
             else
             {

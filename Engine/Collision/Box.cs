@@ -20,6 +20,13 @@ namespace Engine.Collision
             Height = height;
         }
 
+        public Box(float width, float height, int layerMask)
+        {
+            Width = width;
+            Height = height; 
+            LayerMask = layerMask;
+        }
+
         public Box(float x, float y, float width, float height)
         {
             X = x;

@@ -28,7 +28,7 @@ namespace Engine
 
         public override void Update(GameTime gameTime)
         {
-            if (Level.Status == Level.LoadStatus.Loaded && CanStartNextLevel()) 
+            if (Level.Status == LevelLoadStatus.Loaded && CanStartNextLevel()) 
             {
                 Application.Screens.SetTop(Level);
             }

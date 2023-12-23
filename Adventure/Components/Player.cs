@@ -10,7 +10,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Components
 {
-    public class Player : Component
+    public class Player : Entity
     {
         // When the player is moving, it should collide with enemies and solid entities.
         // Could also eventually add other layers here. Like health pickups, interactables, hazards, etc..
@@ -27,13 +27,15 @@ namespace Adventure.Components
 
         public override void OnLoad(ContentManager content)
         {
-            Entity.AddComponent(_body = new Body(12, 16, EntityLayers.Player));
-            Entity.AddComponent(_sprite = new AnimatedSprite(SharedContent.Graphics.Player, PlayerAnimations.Frames));
+            Fireball.Preload(content);
+
+            AddComponent(_sprite = new AnimatedSprite(SharedContent.Graphics.Player, PlayerAnimations.Frames));
+            AddComponent(_body = new Body(12, 16, EntityLayers.Player));
         }
 
         public override void OnStart()
         {
-            Level.Camera.Position = Entity.Position;
+            Level.Camera.Position = Position;
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -67,14 +69,14 @@ namespace Adventure.Components
 
         private void CameraFollow() 
         {
-            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Entity.Position, 0.15f);
+            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Position, 0.15f);
         }
 
         private void HandleInteractInput(float deltaTime) 
         {
             if (Input.IsKeyPressed(Keys.E))
             {
-                Level.Spawn(new Fireball(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
+                Spawn(new Fireball(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
             }
         }
 

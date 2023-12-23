@@ -6,7 +6,7 @@ using Engine.Graphics;
 
 namespace Adventure.Components
 {
-    public sealed class Phial : Component
+    public sealed class Phial : Entity
     {
         public static void Preload(ContentManager content)
         {
@@ -17,7 +17,7 @@ namespace Adventure.Components
         {
             var texture = content.Load<Texture2D>("art/common/phial");
 
-            Entity.AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
+            AddComponent(new Sprite(texture, new Rectangle(0, 0, 16, 16)));
         }
     }
 }

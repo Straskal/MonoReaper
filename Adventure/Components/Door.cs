@@ -8,7 +8,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Components
 {
-    public sealed class Door : Component, IDamageable
+    public sealed class Door : Entity, IDamageable
     {
         private bool isOpen;
         private bool isMoving;
@@ -22,26 +22,26 @@ namespace Adventure.Components
                 return;
             }
 
-            Entity.GetComponent<AnimatedSprite>().Play("open");
+            GetComponent<AnimatedSprite>().Play("open");
 
             isMoving = true;
         }
 
         public override void OnUpdate(GameTime gameTime)
         {
-            if (isMoving && Entity.GetComponent<AnimatedSprite>().IsFinished)
+            if (isMoving && GetComponent<AnimatedSprite>().CurrentAnimationFinished)
             {
                 isMoving = false;
                 isOpen = true;
 
-                Entity.RemoveComponent(Entity.GetComponent<Box>());
+                RemoveComponent(GetComponent<Box>());
             }
         }
 
         public override void OnLoad(ContentManager content)
         {
-            Entity.AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
-            Entity.AddComponent(new AnimatedSprite(content.Load<Texture2D>("art/common/door_"), new Animation[]
+            AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
+            AddComponent(new AnimatedSprite(content.Load<Texture2D>("art/common/door_"), new Animation[]
             {
                 new Animation("idle")
                 {

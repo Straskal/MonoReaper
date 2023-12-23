@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Graphics
@@ -71,11 +70,6 @@ namespace Engine.Graphics
         {
             get;
             set;
-        }
-
-        public override void OnLoad(ContentManager content)
-        {
-            _texture ??= Renderer.BlankTexture;
         }
 
         public override void OnDraw(Renderer renderer, GameTime gameTime)

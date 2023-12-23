@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Graphics
@@ -84,15 +83,6 @@ namespace Engine.Graphics
         { 
             get; 
             set; 
-        }
-
-        public override void OnLoad(ContentManager content)
-        {
-            if (_texture == null)
-            {
-                _texture = Renderer.BlankTexture;
-                _sourceRectangle = new Rectangle(0, 0, Renderer.BlankTexture.Width, Renderer.BlankTexture.Height);
-            }
         }
 
         public override void OnUpdate(GameTime gameTime)

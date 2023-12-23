@@ -6,16 +6,21 @@ using Engine.Graphics;
 
 namespace Adventure.Components
 {
-    public sealed class OnFire : Component
+    public sealed class Fire : Entity
     {
         private IDamageable _damageable;
         private float _timer;
         private int _hits;
-        private Particles _particles;
+        private Entity _target;
+
+        public Fire(Entity target) 
+        {
+            _target = target;
+        }
 
         public override void OnLoad(ContentManager content)
         {
-            Entity.AddComponent(_particles = new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
+            AddComponent(new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(10f, -50f),
@@ -24,12 +29,11 @@ namespace Adventure.Components
                 MaxColor = Color.White * 0.1f,
                 MaxTime = 0.25f
             });
-
         }
 
         public override void OnStart()
         {
-            _damageable = Entity.GetComponent<IDamageable>();
+            _damageable = _target as IDamageable;
         }
 
         public override void OnUpdate(GameTime gameTime)
@@ -44,14 +48,23 @@ namespace Adventure.Components
 
                 if (_hits == 3)
                 {
-                    Entity.RemoveComponent(_particles);
-                    Entity.RemoveComponent(this);
+                    Level.Destroy(this);
                 }
                 else
                 {
                     _timer = 1f;
                 }
             }
+
+            if (_target.IsDestroyed) 
+            {
+                DestroySelf();
+            }
+        }
+
+        public override void OnPostUpdate(GameTime gameTime)
+        {
+            Position = _target.Position;
         }
     }
 }

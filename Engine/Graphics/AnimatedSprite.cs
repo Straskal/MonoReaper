@@ -63,7 +63,7 @@ namespace Engine.Graphics
         /// <summary>
         /// Returns true if the current animation has finished
         /// </summary>
-        public bool IsFinished 
+        public bool CurrentAnimationFinished 
         { 
             get; 
             private set; 
@@ -85,7 +85,7 @@ namespace Engine.Graphics
 
         public void Play(string animationName)
         {
-            if (!StringComparer.OrdinalIgnoreCase.Equals(animationName, CurrentAnimation?.Name) || IsFinished) 
+            if (!StringComparer.OrdinalIgnoreCase.Equals(animationName, CurrentAnimation?.Name) || CurrentAnimationFinished) 
             {
                 foreach (var animation in _animations) 
                 {
@@ -102,7 +102,7 @@ namespace Engine.Graphics
 
         public void Play(int animationNameHashCode)
         {
-            if (animationNameHashCode != CurrentAnimation?.NameHashCode || IsFinished)
+            if (animationNameHashCode != CurrentAnimation?.NameHashCode || CurrentAnimationFinished)
             {
                 foreach (var animation in _animations)
                 {
@@ -124,7 +124,7 @@ namespace Engine.Graphics
                 return;
             }
 
-            if (IsFinished) 
+            if (CurrentAnimationFinished) 
             {
                 return;
             }
@@ -142,7 +142,7 @@ namespace Engine.Graphics
                 }
                 else
                 {
-                    IsFinished = true;
+                    CurrentAnimationFinished = true;
                 }
             }
             else 
@@ -159,7 +159,7 @@ namespace Engine.Graphics
             CurrentAnimation = animation;
             CurrentFrame = 0;
             SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
-            IsFinished = false;
+            CurrentAnimationFinished = false;
         }
     }
 }

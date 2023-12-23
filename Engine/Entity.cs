@@ -1,91 +1,52 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Engine
 {
-    /// <summary>
-    /// An entity is an object that has a physical position in a level
-    /// </summary>
-    /// <remarks>
-    /// Entities are composed of components, which hold the actual game and rendering logic.
-    /// </remarks>
     public class Entity
     {
-        public Entity(params Component[] components)
-        {
-            Components.AddRange(components);
-        }
-
-        /// <summary>
-        /// Gets the entity's component list
-        /// </summary>
         internal List<Component> Components
         {
             get;
         } = new List<Component>();
 
-        /// <summary>
-        /// Gets the entity's level
-        /// </summary>
         public Level Level
         {
             get;
             internal set;
         }
 
-        /// <summary>
-        /// Gets or sets the entity's position
-        /// </summary>
-        public Vector2 Position
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the entity's origin
-        /// </summary>
         public Origin Origin
         {
             get;
             init;
         } = Origin.Center;
 
-        /// <summary>
-        /// True if the entity has been destroyed
-        /// </summary>
+        public Vector2 Position
+        {
+            get;
+            set;
+        }
+
         public bool IsDestroyed
         {
             get;
             internal set;
         }
 
-        /// <summary>
-        /// Adds the given component to the entity
-        /// </summary>
-        /// <param name="component"></param>
         public void AddComponent(Component component)
         {
             Components.Add(component);
             Level?.AddComponent(this, component);
         }
 
-        /// <summary>
-        /// Removes the given component from the entity
-        /// </summary>
-        /// <param name="component"></param>
         public void RemoveComponent(Component component)
         {
             Components.Remove(component);
             Level?.RemoveComponent(component);
         }
 
-        /// <summary>
-        /// Gets the first instance of a component of the given type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public T GetComponent<T>() where T : class
         {
             var result = default(T);
@@ -102,26 +63,47 @@ namespace Engine
             return result;
         }
 
-        /// <summary>
-        /// Returns true if the entity contains a component of the given type and outputs it
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        public bool TryGetComponent<T>(out T component) where T : class
+        public void Spawn(Entity entity, Vector2 position)
         {
-            return (component = GetComponent<T>()) != null;
+            Level.Spawn(entity, position);
         }
 
-        /// <summary>
-        /// Gets the first instance of a component of the given type and throws an exception if the component is not found.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public T RequireComponent<T>() where T : class
+        public void Destroy(Entity entity)
         {
-            return GetComponent<T>() ?? throw new Exception($"Required behavior of type {typeof(T).Name} is missing.");
+            Level.Destroy(entity);
+        }
+
+        public void DestroySelf()
+        {
+            Level.Destroy(this);
+        }
+
+        public virtual void OnLoad(ContentManager content)
+        {
+        }
+
+        public virtual void OnSpawn()
+        {
+        }
+
+        public virtual void OnDestroy()
+        {
+        }
+
+        public virtual void OnStart()
+        {
+        }
+
+        public virtual void OnEnd()
+        {
+        }
+
+        public virtual void OnUpdate(GameTime gameTime)
+        {
+        }
+
+        public virtual void OnPostUpdate(GameTime gameTime)
+        {
         }
     }
 }

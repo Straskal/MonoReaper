@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Engine;
 using Engine.Collision;
 using Engine.Graphics;
 
 using static Adventure.Constants;
+using Microsoft.Xna.Framework.Content;
 
 namespace Adventure.Components
 {
-    public sealed class Fireball : Component
+    public sealed class Fireball : Entity
     {
         private Body _body;
         private Vector2 _velocity;
@@ -18,10 +18,15 @@ namespace Adventure.Components
             _velocity = velocity;
         }
 
-        public override void OnLoad(ContentManager content)
+        public static void Preload(ContentManager content) 
         {
-            Entity.AddComponent(_body = new Body(4, 4, EntityLayers.PlayerProjectile));
-            Entity.AddComponent(new Particles(SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
+            Explosion.Preload(content);
+        }
+
+        public override void OnSpawn()
+        {
+            AddComponent(_body = new Body(4, 4, EntityLayers.PlayerProjectile));
+            AddComponent(new Particles(SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(25f),
@@ -31,10 +36,7 @@ namespace Adventure.Components
                 MaxTime = 0.25f,
                 ZOrder = 5
             });
-        }
 
-        public override void OnSpawn()
-        {
             SharedContent.Sounds.Shoot.Play();
         }
 
@@ -45,16 +47,16 @@ namespace Adventure.Components
 
         private Vector2 HandleCollision(Collision collision)
         {
-            Level.Destroy(Entity);
-            Level.Spawn(new Explosion(), Entity.Position);
+            DestroySelf();
+            Spawn(new Explosion(), Position);
 
-            if (collision.Box.Entity.TryGetComponent<IDamageable>(out var damageable))
+            if (collision.Box.Entity is IDamageable damageable)
             {
                 damageable.Damage(1);
 
                 if (damageable.Flammable)
                 {
-                    collision.Box.Entity.AddComponent(new OnFire());
+                    Level.Spawn(new Fire(collision.Box.Entity));
                 }
             }
 

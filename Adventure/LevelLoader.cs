@@ -40,20 +40,20 @@ namespace Adventure
                     case "PlayerSpawn":
                         if (entityData.Fields.GetString("Id")?.Equals(playerSpawnId) == true)
                         {
-                            yield return new Entity(new Player())
+                            yield return new Player()
                             {
                                 Position = entityData.Position
                             };
                         }
                         break;
                     case "Barrel":
-                        yield return new Entity(new Barrel())
+                        yield return new Barrel()
                         {
                             Position = entityData.Position
                         };
                         break;
                     case "LevelTrigger":
-                        yield return new Entity(new LevelTrigger(entityData))
+                        yield return new LevelTrigger(entityData)
                         {
                             Origin = Origin.TopLeft,
                             Position = entityData.Position
@@ -83,7 +83,7 @@ namespace Adventure
                     IsSolid = true
                 };
 
-                yield return new Entity(new Tilemap(mapData) { ZOrder = -100 })
+                yield return new Tilemap(mapData)
                 {
                     Origin = Origin.TopLeft
                 };

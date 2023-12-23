@@ -6,7 +6,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Components
 {
-    public sealed class LevelTrigger : Component
+    public sealed class LevelTrigger : Entity
     {
         private Box _box;
 
@@ -26,10 +26,7 @@ namespace Adventure.Components
 
         public override void OnSpawn()
         {
-            Entity.AddComponent(_box = new Box(Width, Height) 
-            {
-                LayerMask = BoxLayers.Interactable
-            });
+            AddComponent(_box = new Box(Width, Height, BoxLayers.Interactable));
         }
 
         public override void OnStart()

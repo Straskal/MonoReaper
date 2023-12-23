@@ -3,14 +3,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
-using Engine.Graphics;
 using Engine.Collision;
 
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
-    public class Tilemap : Component
+    public class Tilemap : Entity
     {
         public struct TileInfo
         {
@@ -39,6 +38,7 @@ namespace Adventure.Components
         public override void OnLoad(ContentManager content)
         {
             Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
+            AddComponent(new TilemapRenderer(Data));
         }
 
         public override void OnSpawn()
@@ -50,15 +50,7 @@ namespace Adventure.Components
 
             foreach (var tile in Data.Tiles)
             {
-                Entity.AddComponent(new Box(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
-            }
-        }
-
-        public override void OnDraw(Renderer renderer, GameTime gameTime)
-        {
-            foreach (var tile in Data.Tiles)
-            {
-                renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
+                AddComponent(new Box(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
             }
         }
     }
