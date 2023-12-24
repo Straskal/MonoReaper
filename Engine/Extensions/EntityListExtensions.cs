@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine.Graphics;
+using Microsoft.Xna.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Engine.Extensions
 {
@@ -12,7 +14,7 @@ namespace Engine.Extensions
 
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].OnLoad(content);
+                entities[i].Load(content);
 
                 if (currentAssetCount != content.LoadedAssetCount)
                 {
@@ -26,7 +28,7 @@ namespace Engine.Extensions
         {
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].OnSpawn();
+                entities[i].Spawn();
             }
         }
 
@@ -34,7 +36,7 @@ namespace Engine.Extensions
         {
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].OnStart();
+                entities[i].Start();
             }
         }
 
@@ -42,7 +44,7 @@ namespace Engine.Extensions
         {
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].OnUpdate(gameTime);
+                entities[i].Update(gameTime);
             }
         }
 
@@ -50,7 +52,7 @@ namespace Engine.Extensions
         {
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].OnPostUpdate(gameTime);
+                entities[i].PostUpdate(gameTime);
             }
         }
 
@@ -58,7 +60,15 @@ namespace Engine.Extensions
         {
             foreach (var entity in entities.ToArray())
             {
-                entity.OnEnd();
+                entity.End();
+            }
+        }
+
+        public static void Draw(this List<Entity> entities, Renderer renderer, GameTime gameTime)
+        {
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].Draw(renderer, gameTime);
             }
         }
     }

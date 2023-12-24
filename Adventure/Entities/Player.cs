@@ -12,33 +12,28 @@ namespace Adventure.Components
 {
     public class Player : Entity
     {
-        // When the player is moving, it should collide with enemies and solid entities.
-        // Could also eventually add other layers here. Like health pickups, interactables, hazards, etc..
         private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
 
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.85f;
 
-        private Body _body;
-        private AnimatedSprite _sprite;
-
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
 
-        public override void OnLoad(ContentManager content)
+        public AnimatedSprite AnimatedSprite { get; set; }
+
+        protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-
-            AddComponent(_sprite = new AnimatedSprite(SharedContent.Graphics.Player, PlayerAnimations.Frames));
-            AddComponent(_body = new Body(12, 16, EntityLayers.Player));
+            GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
-        public override void OnStart()
+        protected override void OnStart()
         {
             Level.Camera.Position = Position;
         }
 
-        public override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate(GameTime gameTime)
         {
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
@@ -50,21 +45,16 @@ namespace Adventure.Components
                 movementInput.Normalize();
             }
 
-            _sprite.IsPaused = movementLength == 0f;
+            //_sprite.IsPaused = movementLength == 0f;
             _direction = movementLength > 0f ? movementInput : _direction;
             _velocity = movementInput * Speed * deltaTime;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
             _velocity.Y = MathHelper.Clamp(_velocity.Y, -MaxSpeed, MaxSpeed);
 
-            Move();
+            MoveAndCollide(ref _velocity, MovementCollisionLayerMask, HandleCollision);
             Animate();
             HandleInteractInput(deltaTime);
             CameraFollow(); 
-        }
-
-        private void Move() 
-        {
-            _body.MoveAndCollide(ref _velocity, MovementCollisionLayerMask, HandleCollision);
         }
 
         private void CameraFollow() 
@@ -76,8 +66,13 @@ namespace Adventure.Components
         {
             if (Input.IsKeyPressed(Keys.E))
             {
-                Spawn(new Fireball(_direction * 100f * deltaTime), _body.CalculateBounds().Center + _direction * 10f);
+                ShootFireball(deltaTime);
             }
+        }
+
+        private void ShootFireball(float deltaTime) 
+        {
+            Level.Spawn(new Fireball(_direction * 100f * deltaTime), Box.CalculateBounds().Center + _direction);
         }
 
         private static Vector2 HandleCollision(Collision collision)
@@ -96,22 +91,22 @@ namespace Adventure.Components
             {
                 if (_direction.X < 0f)
                 {
-                    _sprite.Play("walk_left");
+                    AnimatedSprite.Play("walk_left");
                 }
                 else
                 {
-                    _sprite.Play("walk_right");
+                    AnimatedSprite.Play("walk_right");
                 }
             }
             else
             {
                 if (_direction.Y < 0f)
                 {
-                    _sprite.Play("walk_up");
+                    AnimatedSprite.Play("walk_up");
                 }
                 else
                 {
-                    _sprite.Play("walk_down");
+                    AnimatedSprite.Play("walk_down");
 
                 }
             }

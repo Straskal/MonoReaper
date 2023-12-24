@@ -74,21 +74,6 @@ namespace Engine
             Entities.Destroy(entity);
         }
 
-        internal void AddComponent(Entity entity, Component component)
-        {
-            Entities.AddComponent(entity, component);
-        }
-
-        internal void AddComponents(Entity entity, List<Component> components)
-        {
-            Entities.AddComponents(entity, components);
-        }
-
-        internal void RemoveComponent(Component component)
-        {
-            Entities.RemoveComponent(component);
-        }
-
         public override void Start()
         {
             if (Status == LevelLoadStatus.NotStarted)

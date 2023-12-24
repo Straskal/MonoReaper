@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
@@ -28,20 +27,50 @@ namespace Adventure.Components
             public bool IsSolid { get; set; }
         }
 
+        public sealed class TileBoxes
+        {
+            private readonly Partition _partition;
+
+            public TileBoxes(Partition partition)
+            {
+                _partition = partition;
+            }
+
+            public void Add(Box box)
+            {
+                _partition.Add(box);
+            }
+
+            public void Remove(Box box)
+            {
+                _partition.Remove(box);
+            }
+        }
+
         public Tilemap(MapData data)
         {
-            Data = data ?? throw new ArgumentNullException(nameof(data));
+            Data = data;
         }
 
-        public MapData Data { get; }
+        private TileBoxes Boxes 
+        {
+            get;
+            set;
+        }
 
-        public override void OnLoad(ContentManager content)
+        public MapData Data 
+        { 
+            get; 
+        }
+
+        protected override void OnLoad(ContentManager content)
         {
             Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
-            AddComponent(new TilemapRenderer(Data));
+            GraphicsComponent = new TilemapRenderer(Data);
+            Boxes = new TileBoxes(Level.Partition);
         }
 
-        public override void OnSpawn()
+        protected override void OnSpawn()
         {
             if (!Data.IsSolid)
             {
@@ -50,7 +79,7 @@ namespace Adventure.Components
 
             foreach (var tile in Data.Tiles)
             {
-                AddComponent(new Box(tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
+                Boxes.Add(new Box(this, tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
             }
         }
     }

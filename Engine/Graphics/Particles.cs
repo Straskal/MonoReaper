@@ -7,7 +7,7 @@ namespace Engine.Graphics
     /// <summary>
     /// This component will add particles to an entity.
     /// </summary>
-    public sealed class Particles : Component
+    public sealed class Particles : GraphicsComponent
     {
         private struct Particle
         {
@@ -22,70 +22,65 @@ namespace Engine.Graphics
 
         private readonly List<Particle> _particles = new();
 
-        private Texture2D _texture;
-        private Rectangle _sourceRectangle;
-
-        public Particles(Texture2D texture, Rectangle sourceRectangle)
+        public Particles(Entity entity, Texture2D texture, Rectangle sourceRectangle)
         {
-            _texture = texture;
-            _sourceRectangle = sourceRectangle;
+            Entity = entity;
+            Texture = texture;
+            SourceRectangle = sourceRectangle;
         }
 
-        /// <summary>
-        /// The max velocity that a particle can travel at.
-        /// </summary>
-        public Vector2 Velocity 
-        { 
-            get; 
-            set; 
+        public Entity Entity 
+        {
+            get;
         }
 
-        /// <summary>
-        /// The max angular velocity that a prticle can travel at.
-        /// </summary>
-        public float AngularVelocity 
-        { 
-            get; 
-            set; 
+        public Texture2D Texture 
+        {
+            get;
         }
 
-        /// <summary>
-        /// The max number of particles that can be emitted.
-        /// </summary>
-        public int MaxParticles 
-        { 
-            get; 
-            set; 
+        public Rectangle SourceRectangle
+        {
+            get;
+        }
+
+        public Vector2 Velocity
+        {
+            get;
+            set;
+        }
+
+        public float AngularVelocity
+        {
+            get;
+            set;
+        }
+
+        public int MaxParticles
+        {
+            get;
+            set;
         } = 10;
 
-        /// <summary>
-        /// The color of the particle at the beginning of it's lifespan.
-        /// </summary>
-        public Color MinColor 
-        { 
-            get; 
-            set; 
+        public Color MinColor
+        {
+            get;
+            set;
         }
 
-        /// <summary>
-        /// The color of the particle at the ending of it's lifespan.
-        /// </summary>
-        public Color MaxColor 
-        { 
-            get; 
-            set; 
+        public Color MaxColor
+        {
+            get;
+            set;
         }
 
-        /// <summary>
-        /// The max time that a particle can live.
-        /// </summary>
-        public float MaxTime 
-        { 
-            get; 
-            set; 
+        public float MaxTime
+        {
+            get;
+            set;
         }
 
-        public override void OnUpdate(GameTime gameTime)
+        public override void OnPostUpdate(GameTime gameTime)
         {
             var dt = gameTime.GetDeltaTime();
             var diff = MaxParticles - _particles.Count;
@@ -118,9 +113,9 @@ namespace Engine.Graphics
 
         public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
-            foreach (var particle in _particles) 
+            foreach (var particle in _particles)
             {
-                renderer.Draw(_texture, particle.Position, _sourceRectangle, particle.Color);
+                renderer.Draw(Texture, particle.Position, SourceRectangle, particle.Color);
             }
         }
 

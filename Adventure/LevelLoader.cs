@@ -46,12 +46,12 @@ namespace Adventure
                             };
                         }
                         break;
-                    case "Barrel":
-                        yield return new Barrel()
-                        {
-                            Position = entityData.Position
-                        };
-                        break;
+                    //case "Barrel":
+                    //    yield return new Barrel()
+                    //    {
+                    //        Position = entityData.Position
+                    //    };
+                    //    break;
                     case "LevelTrigger":
                         yield return new LevelTrigger(entityData)
                         {

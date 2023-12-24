@@ -7,36 +7,46 @@ namespace Engine.Collision
     /// <summary>
     /// This component is used for tracking collidable objects.
     /// </summary>
-    public class Box : Component
+    public class Box
     {
+
         /// <summary>
         /// The partition cell points that contain this box.
         /// </summary>
         internal List<Point> PartitionCellPoints { get; } = new();
 
-        public Box(float width, float height)
+        public Box(Entity entity)
         {
+            Entity = entity;
+        }
+
+        public Box(Entity entity, float width, float height)
+        {
+            Entity = entity;
             Width = width;
             Height = height;
         }
 
-        public Box(float width, float height, int layerMask)
+        public Box(Entity entity, float width, float height, int layerMask)
         {
+            Entity = entity;
             Width = width;
             Height = height; 
             LayerMask = layerMask;
         }
 
-        public Box(float x, float y, float width, float height)
+        public Box(Entity entity, float x, float y, float width, float height)
         {
+            Entity = entity;
             X = x;
             Y = y;
             Width = width;
             Height = height;
         }
 
-        public Box(float x, float y, float width, float height, int layerMask)
+        public Box(Entity entity, float x, float y, float width, float height, int layerMask)
         {
+            Entity = entity;
             X = x;
             Y = y;
             Width = width;
@@ -45,6 +55,11 @@ namespace Engine.Collision
         }
 
         public event CollidedWithCallback CollidedWith;
+
+        public Entity Entity 
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets or sets the box's X position relative to the entity.
@@ -74,14 +89,14 @@ namespace Engine.Collision
         /// </remarks>
         public int LayerMask { get; set; }
 
-        public override void OnSpawn()
+        public void OnSpawn()
         {
-            Level.Partition.Add(this);
+            Entity.Level.Partition.Add(this);
         }
 
-        public override void OnDestroy()
+        public void OnDestroy()
         {
-            Level.Partition.Remove(this);
+            Entity.Level.Partition.Remove(this);
         }
 
         /// <summary>
@@ -121,15 +136,15 @@ namespace Engine.Collision
         /// </remarks>
         public void UpdateBBox()
         {
-            Level.Partition.Update(this);
+            Entity.Level.Partition.Update(this);
         }
 
-        public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
             renderer.DrawRectangleOutline(CalculateBounds().ToXnaRect(), Color.White);
         }
 
-        internal void NotifyCollidedWith(Body body, Collision collision) 
+        internal void NotifyCollidedWith(Box body, Collision collision) 
         {
             CollidedWith?.Invoke(body, collision);
         }

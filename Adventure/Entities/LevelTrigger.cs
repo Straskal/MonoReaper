@@ -1,15 +1,12 @@
-﻿using Engine;
+﻿using Adventure.Content;
+using Engine;
 using Engine.Collision;
-using Adventure.Content;
-
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
     public sealed class LevelTrigger : Entity
     {
-        private Box _box;
-
         public LevelTrigger(EntityData entityData)
         {
             // Concat should be in the level reader.
@@ -24,22 +21,24 @@ namespace Adventure.Components
         public int Width { get; }
         public int Height { get; }
 
-        public override void OnSpawn()
+        protected override void OnSpawn()
         {
-            AddComponent(_box = new Box(Width, Height, BoxLayers.Interactable));
+            Box.Width = Width;
+            Box.Height = Height;
+            Box.LayerMask = BoxLayers.Interactable;
         }
 
-        public override void OnStart()
+        protected override void OnStart()
         {
-            _box.CollidedWith += OnCollidedWith;
+            Box.CollidedWith += OnCollidedWith;
         }
 
-        public override void OnEnd()
+        protected override void OnEnd()
         {
-            _box.CollidedWith -= OnCollidedWith;
+            Box.CollidedWith -= OnCollidedWith;
         }
 
-        private void OnCollidedWith(Body body, Collision collision) 
+        private void OnCollidedWith(Box body, Collision collision) 
         {
             if (body.LayerMask == EntityLayers.Player) 
             {

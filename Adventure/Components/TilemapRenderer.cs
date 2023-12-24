@@ -2,12 +2,11 @@
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using static Adventure.Components.Tilemap;
 
 namespace Adventure.Components
 {
-    public sealed class TilemapRenderer : Component
+    public sealed class TilemapRenderer : GraphicsComponent
     {
         public TilemapRenderer(MapData data) 
         {

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine.Collision;
+using Engine.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
 
@@ -6,11 +8,6 @@ namespace Engine
 {
     public class Entity
     {
-        internal List<Component> Components
-        {
-            get;
-        } = new List<Component>();
-
         public Level Level
         {
             get;
@@ -20,7 +17,7 @@ namespace Engine
         public Origin Origin
         {
             get;
-            init;
+            set;
         } = Origin.Center;
 
         public Vector2 Position
@@ -29,81 +26,149 @@ namespace Engine
             set;
         }
 
+        public Box Box
+        {
+            get;
+            protected set;
+        }
+
+        public GraphicsComponent GraphicsComponent
+        {
+            get;
+            protected set;
+        } = GraphicsComponent.Empty;
+
         public bool IsDestroyed
         {
             get;
             internal set;
         }
 
-        public void AddComponent(Component component)
+        internal void Load(ContentManager content)
         {
-            Components.Add(component);
-            Level?.AddComponent(this, component);
+            Box = new Box(this);
+            OnLoad(content);
         }
 
-        public void RemoveComponent(Component component)
+        internal void Spawn()
         {
-            Components.Remove(component);
-            Level?.RemoveComponent(component);
+            Box.OnSpawn();
+            OnSpawn();
         }
 
-        public T GetComponent<T>() where T : class
+        internal void Destroy()
         {
-            var result = default(T);
+            OnDestroy();
+            Box.OnDestroy();
+        }
 
-            foreach (var component in Components)
+        internal void Start()
+        {
+            OnStart();
+        }
+
+        internal void End()
+        {
+            OnEnd();
+        }
+
+        internal void Update(GameTime gameTime)
+        {
+            OnUpdate(gameTime);
+        }
+
+        internal void PostUpdate(GameTime gameTime)
+        {
+            GraphicsComponent.OnPostUpdate(gameTime);
+            OnPostUpdate(gameTime);
+        }
+
+        internal void Draw(Renderer renderer, GameTime gameTime)
+        {
+            GraphicsComponent.OnDraw(renderer, gameTime);
+        }
+
+        internal void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            GraphicsComponent.OnDebugDraw(renderer, gameTime);
+        }
+
+        protected virtual void OnLoad(ContentManager content)
+        {
+        }
+
+        protected virtual void OnSpawn()
+        {
+        }
+
+        protected virtual void OnDestroy()
+        {
+        }
+
+        protected virtual void OnStart()
+        {
+        }
+
+        protected virtual void OnEnd()
+        {
+        }
+
+        protected virtual void OnUpdate(GameTime gameTime)
+        {
+        }
+
+        protected virtual void OnPostUpdate(GameTime gameTime)
+        {
+        }
+
+        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionResponseCallback response)
+        {
+            if (velocity == Vector2.Zero)
             {
-                if (component is T t)
-                {
-                    result = t;
-                    break;
-                }
+                return;
             }
 
-            return result;
-        }
+            var visited = new HashSet<Box>() { Box };
+            var potentialCollisions = new List<Box>();
 
-        public void Spawn(Entity entity, Vector2 position)
-        {
-            Level.Spawn(entity, position);
-        }
+            while (true)
+            {
+                potentialCollisions.Clear();
 
-        public void Destroy(Entity entity)
-        {
-            Level.Destroy(entity);
-        }
+                var bounds = Box.CalculateBounds();
+                var broadphaseRectangle = bounds.Union(velocity);
 
-        public void DestroySelf()
-        {
-            Level.Destroy(this);
-        }
+                foreach (var box in Level.Partition.Query(broadphaseRectangle))
+                {
+                    if ((box.LayerMask | layerMask) != layerMask)
+                    {
+                        continue;
+                    }
 
-        public virtual void OnLoad(ContentManager content)
-        {
-        }
+                    if (visited.Contains(box))
+                    {
+                        continue;
+                    }
 
-        public virtual void OnSpawn()
-        {
-        }
+                    if (!broadphaseRectangle.Intersects(box.CalculateBounds()))
+                    {
+                        continue;
+                    }
 
-        public virtual void OnDestroy()
-        {
-        }
+                    potentialCollisions.Add(box);
+                }
 
-        public virtual void OnStart()
-        {
-        }
+                if (!Sweep.Test(bounds, velocity, potentialCollisions, out var collision))
+                {
+                    Box.Move(velocity);
+                    break;
+                }
 
-        public virtual void OnEnd()
-        {
-        }
-
-        public virtual void OnUpdate(GameTime gameTime)
-        {
-        }
-
-        public virtual void OnPostUpdate(GameTime gameTime)
-        {
+                visited.Add(collision.Box);
+                Box.MoveTo(collision.Position);
+                velocity = response.Invoke(collision);
+                collision.Box.NotifyCollidedWith(Box, collision);
+            }
         }
     }
 }

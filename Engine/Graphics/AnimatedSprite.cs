@@ -6,16 +6,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Graphics
 {
-    /// <summary>
-    /// This class represents a sprite with animations. It handles playing the current animation and rendering animation frame.
-    /// </summary>
     public sealed class AnimatedSprite : Sprite
     {
         private readonly Animation[] _animations;
 
         private float _timer;
 
-        public AnimatedSprite(Texture2D texture, IEnumerable<Animation> animations) : base(texture)
+        public AnimatedSprite(Entity entity, Texture2D texture, IEnumerable<Animation> animations) : base(entity, texture)
         {
             if (animations == null) 
             {
@@ -28,59 +25,38 @@ namespace Engine.Graphics
             }            
 
             _animations = animations.ToArray();
+
+            ResetAnimation(_animations[0]);
         }
 
-        /// <summary>
-        /// Gets or sets the animation speed. Speed is measured in seconds.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 4 frames per second
-        /// </remarks>
         public float Speed 
         { 
             get; 
             set; 
         } = Animation.FpsToSpeed(4);
 
-        /// <summary>
-        /// Gets the current animation
-        /// </summary>
         public Animation CurrentAnimation 
         {
             get;
             private set;
         }
 
-        /// <summary>
-        /// Gets the current frame number
-        /// </summary>
         public int CurrentFrame 
         {
             get;
             private set;
         }
 
-        /// <summary>
-        /// Returns true if the current animation has finished
-        /// </summary>
         public bool CurrentAnimationFinished 
         { 
             get; 
             private set; 
         }
 
-        /// <summary>
-        /// Gets or sets whether the animated sprite is paused
-        /// </summary>
         public bool IsPaused 
         {
             get;
             set;
-        }
-
-        public override void OnSpawn()
-        {
-            Play(_animations[0].Name);
         }
 
         public void Play(string animationName)
@@ -117,7 +93,7 @@ namespace Engine.Graphics
             }
         }
 
-        public override void OnUpdate(GameTime gameTime)
+        public override void OnPostUpdate(GameTime gameTime)
         {
             if (IsPaused) 
             {

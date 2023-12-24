@@ -19,28 +19,28 @@ namespace Adventure.Components
             content.Load<Texture2D>("art/common/explosion-1");
         }
 
-        public override void OnLoad(ContentManager content)
+        protected override void OnLoad(ContentManager content)
         {
             _sound = content.Load<SoundEffect>("audio/explosion4");
             _texture = content.Load<Texture2D>("art/common/explosion-1");
         }
 
-        public override void OnSpawn()
+        protected override void OnSpawn()
         {
-            AddComponent(_animatedSprite = new AnimatedSprite(_texture, ExplosionAnimations.Frames)
+            GraphicsComponent = _animatedSprite = new AnimatedSprite(this, _texture, ExplosionAnimations.Frames)
             {
                 Speed = 0.1f,
-                ZOrder = 10
-            });
+                DrawOrder = 10
+            };
 
             _sound.Play();
         }
 
-        public override void OnUpdate(GameTime gameTime)
+        protected override void OnUpdate(GameTime gameTime)
         {
             if (_animatedSprite.CurrentAnimationFinished)
             {
-                DestroySelf();
+                Level.Destroy(this);
             }
         }
     }

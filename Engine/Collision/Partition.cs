@@ -25,7 +25,7 @@ namespace Engine.Collision
         /// </summary>
         public int CellSize { get; }
 
-        internal void Add(Box box)
+        public void Add(Box box)
         {
             if (box.PartitionCellPoints.Count != 0)
             {
@@ -40,7 +40,7 @@ namespace Engine.Collision
             }
         }
 
-        internal void Remove(Box box)
+        public void Remove(Box box)
         {
             if (box.PartitionCellPoints.Count == 0)
             {
@@ -55,7 +55,7 @@ namespace Engine.Collision
             box.PartitionCellPoints.Clear();
         }
 
-        internal void Update(Box box)
+        public void Update(Box box)
         {
             Remove(box);
             Add(box);
