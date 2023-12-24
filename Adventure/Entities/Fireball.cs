@@ -48,6 +48,17 @@ namespace Adventure.Components
         {
             Level.Destroy(this);
             Level.Spawn(new Explosion(), Position);
+
+            if (collision.Box.Entity is IDamageable damageable) 
+            {
+                damageable.Damage(1);
+
+                if (damageable.Flammable) 
+                {
+                    Level.Spawn(new Fire(collision.Box.Entity));
+                }
+            }
+
             return collision.Ignore();
         }
     }

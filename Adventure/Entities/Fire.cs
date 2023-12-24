@@ -1,69 +1,79 @@
-﻿//using Microsoft.Xna.Framework;
-//using Microsoft.Xna.Framework.Content;
-//using Microsoft.Xna.Framework.Graphics;
-//using Engine;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Engine;
+using Engine.Graphics;
 
-//namespace Adventure.Components
-//{
-//    public sealed class Fire : Entity
-//    {
-//        private IDamageable _damageable;
-//        private float _timer;
-//        private int _hits;
-//        private Entity _target;
+namespace Adventure.Components
+{
+    public sealed class Fire : Entity
+    {
+        public Fire(Entity target)
+        {
+            Target = target;
+        }
 
-//        public Fire(Entity target) 
-//        {
-//            _target = target;
-//        }
+        public Entity Target 
+        {
+            get;
+        }
 
-//        public override void OnLoad(ContentManager content)
-//        {
-//            AddComponent(new Particles(content.Load<Texture2D>("art/player/fire"), new Rectangle(8, 8, 8, 8))
-//            {
-//                MaxParticles = 100,
-//                Velocity = new Vector2(10f, -50f),
-//                AngularVelocity = 10f,
-//                MinColor = Color.White,
-//                MaxColor = Color.White * 0.1f,
-//                MaxTime = 0.25f
-//            });
-//        }
+        public float Timer 
+        {
+            get;
+            private set;
+        }
 
-//        public override void OnStart()
-//        {
-//            _damageable = _target as IDamageable;
-//        }
+        public int HitCount 
+        {
+            get;
+            private set;
+        }
 
-//        public override void OnUpdate(GameTime gameTime)
-//        {
-//            _timer -= gameTime.GetDeltaTime();
+        protected override void OnLoad(ContentManager content)
+        {
+            GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
+            {
+                MaxParticles = 100,
+                Velocity = new Vector2(10f, -50f),
+                AngularVelocity = 10f,
+                MinColor = Color.White,
+                MaxColor = Color.White * 0.1f,
+                MaxTime = 0.25f
+            };
+        }
 
-//            if (_timer < 0f)
-//            {
-//                _damageable?.Damage(1);
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            Timer -= gameTime.GetDeltaTime();
 
-//                _hits++;
+            if (Timer < 0f)
+            {
+                if (Target is IDamageable damageable) 
+                {
+                    damageable.Damage(1);
+                }
 
-//                if (_hits == 3)
-//                {
-//                    Level.Destroy(this);
-//                }
-//                else
-//                {
-//                    _timer = 1f;
-//                }
-//            }
+                HitCount++;
 
-//            if (_target.IsDestroyed) 
-//            {
-//                DestroySelf();
-//            }
-//        }
+                if (HitCount == 3)
+                {
+                    Level.Destroy(this);
+                }
+                else
+                {
+                    Timer = 1f;
+                }
+            }
 
-//        public override void OnPostUpdate(GameTime gameTime)
-//        {
-//            Position = _target.Position;
-//        }
-//    }
-//}
+            if (Target.IsDestroyed)
+            {
+                Level.Destroy(this);
+            }
+        }
+
+        protected override void OnPostUpdate(GameTime gameTime)
+        {
+            Position = Target.Position;
+        }
+    }
+}

@@ -52,14 +52,14 @@ namespace Engine
 
         internal void Spawn()
         {
-            Box.OnSpawn();
             OnSpawn();
+            Level.Partition.Add(Box);
         }
 
         internal void Destroy()
         {
             OnDestroy();
-            Box.OnDestroy();
+            Level.Partition.Remove(Box);
         }
 
         internal void Start()
@@ -79,8 +79,8 @@ namespace Engine
 
         internal void PostUpdate(GameTime gameTime)
         {
-            GraphicsComponent.OnPostUpdate(gameTime);
             OnPostUpdate(gameTime);
+            GraphicsComponent.OnPostUpdate(gameTime);
         }
 
         internal void Draw(Renderer renderer, GameTime gameTime)
@@ -90,6 +90,7 @@ namespace Engine
 
         internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
+            Box.OnDebugDraw(renderer, gameTime);
             GraphicsComponent.OnDebugDraw(renderer, gameTime);
         }
 
@@ -119,6 +120,23 @@ namespace Engine
 
         protected virtual void OnPostUpdate(GameTime gameTime)
         {
+        }
+
+        public void UpdateBBox()
+        {
+            Level.Partition.Update(Box);
+        }
+
+        public void Move(Vector2 direction)
+        {
+            Position += direction;
+            UpdateBBox();
+        }
+
+        public void MoveTo(Vector2 position)
+        {
+            Position = Origin.Invert(position.X, position.Y, Box.Width, Box.Height).Position;
+            UpdateBBox();
         }
 
         protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionResponseCallback response)
@@ -160,12 +178,12 @@ namespace Engine
 
                 if (!Sweep.Test(bounds, velocity, potentialCollisions, out var collision))
                 {
-                    Box.Move(velocity);
+                    Move(velocity);
                     break;
                 }
 
                 visited.Add(collision.Box);
-                Box.MoveTo(collision.Position);
+                MoveTo(collision.Position);
                 velocity = response.Invoke(collision);
                 collision.Box.NotifyCollidedWith(Box, collision);
             }

@@ -1,75 +1,97 @@
-﻿//using Microsoft.Xna.Framework;
-//using Microsoft.Xna.Framework.Content;
-//using Microsoft.Xna.Framework.Graphics;
-//using Engine;
-//using Engine.Collision;
-//using Engine.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Engine;
+using Engine.Collision;
+using Engine.Graphics;
 
-//using static Adventure.Constants;
+using static Adventure.Constants;
 
-//namespace Adventure.Components
-//{
-//    public interface IDamageable
-//    {
-//        bool Flammable { get; }
-//        void Damage(int amount);
-//    }
+namespace Adventure.Components
+{
+    public interface IDamageable
+    {
+        bool Flammable { get; }
+        void Damage(int amount);
+    }
 
-//    public sealed class Barrel : Entity, IDamageable
-//    {
-//        private int health = 3;
+    public sealed class Barrel : Entity, IDamageable
+    {
+        public int Health
+        {
+            get;
+            private set;
+        } = 3;
 
-//        private Sprite _sprite;
-//        private Effect _hurtEffect;
-//        private float _hurtTimer;
+        public bool Flammable 
+        {
+            get => true;
+        }
 
-//        public bool Flammable => true;
+        public Sprite Sprite 
+        {
+            get;
+            private set;
+        }
 
-//        public override void OnLoad(ContentManager content)
-//        {
-//            // Preload loot that drops when barrel is destroyed.
-//            Phial.Preload(content);
+        public Effect HurtEffect 
+        {
+            get;
+            private set;
+        }
 
-//            _hurtEffect = content.Load<Effect>("shaders/SolidColor");
+        public float HurtTimer 
+        {
+            get;
+            set;
+        }
 
-//            AddComponent(_sprite = new Sprite(content.Load<Texture2D>("art/common/barrel"), new Rectangle(0, 0, 16, 16)));
-//            AddComponent(new Box(0, 0, 16, 16, EntityLayers.Enemy | EntityLayers.Solid));
-//        }
+        protected override void OnLoad(ContentManager content)
+        {
+            HurtEffect = content.Load<Effect>("shaders/SolidColor");
+            Box.Width = 16;
+            Box.Height = 16;
+            Box.LayerMask = EntityLayers.Enemy | EntityLayers.Solid;
+            GraphicsComponent = Sprite = new Sprite(this, content.Load<Texture2D>("art/common/barrel"))
+            {
+                SourceRectangle = new Rectangle(0, 0, 16, 16)
+            };
+        }
 
-//        public override void OnDestroy()
-//        {
-//            DropLoot();
-//        }
+        protected override void OnDestroy()
+        {
+            DropLoot();
+        }
 
-//        public override void OnUpdate(GameTime gameTime)
-//        {
-//            float delta = gameTime.GetDeltaTime();
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            float delta = gameTime.GetDeltaTime();
 
-//            _hurtTimer -= delta;
+            HurtTimer -= delta;
 
-//            if (_hurtTimer < 0f)
-//            {
-//                _sprite.Effect = null;
-//            }
-//        }
+            if (HurtTimer < 0f)
+            {
+                Sprite.Effect = null;
+            }
+        }
 
-//        public void Damage(int amount)
-//        {
-//            health -= amount;
+        public void Damage(int amount)
+        {
+            Health -= amount;
 
-//            if (health < 0)
-//            {
-//                Level.Destroy(this);
-//            }
-//            else
-//            {
-//                _sprite.Effect = _hurtEffect;
-//                _hurtTimer = 0.1f;
-//            }
-//        }
+            if (Health < 0)
+            {
+                Level.Destroy(this);
+            }
+            else
+            {
+                Sprite.Effect = HurtEffect;
+                HurtTimer = 0.1f;
+            }
+        }
 
-//        private void DropLoot()
-//        {
-//        }
-//    }
-//}
+        private void DropLoot()
+        {
+        }
+    }
+}

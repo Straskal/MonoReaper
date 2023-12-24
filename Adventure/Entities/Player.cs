@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Engine;
+using Engine.Collision;
+using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
-using Engine;
-using Engine.Collision;
-using Engine.Graphics;
-
+using System;
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -20,12 +19,19 @@ namespace Adventure.Components
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
 
-        public AnimatedSprite AnimatedSprite { get; set; }
-
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
+            Box.Width = 12;
+            Box.Height = 16;
+            Box.LayerMask = EntityLayers.Player;
             GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
+        }
+
+        public AnimatedSprite AnimatedSprite 
+        { 
+            get; 
+            private set; 
         }
 
         protected override void OnStart()
@@ -45,7 +51,8 @@ namespace Adventure.Components
                 movementInput.Normalize();
             }
 
-            //_sprite.IsPaused = movementLength == 0f;
+            AnimatedSprite.IsPaused = movementLength == 0f;
+
             _direction = movementLength > 0f ? movementInput : _direction;
             _velocity = movementInput * Speed * deltaTime;
             _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
