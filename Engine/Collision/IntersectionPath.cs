@@ -15,7 +15,13 @@ namespace Engine.Collision
         public readonly Vector2 Velocity;
         public readonly float Length;
 
-        public readonly Vector2 Position => Ray.Position;
-        public readonly Vector2 NormalizedDirection => Ray.Direction;
+        public readonly Vector2 Position 
+        {
+            get => Ray.Position;
+        }
+        public readonly Vector2 NormalizedDirection 
+        {
+            get => Ray.Direction;
+        }
     }
 }

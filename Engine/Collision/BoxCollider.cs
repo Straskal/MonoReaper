@@ -67,12 +67,12 @@ namespace Engine.Collision
 
         public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return Intersection.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
+            return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
         public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return Intersection.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
+            return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)

@@ -37,11 +37,11 @@ namespace Engine.Collision
         {
             var result = Direction * RemainingTime;
 
-            if (Math.Abs(Normal.X) > 0.0001f)
+            if (Math.Abs(Normal.X) > float.Epsilon)
             {
                 result.X *= -1;
             }
-            if (Math.Abs(Normal.Y) > 0.0001f)
+            if (Math.Abs(Normal.Y) > float.Epsilon)
             {
                 result.Y *= -1;
             }
@@ -51,8 +51,7 @@ namespace Engine.Collision
 
         public Vector2 Slide()
         {
-            var velocity = Direction * RemainingTime;
-            return velocity - Vector2.Dot(velocity, Normal) * Normal;
+            return Direction * RemainingTime - Vector2.Dot(Direction * RemainingTime, Normal) * Normal;
         }
     }
 }

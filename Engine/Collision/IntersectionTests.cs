@@ -3,7 +3,7 @@ using System;
 
 namespace Engine.Collision
 {
-    public static class Intersection
+    public static class IntersectionTests
     {
         public static bool MovingCircleVsCircle(CircleF circle0, IntersectionPath path, CircleF circle1, out float time, out Vector2 contact, out Vector2 normal)
         {

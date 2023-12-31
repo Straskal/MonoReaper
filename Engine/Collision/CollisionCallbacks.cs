@@ -3,11 +3,11 @@
 namespace Engine.Collision
 {
     /// <summary>
-    /// A function that handles a collision and returns a new velocity to resolve the collision using the hit helper methods.
+    /// A function that handles a collision and returns a new velocity to resolve the collision.
     /// </summary>
-    /// <param name="hit"></param>
+    /// <param name="collision"></param>
     /// <returns></returns>
-    public delegate Vector2 CollisionResponseCallback(Collision hit);
+    public delegate Vector2 CollisionCallback(Collision collision);
 
     /// <summary>
     /// A function that is invoked when a box is collided with.
