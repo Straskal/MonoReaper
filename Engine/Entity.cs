@@ -2,7 +2,6 @@
 using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using System.Collections.Generic;
 
 namespace Engine
 {
@@ -141,43 +140,47 @@ namespace Engine
 
         protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionResponseCallback response)
         {
-            if (velocity == Vector2.Zero) 
+            if (velocity == Vector2.Zero) return;
+            if (!Simulate(ref velocity, layerMask, response, null, out var c0)) return;
+            if (IsDestroyed) return;
+            if (!Simulate(ref velocity, layerMask, response, c0.Collider, out _)) return;
+
+            velocity = Vector2.Zero;
+        }
+
+        private bool Simulate(ref Vector2 velocity, int layerMask, CollisionResponseCallback response, Collider previousCollider, out Collision.Collision collision)
+        {
+            if (!Simulate(velocity, layerMask, previousCollider, out collision))
             {
-                return;
+                Move(velocity);
+                return false;
             }
 
-            Collider c1 = null;
+            MoveTo(collision.Position);
+            velocity = response.Invoke(collision);
+            collision.Collider.NotifyCollidedWith(Collider, collision);
+            return true;
+        }
 
-            while (true)
+        private bool Simulate(Vector2 velocity, int layerMask, Collider previousCollider, out Collision.Collision collision)
+        {
+            collision = Collision.Collision.Empty;
+            var path = new IntersectionPath(Position, velocity);
+            var broadphaseRectangle = Collider.Bounds.Union(velocity);
+
+            foreach (var collider in Level.Partition.Query(broadphaseRectangle))
             {
-                var path = new IntersectionPath(Position, velocity);
-                var broadphaseRectangle = Collider.Bounds.Union(velocity);
-                var collision = Collision.Collision.Empty;
+                if (collider == Collider) continue;
+                if (previousCollider == collider) continue;
+                if (!((collider.LayerMask | layerMask) == layerMask)) continue;
+                if (!broadphaseRectangle.Intersects(collider.Bounds)) continue;
+                if (!Collider.Intersect(collider, path, out var time, out var contact, out var normal)) continue;
+                if (!(time < collision.Time)) continue;
 
-                foreach (var collider in Level.Partition.Query(broadphaseRectangle))
-                {
-                    if (collider == Collider) continue;
-                    if (!((collider.LayerMask | layerMask) == layerMask)) continue;
-                    if (c1 == collider) continue;
-                    if (!broadphaseRectangle.Intersects(collider.Bounds)) continue;
-                    if (!Collider.Intersect(collider, path, out var time, out var contact, out var normal)) continue;
-                    if (!(time < collision.Time)) continue;
-
-                    collision = new Collision.Collision(collider, velocity, normal, time, contact);
-                }
-
-                if (collision.Time == float.PositiveInfinity)
-                {
-                    Move(velocity);
-                    break;
-                }
-
-                c1 = collision.Collider;
-                MoveTo(collision.Position);
-                velocity = response.Invoke(collision);
-                collision.Collider.NotifyCollidedWith(Collider, collision);
-                if (IsDestroyed) break;
+                collision = new Collision.Collision(collider, velocity, normal, time, contact);
             }
+
+            return collision.Time < float.PositiveInfinity;
         }
     }
 }

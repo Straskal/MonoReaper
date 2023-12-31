@@ -28,7 +28,7 @@ namespace Adventure
             LoadSharedContent();
             LoadGUI();
 
-            Screens.Push(new MainMenuScreen(Application));
+            Screens.Push(LevelLoader.LoadLevel(Application, "Levels/world/level_0"));
         }
 
         public override void Update(GameTime gameTime)

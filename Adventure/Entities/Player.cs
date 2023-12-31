@@ -14,7 +14,7 @@ namespace Adventure.Components
         private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
 
         public const float Speed = 1000f;
-        public const float MaxSpeed = 0.85f;
+        public const float MaxSpeed = 1f;
 
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
@@ -22,7 +22,7 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-            Collider = new CircleCollider(this, Vector2.Zero, 4f, EntityLayers.Player);
+            Collider = new CircleCollider(this, Vector2.Zero, 6f, EntityLayers.Player);
             //Collider = new BoxCollider(this, 12, 16, EntityLayers.Player);
             GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
