@@ -91,5 +91,15 @@ namespace Engine
             result.Height += circle.Radius * 2f;
             return result;
         }
+
+        public static RectangleF Inflate(RectangleF rectangle0, RectangleF rectangle1)
+        {
+            var result = rectangle0;
+            result.X -= rectangle1.HalfSize.X;
+            result.Y -= rectangle1.HalfSize.Y;
+            result.Width += rectangle1.Width;
+            result.Height += rectangle1.Height;
+            return result;
+        }
     }
 }

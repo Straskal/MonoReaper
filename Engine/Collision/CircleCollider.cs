@@ -1,5 +1,6 @@
 ﻿using Engine.Graphics;
 using Microsoft.Xna.Framework;
+using System.Runtime.InteropServices;
 
 namespace Engine.Collision
 {
@@ -39,7 +40,7 @@ namespace Engine.Collision
             get => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
         }
 
-        public override bool Intersect(Box collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
             return Intersection.MovingCircleVsRectangle(Shape, path, collider.Bounds, out time, out contact, out normal);
         }
@@ -51,7 +52,7 @@ namespace Engine.Collision
 
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
-            renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.White);
+            renderer.DrawCircleOutline(Entity.Position.X, Entity.Position.Y, Radius, 10, new Color(Color.White, 0.1f));
         }
     }
 }

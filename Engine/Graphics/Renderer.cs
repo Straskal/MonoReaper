@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Engine.Graphics
 {
@@ -152,6 +153,21 @@ namespace Engine.Graphics
             _spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
         }
 
+        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(point1, distance, angle, color, thickness);
+        }
+
+        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+
+            _spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+        }
+
         public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
             // Top
@@ -162,6 +178,18 @@ namespace Engine.Graphics
             _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color);
             // Bottom
             _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color);
+        }
+
+        public void DrawCircleOutline(float x, float y, float radius, int resolution, Color color)
+        {
+            for (var i = 0; i < 360; i += resolution) 
+            {
+                var pos = new Vector2(x, y);
+                var p1 = new Vector2(MathF.Cos(MathHelper.ToRadians(i)), MathF.Sin(MathHelper.ToRadians(i))) * radius;
+                var p2 = new Vector2(MathF.Cos(MathHelper.ToRadians(i + resolution)), MathF.Sin(MathHelper.ToRadians(i + resolution))) * radius;
+
+                DrawLine(pos + p1, pos + p2, color);
+            }
         }
 
         /// <summary>

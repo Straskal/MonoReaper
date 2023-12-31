@@ -139,28 +139,6 @@
 					"fieldInstances": []
 				},
 				{
-					"__identifier": "LevelTrigger",
-					"__grid": [8,3],
-					"__pivot": [0,0],
-					"__tags": ["Triggers"],
-					"__tile": null,
-					"__smartColor": "#437BD7",
-					"__worldX": 144,
-					"__worldY": 64,
-					"iid": "fa4d6490-8990-11ee-b026-9515fbc5b16f",
-					"width": 32,
-					"height": 16,
-					"defUid": 11,
-					"px": [128,48],
-					"fieldInstances": [
-						{ "__identifier": "LevelPath", "__type": "FilePath", "__value": "world/Level_1.ldtkl", "__tile": null, "defUid": 13, "realEditorValues": [{
-							"id": "V_String",
-							"params": ["world/Level_1.ldtkl"]
-						}] },
-						{ "__identifier": "PlayerSpawnId", "__type": "String", "__value": "Default", "__tile": null, "defUid": 20, "realEditorValues": [] }
-					]
-				},
-				{
 					"__identifier": "Barrel",
 					"__grid": [12,7],
 					"__pivot": [0.5,0.5],

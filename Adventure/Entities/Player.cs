@@ -23,7 +23,7 @@ namespace Adventure.Components
         {
             Fireball.Preload(content);
             Collider = new CircleCollider(this, Vector2.Zero, 8, EntityLayers.Player);
-            //Collider = new Box(this, 12, 16, EntityLayers.Player);
+            //Collider = new BoxCollider(this, 12, 16, EntityLayers.Player);
             GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 

@@ -1,31 +1,32 @@
 ﻿using Engine.Graphics;
 using Microsoft.Xna.Framework;
+using System.IO;
 
 namespace Engine.Collision
 {
-    public class Box : Collider
+    public class BoxCollider : Collider
     {
-        public Box(Entity entity)
+        public BoxCollider(Entity entity)
             : this(entity, 0f, 0f)
         {
         }
 
-        public Box(Entity entity, float width, float height)
+        public BoxCollider(Entity entity, float width, float height)
             : this(entity, width, height, 0)
         {
         }
 
-        public Box(Entity entity, float width, float height, int layerMask) 
+        public BoxCollider(Entity entity, float width, float height, int layerMask) 
             : this(entity, 0f, 0f, width, height, layerMask)
         {
         }
 
-        public Box(Entity entity, float x, float y, float width, float height)
+        public BoxCollider(Entity entity, float x, float y, float width, float height)
             : this(entity, x, y, width, height, 0)
         {
         }
 
-        public Box(Entity entity, float x, float y, float width, float height, int layerMask)
+        public BoxCollider(Entity entity, float x, float y, float width, float height, int layerMask)
             : base(entity)
         {
             X = x;
@@ -64,14 +65,14 @@ namespace Engine.Collision
             get => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
         }
 
-        public override bool Intersect(Box collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
             return Intersection.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
-        public override bool Intersect(CircleCollider collider, IntersectionPath velocity, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            throw new System.NotImplementedException();
+            return Intersection.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)

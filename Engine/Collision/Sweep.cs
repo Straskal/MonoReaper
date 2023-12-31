@@ -9,7 +9,7 @@ namespace Engine.Collision
     /// </summary>
     internal static class Sweep
     {
-        public const float Correction = 0.005f;
+        public const float Correction = 0.01f;
 
         /// <summary>
         /// Test a vector against the given collidable objects. This is a raycast.
@@ -19,7 +19,7 @@ namespace Engine.Collision
         /// <param name="others"></param>
         /// <param name="hit"></param>
         /// <returns></returns>
-        public static bool Test(Vector2 position, Vector2 direction, IEnumerable<Box> others, out Collision hit)
+        public static bool Test(Vector2 position, Vector2 direction, IEnumerable<BoxCollider> others, out Collision hit)
         {
             return Test(new RectangleF(position.X, position.Y, 0f, 0f), direction, others, out hit);
         }
@@ -32,7 +32,7 @@ namespace Engine.Collision
         /// <param name="others">The other objects to test against.</param>
         /// <param name="collision">If there is a collision, hit will be output with all of the collision info.</param>
         /// <returns>Returns true if there a collision was detected.</returns>
-        public static bool Test(RectangleF rect, Vector2 velocity, IEnumerable<Box> others, out Collision collision)
+        public static bool Test(RectangleF rect, Vector2 velocity, IEnumerable<BoxCollider> others, out Collision collision)
         {
             collision = Collision.Empty;
 

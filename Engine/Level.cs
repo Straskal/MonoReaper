@@ -110,8 +110,8 @@ namespace Engine
             {
                 renderer.BeginDraw(Camera.TransformationMatrix);
                 Entities.Draw(renderer, gameTime);
-                //Entities.DebugDraw(renderer, gameTime);
-                //Partition.DebugDraw(renderer);
+                Entities.DebugDraw(renderer, gameTime);
+                Partition.DebugDraw(renderer);
                 renderer.EndDraw();
             }
         }

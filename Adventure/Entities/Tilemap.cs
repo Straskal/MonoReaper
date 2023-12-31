@@ -36,12 +36,12 @@ namespace Adventure.Components
                 _partition = partition;
             }
 
-            public void Add(Box box)
+            public void Add(BoxCollider box)
             {
                 _partition.Add(box);
             }
 
-            public void Remove(Box box)
+            public void Remove(BoxCollider box)
             {
                 _partition.Remove(box);
             }
@@ -79,7 +79,7 @@ namespace Adventure.Components
 
             foreach (var tile in Data.Tiles)
             {
-                Boxes.Add(new Box(this, tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
+                Boxes.Add(new BoxCollider(this, tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
             }
         }
     }

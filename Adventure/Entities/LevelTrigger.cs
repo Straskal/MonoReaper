@@ -23,7 +23,7 @@ namespace Adventure.Components
 
         protected override void OnSpawn()
         {
-            Collider = new Box(this, Width, Height, BoxLayers.Interactable);
+            Collider = new BoxCollider(this, Width, Height, BoxLayers.Interactable);
         }
 
         protected override void OnStart()

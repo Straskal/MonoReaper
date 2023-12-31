@@ -46,7 +46,7 @@ namespace Engine
 
         internal void Load(ContentManager content)
         {
-            Collider = new Box(this);
+            Collider = new BoxCollider(this);
             OnLoad(content);
         }
 
@@ -135,32 +135,43 @@ namespace Engine
 
         public void MoveTo(Vector2 position)
         {
-            Position = position; //Origin.Invert(position.X, position.Y, Collider.Bounds.Width, Collider.Bounds.Height).Position;
+            Position = position;
             UpdateBBox();
         }
 
         protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionResponseCallback response)
         {
-            if (velocity == Vector2.Zero) return;
+            if (velocity == Vector2.Zero) 
+            {
+                return;
+            }
+
+            Collider last = null;
+
             while (true)
             {
                 var path = new IntersectionPath(Position, velocity);
                 var broadphaseRectangle = Collider.Bounds.Union(velocity);
                 var collision = Collision.Collision.Empty;
+
                 foreach (var collider in Level.Partition.Query(broadphaseRectangle))
                 {
                     if (!((collider.LayerMask | layerMask) == layerMask)) continue;
+                    if (collider == last) continue;
                     if (!broadphaseRectangle.Intersects(collider.Bounds)) continue;
                     if (!Collider.Intersect(collider, path, out var time, out var contact, out var normal)) continue;
                     if (!(time < collision.Time)) continue;
                     collision = new Collision.Collision(collider, velocity, normal, time, contact);
                 }
-                if (collision.Time == 1f) 
+
+                if (collision.Time == 1f)
                 {
                     Move(velocity);
                     break;
                 }
-                MoveTo(collision.Position + Sweep.Correction * collision.Normal);
+
+                last = collision.Collider;
+                MoveTo(collision.Position);
                 velocity = response.Invoke(collision);
                 collision.Collider.NotifyCollidedWith(Collider, collision);
                 if (IsDestroyed) break;

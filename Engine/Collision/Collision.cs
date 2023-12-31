@@ -108,7 +108,8 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Slide()
         {
-            return Velocity - Vector2.Dot(Velocity, Normal) * Normal;
+            var velocity = Velocity * RemainingTime;
+            return velocity - Vector2.Dot(velocity, Normal) * Normal;
         }
     }
 }

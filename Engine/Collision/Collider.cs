@@ -37,7 +37,7 @@ namespace Engine.Collision
 
         public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            if (collider is Box box)
+            if (collider is BoxCollider box)
             {
                 return Intersect(box, path, out time, out contact, out normal);
             }
@@ -49,7 +49,7 @@ namespace Engine.Collision
             throw new ArgumentException();
         }
 
-        public abstract bool Intersect(Box collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
+        public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
         public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
 
         internal void NotifyCollidedWith(Collider body, Collision collision)
