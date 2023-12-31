@@ -11,12 +11,14 @@ namespace Engine.Collision
         /// <summary>
         /// The other object involved in the collision.
         /// </summary>
-        public readonly Box Box;
+        public readonly Collider Collider;
 
         /// <summary>
         /// The velocity that the moving object is traveling at.
         /// </summary>
         public readonly Vector2 Velocity;
+
+        public readonly Vector2 Direction;
 
         /// <summary>
         /// The collision normal.
@@ -46,13 +48,14 @@ namespace Engine.Collision
         /// </summary>
         public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, 1f, Vector2.Zero);
 
-        public Collision(Box other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
+        public Collision(Collider other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
-            Box = other;
+            Collider = other;
             Velocity = velocity;
             Normal = normal;
             Time = collisionTime;
             Position = position;
+            Direction = Vector2.Normalize(Velocity);
         }
 
         /// <summary>
@@ -105,9 +108,7 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Slide()
         {
-            var inverseNormal = new Vector2(Normal.Y, Normal.X);
-
-            return inverseNormal * Velocity * inverseNormal * RemainingTime;
+            return Velocity - Vector2.Dot(Velocity, Normal) * Normal;
         }
     }
 }

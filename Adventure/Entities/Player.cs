@@ -22,9 +22,8 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-            Box.Width = 12;
-            Box.Height = 16;
-            Box.LayerMask = EntityLayers.Player;
+            Collider = new CircleCollider(this, Vector2.Zero, 8, EntityLayers.Player);
+            //Collider = new Box(this, 12, 16, EntityLayers.Player);
             GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
@@ -79,12 +78,12 @@ namespace Adventure.Components
 
         private void ShootFireball(float deltaTime) 
         {
-            Level.Spawn(new Fireball(_direction * 100f * deltaTime), Box.CalculateBounds().Center + _direction);
+            Level.Spawn(new Fireball(_direction * 100f * deltaTime), Collider.Bounds.Center + _direction);
         }
 
         private static Vector2 HandleCollision(Collision collision)
         {
-            if (collision.Box.IsSolid())
+            if (collision.Collider.IsSolid())
             {
                 return collision.Slide();
             }

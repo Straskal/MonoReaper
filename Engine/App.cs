@@ -31,7 +31,7 @@ namespace Engine
             GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
 #else
-            GraphicsDeviceManager.IsFullScreen = true;
+            //GraphicsDeviceManager.IsFullScreen = true;
 #endif
         }
 

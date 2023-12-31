@@ -73,6 +73,11 @@ namespace Engine
             _entities.Draw(renderer, gameTime);
         }
 
+        public void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            _entities.DebugDraw(renderer, gameTime);
+        }
+
         private void OnEntityAdded_PostLoad(Entity entity)
         {
             entity.Load(_level.Content);

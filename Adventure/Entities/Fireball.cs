@@ -23,9 +23,8 @@ namespace Adventure.Components
 
         protected override void OnSpawn()
         {
-            Box.Width = 4;
-            Box.Height = 4;
-            Box.LayerMask = EntityLayers.PlayerProjectile;
+            Collider = new CircleCollider(this, Vector2.Zero, 4);
+            Collider.LayerMask = EntityLayers.PlayerProjectile;
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
@@ -49,13 +48,13 @@ namespace Adventure.Components
             Level.Destroy(this);
             Level.Spawn(new Explosion(), Position);
 
-            if (collision.Box.Entity is IDamageable damageable) 
+            if (collision.Collider.Entity is IDamageable damageable) 
             {
                 damageable.Damage(1);
 
                 if (damageable.Flammable) 
                 {
-                    Level.Spawn(new Fire(collision.Box.Entity));
+                    Level.Spawn(new Fire(collision.Collider.Entity));
                 }
             }
 

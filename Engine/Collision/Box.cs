@@ -1,13 +1,10 @@
 ﻿using Engine.Graphics;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace Engine.Collision
 {
-    public class Box
+    public class Box : Collider
     {
-        internal List<Point> PartitionCellPoints { get; } = new();
-
         public Box(Entity entity)
             : this(entity, 0f, 0f)
         {
@@ -29,20 +26,13 @@ namespace Engine.Collision
         }
 
         public Box(Entity entity, float x, float y, float width, float height, int layerMask)
+            : base(entity)
         {
-            Entity = entity;
             X = x;
             Y = y;
             Width = width;
             Height = height;
             LayerMask = layerMask;
-        }
-
-        public event CollidedWithCallback CollidedWith;
-
-        public Entity Entity
-        {
-            get;
         }
 
         public float X
@@ -69,25 +59,24 @@ namespace Engine.Collision
             set;
         }
 
-        public int LayerMask
+        public override RectangleF Bounds 
         {
-            get;
-            set;
+            get => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
         }
 
-        public RectangleF CalculateBounds()
+        public override bool Intersect(Box collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
+            return Intersection.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
-        internal void NotifyCollidedWith(Box body, Collision collision)
+        public override bool Intersect(CircleCollider collider, IntersectionPath velocity, out float time, out Vector2 contact, out Vector2 normal)
         {
-            CollidedWith?.Invoke(body, collision);
+            throw new System.NotImplementedException();
         }
 
-        internal void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
-            renderer.DrawRectangleOutline(CalculateBounds().ToXnaRect(), Color.White);
+            renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.White);
         }
     }
 }

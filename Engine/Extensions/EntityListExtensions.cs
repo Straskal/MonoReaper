@@ -71,5 +71,13 @@ namespace Engine.Extensions
                 entities[i].Draw(renderer, gameTime);
             }
         }
+
+        public static void DebugDraw(this List<Entity> entities, Renderer renderer, GameTime gameTime)
+        {
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].DebugDraw(renderer, gameTime);
+            }
+        }
     }
 }

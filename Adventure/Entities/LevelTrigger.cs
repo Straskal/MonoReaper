@@ -23,22 +23,20 @@ namespace Adventure.Components
 
         protected override void OnSpawn()
         {
-            Box.Width = Width;
-            Box.Height = Height;
-            Box.LayerMask = BoxLayers.Interactable;
+            Collider = new Box(this, Width, Height, BoxLayers.Interactable);
         }
 
         protected override void OnStart()
         {
-            Box.CollidedWith += OnCollidedWith;
+            Collider.CollidedWith += OnCollidedWith;
         }
 
         protected override void OnEnd()
         {
-            Box.CollidedWith -= OnCollidedWith;
+            Collider.CollidedWith -= OnCollidedWith;
         }
 
-        private void OnCollidedWith(Box body, Collision collision) 
+        private void OnCollidedWith(Collider body, Collision collision) 
         {
             if (body.LayerMask == EntityLayers.Player) 
             {

@@ -38,7 +38,7 @@ namespace Engine.Collision
 
             foreach (var other in others)
             {
-                var time = SweptAabbAabb(rect, other.CalculateBounds(), velocity, out var normal);
+                var time = SweptAabbAabb(rect, other.Bounds, velocity, out var normal);
 
                 if (time < collision.Time)
                 {

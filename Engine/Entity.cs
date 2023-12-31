@@ -26,7 +26,7 @@ namespace Engine
             set;
         }
 
-        public Box Box
+        public Collider Collider
         {
             get;
             protected set;
@@ -46,20 +46,20 @@ namespace Engine
 
         internal void Load(ContentManager content)
         {
-            Box = new Box(this);
+            Collider = new Box(this);
             OnLoad(content);
         }
 
         internal void Spawn()
         {
             OnSpawn();
-            Level.Partition.Add(Box);
+            Level.Partition.Add(Collider);
         }
 
         internal void Destroy()
         {
             OnDestroy();
-            Level.Partition.Remove(Box);
+            Level.Partition.Remove(Collider);
         }
 
         internal void Start()
@@ -90,7 +90,7 @@ namespace Engine
 
         internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
-            Box.OnDebugDraw(renderer, gameTime);
+            Collider.OnDebugDraw(renderer, gameTime);
             GraphicsComponent.OnDebugDraw(renderer, gameTime);
         }
 
@@ -124,7 +124,7 @@ namespace Engine
 
         public void UpdateBBox()
         {
-            Level.Partition.Update(Box);
+            Level.Partition.Update(Collider);
         }
 
         public void Move(Vector2 direction)
@@ -135,57 +135,35 @@ namespace Engine
 
         public void MoveTo(Vector2 position)
         {
-            Position = Origin.Invert(position.X, position.Y, Box.Width, Box.Height).Position;
+            Position = position; //Origin.Invert(position.X, position.Y, Collider.Bounds.Width, Collider.Bounds.Height).Position;
             UpdateBBox();
         }
 
         protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionResponseCallback response)
         {
-            if (velocity == Vector2.Zero)
-            {
-                return;
-            }
-
-            var visited = new HashSet<Box>() { Box };
-            var potentialCollisions = new List<Box>();
-
+            if (velocity == Vector2.Zero) return;
             while (true)
             {
-                potentialCollisions.Clear();
-
-                var bounds = Box.CalculateBounds();
-                var broadphaseRectangle = bounds.Union(velocity);
-
-                foreach (var box in Level.Partition.Query(broadphaseRectangle))
+                var path = new IntersectionPath(Position, velocity);
+                var broadphaseRectangle = Collider.Bounds.Union(velocity);
+                var collision = Collision.Collision.Empty;
+                foreach (var collider in Level.Partition.Query(broadphaseRectangle))
                 {
-                    if ((box.LayerMask | layerMask) != layerMask)
-                    {
-                        continue;
-                    }
-
-                    if (visited.Contains(box))
-                    {
-                        continue;
-                    }
-
-                    if (!broadphaseRectangle.Intersects(box.CalculateBounds()))
-                    {
-                        continue;
-                    }
-
-                    potentialCollisions.Add(box);
+                    if (!((collider.LayerMask | layerMask) == layerMask)) continue;
+                    if (!broadphaseRectangle.Intersects(collider.Bounds)) continue;
+                    if (!Collider.Intersect(collider, path, out var time, out var contact, out var normal)) continue;
+                    if (!(time < collision.Time)) continue;
+                    collision = new Collision.Collision(collider, velocity, normal, time, contact);
                 }
-
-                if (!Sweep.Test(bounds, velocity, potentialCollisions, out var collision))
+                if (collision.Time == 1f) 
                 {
                     Move(velocity);
                     break;
                 }
-
-                visited.Add(collision.Box);
-                MoveTo(collision.Position);
+                MoveTo(collision.Position + Sweep.Correction * collision.Normal);
                 velocity = response.Invoke(collision);
-                collision.Box.NotifyCollidedWith(Box, collision);
+                collision.Collider.NotifyCollidedWith(Collider, collision);
+                if (IsDestroyed) break;
             }
         }
     }

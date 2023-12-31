@@ -14,5 +14,5 @@ namespace Engine.Collision
     /// </summary>
     /// <param name="body"></param>
     /// <param name="collision"></param>
-    public delegate void CollidedWithCallback(Box body, Collision collision);
+    public delegate void CollidedWithCallback(Collider body, Collision collision);
 }

@@ -13,7 +13,7 @@ namespace Engine.Collision
         /// <summary>
         /// Store boxes in their respective cell.
         /// </summary>
-        private readonly Dictionary<Point, HashSet<Box>> _cells = new();
+        private readonly Dictionary<Point, HashSet<Collider>> _cells = new();
 
         public Partition(int cellSize)
         {
@@ -25,14 +25,14 @@ namespace Engine.Collision
         /// </summary>
         public int CellSize { get; }
 
-        public void Add(Box box)
+        public void Add(Collider box)
         {
             if (box.PartitionCellPoints.Count != 0)
             {
                 throw new InvalidOperationException("Cannot add box that is already added to partition.");
             }
 
-            box.PartitionCellPoints.AddRange(GetCellsForRectangle(box.CalculateBounds()));
+            box.PartitionCellPoints.AddRange(GetCellsForRectangle(box.Bounds));
 
             foreach (var point in box.PartitionCellPoints)
             {
@@ -40,7 +40,7 @@ namespace Engine.Collision
             }
         }
 
-        public void Remove(Box box)
+        public void Remove(Collider box)
         {
             if (box.PartitionCellPoints.Count == 0)
             {
@@ -55,18 +55,18 @@ namespace Engine.Collision
             box.PartitionCellPoints.Clear();
         }
 
-        public void Update(Box box)
+        public void Update(Collider box)
         {
             Remove(box);
             Add(box);
         }
 
-        public IEnumerable<Box> Query(Vector2 position)
+        public IEnumerable<Collider> Query(Vector2 position)
         {
             return QueryCells(GetCellsForRectangle(new RectangleF(position.X, position.Y, 1, 1)));
         }
 
-        public IEnumerable<Box> Query(RectangleF bounds)
+        public IEnumerable<Collider> Query(RectangleF bounds)
         {
             return QueryCells(GetCellsForRectangle(bounds));
         }
@@ -89,19 +89,19 @@ namespace Engine.Collision
             return result;
         }
 
-        private HashSet<Box> GetCellAtPoint(Point point)
+        private HashSet<Collider> GetCellAtPoint(Point point)
         {
             if (!_cells.TryGetValue(point, out var cell))
             {
-                _cells[point] = cell = new HashSet<Box>();
+                _cells[point] = cell = new HashSet<Collider>();
             }
 
             return cell;
         }
 
-        private IEnumerable<Box> QueryCells(List<Point> cellPoints)
+        private IEnumerable<Collider> QueryCells(List<Point> cellPoints)
         {
-            var result = new HashSet<Box>();
+            var result = new HashSet<Collider>();
 
             foreach (var point in cellPoints)
             {
@@ -114,7 +114,7 @@ namespace Engine.Collision
             return result;
         }
 
-        internal void DebugDraw(Renderer renderer, GameTime gameTime)
+        internal void DebugDraw(Renderer renderer)
         {
             foreach (var kvp in _cells)
             {
