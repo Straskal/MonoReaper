@@ -38,15 +38,14 @@ namespace Engine.Collision
         /// </summary>
         public readonly float Time;
 
-        /// <summary>
-        /// The amount of time remaining since the collision occured.
-        /// </summary>
-        public float RemainingTime => 1f - Time;
+        public readonly float Length;
+
+        public readonly float RemainingTime;
 
         /// <summary>
         /// An empty hit.
         /// </summary>
-        public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, 1f, Vector2.Zero);
+        public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
 
         public Collision(Collider other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
@@ -56,6 +55,8 @@ namespace Engine.Collision
             Time = collisionTime;
             Position = position;
             Direction = Vector2.Normalize(Velocity);
+            Length = Velocity.Length();
+            RemainingTime = Length - Time;
         }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Ignore()
         {
-            return Velocity * RemainingTime;
+            return Direction * RemainingTime;
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Bounce()
         {
-            var result = Velocity * RemainingTime;
+            var result = Direction * RemainingTime;
 
             if (Math.Abs(Normal.X) > 0.0001f)
             {
@@ -108,7 +109,7 @@ namespace Engine.Collision
         /// </remarks>
         public Vector2 Slide()
         {
-            var velocity = Velocity * RemainingTime;
+            var velocity = Direction * RemainingTime;
             return velocity - Vector2.Dot(velocity, Normal) * Normal;
         }
     }

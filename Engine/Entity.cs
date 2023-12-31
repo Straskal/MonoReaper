@@ -146,7 +146,7 @@ namespace Engine
                 return;
             }
 
-            Collider last = null;
+            Collider c1 = null;
 
             while (true)
             {
@@ -156,21 +156,23 @@ namespace Engine
 
                 foreach (var collider in Level.Partition.Query(broadphaseRectangle))
                 {
+                    if (collider == Collider) continue;
                     if (!((collider.LayerMask | layerMask) == layerMask)) continue;
-                    if (collider == last) continue;
+                    if (c1 == collider) continue;
                     if (!broadphaseRectangle.Intersects(collider.Bounds)) continue;
                     if (!Collider.Intersect(collider, path, out var time, out var contact, out var normal)) continue;
                     if (!(time < collision.Time)) continue;
+
                     collision = new Collision.Collision(collider, velocity, normal, time, contact);
                 }
 
-                if (collision.Time == 1f)
+                if (collision.Time == float.PositiveInfinity)
                 {
                     Move(velocity);
                     break;
                 }
 
-                last = collision.Collider;
+                c1 = collision.Collider;
                 MoveTo(collision.Position);
                 velocity = response.Invoke(collision);
                 collision.Collider.NotifyCollidedWith(Collider, collision);

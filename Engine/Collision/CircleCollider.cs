@@ -52,7 +52,7 @@ namespace Engine.Collision
 
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
-            renderer.DrawCircleOutline(Entity.Position.X, Entity.Position.Y, Radius, 10, new Color(Color.White, 0.1f));
+            renderer.DrawCircleOutline(Entity.Position.X - Position.X, Entity.Position.Y + Position.Y, Radius, 10, new Color(Color.White, 0.1f));
         }
     }
 }
