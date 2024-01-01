@@ -7,9 +7,9 @@ namespace Engine.Collision
     {
         public static bool MovingCircleVsCircle(CircleF circle0, IntersectionPath path, CircleF circle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            circle1.Radius += circle0.Radius;
+            var inflatedCircle = CircleF.Inflate(circle1, circle0);
 
-            if (PathVsCircle(path, circle1, out time, out contact))
+            if (PathVsCircle(path, inflatedCircle, out time, out contact))
             {
                 normal = GetNormal(contact, circle1.Center);
                 return true;
@@ -21,17 +21,17 @@ namespace Engine.Collision
 
         public static bool MovingCircleVsRectangle(CircleF circle, IntersectionPath path, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var boundingRectangle = RectangleF.Inflate(rectangle, circle);
+            var inflatedRectangle = RectangleF.Inflate(rectangle, circle);
 
-            if (!PathVsRectangle(path, boundingRectangle, out time, out contact))
+            if (!PathVsRectangle(path, inflatedRectangle, out time, out contact))
             {
                 normal = Vector2.Zero;
                 return false;
             }
 
-            if (!IsCorner(contact, rectangle, out var corner))
+            if (!TryGetRectangleCorner(contact, rectangle, out var corner))
             {
-                normal = GetNormal(contact, boundingRectangle);
+                normal = GetNormal(contact, inflatedRectangle);
                 return true;
             }
 
@@ -45,20 +45,17 @@ namespace Engine.Collision
             return true;
         }
 
-        public static bool MovingRectangleVsRectangle(RectangleF rectangle1, IntersectionPath path, RectangleF rectangle2, out float time, out Vector2 contact, out Vector2 normal)
+        public static bool MovingRectangleVsRectangle(RectangleF rectangle0, IntersectionPath path, RectangleF rectangle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            rectangle2.X -= rectangle1.HalfSize.X;
-            rectangle2.Y -= rectangle1.HalfSize.Y;
-            rectangle2.Width += rectangle1.Size.X;
-            rectangle2.Height += rectangle1.Size.Y;
+            var inflatedRectangle = RectangleF.Inflate(rectangle1, rectangle0);
 
-            if (!PathVsRectangle(path, rectangle2, out time, out contact))
+            if (PathVsRectangle(path, inflatedRectangle, out time, out contact))
             {
-                contact = normal = Vector2.Zero;
+                normal = GetNormal(contact, rectangle1);
                 return false;
             }
 
-            normal = GetNormal(contact, rectangle2);
+            normal = Vector2.Zero;
             return true;
         }
 
@@ -166,7 +163,7 @@ namespace Engine.Collision
             return true;
         }
 
-        private static bool IsCorner(Vector2 point, RectangleF rectangle, out Vector2 corner)
+        private static bool TryGetRectangleCorner(Vector2 point, RectangleF rectangle, out Vector2 corner)
         {
             corner = Vector2.Zero;
 
@@ -190,11 +187,6 @@ namespace Engine.Collision
                 mask |= 8;
             }
 
-            if ((mask & (mask - 1)) == 0)
-            {
-                return false;
-            }
-
             switch (mask)
             {
                 case 1 | 4:
@@ -209,6 +201,8 @@ namespace Engine.Collision
                 case 2 | 8:
                     corner = rectangle.BottomRight;
                     break;
+                default:
+                    return false;
             }
 
             return true;
