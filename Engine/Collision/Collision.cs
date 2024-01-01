@@ -5,15 +5,6 @@ namespace Engine.Collision
 {
     public readonly ref struct Collision
     {
-        public readonly Collider Collider;
-        public readonly Vector2 Velocity;
-        public readonly Vector2 Direction;
-        public readonly Vector2 Normal;
-        public readonly Vector2 Position;
-        public readonly float Time;
-        public readonly float Length;
-        public readonly float RemainingTime;
-
         public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
 
         public Collision(Collider other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
@@ -26,6 +17,20 @@ namespace Engine.Collision
             Direction = Vector2.Normalize(Velocity);
             Length = Velocity.Length();
             RemainingTime = Length - Time;
+        }
+
+        public readonly Collider Collider;
+        public readonly Vector2 Velocity;
+        public readonly Vector2 Direction;
+        public readonly Vector2 Normal;
+        public readonly Vector2 Position;
+        public readonly float Time;
+        public readonly float Length;
+        public readonly float RemainingTime;
+
+        public bool IsEmpty 
+        {
+            get => Time == float.PositiveInfinity;
         }
 
         public Vector2 Ignore()

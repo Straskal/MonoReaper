@@ -61,12 +61,12 @@ namespace Engine.Collision
 
         public static bool PathVsCircle(IntersectionPath path, CircleF circle, out float time, out Vector2 contact)
         {
-            return RayVsCircle(path.Ray, circle.Center, circle.Radius, out time, out contact) && time < path.Length;
+            return RayVsCircle(path.Ray, circle.Center, circle.Radius, out time, out contact) && time <= path.Length;
         }
 
         public static bool PathVsRectangle(IntersectionPath segment, RectangleF rectangle, out float time, out Vector2 contact)
         {
-            return RayVsRectangle(segment.Ray, rectangle, out time, out contact) && time < segment.Length;
+            return RayVsRectangle(segment.Ray, rectangle, out time, out contact) && time <= segment.Length;
         }
 
         public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact)
@@ -106,67 +106,55 @@ namespace Engine.Collision
             var tmin = float.MinValue;
             var tmax = float.MaxValue;
 
-            if (MathF.Abs(ray.Direction.X) < float.Epsilon)
+            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.Min.X, rectangle.Max.X, ref tmin, ref tmax)) 
             {
-                if (ray.Position.X < rectangle.Min.X || ray.Position.X > rectangle.Max.X)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                var t1 = (rectangle.Min.X - ray.Position.X) * ray.InverseDirection.X;
-                var t2 = (rectangle.Max.X - ray.Position.X) * ray.InverseDirection.X;
-
-                if (t1 > t2)
-                {
-                    (t1, t2) = (t2, t1);
-                }
-
-                tmin = MathF.Max(tmin, t1);
-                tmax = MathF.Min(tmax, t2);
-
-                if (tmin > tmax)
-                {
-                    return false;
-                }
+                return false;
             }
 
-            if (MathF.Abs(ray.Direction.Y) < float.Epsilon)
+            if (!RayVsEdges(ray.Direction.Y, ray.InverseDirection.Y, ray.Position.Y, rectangle.Min.Y, rectangle.Max.Y, ref tmin, ref tmax))
             {
-                if (ray.Position.Y < rectangle.Min.Y || ray.Position.Y > rectangle.Max.Y)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                var t1 = (rectangle.Min.Y - ray.Position.Y) * ray.InverseDirection.Y;
-                var t2 = (rectangle.Max.Y - ray.Position.Y) * ray.InverseDirection.Y;
-
-                if (t1 > t2)
-                {
-                    (t1, t2) = (t2, t1);
-                }
-
-                tmin = MathF.Max(tmin, t1);
-                tmax = MathF.Min(tmax, t2);
-
-                if (tmin > tmax)
-                {
-                    return false;
-                }
+                return false;
             }
 
             time = tmin;
             contact = ray.Position + ray.Direction * time;
+
+            return true;
+        }
+
+        private static bool RayVsEdges(float direction, float inverseDirection, float position, float min, float max, ref float tmin, ref float tmax)
+        {
+            if (MathF.Abs(direction) < float.Epsilon)
+            {
+                if (position < min || position > max)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                var t1 = (min - position) * inverseDirection;
+                var t2 = (max - position) * inverseDirection;
+
+                if (t1 > t2)
+                {
+                    (t1, t2) = (t2, t1);
+                }
+
+                tmin = MathF.Max(tmin, t1);
+                tmax = MathF.Min(tmax, t2);
+
+                if (tmin > tmax)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
         private static bool TryGetRectangleCorner(Vector2 point, RectangleF rectangle, out Vector2 corner)
         {
-            corner = Vector2.Zero;
-
             var mask = 0;
 
             if (point.X < rectangle.Left)
@@ -202,6 +190,7 @@ namespace Engine.Collision
                     corner = rectangle.BottomRight;
                     break;
                 default:
+                    corner = Vector2.Zero;
                     return false;
             }
 
