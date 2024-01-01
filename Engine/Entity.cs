@@ -45,20 +45,27 @@ namespace Engine
 
         internal void Load(ContentManager content)
         {
-            Collider = new BoxCollider(this);
             OnLoad(content);
         }
 
         internal void Spawn()
         {
             OnSpawn();
-            Level.Partition.Add(Collider);
+
+            if (Collider != null) 
+            {
+                Level.Partition.Add(Collider);
+            }
         }
 
         internal void Destroy()
         {
             OnDestroy();
-            Level.Partition.Remove(Collider);
+
+            if (Collider != null)
+            {
+                Level.Partition.Remove(Collider);
+            }
         }
 
         internal void Start()
@@ -89,7 +96,7 @@ namespace Engine
 
         internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
-            Collider.OnDebugDraw(renderer, gameTime);
+            Collider?.OnDebugDraw(renderer, gameTime);
             GraphicsComponent.OnDebugDraw(renderer, gameTime);
         }
 
@@ -123,7 +130,7 @@ namespace Engine
 
         protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
         {
-            Collider.MoveAndCollide(ref velocity, layerMask, response);
+            Collider?.MoveAndCollide(ref velocity, layerMask, response);
         }
     }
 }
