@@ -7,9 +7,9 @@ namespace Engine.Collision
     {
         public static bool MovingCircleVsCircle(CircleF circle0, IntersectionPath path, CircleF circle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var inflatedCircle = CircleF.Inflate(circle1, circle0);
+            var target = CircleF.Inflate(circle1, circle0);
 
-            if (PathVsCircle(path, inflatedCircle, out time, out contact))
+            if (PathVsCircle(path, target, out time, out contact))
             {
                 normal = GetNormal(contact, circle1.Center);
                 return true;
@@ -21,9 +21,9 @@ namespace Engine.Collision
 
         public static bool MovingCircleVsRectangle(CircleF circle, IntersectionPath path, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var inflatedRectangle = RectangleF.Inflate(rectangle, circle);
+            var target = RectangleF.Inflate(rectangle, circle);
 
-            if (!PathVsRectangle(path, inflatedRectangle, out time, out contact))
+            if (!PathVsRectangle(path, target, out time, out contact))
             {
                 normal = Vector2.Zero;
                 return false;
@@ -31,7 +31,7 @@ namespace Engine.Collision
 
             if (!TryGetRectangleCorner(contact, rectangle, out var corner))
             {
-                normal = GetNormal(contact, inflatedRectangle);
+                normal = GetNormal(contact, target);
                 return true;
             }
 
@@ -47,16 +47,16 @@ namespace Engine.Collision
 
         public static bool MovingRectangleVsRectangle(RectangleF rectangle0, IntersectionPath path, RectangleF rectangle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var inflatedRectangle = RectangleF.Inflate(rectangle1, rectangle0);
+            var target = RectangleF.Inflate(rectangle1, rectangle0);
 
-            if (PathVsRectangle(path, inflatedRectangle, out time, out contact))
+            if (PathVsRectangle(path, target, out time, out contact))
             {
-                normal = GetNormal(contact, rectangle1);
-                return false;
+                normal = GetNormal(contact, target);
+                return true;
             }
 
             normal = Vector2.Zero;
-            return true;
+            return false;
         }
 
         public static bool PathVsCircle(IntersectionPath path, CircleF circle, out float time, out Vector2 contact)
@@ -116,7 +116,7 @@ namespace Engine.Collision
                 return false;
             }
 
-            time = tmin;
+            time = MathF.Max(tmin, 0f);
             contact = ray.Position + ray.Direction * time;
 
             return true;
