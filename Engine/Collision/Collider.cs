@@ -79,17 +79,12 @@ namespace Engine.Collision
 
         public void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
         {
-            // Run first iteration to get nearest collision
-            if (velocity == Vector2.Zero || !RunMovementIteration(ref velocity, layerMask, response, null, out var c0))
-            {
-                return;
-            }
+            // This loop makes me nervous. Should probably limit the number of iterations.
+            Collider last = null;
 
-            // Run second iteration to handle any new intersections with updated velocity.
-            if (!(velocity == Vector2.Zero || Entity.IsDestroyed) && RunMovementIteration(ref velocity, layerMask, response, c0.Collider, out _))
+            while (!(velocity == Vector2.Zero || Entity.IsDestroyed) && RunMovementIteration(ref velocity, layerMask, response, last, out var collision)) 
             {
-                // If the second iteration caught a new intersection, then completely stop the collider from moving any further.
-                velocity = Vector2.Zero;
+                last = collision.Collider;
             }
         }
 
