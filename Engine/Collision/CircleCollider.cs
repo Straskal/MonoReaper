@@ -6,15 +6,15 @@ namespace Engine.Collision
     public class CircleCollider : Collider
     {
         public CircleCollider(Entity entity, Vector2 position, float radius)
+            : this(entity, position, radius, 0)
+        {
+        }
+
+        public CircleCollider(Entity entity, Vector2 position, float radius, int layerMask)
             : base(entity)
         {
             Position = position;
             Radius = radius;
-        }
-
-        public CircleCollider(Entity entity, Vector2 position, float radius, int layerMask)
-            : this(entity, position, radius)
-        {
             LayerMask = layerMask;
         }
 
