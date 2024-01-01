@@ -29,7 +29,7 @@ namespace Engine.Collision
             get;
         }
 
-        public CircleF Shape
+        public CircleF Circle
         {
             get => new(Bounds.Center, Radius);
         }
@@ -41,12 +41,12 @@ namespace Engine.Collision
 
         public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return IntersectionTests.MovingCircleVsRectangle(Shape, path, collider.Bounds, out time, out contact, out normal);
+            return IntersectionTests.MovingCircleVsRectangle(Circle, path, collider.Bounds, out time, out contact, out normal);
         }
 
         public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return IntersectionTests.MovingCircleVsCircle(Shape, path, collider.Shape, out time, out contact, out normal);
+            return IntersectionTests.MovingCircleVsCircle(Circle, path, collider.Circle, out time, out contact, out normal);
         }
 
         public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
