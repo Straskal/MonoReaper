@@ -1,6 +1,5 @@
 ﻿using Engine.Graphics;
 using Microsoft.Xna.Framework;
-using System.IO;
 
 namespace Engine.Collision
 {
@@ -72,6 +71,7 @@ namespace Engine.Collision
 
         public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
+            // TODO: Make moving rectangle vs circle intersections work correctly. Right now they are treated as tectangle vs rectangle.
             return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
