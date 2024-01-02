@@ -91,10 +91,10 @@ namespace Engine.Collision
         {
             var visited = new HashSet<Collider>();
 
-            Iterate(ref velocity, layerMask, response, visited);
+            RunMovementIteration(ref velocity, layerMask, response, visited);
         }
 
-        private void Iterate(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
+        private void RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
         {
             if (velocity == Vector2.Zero || Entity.IsDestroyed) 
             {
@@ -103,19 +103,25 @@ namespace Engine.Collision
 
             if (!TryGetNearestCollision(velocity, layerMask, out var collision))
             {
+                // If we haven't detected a collision, then just straight up move using the given velocity.
                 Move(velocity);
                 return;
             }
 
-            MoveToPosition(collision.Position + 0.0001f * collision.Normal);
+            // Move to the intersection point.
+            MoveToPosition(collision.Position + GetHackyCorrection(collision.Normal));
 
-            if (!visited.Contains(collision.Collider))
+            // If the previous iteration collision response caused a collision with a visited object, then quit iterating.
+            if (visited.Contains(collision.Collider)) 
             {
-                visited.Add(collision.Collider);
-                velocity = response.Invoke(collision);
-                collision.Collider.NotifyCollidedWith(this, collision);
-                Iterate(ref velocity, layerMask, response, visited);
+                return;
             }
+
+            visited.Add(collision.Collider);
+            velocity = response.Invoke(collision);
+            collision.Collider.NotifyCollidedWith(this, collision);
+            
+            RunMovementIteration(ref velocity, layerMask, response, visited);
         }
 
         private bool TryGetNearestCollision(Vector2 velocity, int layerMask, out Collision collision)
@@ -146,6 +152,11 @@ namespace Engine.Collision
             }
 
             return !collision.IsEmpty;
+        }
+
+        private static Vector2 GetHackyCorrection(Vector2 normal)
+        {
+            return normal * 0.0001f;
         }
     }
 }
