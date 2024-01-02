@@ -51,21 +51,13 @@ namespace Engine
         internal void Spawn()
         {
             OnSpawn();
-
-            if (Collider != null) 
-            {
-                Level.Partition.Add(Collider);
-            }
+            Collider?.Register();
         }
 
         internal void Destroy()
         {
             OnDestroy();
-
-            if (Collider != null)
-            {
-                Level.Partition.Remove(Collider);
-            }
+            Collider?.Unregister();
         }
 
         internal void Start()

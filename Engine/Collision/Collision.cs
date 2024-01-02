@@ -13,7 +13,7 @@ namespace Engine.Collision
             Velocity = velocity;
             Normal = normal;
             Time = collisionTime;
-            Position = position + 0.005f * Normal; // Add correction!
+            Position = position;
             Direction = Vector2.Normalize(Velocity);
             Length = Velocity.Length();
             RemainingTime = Length - Time;
@@ -28,7 +28,7 @@ namespace Engine.Collision
         public readonly float Length;
         public readonly float RemainingTime;
 
-        public bool IsEmpty 
+        public readonly bool IsEmpty 
         {
             get => Time == float.PositiveInfinity;
         }

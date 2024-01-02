@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
-using Engine.Collision;
-
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -27,35 +25,9 @@ namespace Adventure.Components
             public bool IsSolid { get; set; }
         }
 
-        public sealed class TileBoxes
-        {
-            private readonly Partition _partition;
-
-            public TileBoxes(Partition partition)
-            {
-                _partition = partition;
-            }
-
-            public void Add(BoxCollider box)
-            {
-                _partition.Add(box);
-            }
-
-            public void Remove(BoxCollider box)
-            {
-                _partition.Remove(box);
-            }
-        }
-
         public Tilemap(MapData data)
         {
             Data = data;
-        }
-
-        private TileBoxes Boxes 
-        {
-            get;
-            set;
         }
 
         public MapData Data 
@@ -67,20 +39,7 @@ namespace Adventure.Components
         {
             Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
             GraphicsComponent = new TilemapRenderer(Data);
-            Boxes = new TileBoxes(Level.Partition);
-        }
-
-        protected override void OnSpawn()
-        {
-            if (!Data.IsSolid)
-            {
-                return;
-            }
-
-            foreach (var tile in Data.Tiles)
-            {
-                Boxes.Add(new BoxCollider(this, tile.Position.X, tile.Position.Y, Data.CellSize, Data.CellSize, EntityLayers.Solid));
-            }
+            Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
         }
     }
 }

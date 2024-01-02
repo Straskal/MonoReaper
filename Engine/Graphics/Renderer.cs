@@ -157,6 +157,7 @@ namespace Engine.Graphics
         {
             var distance = Vector2.Distance(point1, point2);
             var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
             DrawLine(point1, distance, angle, color, thickness);
         }
 
@@ -170,14 +171,10 @@ namespace Engine.Graphics
 
         public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
-            // Top
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, 1, rectangle.Height), color);
-            // Left
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, 1), color);
-            // Right
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, 1, rectangle.Height), color);
-            // Bottom
-            _spriteBatch.Draw(BlankTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width, 1), color);
+            DrawLine(new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Top), color);
+            DrawLine(new Vector2(rectangle.Left, rectangle.Bottom), new Vector2(rectangle.Right, rectangle.Bottom), color);
+            DrawLine(new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Left, rectangle.Bottom), color);
+            DrawLine(new Vector2(rectangle.Right, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color);
         }
 
         public void DrawCircleOutline(float x, float y, float radius, int resolution, Color color)

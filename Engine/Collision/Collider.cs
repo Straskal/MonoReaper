@@ -48,61 +48,77 @@ namespace Engine.Collision
             }
         }
 
-        public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-        public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-
         internal void NotifyCollidedWith(Collider body, Collision collision)
         {
             CollidedWith?.Invoke(body, collision);
         }
 
+        public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
+        public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
+
         public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
         }
 
-        public void Move(Vector2 direction)
+        public virtual void Move(Vector2 direction)
         {
             Entity.Position += direction;
             UpdateBBox();
         }
 
-        public void MoveToPosition(Vector2 position)
+        public virtual void MoveToPosition(Vector2 position)
         {
             Entity.Position = position;
             UpdateBBox();
         }
 
-        public void UpdateBBox()
+        public virtual void Register()
+        {
+            Entity.Level.Partition.Add(this);
+        }
+
+        public virtual void Unregister()
+        {
+            Entity.Level.Partition.Remove(this);
+        }
+
+        public virtual void UpdateBBox()
         {
             Entity.Level.Partition.Update(this);
         }
 
-        public void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        public virtual void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
         {
-            // This loop makes me nervous. Should probably limit the number of iterations.
-            Collider last = null;
+            var visited = new HashSet<Collider>();
 
-            while (!(velocity == Vector2.Zero || Entity.IsDestroyed) && RunMovementIteration(ref velocity, layerMask, response, last, out var collision)) 
-            {
-                last = collision.Collider;
-            }
+            Iterate(ref velocity, layerMask, response, visited);
         }
 
-        private bool RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, Collider previousCollider, out Collision collision)
+        private void Iterate(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
         {
-            if (!TryGetNearestCollision(velocity, layerMask, previousCollider, out collision))
+            if (velocity == Vector2.Zero || Entity.IsDestroyed) 
+            {
+                return;
+            }
+
+            if (!TryGetNearestCollision(velocity, layerMask, out var collision))
             {
                 Move(velocity);
-                return false;
+                return;
             }
 
-            MoveToPosition(collision.Position);
-            velocity = response.Invoke(collision);
-            collision.Collider.NotifyCollidedWith(this, collision);
-            return true;
+            MoveToPosition(collision.Position + 0.0001f * collision.Normal);
+
+            if (!visited.Contains(collision.Collider))
+            {
+                visited.Add(collision.Collider);
+                velocity = response.Invoke(collision);
+                collision.Collider.NotifyCollidedWith(this, collision);
+                Iterate(ref velocity, layerMask, response, visited);
+            }
         }
 
-        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, Collider previousCollider, out Collision collision)
+        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, out Collision collision)
         {
             collision = Collision.Empty;
 
@@ -111,7 +127,7 @@ namespace Engine.Collision
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
-                if (collider == this || collider == previousCollider) 
+                if (collider == this) 
                 {
                     continue;
                 }

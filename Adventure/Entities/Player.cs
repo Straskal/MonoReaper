@@ -85,11 +85,11 @@ namespace Adventure.Components
         {
             if (collision.Collider.IsSolid())
             {
-                if (collision.Collider.Entity is Barrel barrel)
-                {
-                    var velocity = -collision.Normal * 0.5f;
-                    collision.Collider.MoveAndCollide(ref velocity, MovementCollisionLayerMask, coll => coll.Slide());
-                }
+                //if (collision.Collider.Entity is Barrel barrel)
+                //{
+                //    var velocity = -collision.Normal * 0.5f;
+                //    collision.Collider.MoveAndCollide(ref velocity, MovementCollisionLayerMask, coll => coll.Slide());
+                //}
 
                 return collision.Slide();
             }
