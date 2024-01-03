@@ -43,8 +43,7 @@ namespace Engine.Collision
         public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact, out Vector2 normal)
         {
             time = 0f;
-            contact = Vector2.Zero;
-            normal = Vector2.Zero;
+            contact = normal = Vector2.Zero;
 
             var m = ray.Position - center;
             var b = Vector2.Dot(m, ray.Direction);
@@ -71,8 +70,7 @@ namespace Engine.Collision
         public static bool RayVsRectangle(RayF ray, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
             time = 0f;
-            contact = Vector2.Zero;
-            normal = Vector2.Zero;
+            contact = normal = Vector2.Zero;
 
             var tmin = float.MinValue;
             var tmax = float.MaxValue;
