@@ -14,7 +14,7 @@ namespace Adventure.Components
         private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
 
         public const float Speed = 1000f;
-        public const float MaxSpeed = 0.75f;
+        public const float MaxSpeed = 0.8f;
 
         private Vector2 _direction = Vector2.One;
         private Vector2 _velocity = Vector2.Zero;
@@ -84,12 +84,6 @@ namespace Adventure.Components
         {
             if (collision.Collider.IsSolid())
             {
-                //if (collision.Collider.Entity is Barrel barrel)
-                //{
-                //    var velocity = -collision.Normal * 0.5f;
-                //    collision.Collider.MoveAndCollide(ref velocity, MovementCollisionLayerMask, coll => coll.Slide());
-                //}
-
                 return collision.Slide();
             }
 
