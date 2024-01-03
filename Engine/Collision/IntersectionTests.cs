@@ -163,39 +163,43 @@ namespace Engine.Collision
 
         private static Vector2 GetNormal(Vector2 point, Vector2 center)
         {
-            // This is kind of hacky, but add a correction to the circle collisions don't end up resolving into themselves.
+            return AddHackyCorrectionToNormal(Vector2.Normalize(point - center));
+        }
+
+        private static Vector2 GetNormal(Vector2 point, RectangleF rectangle)
+        {
+            var normal = Vector2.Zero;
+
+            if (point.X == rectangle.Left)
+            {
+                normal.X = -1f;
+            }
+            else if (point.X == rectangle.Right)
+            {
+                normal.X = 1f;
+            }
+            else if (point.Y == rectangle.Top)
+            {
+                normal.Y = -1f;
+            }
+            else if (point.Y == rectangle.Bottom)
+            {
+                normal.Y = 1f;
+            }
+
+            return normal;
+        }
+
+        private static Vector2 AddHackyCorrectionToNormal(Vector2 normal) 
+        {
+            // This is kind of hacky, but add a correction so the collisions don't end up resolving into themselves.
             // It's important to add the correction to the normal rather than the collision contact point.
             // Adding a correction to the contact point will place objects into potentially invalid position,
             // whereas the normal will slide the object into a potentially invalid position, which will be handled by the next
             // collision iteration.
             const float Correction = 0.0001f;
 
-            var m = point - center;
-            return Vector2.Normalize(m) + m * Correction;
-        }
-
-        private static Vector2 GetNormal(Vector2 point, RectangleF rectangle)
-        {
-            var result = Vector2.Zero;
-
-            if (point.X == rectangle.Left)
-            {
-                result.X = -1f;
-            }
-            else if (point.X == rectangle.Right)
-            {
-                result.X = 1f;
-            }
-            else if (point.Y == rectangle.Top)
-            {
-                result.Y = -1f;
-            }
-            else if (point.Y == rectangle.Bottom)
-            {
-                result.Y = 1f;
-            }
-
-            return result;
+            return normal + normal * Correction;
         }
     }
 }
