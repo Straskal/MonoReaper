@@ -93,33 +93,23 @@ namespace Engine.Collision
 
         private static bool RayVsEdges(float direction, float inverseDirection, float position, float min, float max, ref float tmin, ref float tmax)
         {
-            if (MathF.Abs(direction) < float.Epsilon)
+            if (MathF.Abs(direction) < float.Epsilon && (position < min || position > max))
             {
-                if (position < min || position > max)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                var t1 = (min - position) * inverseDirection;
-                var t2 = (max - position) * inverseDirection;
-
-                if (t1 > t2)
-                {
-                    (t1, t2) = (t2, t1);
-                }
-
-                tmin = MathF.Max(tmin, t1);
-                tmax = MathF.Min(tmax, t2);
-
-                if (tmin > tmax)
-                {
-                    return false;
-                }
+                return false;
             }
 
-            return true;
+            var t1 = (min - position) * inverseDirection;
+            var t2 = (max - position) * inverseDirection;
+
+            if (t1 > t2)
+            {
+                (t1, t2) = (t2, t1);
+            }
+
+            tmin = MathF.Max(tmin, t1);
+            tmax = MathF.Min(tmax, t2);
+
+            return tmin <= tmax;
         }
 
         private static bool TryGetRectangleCorner(Vector2 point, RectangleF rectangle, out Vector2 corner)
@@ -144,6 +134,11 @@ namespace Engine.Collision
                 mask |= 8;
             }
 
+            return TryGetRectangleCorner(rectangle, mask, out corner);
+        }
+
+        private static bool TryGetRectangleCorner(RectangleF rectangle, int mask, out Vector2 corner)
+        {
             switch (mask)
             {
                 case 1 | 4:
@@ -166,13 +161,13 @@ namespace Engine.Collision
             return true;
         }
 
-        public static Vector2 GetNormal(Vector2 point, Vector2 center)
+        private static Vector2 GetNormal(Vector2 point, Vector2 center)
         {
             var m = point - center;
             return Vector2.Normalize(m) + m * 0.0001f; // Offset the normal
         }
 
-        public static Vector2 GetNormal(Vector2 point, RectangleF rectangle)
+        private static Vector2 GetNormal(Vector2 point, RectangleF rectangle)
         {
             var result = Vector2.Zero;
             var closestPoint = ClosestPointComputations.Rectangle(point, rectangle);
