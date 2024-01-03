@@ -7,72 +7,44 @@ namespace Engine.Collision
     {
         public static bool MovingCircleVsCircle(CircleF circle0, IntersectionPath path, CircleF circle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var target = CircleF.Inflate(circle1, circle0);
-
-            if (PathVsCircle(path, target, out time, out contact))
-            {
-                normal = GetNormal(contact, target.Center);
-                return true;
-            }
-
-            normal = Vector2.Zero;
-            return false;
+            return PathVsCircle(path, CircleF.Inflate(circle1, circle0), out time, out contact, out normal);
         }
 
         public static bool MovingCircleVsRectangle(CircleF circle, IntersectionPath path, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var target = RectangleF.Inflate(rectangle, circle);
-
-            if (!PathVsRectangle(path, target, out time, out contact))
+            if (!PathVsRectangle(path, RectangleF.Inflate(rectangle, circle), out time, out contact, out normal))
             {
-                normal = Vector2.Zero;
                 return false;
             }
 
-            if (!TryGetRectangleCorner(contact, rectangle, out var corner))
+            if (TryGetRectangleCorner(contact, rectangle, out var corner) && !PathVsCircle(path, new CircleF(corner, circle.Radius), out time, out contact, out normal))
             {
-                normal = GetNormal(contact, target);
-                return true;
-            }
-
-            if (!PathVsCircle(path, new CircleF(corner, circle.Radius), out time, out contact))
-            {
-                normal = Vector2.Zero;
                 return false;
             }
 
-            normal = GetNormal(contact, corner);
             return true;
         }
 
         public static bool MovingRectangleVsRectangle(RectangleF rectangle0, IntersectionPath path, RectangleF rectangle1, out float time, out Vector2 contact, out Vector2 normal)
         {
-            var target = RectangleF.Inflate(rectangle1, rectangle0);
-
-            if (PathVsRectangle(path, target, out time, out contact))
-            {
-                normal = GetNormal(contact, target);
-                return true;
-            }
-
-            normal = Vector2.Zero;
-            return false;
+            return PathVsRectangle(path, RectangleF.Inflate(rectangle1, rectangle0), out time, out contact, out normal);
         }
 
-        public static bool PathVsCircle(IntersectionPath path, CircleF circle, out float time, out Vector2 contact)
+        public static bool PathVsCircle(IntersectionPath path, CircleF circle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return RayVsCircle(path.Ray, circle.Center, circle.Radius, out time, out contact) && time <= path.Length;
+            return RayVsCircle(path.Ray, circle.Center, circle.Radius, out time, out contact, out normal) && time <= path.Length;
         }
 
-        public static bool PathVsRectangle(IntersectionPath segment, RectangleF rectangle, out float time, out Vector2 contact)
+        public static bool PathVsRectangle(IntersectionPath segment, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return RayVsRectangle(segment.Ray, rectangle, out time, out contact) && time <= segment.Length;
+            return RayVsRectangle(segment.Ray, rectangle, out time, out contact, out normal) && time <= segment.Length;
         }
 
-        public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact)
+        public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact, out Vector2 normal)
         {
-            contact = Vector2.Zero;
             time = 0f;
+            contact = Vector2.Zero;
+            normal = Vector2.Zero;
 
             var m = ray.Position - center;
             var b = Vector2.Dot(m, ray.Direction);
@@ -83,39 +55,41 @@ namespace Engine.Collision
             }
 
             var c = Vector2.Dot(m, m) - radius * radius;
-            var disc = b * b - c;
+            var d = b * b - c;
 
-            if (disc < 0f)
+            if (d < 0f)
             {
                 return false;
             }
 
-            time = MathF.Max(-b - MathF.Sqrt(disc), 0f);
+            time = MathF.Max(-b - MathF.Sqrt(d), 0f);
             contact = ray.Position + ray.Direction * time;
+            normal = GetNormal(contact, center);
             return true;
         }
 
-        public static bool RayVsRectangle(RayF ray, RectangleF rectangle, out float time, out Vector2 contact)
+        public static bool RayVsRectangle(RayF ray, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            contact = Vector2.Zero;
             time = 0f;
+            contact = Vector2.Zero;
+            normal = Vector2.Zero;
 
             var tmin = float.MinValue;
             var tmax = float.MaxValue;
 
-            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.Min.X, rectangle.Max.X, ref tmin, ref tmax)) 
+            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax)) 
             {
                 return false;
             }
 
-            if (!RayVsEdges(ray.Direction.Y, ray.InverseDirection.Y, ray.Position.Y, rectangle.Min.Y, rectangle.Max.Y, ref tmin, ref tmax))
+            if (!RayVsEdges(ray.Direction.Y, ray.InverseDirection.Y, ray.Position.Y, rectangle.TopLeft.Y, rectangle.BottomRight.Y, ref tmin, ref tmax))
             {
                 return false;
             }
 
             time = MathF.Max(tmin, 0f);
             contact = ray.Position + ray.Direction * time;
-
+            normal = GetNormal(contact, rectangle);
             return true;
         }
 

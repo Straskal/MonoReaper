@@ -22,7 +22,7 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-            Collider = new CircleCollider(this, new Vector2(0f, 3f), 4f, EntityLayers.Player);
+            Collider = new CircleCollider(this, new Vector2(0f, 3f), 5f, EntityLayers.Player);
             GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 

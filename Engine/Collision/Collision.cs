@@ -5,7 +5,10 @@ namespace Engine.Collision
 {
     public readonly ref struct Collision
     {
-        public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
+        public static Collision Empty 
+        {
+            get => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
+        }
 
         public Collision(Collider other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
@@ -33,12 +36,12 @@ namespace Engine.Collision
             get => Time == float.PositiveInfinity;
         }
 
-        public Vector2 Ignore()
+        public readonly Vector2 Ignore()
         {
             return Direction * RemainingTime;
         }
 
-        public Vector2 Bounce()
+        public readonly Vector2 Bounce()
         {
             var result = Direction * RemainingTime;
 
@@ -54,7 +57,7 @@ namespace Engine.Collision
             return result;
         }
 
-        public Vector2 Slide()
+        public readonly Vector2 Slide()
         {
             var v = Direction * RemainingTime;
             return v - Vector2.Dot(v, Normal) * Normal;
