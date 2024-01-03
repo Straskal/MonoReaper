@@ -96,7 +96,7 @@ namespace Engine.Collision
 
         private void RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
         {
-            if (velocity == Vector2.Zero || Entity.IsDestroyed) 
+            if (velocity == Vector2.Zero || Entity.IsDestroyed)
             {
                 return;
             }
@@ -109,10 +109,10 @@ namespace Engine.Collision
             }
 
             // Move to the intersection point.
-            MoveToPosition(collision.Position + GetHackyCorrection(collision.Normal));
+            MoveToPosition(collision.Position);
 
             // If the previous iteration collision response caused a collision with a visited object, then quit iterating.
-            if (visited.Contains(collision.Collider)) 
+            if (visited.Contains(collision.Collider))
             {
                 return;
             }
@@ -120,7 +120,7 @@ namespace Engine.Collision
             visited.Add(collision.Collider);
             velocity = response.Invoke(collision);
             collision.Collider.NotifyCollidedWith(this, collision);
-            
+
             RunMovementIteration(ref velocity, layerMask, response, visited);
         }
 
@@ -128,22 +128,22 @@ namespace Engine.Collision
         {
             collision = Collision.Empty;
 
-            var path = new IntersectionPath(Entity.Position, velocity);
+            var path = new IntersectionPath(Bounds.Center, velocity);
             var broadphaseRectangle = Bounds.Union(velocity);
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
-                if (collider == this) 
+                if (collider == this)
                 {
                     continue;
                 }
 
-                if (!((collider.LayerMask | layerMask) == layerMask && broadphaseRectangle.Intersects(collider.Bounds))) 
+                if (!((collider.LayerMask | layerMask) == layerMask && broadphaseRectangle.Intersects(collider.Bounds)))
                 {
                     continue;
                 }
 
-                if (!(Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time)) 
+                if (!(Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time))
                 {
                     continue;
                 }
@@ -152,11 +152,6 @@ namespace Engine.Collision
             }
 
             return !collision.IsEmpty;
-        }
-
-        private static Vector2 GetHackyCorrection(Vector2 normal)
-        {
-            return normal * 0.0001f;
         }
     }
 }

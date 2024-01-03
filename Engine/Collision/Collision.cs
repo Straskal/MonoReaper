@@ -56,7 +56,8 @@ namespace Engine.Collision
 
         public Vector2 Slide()
         {
-            return Direction * RemainingTime - Vector2.Dot(Direction * RemainingTime, Normal) * Normal;
+            var v = Direction * RemainingTime;
+            return v - Vector2.Dot(v, Normal) * Normal;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Engine.Collision
 
             if (PathVsCircle(path, target, out time, out contact))
             {
-                normal = GetNormal(contact, circle1.Center);
+                normal = GetNormal(contact, target.Center);
                 return true;
             }
 
@@ -71,21 +71,18 @@ namespace Engine.Collision
 
         public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact)
         {
-            // t² + 2(m · d)t + (m · m) - r²    
-            // t² + 2bt + c = 0                 (quadratic formula)
-            // t = -b ± √(b² - c)               (quadratic solutions)
             contact = Vector2.Zero;
             time = 0f;
 
             var m = ray.Position - center;
             var b = Vector2.Dot(m, ray.Direction);
-            var c = Vector2.Dot(m, m) - radius * radius;
 
-            if (c > 0f && b > 0f)
+            if (b > 0f)
             {
                 return false;
             }
 
+            var c = Vector2.Dot(m, m) - radius * radius;
             var disc = b * b - c;
 
             if (disc < 0f)
@@ -199,7 +196,8 @@ namespace Engine.Collision
 
         public static Vector2 GetNormal(Vector2 point, Vector2 center)
         {
-            return Vector2.Normalize(point - center);
+            var m = point - center;
+            return Vector2.Normalize(m) + m * 0.0001f; // Offset the normal
         }
 
         public static Vector2 GetNormal(Vector2 point, RectangleF rectangle)

@@ -39,6 +39,12 @@ namespace Engine.Collision
             get => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
         }
 
+        public override void MoveToPosition(Vector2 position)
+        {
+            Entity.Position = position - Position;
+            UpdateBBox();
+        }
+
         public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
             return IntersectionTests.MovingCircleVsRectangle(Circle, path, collider.Bounds, out time, out contact, out normal);
