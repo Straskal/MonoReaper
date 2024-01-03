@@ -35,9 +35,9 @@ namespace Engine.Collision
             return RayVsCircle(path.Ray, circle.Center, circle.Radius, out time, out contact, out normal) && time <= path.Length;
         }
 
-        public static bool PathVsRectangle(IntersectionPath segment, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
+        public static bool PathVsRectangle(IntersectionPath path, RectangleF rectangle, out float time, out Vector2 contact, out Vector2 normal)
         {
-            return RayVsRectangle(segment.Ray, rectangle, out time, out contact, out normal) && time <= segment.Length;
+            return RayVsRectangle(path.Ray, rectangle, out time, out contact, out normal) && time <= path.Length;
         }
 
         public static bool RayVsCircle(RayF ray, Vector2 center, float radius, out float time, out Vector2 contact, out Vector2 normal)
