@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Engine.Graphics;
+using Engine;
 
 namespace Adventure.Components
 {

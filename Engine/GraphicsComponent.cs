@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Engine.Graphics
+namespace Engine
 {
     public abstract class GraphicsComponent
     {
@@ -17,21 +17,21 @@ namespace Engine.Graphics
 
         public static GraphicsComponent Empty { get; } = new EmptyGraphicsComponent();
 
-        public int DrawOrder 
+        public int DrawOrder
         {
             get;
             set;
         }
 
-        public virtual void OnPostUpdate(GameTime gameTime) 
+        public virtual void OnPostUpdate(GameTime gameTime)
         {
         }
 
-        public virtual void OnDraw(Renderer renderer, GameTime gameTime) 
+        public virtual void OnDraw(Renderer renderer, GameTime gameTime)
         {
         }
 
-        public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime) 
+        public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime)
         {
         }
     }

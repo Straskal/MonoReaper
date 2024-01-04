@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Engine.Collision
+namespace Engine
 {
     public readonly ref struct RayF
     {
-        public RayF(Vector2 position, Vector2 direction) 
+        public RayF(Vector2 position, Vector2 direction)
         {
             Position = position;
             Direction = Vector2.Normalize(direction);

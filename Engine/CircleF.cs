@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Engine.Collision
+namespace Engine
 {
     public struct CircleF
     {
@@ -9,7 +9,7 @@ namespace Engine.Collision
         {
         }
 
-        public CircleF(Vector2 position, float radius) 
+        public CircleF(Vector2 position, float radius)
         {
             Center = position;
             Radius = radius;
@@ -18,7 +18,7 @@ namespace Engine.Collision
         public Vector2 Center;
         public float Radius;
 
-        public static CircleF Inflate(CircleF circle0, CircleF circle1) 
+        public static CircleF Inflate(CircleF circle0, CircleF circle1)
         {
             circle0.Radius += circle1.Radius;
             return circle0;

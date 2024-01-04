@@ -1,4 +1,4 @@
-﻿namespace Engine.Graphics
+﻿namespace Engine
 {
     /// <summary>
     /// Resolution scale mode affects when resolution upscaling happens.

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Engine;
-using Engine.Graphics;
 
 namespace Adventure
 {
@@ -10,12 +9,6 @@ namespace Adventure
         {
         }
 
-        public override bool ShouldUpdateBelow
-        {
-            // Don't update the states below. This is what pauses the game.
-            get => false;
-        }
-
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             renderer.BeginDraw();
@@ -23,11 +16,11 @@ namespace Adventure
             GUI.Start();
             if (GUI.PrimaryButton(1, "Resume", 100, 150))
             {
-                Application.Screens.Pop(this);
+                //Application.Screens.Pop(this);
             }
             if (GUI.PrimaryButton(3, "Main menu", 100, 180))
             {
-                Application.Screens.SetTop(new MainMenuScreen(Application));
+                //Application.Screens.SetTop(new MainMenuScreen(Application));
             }
             renderer.EndDraw();
         }

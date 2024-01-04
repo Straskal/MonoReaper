@@ -1,7 +1,6 @@
-﻿using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
-namespace Engine.Collision
+namespace Engine
 {
     public class BoxCollider : Collider
     {
@@ -15,7 +14,7 @@ namespace Engine.Collision
         {
         }
 
-        public BoxCollider(Entity entity, float width, float height, int layerMask) 
+        public BoxCollider(Entity entity, float width, float height, int layerMask)
             : this(entity, 0f, 0f, width, height, layerMask)
         {
         }
@@ -59,7 +58,7 @@ namespace Engine.Collision
             set;
         }
 
-        public override RectangleF Bounds 
+        public override RectangleF Bounds
         {
             get => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
         }
@@ -75,7 +74,7 @@ namespace Engine.Collision
             return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
         }
 
-        public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public override void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.White);
         }

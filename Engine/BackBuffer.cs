@@ -1,8 +1,9 @@
 ﻿using System;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Graphics
+namespace Engine
 {
     /// <summary>
     /// The virtual screen that handles scaling logic for the target resolution.
@@ -94,7 +95,7 @@ namespace Engine.Graphics
         /// <summary>
         /// Gets the screen's scale matrix
         /// </summary>
-        public Matrix ScaleMatrix 
+        public Matrix ScaleMatrix
         {
             get;
             private set;
@@ -103,7 +104,7 @@ namespace Engine.Graphics
         /// <summary>
         /// Gets the screen's inverted scale matrix
         /// </summary>
-        public Matrix InvertedScaleMatrix 
+        public Matrix InvertedScaleMatrix
         {
             get;
             private set;

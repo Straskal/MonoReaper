@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "<Pending>", Scope = "member", Target = "~M:Engine.Collision.Collider.Intersect(Engine.Collision.Collider,Engine.Collision.IntersectionPath,System.Single@,Microsoft.Xna.Framework.Vector2@,Microsoft.Xna.Framework.Vector2@)~System.Boolean")]
+[assembly: SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "<Pending>", Scope = "member", Target = "~M:Engine.App.#ctor(System.Int32,System.Int32,Engine.Graphics.ResolutionScaleMode)")]

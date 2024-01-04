@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using Microsoft.Xna.Framework;
-using Engine.Graphics;
-using Engine.Collision;
 
 namespace Engine
 {
@@ -114,6 +112,5 @@ namespace Engine
                 renderer.EndDraw();
             }
         }
-
     }
 }

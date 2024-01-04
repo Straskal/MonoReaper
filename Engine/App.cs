@@ -1,110 +1,37 @@
 ﻿using System;
 using System.Collections;
 using Microsoft.Xna.Framework;
-using Engine.Graphics;
 
 namespace Engine
 {
-    /// <summary>
-    /// The main runner for the game.
-    /// </summary>
     public class App : Game
     {
-        /// <summary>
-        /// Gets the single instance of App
-        /// </summary>
-        public static App Instance { get; private set; }
+        private readonly CoroutineRunner coroutines = new();
 
-        public App(int targetResolutionWidth, int targetResolutionHeight, ResolutionScaleMode resolutionScaleMode)
+        private Screen nextScreen;
+
+        public App(int resolutionWidth, int resolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
-            Instance = this;
-            ResolutionWidth = targetResolutionWidth;
-            ResolutionHeight = targetResolutionHeight;
+            ResolutionWidth = resolutionWidth;
+            ResolutionHeight = resolutionHeight;
             ResolutionScaleMode = resolutionScaleMode;
             Content = new ContentManagerExtended(Services, "Content");
-
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
-
-#if DEBUG
-            GraphicsDeviceManager.IsFullScreen = false;
             GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
-#else
-            //GraphicsDeviceManager.IsFullScreen = true;
-#endif
+            IsFixedTimeStep = true;
         }
 
-        /// <summary>
-        /// Gets the target resolution width
-        /// </summary>
-        public int ResolutionWidth
-        {
-            get;
-        }
+        public static Random Random { get; } = new();
 
-        /// <summary>
-        /// Gets the target resolution height
-        /// </summary>
-        public int ResolutionHeight
-        {
-            get;
-        }
-
-        public ResolutionScaleMode ResolutionScaleMode 
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the graphics device manager
-        /// </summary>
-        public GraphicsDeviceManager GraphicsDeviceManager
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the game state stack
-        /// </summary>
-        public ScreenStack Screens
-        {
-            get;
-        } = new();
-
-        /// <summary>
-        /// Gets the virtual resolution
-        /// </summary>
-        public BackBuffer BackBuffer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the renderer
-        /// </summary>
-        public Renderer Renderer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the instance of random
-        /// </summary>
-        public Random Random
-        {
-            get;
-        } = new();
-
-        /// <summary>
-        /// Gets the coroutine runner
-        /// </summary>
-        internal CoroutineRunner Coroutines
-        {
-            get;
-        } = new();
+        public int ResolutionWidth { get; }
+        public int ResolutionHeight { get; }
+        public ResolutionScaleMode ResolutionScaleMode { get; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; }
+        public BackBuffer BackBuffer { get; private set; }
+        public Renderer Renderer { get; private set; }
+        public Screen Screen { get; private set; }
 
         protected override void Initialize()
         {
@@ -124,8 +51,9 @@ namespace Engine
         {
             BackBuffer.Update();
             Input.Update(BackBuffer);
-            Coroutines.Update();
-            Screens.Update(gameTime);
+            coroutines.Update();
+            Screen?.Update(gameTime);
+            HandleScreenChange();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -133,7 +61,7 @@ namespace Engine
             Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
             Renderer.SetViewport(BackBuffer.FullViewport);
             Renderer.Clear();
-            Screens.Draw(Renderer, gameTime);
+            Screen?.Draw(Renderer, gameTime);
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
@@ -141,14 +69,31 @@ namespace Engine
             Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
         }
+
+        public void ChangeScreen(Screen screen) 
+        {
+            nextScreen = screen;
+        }
+
         public Coroutine StartCoroutine(IEnumerator routine)
         {
-            return Coroutines.Start(routine);
+            return coroutines.Start(routine);
         }
 
         public void StopCoroutine(Coroutine coroutine)
         {
-            Coroutines.Stop(coroutine);
+            coroutines.Stop(coroutine);
+        }
+
+        private void HandleScreenChange() 
+        {
+            if (nextScreen != null) 
+            {
+                Screen?.Stop();
+                Screen = nextScreen;
+                Screen?.Start();
+                nextScreen = null;
+            }
         }
     }
 }

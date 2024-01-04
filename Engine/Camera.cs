@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Engine.Graphics
+namespace Engine
 {
     /// <summary>
     /// This class can manipulate the view.

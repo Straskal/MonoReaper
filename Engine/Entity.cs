@@ -1,6 +1,4 @@
-﻿using Engine.Collision;
-using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace Engine
@@ -35,7 +33,7 @@ namespace Engine
         {
             get;
             protected set;
-        } = GraphicsComponent.Empty;
+        }
 
         public bool IsDestroyed
         {
@@ -78,18 +76,23 @@ namespace Engine
         internal void PostUpdate(GameTime gameTime)
         {
             OnPostUpdate(gameTime);
-            GraphicsComponent.OnPostUpdate(gameTime);
+            GraphicsComponent?.OnPostUpdate(gameTime);
         }
 
         internal void Draw(Renderer renderer, GameTime gameTime)
         {
-            GraphicsComponent.OnDraw(renderer, gameTime);
+            GraphicsComponent?.OnDraw(renderer, gameTime);
         }
 
         internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
-            Collider?.OnDebugDraw(renderer, gameTime);
-            GraphicsComponent.OnDebugDraw(renderer, gameTime);
+            Collider?.DebugDraw(renderer, gameTime);
+            GraphicsComponent?.OnDebugDraw(renderer, gameTime);
+        }
+
+        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        {
+            Collider?.MoveAndCollide(ref velocity, layerMask, response);
         }
 
         protected virtual void OnLoad(ContentManager content)
@@ -118,11 +121,6 @@ namespace Engine
 
         protected virtual void OnPostUpdate(GameTime gameTime)
         {
-        }
-
-        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
-        {
-            Collider?.MoveAndCollide(ref velocity, layerMask, response);
         }
     }
 }

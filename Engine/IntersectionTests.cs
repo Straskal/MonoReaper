@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Engine.Collision
+namespace Engine
 {
     public static class IntersectionTests
     {
@@ -75,7 +75,7 @@ namespace Engine.Collision
             var tmin = float.MinValue;
             var tmax = float.MaxValue;
 
-            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax)) 
+            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax))
             {
                 return false;
             }
@@ -190,7 +190,7 @@ namespace Engine.Collision
             return normal;
         }
 
-        private static Vector2 AddHackyCorrectionToNormal(Vector2 normal) 
+        private static Vector2 AddHackyCorrectionToNormal(Vector2 normal)
         {
             // This is kind of hacky, but add a correction so the collisions don't end up resolving into themselves.
             // It's important to add the correction to the normal rather than the collision contact point.

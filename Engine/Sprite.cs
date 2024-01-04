@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Graphics
+namespace Engine
 {
     public class Sprite : GraphicsComponent
     {
@@ -11,7 +11,7 @@ namespace Engine.Graphics
             Texture = texture;
         }
 
-        public Entity Entity 
+        public Entity Entity
         {
             get;
         }

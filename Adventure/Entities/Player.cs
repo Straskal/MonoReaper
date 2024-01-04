@@ -1,6 +1,5 @@
 ﻿using Engine;
-using Engine.Collision;
-using Engine.Graphics;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;

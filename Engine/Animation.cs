@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace Engine.Graphics
+namespace Engine
 {
     /// <summary>
     /// This class represents an animation containing it's name and animation frames.
     /// </summary>
     public class Animation
     {
-        public Animation(string name) 
+        public Animation(string name)
         {
             Name = name;
             NameHashCode = GetNameHashCode(name);

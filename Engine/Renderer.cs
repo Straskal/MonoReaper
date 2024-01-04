@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Engine.Graphics
+namespace Engine
 {
     /// <summary>
     /// This class contains all draw functions as well as graphics device functions.
@@ -25,7 +25,7 @@ namespace Engine.Graphics
             private set;
         }
 
-        public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer) 
+        public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer)
         {
             _graphicsDevice = graphicsDevice;
             _backBuffer = backBuffer;
@@ -54,7 +54,7 @@ namespace Engine.Graphics
         /// Sets the graphics device viewport
         /// </summary>
         /// <param name="viewport"></param>
-        public void SetViewport(Viewport viewport) 
+        public void SetViewport(Viewport viewport)
         {
             _graphicsDevice.Viewport = viewport;
         }
@@ -62,7 +62,7 @@ namespace Engine.Graphics
         /// <summary>
         /// Clears the current render target
         /// </summary>
-        public void Clear() 
+        public void Clear()
         {
             _graphicsDevice.Clear(Color.Black);
         }
@@ -179,7 +179,7 @@ namespace Engine.Graphics
 
         public void DrawCircleOutline(float x, float y, float radius, int resolution, Color color)
         {
-            for (var i = 0; i < 360; i += resolution) 
+            for (var i = 0; i < 360; i += resolution)
             {
                 var pos = new Vector2(x, y);
                 var p1 = new Vector2(MathF.Cos(MathHelper.ToRadians(i)), MathF.Sin(MathHelper.ToRadians(i))) * radius;
@@ -193,7 +193,7 @@ namespace Engine.Graphics
         /// Check if the given effect changes the current effect. If so, flush the current batch and then start a new one with the new effect.
         /// </summary>
         /// <param name="effect"></param>
-        private void SwapEffectIfNeeded(Effect effect) 
+        private void SwapEffectIfNeeded(Effect effect)
         {
             if (_effect != effect)
             {
@@ -203,7 +203,7 @@ namespace Engine.Graphics
             }
         }
 
-        private void BeginSpriteBatch() 
+        private void BeginSpriteBatch()
         {
             _spriteBatch.Begin(
                  sortMode: SpriteSortMode.Deferred,

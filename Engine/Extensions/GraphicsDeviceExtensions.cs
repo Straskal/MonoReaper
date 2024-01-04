@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine
+namespace Engine.Extensions
 {
     public static class GraphicsDeviceExtensions
     {
@@ -27,7 +27,7 @@ namespace Engine
         /// <param name="targetWidth"></param>
         /// <param name="targetHeight"></param>
         /// <returns></returns>
-        public static Viewport GetLetterboxViewport(this GraphicsDevice graphics, int targetWidth, int targetHeight) 
+        public static Viewport GetLetterboxViewport(this GraphicsDevice graphics, int targetWidth, int targetHeight)
         {
             var screenWidth = graphics.PresentationParameters.BackBufferWidth;
             var screenHeight = graphics.PresentationParameters.BackBufferHeight;

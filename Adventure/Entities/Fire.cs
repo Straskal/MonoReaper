@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Engine;
-using Engine.Graphics;
+using Engine.Extensions;
 
 namespace Adventure.Components
 {

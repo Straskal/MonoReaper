@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Graphics
+namespace Engine
 {
     public sealed class AnimatedSprite : Sprite
     {
@@ -14,7 +15,7 @@ namespace Engine.Graphics
 
         public AnimatedSprite(Entity entity, Texture2D texture, IEnumerable<Animation> animations) : base(entity, texture)
         {
-            if (animations == null) 
+            if (animations == null)
             {
                 throw new ArgumentNullException(nameof(animations));
             }
@@ -22,38 +23,38 @@ namespace Engine.Graphics
             if (!animations.Any())
             {
                 throw new ArgumentException($"{nameof(animations)} must have at least one animation");
-            }            
+            }
 
             _animations = animations.ToArray();
 
             ResetAnimation(_animations[0]);
         }
 
-        public float Speed 
-        { 
-            get; 
-            set; 
+        public float Speed
+        {
+            get;
+            set;
         } = Animation.FpsToSpeed(4);
 
-        public Animation CurrentAnimation 
+        public Animation CurrentAnimation
         {
             get;
             private set;
         }
 
-        public int CurrentFrame 
+        public int CurrentFrame
         {
             get;
             private set;
         }
 
-        public bool CurrentAnimationFinished 
-        { 
-            get; 
-            private set; 
+        public bool CurrentAnimationFinished
+        {
+            get;
+            private set;
         }
 
-        public bool IsPaused 
+        public bool IsPaused
         {
             get;
             set;
@@ -61,11 +62,11 @@ namespace Engine.Graphics
 
         public void Play(string animationName)
         {
-            if (!StringComparer.OrdinalIgnoreCase.Equals(animationName, CurrentAnimation?.Name) || CurrentAnimationFinished) 
+            if (!StringComparer.OrdinalIgnoreCase.Equals(animationName, CurrentAnimation?.Name) || CurrentAnimationFinished)
             {
-                foreach (var animation in _animations) 
+                foreach (var animation in _animations)
                 {
-                    if (StringComparer.OrdinalIgnoreCase.Equals(animation.Name, animationName)) 
+                    if (StringComparer.OrdinalIgnoreCase.Equals(animation.Name, animationName))
                     {
                         ResetAnimation(animation);
                         return;
@@ -95,17 +96,17 @@ namespace Engine.Graphics
 
         public override void OnPostUpdate(GameTime gameTime)
         {
-            if (IsPaused) 
+            if (IsPaused)
             {
                 return;
             }
 
-            if (CurrentAnimationFinished) 
+            if (CurrentAnimationFinished)
             {
                 return;
             }
 
-            if ((_timer += gameTime.GetDeltaTime()) <= Speed) 
+            if ((_timer += gameTime.GetDeltaTime()) <= Speed)
             {
                 return;
             }
@@ -121,7 +122,7 @@ namespace Engine.Graphics
                     CurrentAnimationFinished = true;
                 }
             }
-            else 
+            else
             {
                 CurrentFrame++;
             }

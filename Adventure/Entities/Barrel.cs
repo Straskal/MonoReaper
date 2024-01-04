@@ -1,10 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine;
+using Engine.Extensions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Engine;
-using Engine.Collision;
-using Engine.Graphics;
-
 using static Adventure.Constants;
 
 namespace Adventure.Components

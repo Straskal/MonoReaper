@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Engine;
-using Engine.Graphics;
 
 namespace Adventure
 {
@@ -29,7 +28,7 @@ namespace Adventure
 
             if (GUI.PrimaryButton(1, "Start", 100, 120)) 
             {
-                Screens.SetTop(new LevelTransitionScreen(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
+                Application.ChangeScreen(new LevelTransitionScreen(Application, LevelLoader.LoadLevel(Application, "Levels/world/level_0")));
             }
 
             if (GUI.DangerButton(2, "Exit", 100, 150))

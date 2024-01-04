@@ -1,12 +1,8 @@
 ﻿using System;
-using Engine.Collision;
 using Microsoft.Xna.Framework;
 
 namespace Engine
 {
-    /// <summary>
-    /// A rectangle containing floating point position and size.
-    /// </summary>
     public struct RectangleF
     {
         public float X;
@@ -22,12 +18,10 @@ namespace Engine
         public readonly Vector2 TopRight => new(Right, Top);
         public readonly Vector2 BottomLeft => new(Left, Bottom);
         public readonly Vector2 BottomRight => new(Right, Bottom);
-        public readonly Vector2 Center => new(X + Width / 2f, Y + Height / 2f);
+        public readonly Vector2 Center => new(X + Width * 0.5f, Y + Height * 0.5f);
         public readonly Vector2 Position => new(X, Y);
         public readonly Vector2 Size => new(Width, Height);
-        public readonly Vector2 HalfSize => new(Width / 2f, Height / 2f);
-        public readonly Vector2 Min => TopLeft;
-        public readonly Vector2 Max => BottomRight;
+        public readonly Vector2 HalfSize => Size * 0.5f;
 
         public RectangleF(float x, float y)
         {

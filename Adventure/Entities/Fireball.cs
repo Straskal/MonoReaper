@@ -1,6 +1,4 @@
 ﻿using Engine;
-using Engine.Collision;
-using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using static Adventure.Constants;

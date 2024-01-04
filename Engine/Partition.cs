@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Engine.Graphics;
 
-namespace Engine.Collision
+namespace Engine
 {
     /// <summary>
     /// This class is used to organize boxes by position for efficient spatial queries.

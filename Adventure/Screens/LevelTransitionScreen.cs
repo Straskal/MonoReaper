@@ -1,5 +1,5 @@
 ﻿using Engine;
-using Engine.Graphics;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 
 namespace Adventure

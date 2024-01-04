@@ -1,9 +1,8 @@
-﻿using Engine.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace Engine.Collision
+namespace Engine
 {
     public abstract class Collider
     {
@@ -56,7 +55,7 @@ namespace Engine.Collision
         public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
         public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
 
-        public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
         {
         }
 

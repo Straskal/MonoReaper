@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Graphics
+namespace Engine
 {
     /// <summary>
     /// This component will add particles to an entity.
@@ -29,12 +30,12 @@ namespace Engine.Graphics
             SourceRectangle = sourceRectangle;
         }
 
-        public Entity Entity 
+        public Entity Entity
         {
             get;
         }
 
-        public Texture2D Texture 
+        public Texture2D Texture
         {
             get;
         }
@@ -123,8 +124,8 @@ namespace Engine.Graphics
         {
             var origin = Entity.Position;
 
-            var vx = (float)(App.Instance.Random.NextDouble() * Velocity.X - Velocity.X / 2);
-            var vy = (float)(App.Instance.Random.NextDouble() * Velocity.Y - Velocity.Y / 2);
+            var vx = (float)(App.Random.NextDouble() * Velocity.X - Velocity.X / 2);
+            var vy = (float)(App.Random.NextDouble() * Velocity.Y - Velocity.Y / 2);
 
             var particle = new Particle
             {

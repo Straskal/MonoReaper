@@ -1,6 +1,5 @@
 ﻿using Adventure.Content;
 using Engine;
-using Engine.Collision;
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -40,7 +39,7 @@ namespace Adventure.Components
         {
             if (body.LayerMask == EntityLayers.Player) 
             {
-                Level.Screens.SetTop(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
+                Level.Application.ChangeScreen(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
             }
         }
     }

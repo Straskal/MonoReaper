@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Engine.Collision
+namespace Engine
 {
     public readonly ref struct Collision
     {
-        public static Collision Empty 
+        public static Collision Empty
         {
             get => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
         }
@@ -31,7 +31,7 @@ namespace Engine.Collision
         public readonly float Length;
         public readonly float RemainingTime;
 
-        public readonly bool IsEmpty 
+        public readonly bool IsEmpty
         {
             get => Time == float.PositiveInfinity;
         }

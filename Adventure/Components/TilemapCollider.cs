@@ -1,6 +1,4 @@
 ﻿using Engine;
-using Engine.Collision;
-using Engine.Graphics;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -96,11 +94,11 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public override void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             foreach (var box in _colliders) 
             {
-                box.OnDebugDraw(renderer, gameTime);
+                box.DebugDraw(renderer, gameTime);
             }
         }
     }
