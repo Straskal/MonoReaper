@@ -6,7 +6,7 @@ namespace Engine
 {
     public abstract class Collider
     {
-        internal List<Point> PartitionCellPoints { get; } = new();
+        internal List<Point> Cells { get; } = new();
 
         public Collider(Entity entity)
         {

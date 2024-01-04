@@ -25,7 +25,6 @@ namespace Engine
             {
                 entity.Level = Level;
                 entity.Position = position;
-
                 entities.Add(entity);
                 entityAddedHandler?.Invoke(entity);
             }

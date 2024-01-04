@@ -7,42 +7,42 @@ namespace Engine
     public sealed class Partition
     {
         private readonly Dictionary<Point, HashSet<Collider>> cells = new();
+        private readonly int cellSize;
+        private readonly float inverseCellSize;
 
         public Partition(int cellSize)
         {
-            CellSize = cellSize;
+            this.cellSize = cellSize;
+            inverseCellSize = 1f / cellSize;
         }
 
-        public int CellSize { get; }
-
-        public void Add(Collider box)
+        public void Add(Collider collider)
         {
-            if (box.PartitionCellPoints.Count != 0)
+            if (collider.Cells.Count != 0)
             {
                 throw new InvalidOperationException("Cannot add box that is already added to partition.");
             }
 
-            box.PartitionCellPoints.AddRange(GetCellsForRectangle(box.Bounds));
-
-            foreach (var point in box.PartitionCellPoints)
+            foreach (var point in GetIntersectingCells(collider.Bounds))
             {
-                GetCellAtPoint(point).Add(box);
+                collider.Cells.Add(point);
+                GetCellAtPoint(point).Add(collider);
             }
         }
 
-        public void Remove(Collider box)
+        public void Remove(Collider collider)
         {
-            if (box.PartitionCellPoints.Count == 0)
+            if (collider.Cells.Count == 0)
             {
                 throw new InvalidOperationException("Cannot remove box that isn't contained in partition.");
             }
 
-            foreach (var point in box.PartitionCellPoints)
+            foreach (var point in collider.Cells)
             {
-                GetCellAtPoint(point).Remove(box);
+                GetCellAtPoint(point).Remove(collider);
             }
 
-            box.PartitionCellPoints.Clear();
+            collider.Cells.Clear();
         }
 
         public void Update(Collider box)
@@ -53,26 +53,29 @@ namespace Engine
 
         public IEnumerable<Collider> Query(Vector2 position)
         {
-            return QueryCells(GetCellsForRectangle(new RectangleF(position.X, position.Y, 1, 1)));
+            return GetCellAtPoint(position.ToPoint());
         }
 
         public IEnumerable<Collider> Query(RectangleF bounds)
         {
-            return QueryCells(GetCellsForRectangle(bounds));
+            return QueryCells(GetIntersectingCells(bounds));
         }
 
-        private List<Point> GetCellsForRectangle(RectangleF bounds)
+        private List<Point> GetIntersectingCells(RectangleF bounds)
         {
             var result = new List<Point>();
-            var min = Vector2.Floor(bounds.TopLeft / CellSize).ToPoint();
-            var max = Vector2.Floor(bounds.BottomRight / CellSize).ToPoint();
+            var min = Vector2.Floor(bounds.TopLeft * inverseCellSize).ToPoint();
+            var max = Vector2.Floor(bounds.BottomRight * inverseCellSize).ToPoint();
             var length = max - min;
+            var current = new Point();
 
             for (int y = 0; y <= length.Y; y++)
             {
                 for (int x = 0; x <= length.X; x++)
                 {
-                    result.Add(new Point(min.X + x, min.Y + y));
+                    current.X = min.X + x;
+                    current.Y = min.Y + y;
+                    result.Add(current);
                 }
             }
 
@@ -110,11 +113,11 @@ namespace Engine
             {
                 var row = kvp.Key.Y;
                 var col = kvp.Key.X;
-                var y = row * CellSize;
-                var x = col * CellSize;
+                var y = row * cellSize;
+                var x = col * cellSize;
                 var opacity = kvp.Value.Count > 0 ? 0.8f : 0.05f;
 
-                renderer.DrawRectangleOutline(new Rectangle(x, y, CellSize - 1, CellSize - 1), Color.DarkBlue * opacity);
+                renderer.DrawRectangleOutline(new Rectangle(x, y, cellSize - 1, cellSize - 1), Color.DarkBlue * opacity);
             }
         }
     }
