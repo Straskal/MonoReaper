@@ -32,6 +32,7 @@ namespace Engine
         public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
         public Screen Screen { get; private set; }
+        public bool IsDebugDrawEnabled { get; set; }
 
         protected override void Initialize()
         {
@@ -52,7 +53,7 @@ namespace Engine
             BackBuffer.Update();
             Input.Update(BackBuffer);
             _coroutines.Update();
-            Screen?.Update(gameTime);
+            UpdateScreen(gameTime);
             HandleScreenChange();
         }
 
@@ -61,13 +62,23 @@ namespace Engine
             Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
             Renderer.SetViewport(BackBuffer.FullViewport);
             Renderer.Clear();
-            Screen?.Draw(Renderer, gameTime);
+            DrawScreen(gameTime);
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
             Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
             Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
             Renderer.EndDraw();
+        }
+
+        protected virtual void UpdateScreen(GameTime gameTime) 
+        {
+            Screen?.Update(gameTime);
+        }
+
+        protected virtual void DrawScreen(GameTime gameTime)
+        {
+            Screen?.Draw(Renderer, gameTime);
         }
 
         public void ChangeScreen(Screen screen) 

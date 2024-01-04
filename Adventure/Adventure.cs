@@ -8,12 +8,18 @@ namespace Adventure
 {
     internal sealed class Adventure : App
     {
+        private readonly PauseScreen _pausedScreen = new();
+
         public Adventure() : base(256, 256, ResolutionScaleMode.Viewport)
         {
+            Instance = this;
             Window.Title = "Adventure Game 2000";
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
         }
+
+        public static Adventure Instance { get; private set; }
+        public static bool IsPaused { get; set; }
 
         protected override void Initialize()
         {
@@ -36,7 +42,35 @@ namespace Adventure
                 GraphicsDeviceManager.ApplyChanges();
             }
 
+            if (Input.IsKeyPressed(Keys.Escape) && Screen is Level) 
+            {
+                IsPaused = !IsPaused;
+            }
+
+            if (Input.IsKeyPressed(Keys.OemTilde))
+            {
+                IsDebugDrawEnabled = !IsDebugDrawEnabled;
+            }
+
             base.Update(gameTime);
+        }
+
+        protected override void UpdateScreen(GameTime gameTime)
+        {
+            if (!IsPaused) 
+            {
+                base.UpdateScreen(gameTime);
+            } 
+        }
+
+        protected override void DrawScreen(GameTime gameTime)
+        {
+            base.DrawScreen(gameTime);
+
+            if (IsPaused) 
+            {
+                _pausedScreen.Draw(Renderer, gameTime);
+            }
         }
 
         private void LoadSharedContent()
