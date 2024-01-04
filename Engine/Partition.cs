@@ -4,14 +4,8 @@ using Microsoft.Xna.Framework;
 
 namespace Engine
 {
-    /// <summary>
-    /// This class is used to organize boxes by position for efficient spatial queries.
-    /// </summary>
     public sealed class Partition
     {
-        /// <summary>
-        /// Store boxes in their respective cell.
-        /// </summary>
         private readonly Dictionary<Point, HashSet<Collider>> _cells = new();
 
         public Partition(int cellSize)
@@ -19,9 +13,6 @@ namespace Engine
             CellSize = cellSize;
         }
 
-        /// <summary>
-        /// Gets the size of the partitions cells.
-        /// </summary>
         public int CellSize { get; }
 
         public void Add(Collider box)

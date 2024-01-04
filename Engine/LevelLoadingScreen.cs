@@ -9,10 +9,7 @@ namespace Engine
             Level = level;
         }
 
-        public Level Level 
-        {
-            get;
-        }
+        public Level Level { get; }
 
         public override void Start()
         {
@@ -22,13 +19,13 @@ namespace Engine
 
         public override void Update(GameTime gameTime)
         {
-            if (Level.Status == LevelLoadStatus.Loaded && CanStartNextLevel()) 
+            if (Level.Status == LevelLoadStatus.Loaded && CanStartNextLevel())
             {
                 Application.ChangeScreen(Level);
             }
         }
 
-        protected virtual bool CanStartNextLevel() 
+        protected virtual bool CanStartNextLevel()
         {
             return true;
         }

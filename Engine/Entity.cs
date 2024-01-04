@@ -5,41 +5,12 @@ namespace Engine
 {
     public class Entity
     {
-        public Level Level
-        {
-            get;
-            internal set;
-        }
-
-        public Origin Origin
-        {
-            get;
-            set;
-        } = Origin.Center;
-
-        public Vector2 Position
-        {
-            get;
-            set;
-        }
-
-        public Collider Collider
-        {
-            get;
-            protected set;
-        }
-
-        public GraphicsComponent GraphicsComponent
-        {
-            get;
-            protected set;
-        }
-
-        public bool IsDestroyed
-        {
-            get;
-            internal set;
-        }
+        public Level Level { get; internal set; }
+        public Origin Origin { get; set; } = Origin.Center;
+        public Vector2 Position { get; set; }
+        public Collider Collider { get; protected set; }
+        public GraphicsComponent GraphicsComponent { get; protected set; }
+        public bool IsDestroyed { get; internal set; }
 
         internal void Load(ContentManager content)
         {

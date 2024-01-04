@@ -6,6 +6,8 @@ namespace Engine
 {
     public abstract class Collider
     {
+        internal List<Point> PartitionCellPoints { get; } = new();
+
         public Collider(Entity entity)
         {
             Entity = entity;
@@ -13,26 +15,9 @@ namespace Engine
 
         public event CollidedWithCallback CollidedWith;
 
-        internal List<Point> PartitionCellPoints
-        {
-            get;
-        } = new();
-
-        public Entity Entity
-        {
-            get;
-        }
-
-        public int LayerMask
-        {
-            get;
-            set;
-        }
-
-        public abstract RectangleF Bounds
-        {
-            get;
-        }
+        public Entity Entity { get; }
+        public int LayerMask { get; set; }
+        public abstract RectangleF Bounds { get; }
 
         public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {

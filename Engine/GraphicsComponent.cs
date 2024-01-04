@@ -15,13 +15,7 @@ namespace Engine
             }
         }
 
-        public static GraphicsComponent Empty { get; } = new EmptyGraphicsComponent();
-
-        public int DrawOrder
-        {
-            get;
-            set;
-        }
+        public int DrawOrder { get; set; }
 
         public virtual void OnPostUpdate(GameTime gameTime)
         {

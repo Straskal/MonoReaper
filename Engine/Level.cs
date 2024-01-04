@@ -3,9 +3,6 @@ using Microsoft.Xna.Framework;
 
 namespace Engine
 {
-    /// <summary>
-    /// This class represents a level in the game, which handles tracking entities and components.
-    /// </summary>
     public class Level : Screen
     {
         private Coroutine _coroutine;
@@ -20,41 +17,13 @@ namespace Engine
             Partition = new Partition(cellSize);
         }
 
-        internal ContentManagerExtended Content
-        {
-            get;
-        }
-
-        internal Entities Entities 
-        {
-            get;
-        }
-
-        public Camera Camera 
-        {
-            get;
-        }
-
-        public Partition Partition 
-        {
-            get;
-        }
-
-        public int Width 
-        {
-            get; 
-        }
-
-        public int Height 
-        {
-            get;
-        }
-
-        public LevelLoadStatus Status 
-        { 
-            get; 
-            private set;
-        }
+        internal ContentManagerExtended Content { get; }
+        internal Entities Entities { get; }
+        public Camera Camera { get; }
+        public Partition Partition { get; }
+        public int Width { get; }
+        public int Height { get; }
+        public LevelLoadStatus Status { get; private set; }
 
         public void Spawn(Entity entity)
         {

@@ -6,9 +6,9 @@ namespace Engine
 {
     public class App : Game
     {
-        private readonly CoroutineRunner coroutines = new();
+        private readonly CoroutineRunner _coroutines = new();
 
-        private Screen nextScreen;
+        private Screen _nextScreen;
 
         public App(int resolutionWidth, int resolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
@@ -51,7 +51,7 @@ namespace Engine
         {
             BackBuffer.Update();
             Input.Update(BackBuffer);
-            coroutines.Update();
+            _coroutines.Update();
             Screen?.Update(gameTime);
             HandleScreenChange();
         }
@@ -72,27 +72,27 @@ namespace Engine
 
         public void ChangeScreen(Screen screen) 
         {
-            nextScreen = screen;
+            _nextScreen = screen;
         }
 
         public Coroutine StartCoroutine(IEnumerator routine)
         {
-            return coroutines.Start(routine);
+            return _coroutines.Start(routine);
         }
 
         public void StopCoroutine(Coroutine coroutine)
         {
-            coroutines.Stop(coroutine);
+            _coroutines.Stop(coroutine);
         }
 
         private void HandleScreenChange() 
         {
-            if (nextScreen != null) 
+            if (_nextScreen != null) 
             {
                 Screen?.Stop();
-                Screen = nextScreen;
+                Screen = _nextScreen;
                 Screen?.Start();
-                nextScreen = null;
+                _nextScreen = null;
             }
         }
     }

@@ -5,9 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine
 {
-    /// <summary>
-    /// This component will add particles to an entity.
-    /// </summary>
     public sealed class Particles : GraphicsComponent
     {
         private struct Particle
@@ -30,56 +27,15 @@ namespace Engine
             SourceRectangle = sourceRectangle;
         }
 
-        public Entity Entity
-        {
-            get;
-        }
-
-        public Texture2D Texture
-        {
-            get;
-        }
-
-        public Rectangle SourceRectangle
-        {
-            get;
-        }
-
-        public Vector2 Velocity
-        {
-            get;
-            set;
-        }
-
-        public float AngularVelocity
-        {
-            get;
-            set;
-        }
-
-        public int MaxParticles
-        {
-            get;
-            set;
-        } = 10;
-
-        public Color MinColor
-        {
-            get;
-            set;
-        }
-
-        public Color MaxColor
-        {
-            get;
-            set;
-        }
-
-        public float MaxTime
-        {
-            get;
-            set;
-        }
+        public Entity Entity { get; }
+        public Texture2D Texture { get; }
+        public Rectangle SourceRectangle { get; }
+        public Vector2 Velocity { get; set; }
+        public float AngularVelocity { get; set; }
+        public int MaxParticles { get; set; } = 10;
+        public Color MinColor { get; set; }
+        public Color MaxColor { get; set; }
+        public float MaxTime { get; set; }
 
         public override void OnPostUpdate(GameTime gameTime)
         {

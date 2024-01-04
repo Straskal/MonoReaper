@@ -18,11 +18,7 @@ namespace Engine
             Level = level;
         }
 
-
-        public Level Level 
-        {
-            get;
-        }
+        public Level Level { get; }
 
         public void Spawn(Entity entity, Vector2 position)
         {

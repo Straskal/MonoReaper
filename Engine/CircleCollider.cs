@@ -17,21 +17,9 @@ namespace Engine
             LayerMask = layerMask;
         }
 
-        public Vector2 Position
-        {
-            get;
-            set;
-        }
-
-        public float Radius
-        {
-            get;
-        }
-
-        public CircleF Circle
-        {
-            get => new(Bounds.Center, Radius);
-        }
+        public Vector2 Position { get; set; }
+        public float Radius { get; set; }
+        public CircleF Circle { get => new(Bounds.Center, Radius); }
 
         public override RectangleF Bounds
         {

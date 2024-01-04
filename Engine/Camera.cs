@@ -2,9 +2,6 @@
 
 namespace Engine
 {
-    /// <summary>
-    /// This class can manipulate the view.
-    /// </summary>
     public sealed class Camera
     {
         private readonly BackBuffer _backBuffer;
@@ -25,9 +22,6 @@ namespace Engine
 
         private Vector2 _position;
 
-        /// <summary>
-        /// Gets or sets the camera's position
-        /// </summary>
         public Vector2 Position
         {
             get => _position;
@@ -40,9 +34,6 @@ namespace Engine
 
         private float _zoom = 1f;
 
-        /// <summary>
-        /// Gets or sets the camera's zoom
-        /// </summary>
         public float Zoom
         {
             get => _zoom;
@@ -55,9 +46,6 @@ namespace Engine
 
         private float _rotation;
 
-        /// <summary>
-        /// Gets or sets the camera's rotation
-        /// </summary>
         public float Rotation
         {
             get => _rotation;
@@ -70,9 +58,6 @@ namespace Engine
 
         private Matrix _transformationMatrix;
 
-        /// <summary>
-        /// Gets the camera's transformation matrix
-        /// </summary>
         public Matrix TransformationMatrix
         {
             get
@@ -104,11 +89,6 @@ namespace Engine
             }
         }
 
-        /// <summary>
-        /// Transforms a world position to screen position.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 ToScreen(Vector2 position)
         {
             position.X += _backBuffer.LetterboxViewport.X;
@@ -117,11 +97,6 @@ namespace Engine
             return Vector2.Transform(position, TransformationMatrix * _backBuffer.VirtualBackBufferScaleMatrix);
         }
 
-        /// <summary>
-        /// Transforms a screen position to world position.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 ToWorld(Vector2 position)
         {
             position.X -= _backBuffer.LetterboxViewport.X;

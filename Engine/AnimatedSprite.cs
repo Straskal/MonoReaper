@@ -30,35 +30,11 @@ namespace Engine
             ResetAnimation(_animations[0]);
         }
 
-        public float Speed
-        {
-            get;
-            set;
-        } = Animation.FpsToSpeed(4);
-
-        public Animation CurrentAnimation
-        {
-            get;
-            private set;
-        }
-
-        public int CurrentFrame
-        {
-            get;
-            private set;
-        }
-
-        public bool CurrentAnimationFinished
-        {
-            get;
-            private set;
-        }
-
-        public bool IsPaused
-        {
-            get;
-            set;
-        }
+        public float Speed { get; set; } = Animation.FpsToSpeed(4);
+        public Animation CurrentAnimation { get; private set; }
+        public int CurrentFrame { get; private set; }
+        public bool CurrentAnimationFinished { get; private set; }
+        public bool IsPaused { get; set; }
 
         public void Play(string animationName)
         {

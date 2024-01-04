@@ -5,9 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine
 {
-    /// <summary>
-    /// The virtual screen that handles scaling logic for the target resolution.
-    /// </summary>
     public sealed class BackBuffer : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
@@ -42,95 +39,17 @@ namespace Engine
             VirtualBackBuffer = new RenderTarget2D(graphicsDevice, virtualBufferWidth, virtualBufferHeight);
         }
 
-        /// <summary>
-        /// Gets target resolution width
-        /// </summary>
-        public int Width
-        {
-            get;
-        }
+        public int Width { get; }
+        public int Height { get; }
+        public ResolutionScaleMode ScaleMode { get; }
+        public RenderTarget2D VirtualBackBuffer { get; }
+        public Viewport FullViewport { get; private set; }
+        public Viewport LetterboxViewport { get; private set; }
+        public Matrix ScaleMatrix { get; private set; }
+        public Matrix InvertedScaleMatrix { get; private set; }
+        public Matrix RendererScaleMatrix { get; private set; }
+        public Matrix VirtualBackBufferScaleMatrix { get; private set; }
 
-        /// <summary>
-        /// Gets the target resolution height
-        /// </summary>
-        public int Height
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the resolution scale mode
-        /// </summary>
-        public ResolutionScaleMode ScaleMode
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the virtual backbuffer render target
-        /// </summary>
-        public RenderTarget2D VirtualBackBuffer
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Gets the full display viewport
-        /// </summary>
-        public Viewport FullViewport
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the scaled, letterbox or pillarbox viewport
-        /// </summary>
-        public Viewport LetterboxViewport
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the screen's scale matrix
-        /// </summary>
-        public Matrix ScaleMatrix
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the screen's inverted scale matrix
-        /// </summary>
-        public Matrix InvertedScaleMatrix
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the renderer scale matrix
-        /// </summary>
-        public Matrix RendererScaleMatrix
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the viewport scale matrix
-        /// </summary>
-        public Matrix VirtualBackBufferScaleMatrix
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Updates the virtual screen resolution to match the window size.
-        /// </summary>
         public void Update()
         {
             var backBufferWidth = _graphicsDevice.PresentationParameters.BackBufferWidth;
@@ -163,11 +82,6 @@ namespace Engine
             }
         }
 
-        /// <summary>
-        /// Transforms a virtual screen position to screen position
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 Project(Vector2 position)
         {
             position.X += LetterboxViewport.X;
@@ -176,11 +90,6 @@ namespace Engine
             return Vector2.Transform(position, ScaleMatrix);
         }
 
-        /// <summary>
-        /// Transforms a screen position to a virtual screen position
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
         public Vector2 Unproject(Vector2 position)
         {
             position.X -= LetterboxViewport.X;
