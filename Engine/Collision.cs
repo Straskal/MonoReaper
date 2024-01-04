@@ -5,10 +5,7 @@ namespace Engine
 {
     public readonly ref struct Collision
     {
-        public static Collision Empty
-        {
-            get => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
-        }
+        public static Collision Empty => new(null, Vector2.Zero, Vector2.Zero, float.PositiveInfinity, Vector2.Zero);
 
         public Collision(Collider other, Vector2 velocity, Vector2 normal, float collisionTime, Vector2 position)
         {
@@ -31,10 +28,7 @@ namespace Engine
         public readonly float Length;
         public readonly float RemainingTime;
 
-        public readonly bool IsEmpty
-        {
-            get => Time == float.PositiveInfinity;
-        }
+        public readonly bool IsEmpty => Time == float.PositiveInfinity;
 
         public readonly Vector2 Ignore()
         {

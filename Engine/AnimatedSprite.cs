@@ -9,9 +9,8 @@ namespace Engine
 {
     public sealed class AnimatedSprite : Sprite
     {
-        private readonly Animation[] _animations;
-
-        private float _timer;
+        private readonly Animation[] animations;
+        private float timer;
 
         public AnimatedSprite(Entity entity, Texture2D texture, IEnumerable<Animation> animations) : base(entity, texture)
         {
@@ -25,9 +24,8 @@ namespace Engine
                 throw new ArgumentException($"{nameof(animations)} must have at least one animation");
             }
 
-            _animations = animations.ToArray();
-
-            ResetAnimation(_animations[0]);
+            this.animations = animations.ToArray();
+            ResetAnimation(this.animations[0]);
         }
 
         public float Speed { get; set; } = Animation.FpsToSpeed(4);
@@ -40,7 +38,7 @@ namespace Engine
         {
             if (!StringComparer.OrdinalIgnoreCase.Equals(animationName, CurrentAnimation?.Name) || CurrentAnimationFinished)
             {
-                foreach (var animation in _animations)
+                foreach (var animation in animations)
                 {
                     if (StringComparer.OrdinalIgnoreCase.Equals(animation.Name, animationName))
                     {
@@ -57,7 +55,7 @@ namespace Engine
         {
             if (animationNameHashCode != CurrentAnimation?.NameHashCode || CurrentAnimationFinished)
             {
-                foreach (var animation in _animations)
+                foreach (var animation in animations)
                 {
                     if (CurrentAnimation?.NameHashCode == animationNameHashCode)
                     {
@@ -72,17 +70,7 @@ namespace Engine
 
         public override void OnPostUpdate(GameTime gameTime)
         {
-            if (IsPaused)
-            {
-                return;
-            }
-
-            if (CurrentAnimationFinished)
-            {
-                return;
-            }
-
-            if ((_timer += gameTime.GetDeltaTime()) <= Speed)
+            if (IsPaused || CurrentAnimationFinished || (timer += gameTime.GetDeltaTime()) <= Speed)
             {
                 return;
             }
@@ -104,7 +92,7 @@ namespace Engine
             }
 
             SourceRectangle = CurrentAnimation.Frames[CurrentFrame];
-            _timer = 0;
+            timer = 0;
         }
 
         private void ResetAnimation(Animation animation)

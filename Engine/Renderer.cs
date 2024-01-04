@@ -9,12 +9,12 @@ namespace Engine
     /// </summary>
     public class Renderer
     {
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly BackBuffer _backBuffer;
-        private readonly SpriteBatch _spriteBatch;
+        private readonly GraphicsDevice graphicsDevice;
+        private readonly BackBuffer backBuffer;
+        private readonly SpriteBatch spriteBatch;
 
-        private Matrix _transformationMatrix;
-        private Effect _effect;
+        private Matrix transformationMatrix;
+        private Effect effect;
 
         /// <summary>
         /// A blank 1px x 1px white texture. Used for drawing rectangles and missing textures.
@@ -27,9 +27,9 @@ namespace Engine
 
         public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer)
         {
-            _graphicsDevice = graphicsDevice;
-            _backBuffer = backBuffer;
-            _spriteBatch = new SpriteBatch(graphicsDevice);
+            this.graphicsDevice = graphicsDevice;
+            this.backBuffer = backBuffer;
+            spriteBatch = new SpriteBatch(graphicsDevice);
 
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
             BlankTexture.SetData(new[] { Color.White });
@@ -37,7 +37,7 @@ namespace Engine
 
         internal void Dispose()
         {
-            _spriteBatch.Dispose();
+            spriteBatch.Dispose();
             BlankTexture.Dispose();
         }
 
@@ -47,7 +47,7 @@ namespace Engine
         /// <param name="renderTarget2D"></param>
         public void SetTarget(RenderTarget2D renderTarget2D)
         {
-            _graphicsDevice.SetRenderTarget(renderTarget2D);
+            graphicsDevice.SetRenderTarget(renderTarget2D);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Engine
         /// <param name="viewport"></param>
         public void SetViewport(Viewport viewport)
         {
-            _graphicsDevice.Viewport = viewport;
+            graphicsDevice.Viewport = viewport;
         }
 
         /// <summary>
@@ -64,25 +64,25 @@ namespace Engine
         /// </summary>
         public void Clear()
         {
-            _graphicsDevice.Clear(Color.Black);
+            graphicsDevice.Clear(Color.Black);
         }
 
         public void BeginDraw()
         {
-            _transformationMatrix = _backBuffer.RendererScaleMatrix;
+            transformationMatrix = backBuffer.RendererScaleMatrix;
             BeginSpriteBatch();
         }
 
         public void BeginDraw(Matrix transformationMatrix)
         {
-            _transformationMatrix = transformationMatrix;
+            this.transformationMatrix = transformationMatrix;
             BeginSpriteBatch();
         }
 
         public void EndDraw()
         {
-            _transformationMatrix = default;
-            _effect = null;
+            transformationMatrix = default;
+            effect = null;
             EndSpriteBatch();
         }
 
@@ -109,7 +109,7 @@ namespace Engine
         public void Draw(Texture2D texture, Vector2 position, Rectangle? source, Color color, SpriteEffects spriteEffects, Effect effect)
         {
             SwapEffectIfNeeded(effect);
-            _spriteBatch.Draw(texture, position, source, color, 0f, Vector2.Zero, Vector2.One, spriteEffects, 0);
+            spriteBatch.Draw(texture, position, source, color, 0f, Vector2.Zero, Vector2.One, spriteEffects, 0);
         }
 
         public void Draw(Texture2D texture, Rectangle destination, Rectangle source)
@@ -130,27 +130,27 @@ namespace Engine
         public void Draw(Texture2D texture, Rectangle destination, Rectangle source, Color color, SpriteEffects spriteEffects, Effect effect)
         {
             SwapEffectIfNeeded(effect);
-            _spriteBatch.Draw(texture, destination, source, color, 0f, Vector2.Zero, spriteEffects, 0);
+            spriteBatch.Draw(texture, destination, source, color, 0f, Vector2.Zero, spriteEffects, 0);
         }
 
         public void DrawString(SpriteFont spriteFont, string text, float x, float y, Color color)
         {
-            _spriteBatch.DrawString(spriteFont, text, new Vector2(x, y), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(spriteFont, text, new Vector2(x, y), color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
         public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color)
         {
-            _spriteBatch.DrawString(spriteFont, text, position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(spriteFont, text, position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
         public void DrawRectangle(Rectangle rectangle, Color color)
         {
-            _spriteBatch.Draw(BlankTexture, rectangle, color);
+            spriteBatch.Draw(BlankTexture, rectangle, color);
         }
 
         public void DrawRectangle(int x, int y, int width, int height, Color color)
         {
-            _spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
+            spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
         }
 
         public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
@@ -166,7 +166,7 @@ namespace Engine
             var origin = new Vector2(0f, 0.5f);
             var scale = new Vector2(length, thickness);
 
-            _spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         public void DrawRectangleOutline(Rectangle rectangle, Color color)
@@ -195,29 +195,29 @@ namespace Engine
         /// <param name="effect"></param>
         private void SwapEffectIfNeeded(Effect effect)
         {
-            if (_effect != effect)
+            if (this.effect != effect)
             {
-                EndSpriteBatch();
-                _effect = effect;
-                BeginSpriteBatch();
+                this.EndSpriteBatch();
+                this.effect = effect;
+                this.BeginSpriteBatch();
             }
         }
 
         private void BeginSpriteBatch()
         {
-            _spriteBatch.Begin(
+            spriteBatch.Begin(
                  sortMode: SpriteSortMode.Deferred,
                  blendState: BlendState.AlphaBlend,
                  samplerState: SamplerState.PointClamp,
                  depthStencilState: DepthStencilState.Default,
                  rasterizerState: RasterizerState.CullCounterClockwise,
-                 effect: _effect,
-                 transformMatrix: _transformationMatrix);
+                 effect: effect,
+                 transformMatrix: transformationMatrix);
         }
 
         private void EndSpriteBatch()
         {
-            _spriteBatch.End();
+            spriteBatch.End();
         }
     }
 }

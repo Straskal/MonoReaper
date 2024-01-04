@@ -4,16 +4,15 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    internal sealed class Entities
+    internal sealed class EntityManager
     {
-        private readonly List<Entity> _entities = new();
-        private readonly List<Entity> _entitiesToRemove = new();
-
+        private readonly List<Entity> entities = new();
+        private readonly List<Entity> entitiesToRemove = new();
         private delegate void EntityAddedHandler(Entity entity);
-        private EntityAddedHandler _entityAddedHandler;
-        private bool _shouldSortComponents;
+        private EntityAddedHandler entityAddedHandler;
+        private bool shouldSortComponents;
 
-        public Entities(Level level)
+        public EntityManager(Level level)
         {
             Level = level;
         }
@@ -27,8 +26,8 @@ namespace Engine
                 entity.Level = Level;
                 entity.Position = position;
 
-                _entities.Add(entity);
-                _entityAddedHandler?.Invoke(entity);
+                entities.Add(entity);
+                entityAddedHandler?.Invoke(entity);
             }
         }
 
@@ -37,7 +36,7 @@ namespace Engine
             if (!entity.IsDestroyed)
             {
                 entity.IsDestroyed = true;
-                _entitiesToRemove.Add(entity);
+                entitiesToRemove.Add(entity);
             }
         }
 
@@ -45,9 +44,9 @@ namespace Engine
         {
             var currentAssetCount = Level.Content.LoadedAssetCount;
 
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].Load(Level.Content);
+                entities[i].Load(Level.Content);
 
                 if (currentAssetCount != Level.Content.LoadedAssetCount)
                 {
@@ -56,26 +55,26 @@ namespace Engine
                 }
             }
 
-            _entityAddedHandler = OnEntityAdded_PostLoad;
+            entityAddedHandler = OnEntityAdded_PostLoad;
 
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].Spawn();
+                entities[i].Spawn();
             }
 
-            _entityAddedHandler = OnEntityAdded_PostSpawn;
+            entityAddedHandler = OnEntityAdded_PostSpawn;
 
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].Start();
+                entities[i].Start();
             }
 
-            _entityAddedHandler = OnEntityAdded_PostStart;
+            entityAddedHandler = OnEntityAdded_PostStart;
         }
 
         public void Stop()
         {
-            foreach (var entity in _entities.ToArray())
+            foreach (var entity in entities.ToArray())
             {
                 entity.End();
             }
@@ -83,14 +82,14 @@ namespace Engine
 
         public void Update(GameTime gameTime)
         {
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].Update(gameTime);
+                entities[i].Update(gameTime);
             }
 
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].PostUpdate(gameTime);
+                entities[i].PostUpdate(gameTime);
             }
 
             ProcessDestroyedEntities();
@@ -100,17 +99,17 @@ namespace Engine
         {
             SortEntititesIfNeeded();
 
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].Draw(renderer, gameTime);
+                entities[i].Draw(renderer, gameTime);
             }
         }
 
         public void DebugDraw(Renderer renderer, GameTime gameTime)
         {
-            for (int i = 0; i < _entities.Count; i++)
+            for (int i = 0; i < entities.Count; i++)
             {
-                _entities[i].DebugDraw(renderer, gameTime);
+                entities[i].DebugDraw(renderer, gameTime);
             }
         }
 
@@ -134,23 +133,23 @@ namespace Engine
 
         private void ProcessDestroyedEntities()
         {
-            for (int i = 0; i < _entitiesToRemove.Count; i++)
+            for (int i = 0; i < entitiesToRemove.Count; i++)
             {
-                _entitiesToRemove[i].Destroy();
-                _entitiesToRemove[i].End();
-                _entitiesToRemove[i].Level = null;
-                _entities.Remove(_entitiesToRemove[i]);
+                entitiesToRemove[i].Destroy();
+                entitiesToRemove[i].End();
+                entitiesToRemove[i].Level = null;
+                entities.Remove(entitiesToRemove[i]);
             }
 
-            _entitiesToRemove.Clear();
+            entitiesToRemove.Clear();
         }
 
         private void SortEntititesIfNeeded()
         {
-            if (_shouldSortComponents)
+            if (shouldSortComponents)
             {
-                _entities.Sort(SortComponentsByZOrder);
-                _shouldSortComponents = false;
+                entities.Sort(SortComponentsByZOrder);
+                shouldSortComponents = false;
             }
         }
 

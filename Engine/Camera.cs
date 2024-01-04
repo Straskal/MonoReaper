@@ -4,105 +4,100 @@ namespace Engine
 {
     public sealed class Camera
     {
-        private readonly BackBuffer _backBuffer;
-
-        private Vector3 _translation;
-        private Vector3 _scale;
-        private Vector3 _center;
-        private Matrix _translationMatrix;
-        private Matrix _rotationMatrix;
-        private Matrix _scaleMatrix;
-        private Matrix _centerTranslationMatrix;
-        private bool _isDirty;
+        private readonly BackBuffer backBuffer;
+        private Vector3 translation;
+        private Vector3 scale;
+        private Vector3 center;
+        private Matrix translationMatrix;
+        private Matrix rotationMatrix;
+        private Matrix scaleMatrix;
+        private Matrix centerTranslationMatrix;
+        private bool isDirty;
 
         public Camera(BackBuffer backBuffer)
         {
-            _backBuffer = backBuffer;
+            this.backBuffer = backBuffer;
         }
 
-        private Vector2 _position;
-
+        private Vector2 position;
         public Vector2 Position
         {
-            get => _position;
+            get => position;
             set
             {
-                _position = value;
-                _isDirty = true;
+                position = value;
+                isDirty = true;
             }
         }
 
-        private float _zoom = 1f;
-
+        private float zoom = 1f;
         public float Zoom
         {
-            get => _zoom;
+            get => zoom;
             set
             {
-                _zoom = value;
-                _isDirty = true;
+                zoom = value;
+                isDirty = true;
             }
         }
 
-        private float _rotation;
-
+        private float rotation;
         public float Rotation
         {
-            get => _rotation;
+            get => rotation;
             set
             {
-                _rotation = value;
-                _isDirty = true;
+                rotation = value;
+                isDirty = true;
             }
         }
 
-        private Matrix _transformationMatrix;
-
+        private Matrix transformationMatrix;
         public Matrix TransformationMatrix
         {
             get
             {
-                if (_isDirty)
+                if (isDirty)
                 {
-                    _translation.X = -Position.X;
-                    _translation.Y = -Position.Y;
-                    _translation.Z = 0f;
+                    translation.X = -Position.X;
+                    translation.Y = -Position.Y;
+                    translation.Z = 0f;
 
-                    _scale.X = Zoom;
-                    _scale.Y = Zoom;
-                    _scale.Z = 1f;
+                    scale.X = Zoom;
+                    scale.Y = Zoom;
+                    scale.Z = 1f;
 
-                    _center.X = _backBuffer.Width * 0.5f;
-                    _center.Y = _backBuffer.Height * 0.5f;
-                    _center.Z = 0f;
+                    center.X = backBuffer.Width * 0.5f;
+                    center.Y = backBuffer.Height * 0.5f;
+                    center.Z = 0f;
 
-                    Matrix.CreateTranslation(ref _translation, out _translationMatrix);
-                    Matrix.CreateRotationZ(Rotation, out _rotationMatrix);
-                    Matrix.CreateScale(ref _scale, out _scaleMatrix);
-                    Matrix.CreateTranslation(ref _center, out _centerTranslationMatrix);
+                    Matrix.CreateTranslation(ref translation, out translationMatrix);
+                    Matrix.CreateRotationZ(Rotation, out rotationMatrix);
+                    Matrix.CreateScale(ref scale, out scaleMatrix);
+                    Matrix.CreateTranslation(ref center, out centerTranslationMatrix);
 
-                    _transformationMatrix = _translationMatrix * _rotationMatrix * _scaleMatrix * _centerTranslationMatrix * _backBuffer.RendererScaleMatrix;
-                    _isDirty = false;
+                    transformationMatrix = translationMatrix * rotationMatrix * scaleMatrix * centerTranslationMatrix * backBuffer.RendererScaleMatrix;
+                    isDirty = false;
                 }
 
-                return _transformationMatrix;
+                return transformationMatrix;
             }
         }
 
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += _backBuffer.LetterboxViewport.X;
-            position.Y += _backBuffer.LetterboxViewport.Y;
+            position.X += backBuffer.LetterboxViewport.X;
+            position.Y += backBuffer.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, TransformationMatrix * _backBuffer.VirtualBackBufferScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix);
         }
 
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= _backBuffer.LetterboxViewport.X;
-            position.Y -= _backBuffer.LetterboxViewport.Y;
+            position.X -= backBuffer.LetterboxViewport.X;
+            position.Y -= backBuffer.LetterboxViewport.Y;
 
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * _backBuffer.VirtualBackBufferScaleMatrix));
+            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix));
         }
     }
 }

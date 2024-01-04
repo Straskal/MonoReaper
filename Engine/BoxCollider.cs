@@ -39,10 +39,7 @@ namespace Engine
         public float Width { get; set; }
         public float Height { get; set; }
 
-        public override RectangleF Bounds
-        {
-            get => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
-        }
+        public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
 
         public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {

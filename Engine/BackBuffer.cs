@@ -7,14 +7,13 @@ namespace Engine
 {
     public sealed class BackBuffer : IDisposable
     {
-        private readonly GraphicsDevice _graphicsDevice;
-
-        private int _previousBackBufferWidth;
-        private int _previousBackBufferHeight;
+        private readonly GraphicsDevice graphicsDevice;
+        private int previousBackBufferWidth;
+        private int previousBackBufferHeight;
 
         public BackBuffer(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
         {
-            _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+            this.graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 
             Width = width;
             Height = height;
@@ -52,20 +51,20 @@ namespace Engine
 
         public void Update()
         {
-            var backBufferWidth = _graphicsDevice.PresentationParameters.BackBufferWidth;
-            var backBufferHeight = _graphicsDevice.PresentationParameters.BackBufferHeight;
+            var backBufferWidth = graphicsDevice.PresentationParameters.BackBufferWidth;
+            var backBufferHeight = graphicsDevice.PresentationParameters.BackBufferHeight;
 
-            if (!(backBufferWidth == _previousBackBufferWidth && backBufferHeight == _previousBackBufferHeight))
+            if (!(backBufferWidth == previousBackBufferWidth && backBufferHeight == previousBackBufferHeight))
             {
-                _previousBackBufferWidth = backBufferWidth;
-                _previousBackBufferHeight = backBufferHeight;
+                previousBackBufferWidth = backBufferWidth;
+                previousBackBufferHeight = backBufferHeight;
 
                 var scale = Math.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
 
                 ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
                 InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
-                FullViewport = _graphicsDevice.GetFullViewport();
-                LetterboxViewport = _graphicsDevice.GetLetterboxViewport(Width, Height);
+                FullViewport = graphicsDevice.GetFullViewport();
+                LetterboxViewport = graphicsDevice.GetLetterboxViewport(Width, Height);
 
                 switch (ScaleMode)
                 {

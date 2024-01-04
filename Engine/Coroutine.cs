@@ -5,29 +5,29 @@ namespace Engine
 {
     public sealed class Coroutine
     {
-        private readonly Stack<IEnumerator> _routines = new();
+        private readonly Stack<IEnumerator> routines = new();
 
         public Coroutine(IEnumerator routine)
         {
-            _routines.Push(routine);
+            routines.Push(routine);
         }
 
         public bool IsFinished { get; private set; }
 
         internal bool Update()
         {
-            if (!_routines.Peek().MoveNext())
+            if (!routines.Peek().MoveNext())
             {
-                _routines.Pop();
+                routines.Pop();
 
-                if (_routines.Count == 0)
+                if (routines.Count == 0)
                 {
                     IsFinished = true;
                 }
             }
-            else if (_routines.Peek().Current is IEnumerator enumerator)
+            else if (routines.Peek().Current is IEnumerator enumerator)
             {
-                _routines.Push(enumerator);
+                routines.Push(enumerator);
             }
 
             return IsFinished;

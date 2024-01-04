@@ -6,7 +6,7 @@ namespace Engine
 {
     public sealed class Partition
     {
-        private readonly Dictionary<Point, HashSet<Collider>> _cells = new();
+        private readonly Dictionary<Point, HashSet<Collider>> cells = new();
 
         public Partition(int cellSize)
         {
@@ -81,9 +81,9 @@ namespace Engine
 
         private HashSet<Collider> GetCellAtPoint(Point point)
         {
-            if (!_cells.TryGetValue(point, out var cell))
+            if (!cells.TryGetValue(point, out var cell))
             {
-                _cells[point] = cell = new HashSet<Collider>();
+                cells[point] = cell = new HashSet<Collider>();
             }
 
             return cell;
@@ -95,7 +95,7 @@ namespace Engine
 
             foreach (var point in cellPoints)
             {
-                if (_cells.TryGetValue(point, out var cell))
+                if (cells.TryGetValue(point, out var cell))
                 {
                     result.UnionWith(cell);
                 }
@@ -106,7 +106,7 @@ namespace Engine
 
         internal void DebugDraw(Renderer renderer)
         {
-            foreach (var kvp in _cells)
+            foreach (var kvp in cells)
             {
                 var row = kvp.Key.Y;
                 var col = kvp.Key.X;

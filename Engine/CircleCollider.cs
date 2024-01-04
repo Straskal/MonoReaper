@@ -21,10 +21,7 @@ namespace Engine
         public float Radius { get; set; }
         public CircleF Circle { get => new(Bounds.Center, Radius); }
 
-        public override RectangleF Bounds
-        {
-            get => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
-        }
+        public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
 
         public override void MoveToPosition(Vector2 position)
         {

@@ -5,37 +5,37 @@ namespace Engine
 {
     public sealed class CoroutineRunner
     {
-        private readonly List<Coroutine> _coroutines = new();
-        private readonly List<Coroutine> _coroutinesToRemove = new();
+        private readonly List<Coroutine> coroutines = new();
+        private readonly List<Coroutine> coroutinesToRemove = new();
 
         public Coroutine Start(IEnumerator enumerator) 
         {
             var coroutine = new Coroutine(enumerator);
-            _coroutines.Add(coroutine);
+            coroutines.Add(coroutine);
             return coroutine;
         }
 
         public void Stop(Coroutine coroutine) 
         {
-            _coroutinesToRemove.Add(coroutine);
+            coroutinesToRemove.Add(coroutine);
         }
 
         public void Update() 
         {
-            for (int i = 0; i < _coroutines.Count; i++) 
+            for (int i = 0; i < coroutines.Count; i++) 
             {
-                if (_coroutines[i].Update()) 
+                if (coroutines[i].Update()) 
                 {
-                    _coroutinesToRemove.Add(_coroutines[i]);
+                    coroutinesToRemove.Add(coroutines[i]);
                 }
             }
 
-            foreach (var coroutine in _coroutinesToRemove) 
+            foreach (var coroutine in coroutinesToRemove) 
             {
-                _coroutines.Remove(coroutine);
+                coroutines.Remove(coroutine);
             }
 
-            _coroutinesToRemove.Clear();
+            coroutinesToRemove.Clear();
         }
     }
 }

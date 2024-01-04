@@ -5,12 +5,12 @@ namespace Engine
 {
     public class Level : Screen
     {
-        private Coroutine _coroutine;
+        private Coroutine coroutine;
 
         public Level(App application, int cellSize, int width, int height) : base(application)
         {
             Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
-            Entities = new Entities(this);
+            Entities = new EntityManager(this);
             Width = width;
             Height = height;
             Camera = new Camera(application.BackBuffer);
@@ -18,7 +18,7 @@ namespace Engine
         }
 
         internal ContentManagerExtended Content { get; }
-        internal Entities Entities { get; }
+        internal EntityManager Entities { get; }
         public Camera Camera { get; }
         public Partition Partition { get; }
         public int Width { get; }
@@ -51,13 +51,13 @@ namespace Engine
                     Status = LevelLoadStatus.Loaded;
                 }
 
-                _coroutine = Application.StartCoroutine(LoadRoutine());
+                coroutine = Application.StartCoroutine(LoadRoutine());
             }
         }
 
         public override void Stop()
         {
-            Application.StopCoroutine(_coroutine);
+            Application.StopCoroutine(coroutine);
             Entities.Stop();
             Content.Unload();
         }

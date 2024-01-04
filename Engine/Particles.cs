@@ -18,7 +18,7 @@ namespace Engine
             public float Scale;
         }
 
-        private readonly List<Particle> _particles = new();
+        private readonly List<Particle> particles = new();
 
         public Particles(Entity entity, Texture2D texture, Rectangle sourceRectangle)
         {
@@ -40,22 +40,22 @@ namespace Engine
         public override void OnPostUpdate(GameTime gameTime)
         {
             var dt = gameTime.GetDeltaTime();
-            var diff = MaxParticles - _particles.Count;
+            var diff = MaxParticles - particles.Count;
 
             if (diff > 0)
             {
                 GenerateParticle();
             }
 
-            for (int i = 0; i < _particles.Count; i++)
+            for (int i = 0; i < particles.Count; i++)
             {
-                var particle = _particles[i];
+                var particle = particles[i];
 
                 particle.Time -= dt;
 
                 if (particle.Time <= 0f)
                 {
-                    _particles.RemoveAt(i);
+                    particles.RemoveAt(i);
                     i--;
                 }
                 else
@@ -63,14 +63,14 @@ namespace Engine
                     particle.Color = Color.Lerp(MaxColor, MinColor, particle.Time / MaxTime);
                     particle.Position += particle.Velocity * dt;
                     particle.Angle += particle.AngularVelocity * dt;
-                    _particles[i] = particle;
+                    particles[i] = particle;
                 }
             }
         }
 
         public override void OnDraw(Renderer renderer, GameTime gameTime)
         {
-            foreach (var particle in _particles)
+            foreach (var particle in particles)
             {
                 renderer.Draw(Texture, particle.Position, SourceRectangle, particle.Color);
             }
@@ -93,7 +93,7 @@ namespace Engine
                 Time = MaxTime
             };
 
-            _particles.Add(particle);
+            particles.Add(particle);
         }
     }
 }

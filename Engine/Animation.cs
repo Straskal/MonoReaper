@@ -12,7 +12,7 @@ namespace Engine
         }
 
         public string Name { get; }
-        public Rectangle[] Frames { get; init; } = Array.Empty<Rectangle>();
+        public Rectangle[] Frames { get; set; } = Array.Empty<Rectangle>();
         public bool Loop { get; set; }
         public int NameHashCode { get; }
 
