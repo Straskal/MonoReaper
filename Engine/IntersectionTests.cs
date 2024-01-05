@@ -75,12 +75,12 @@ namespace Engine
             var tmin = float.MinValue;
             var tmax = float.MaxValue;
 
-            if (!RayVsEdges(ray.Direction.X, ray.InverseDirection.X, ray.Position.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax))
+            if (!RayVsEdges(ray.Position.X, ray.Direction.X, ray.InverseDirection.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax))
             {
                 return false;
             }
 
-            if (!RayVsEdges(ray.Direction.Y, ray.InverseDirection.Y, ray.Position.Y, rectangle.TopLeft.Y, rectangle.BottomRight.Y, ref tmin, ref tmax))
+            if (!RayVsEdges(ray.Position.Y, ray.Direction.Y, ray.InverseDirection.Y, rectangle.TopLeft.Y, rectangle.BottomRight.Y, ref tmin, ref tmax))
             {
                 return false;
             }
@@ -91,7 +91,7 @@ namespace Engine
             return true;
         }
 
-        private static bool RayVsEdges(float direction, float inverseDirection, float position, float min, float max, ref float tmin, ref float tmax)
+        private static bool RayVsEdges(float position, float direction, float inverseDirection, float min, float max, ref float tmin, ref float tmax)
         {
             if (MathF.Abs(direction) < float.Epsilon && (position < min || position > max))
             {
