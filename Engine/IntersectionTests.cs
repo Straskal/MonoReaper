@@ -163,7 +163,7 @@ namespace Engine
 
         private static Vector2 GetNormal(Vector2 point, Vector2 center)
         {
-            return AddHackyCorrectionToNormal(Vector2.Normalize(point - center));
+            return Vector2.Normalize(point - center);
         }
 
         private static Vector2 GetNormal(Vector2 point, RectangleF rectangle)
@@ -188,18 +188,6 @@ namespace Engine
             }
 
             return normal;
-        }
-
-        private static Vector2 AddHackyCorrectionToNormal(Vector2 normal)
-        {
-            // This is kind of hacky, but add a correction so the collisions don't end up resolving into themselves.
-            // It's important to add the correction to the normal rather than the collision contact point.
-            // Adding a correction to the contact point will place objects into potentially invalid position,
-            // whereas the normal will slide the object into a potentially invalid position, which will be handled by the next
-            // collision iteration.
-            const float Correction = 0.0001f;
-
-            return normal + normal * Correction;
         }
     }
 }

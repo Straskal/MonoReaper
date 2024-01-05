@@ -1,17 +1,19 @@
 ﻿using Engine;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using System;
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
     public sealed class Fireball : Entity
     {
-        private Vector2 _velocity;
+        private Vector2 velocity;
 
         public Fireball(Vector2 velocity)
         {
-            _velocity = velocity;
+            this.velocity = velocity;
         }
 
         public static void Preload(ContentManager content) 
@@ -33,12 +35,14 @@ namespace Adventure.Components
                 MaxTime = 0.25f,
                 DrawOrder = 5
             };
-            SharedContent.Sounds.Shoot.Play();
+            var i = SharedContent.Sounds.Shoot.CreateInstance();
+            i.Pitch = Math.Clamp(App.Random.NextSingle(), 0.6f, 1f);
+            i.Play();
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            MoveAndCollide(ref _velocity, EntityLayers.Enemy | EntityLayers.Solid, HandleCollision);
+            MoveAndCollide(ref velocity, EntityLayers.Enemy | EntityLayers.Solid, HandleCollision);
         }
 
         private Vector2 HandleCollision(Collision collision)

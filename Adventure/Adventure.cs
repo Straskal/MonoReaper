@@ -8,7 +8,7 @@ namespace Adventure
 {
     internal sealed class Adventure : App
     {
-        private readonly PauseScreen _pausedScreen = new();
+        private readonly PauseScreen pause = new();
 
         public Adventure() : base(256, 256, ResolutionScaleMode.Viewport)
         {
@@ -49,7 +49,7 @@ namespace Adventure
 
             if (Input.IsKeyPressed(Keys.OemTilde))
             {
-                IsDebugDrawEnabled = !IsDebugDrawEnabled;
+                IsDebugModeEnabled = !IsDebugModeEnabled;
             }
 
             base.Update(gameTime);
@@ -69,7 +69,7 @@ namespace Adventure
 
             if (IsPaused) 
             {
-                _pausedScreen.Draw(Renderer, gameTime);
+                pause.Draw(Renderer, gameTime);
             }
         }
 

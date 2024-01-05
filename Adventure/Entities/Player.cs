@@ -13,22 +13,17 @@ namespace Adventure.Components
         private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
 
         public const float Speed = 1000f;
-        public const float MaxSpeed = 0.8f;
+        public const float MaxSpeed = 0.75f;
 
-        private Vector2 _direction = Vector2.One;
-        private Vector2 _velocity = Vector2.Zero;
+        private AnimatedSprite animatedSprite;
+        private Vector2 direction = Vector2.One;
+        private Vector2 velocity = Vector2.Zero;
 
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
             Collider = new CircleCollider(this, new Vector2(0f, 3f), 5f, EntityLayers.Player);
-            GraphicsComponent = AnimatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
-        }
-
-        public AnimatedSprite AnimatedSprite 
-        { 
-            get; 
-            private set; 
+            GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
         protected override void OnStart()
@@ -48,14 +43,13 @@ namespace Adventure.Components
                 movementInput.Normalize();
             }
 
-            AnimatedSprite.IsPaused = movementLength == 0f;
+            animatedSprite.IsPaused = movementLength == 0f;
+            direction = movementLength > 0f ? movementInput : direction;
+            velocity = movementInput * Speed * deltaTime;
+            velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
+            velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            _direction = movementLength > 0f ? movementInput : _direction;
-            _velocity = movementInput * Speed * deltaTime;
-            _velocity.X = MathHelper.Clamp(_velocity.X, -MaxSpeed, MaxSpeed);
-            _velocity.Y = MathHelper.Clamp(_velocity.Y, -MaxSpeed, MaxSpeed);
-
-            MoveAndCollide(ref _velocity, MovementCollisionLayerMask, HandleCollision);
+            MoveAndCollide(ref velocity, MovementCollisionLayerMask, HandleCollision);
             Animate();
             HandleInteractInput(deltaTime);
             CameraFollow(); 
@@ -76,7 +70,7 @@ namespace Adventure.Components
 
         private void ShootFireball(float deltaTime) 
         {
-            Level.Spawn(new Fireball(_direction * 100f * deltaTime), Collider.Bounds.Center + _direction);
+            Level.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
         private static Vector2 HandleCollision(Collision collision)
@@ -91,26 +85,26 @@ namespace Adventure.Components
 
         private void Animate()
         {
-            if (Math.Abs(_direction.X) > Math.Abs(_direction.Y))
+            if (Math.Abs(direction.X) > Math.Abs(direction.Y))
             {
-                if (_direction.X < 0f)
+                if (direction.X < 0f)
                 {
-                    AnimatedSprite.Play("walk_left");
+                    animatedSprite.Play("walk_left");
                 }
                 else
                 {
-                    AnimatedSprite.Play("walk_right");
+                    animatedSprite.Play("walk_right");
                 }
             }
             else
             {
-                if (_direction.Y < 0f)
+                if (direction.Y < 0f)
                 {
-                    AnimatedSprite.Play("walk_up");
+                    animatedSprite.Play("walk_up");
                 }
                 else
                 {
-                    AnimatedSprite.Play("walk_down");
+                    animatedSprite.Play("walk_down");
 
                 }
             }

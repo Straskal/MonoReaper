@@ -5,12 +5,13 @@ namespace Engine
 {
     public class Level : Screen
     {
+        private readonly EntityManager entities;
         private Coroutine coroutine;
 
         public Level(App application, int cellSize, int width, int height) : base(application)
         {
+            entities = new EntityManager(this);
             Content = new ContentManagerExtended(application.Services, application.Content.RootDirectory);
-            Entities = new EntityManager(this);
             Width = width;
             Height = height;
             Camera = new Camera(application.BackBuffer);
@@ -18,7 +19,7 @@ namespace Engine
         }
 
         internal ContentManagerExtended Content { get; }
-        internal EntityManager Entities { get; }
+
         public Camera Camera { get; }
         public Partition Partition { get; }
         public int Width { get; }
@@ -27,17 +28,17 @@ namespace Engine
 
         public void Spawn(Entity entity)
         {
-            Entities.Spawn(entity, entity.Position);
+            entities.Spawn(entity, entity.Position);
         }
 
         public void Spawn(Entity entity, Vector2 position)
         {
-            Entities.Spawn(entity, position);
+            entities.Spawn(entity, position);
         }
 
         public void Destroy(Entity entity)
         {
-            Entities.Destroy(entity);
+            entities.Destroy(entity);
         }
 
         public override void Start()
@@ -47,7 +48,7 @@ namespace Engine
                 IEnumerator LoadRoutine()
                 {
                     Status = LevelLoadStatus.Loading;
-                    yield return Entities.Start();
+                    yield return entities.Start();
                     Status = LevelLoadStatus.Loaded;
                 }
 
@@ -58,7 +59,7 @@ namespace Engine
         public override void Stop()
         {
             Application.StopCoroutine(coroutine);
-            Entities.Stop();
+            entities.Stop();
             Content.Unload();
         }
 
@@ -66,7 +67,7 @@ namespace Engine
         {
             if (Status == LevelLoadStatus.Loaded)
             {
-                Entities.Update(gameTime);
+                entities.Update(gameTime);
             }
         }
 
@@ -75,11 +76,11 @@ namespace Engine
             if (Status == LevelLoadStatus.Loaded)
             {
                 renderer.BeginDraw(Camera.TransformationMatrix);
-                Entities.Draw(renderer, gameTime);
+                entities.Draw(renderer, gameTime);
 
-                if (Application.IsDebugDrawEnabled) 
+                if (Application.IsDebugModeEnabled) 
                 {
-                    Entities.DebugDraw(renderer, gameTime);
+                    entities.DebugDraw(renderer, gameTime);
                     Partition.DebugDraw(renderer);
                 }
        

@@ -31,7 +31,7 @@ namespace Engine
         public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
         public Screen Screen { get; private set; }
-        public bool IsDebugDrawEnabled { get; set; }
+        public bool IsDebugModeEnabled { get; set; }
 
         protected override void Initialize()
         {

@@ -75,40 +75,33 @@ namespace Engine
         {
             var visited = new HashSet<Collider>();
 
-            RunMovementIteration(ref velocity, layerMask, response, visited);
+            if (RunMovementIteration(ref velocity, layerMask, response, visited)) 
+            {
+                RunMovementIteration(ref velocity, layerMask, response, visited);
+            }
         }
 
-        private void RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
+        private bool RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
         {
             if (velocity == Vector2.Zero || Entity.IsDestroyed)
             {
-                return;
+                return false;
             }
 
-            if (!TryGetNearestCollision(velocity, layerMask, out var collision))
+            if (!TryGetNearestCollision(velocity, layerMask, visited, out var collision))
             {
-                // If we haven't detected a collision, then just straight up move using the given velocity.
                 Move(velocity);
-                return;
+                return false;
             }
 
-            // Move to the intersection point.
             MoveToPosition(collision.Position);
-
-            // If the previous iteration collision response caused a collision with a visited object, then quit iterating.
-            if (visited.Contains(collision.Collider))
-            {
-                return;
-            }
-
-            visited.Add(collision.Collider);
             velocity = response.Invoke(collision);
             collision.Collider.NotifyCollidedWith(this, collision);
-
-            RunMovementIteration(ref velocity, layerMask, response, visited);
+            visited.Add(collision.Collider);
+            return true;
         }
 
-        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, out Collision collision)
+        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, HashSet<Collider> visited, out Collision collision)
         {
             collision = Collision.Empty;
 
@@ -117,7 +110,7 @@ namespace Engine
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
-                if (collider == this)
+                if (collider == this || visited.Contains(collider))
                 {
                     continue;
                 }
