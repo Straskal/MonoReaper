@@ -5,6 +5,20 @@ namespace Engine
 {
     public static class IntersectionTests
     {
+        public static bool CircleVsCircleOverlap(CircleF circle0, CircleF circle1) 
+        {
+            return (circle0.Center - circle1.Center).LengthSquared() <= circle0.Radius * circle1.Radius;
+        }
+
+        public static bool CircleVsRectanglOverlap(CircleF circle, RectangleF rectangle)
+        {
+            var closestPointToRect = circle.Center;
+            closestPointToRect.X = Math.Clamp(closestPointToRect.X, rectangle.Left, rectangle.Right);
+            closestPointToRect.Y = Math.Clamp(closestPointToRect.Y, rectangle.Top, rectangle.Bottom);
+
+            return (circle.Center - closestPointToRect).LengthSquared() < circle.Radius * circle.Radius;
+        }
+
         public static bool MovingCircleVsCircle(CircleF circle0, IntersectionPath path, CircleF circle1, out float time, out Vector2 contact, out Vector2 normal)
         {
             return PathVsCircle(path, CircleF.Inflate(circle1, circle0), out time, out contact, out normal);

@@ -96,5 +96,15 @@ namespace Adventure.Components
                 box.DebugDraw(renderer, gameTime);
             }
         }
+
+        public override bool Overlaps(BoxCollider collider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Overlaps(CircleCollider collider)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

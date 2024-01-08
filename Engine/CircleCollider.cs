@@ -29,6 +29,16 @@ namespace Engine
             UpdateBBox();
         }
 
+        public override bool Overlaps(BoxCollider collider)
+        {
+            return IntersectionTests.CircleVsRectanglOverlap(Circle, collider.Bounds);
+        }
+
+        public override bool Overlaps(CircleCollider collider)
+        {
+            return IntersectionTests.CircleVsCircleOverlap(Circle, collider.Circle);
+        }
+
         public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
             return IntersectionTests.MovingCircleVsRectangle(Circle, path, collider.Bounds, out time, out contact, out normal);

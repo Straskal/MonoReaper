@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine
 {
@@ -23,6 +24,19 @@ namespace Engine
         public CollisionResolver Resolver { get; set; } = CollisionResolvers.Slide;
         public abstract RectangleF Bounds { get; }
 
+        public bool Overlaps(Collider collider)
+        {
+            switch (collider)
+            {
+                case BoxCollider box:
+                    return Overlaps(box);
+                case CircleCollider circle:
+                    return Overlaps(circle);
+                default:
+                    throw new ArgumentException($"Unknown collider type: {collider.GetType()}", nameof(collider));
+            }
+        }
+
         public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
         {
             switch (collider)
@@ -36,6 +50,8 @@ namespace Engine
             }
         }
 
+        public abstract bool Overlaps(BoxCollider collider);
+        public abstract bool Overlaps(CircleCollider collider);
         public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
         public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
         public abstract void DebugDraw(Renderer renderer, GameTime gameTime);
@@ -61,7 +77,7 @@ namespace Engine
 
         internal void ClearContacts()
         {
-            contacts.Clear();
+            contacts.RemoveWhere(c => !Overlaps(c));
         }
 
         public IEnumerable<Collider> GetContacts() 
@@ -135,10 +151,9 @@ namespace Engine
         {
             IsMoving = true;
 
-            var visited = new HashSet<Collider>();
+            var visited = contacts.ToHashSet();
 
-            // Only iterate twice. This could potentially interfere with ignored contacts.
-            if (Iterate(ref velocity, layerMask, ignoreMask, visited))
+            if (Iterate(ref velocity, layerMask, ignoreMask, visited)) 
             {
                 Iterate(ref velocity, layerMask, ignoreMask, visited);
             }
@@ -163,13 +178,12 @@ namespace Engine
             }
 
             SetPosition(collision.Contact);
+            velocity = GetResolver(other.Layer).Invoke(collision);
+            visited.Add(other);
 
             // Notify the entities about the collision.
             NotifyCollision(other, collision);
             other.NotifyCollision(this, collision);
-
-            velocity = GetResolver(other.Layer).Invoke(collision);
-            visited.Add(other);
 
             // Keep iterating
             return true;
