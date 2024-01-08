@@ -48,6 +48,7 @@ namespace Engine
         {
             OnPostUpdate(gameTime);
             GraphicsComponent?.OnPostUpdate(gameTime);
+            Collider?.ClearContacts();
         }
 
         internal void Draw(Renderer renderer, GameTime gameTime)
@@ -61,9 +62,19 @@ namespace Engine
             GraphicsComponent?.OnDebugDraw(renderer, gameTime);
         }
 
-        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        internal void Collision(Entity other, Collision collision)
         {
-            Collider?.MoveAndCollide(ref velocity, layerMask, response);
+            OnCollision(other, collision);
+        }
+
+        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, int ignoreMask)
+        {
+            Collider?.MoveAndCollide(ref velocity, layerMask, ignoreMask);
+        }
+
+        protected void MoveAndCollide(ref Vector2 velocity, int layerMask)
+        {
+            Collider?.MoveAndCollide(ref velocity, layerMask);
         }
 
         protected virtual void OnLoad(ContentManager content)
@@ -91,6 +102,10 @@ namespace Engine
         }
 
         protected virtual void OnPostUpdate(GameTime gameTime)
+        {
+        }
+
+        protected virtual void OnCollision(Entity other, Collision collision)
         {
         }
     }

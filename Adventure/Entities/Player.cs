@@ -10,8 +10,6 @@ namespace Adventure.Components
 {
     public class Player : Entity
     {
-        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
-
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.75f;
 
@@ -22,7 +20,9 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-            Collider = new CircleCollider(this, new Vector2(0f, 3f), 5f, EntityLayers.Player);
+            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f, EntityLayers.Player);
+            Collider.AddResponse(EntityLayers.Projectile, CollisionResponseType.Ignore);
+            Collider.AddResponse(EntityLayers.Solid, CollisionResponseType.Ignore);
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
@@ -49,18 +49,21 @@ namespace Adventure.Components
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            MoveAndCollide(ref velocity, MovementCollisionLayerMask, HandleCollision);
+            var layer = EntityLayers.Solid | BoxLayers.Damage | BoxLayers.Trigger;
+            var ignore = BoxLayers.Player;
+
+            MoveAndCollide(ref velocity, layer, ignore);
             Animate();
             HandleInteractInput(deltaTime);
-            CameraFollow(); 
+            CameraFollow();
         }
 
-        private void CameraFollow() 
+        private void CameraFollow()
         {
             Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Position, 0.15f);
         }
 
-        private void HandleInteractInput(float deltaTime) 
+        private void HandleInteractInput(float deltaTime)
         {
             if (Input.IsKeyPressed(Keys.E))
             {
@@ -68,19 +71,22 @@ namespace Adventure.Components
             }
         }
 
-        private void ShootFireball(float deltaTime) 
+        private void ShootFireball(float deltaTime)
         {
             Level.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
-        private static Vector2 HandleCollision(Collision collision)
+        protected override void OnCollision(Entity other, Collision collision)
         {
-            if (collision.Collider.IsSolid())
+            if (!Collider.IsMoving)
             {
-                return collision.Slide();
+                return;
             }
 
-            return collision.Ignore();
+            if (other is Barrel barrel)
+            {
+                barrel.Push(-collision.Normal);
+            }
         }
 
         private void Animate()

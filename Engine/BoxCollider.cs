@@ -31,7 +31,7 @@ namespace Engine
             Y = y;
             Width = width;
             Height = height;
-            LayerMask = layerMask;
+            Layer = layerMask;
         }
 
         public float X { get; set; }

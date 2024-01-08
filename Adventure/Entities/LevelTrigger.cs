@@ -22,22 +22,12 @@ namespace Adventure.Components
 
         protected override void OnSpawn()
         {
-            Collider = new BoxCollider(this, Width, Height, BoxLayers.Interactable);
+            Collider = new BoxCollider(this, Width, Height, EntityLayers.Trigger);
         }
 
-        protected override void OnStart()
+        protected override void OnCollision(Entity other, Collision collision) 
         {
-            Collider.CollidedWith += OnCollidedWith;
-        }
-
-        protected override void OnEnd()
-        {
-            Collider.CollidedWith -= OnCollidedWith;
-        }
-
-        private void OnCollidedWith(Collider body, Collision collision) 
-        {
-            if (body.LayerMask == EntityLayers.Player) 
+            if (other is Player) 
             {
                 Level.Application.ChangeScreen(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
             }

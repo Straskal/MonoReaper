@@ -1,5 +1,6 @@
 ﻿using Adventure.Components;
 using Adventure.Content;
+using Adventure.Entities;
 using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,12 @@ namespace Adventure
                         break;
                     case "Barrel":
                         yield return new Barrel()
+                        {
+                            Position = entityData.Position
+                        };
+                        break;
+                    case "FireballShooter":
+                        yield return new EnemyFireballShooter()
                         {
                             Position = entityData.Position
                         };

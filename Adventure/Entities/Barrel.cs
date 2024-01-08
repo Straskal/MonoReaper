@@ -3,6 +3,7 @@ using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -15,6 +16,8 @@ namespace Adventure.Components
 
     public sealed class Barrel : Entity, IDamageable
     {
+        private Vector2 push;
+
         public int Health
         {
             get;
@@ -55,6 +58,11 @@ namespace Adventure.Components
             };
         }
 
+        public void Push(Vector2 direction) 
+        {
+            push += direction * 0.5f;
+        }
+
         protected override void OnDestroy()
         {
             DropLoot();
@@ -69,6 +77,15 @@ namespace Adventure.Components
             if (HurtTimer < 0f)
             {
                 Sprite.Effect = null;
+            }
+        }
+
+        protected override void OnPostUpdate(GameTime gameTime)
+        {
+            if (push != Vector2.Zero) 
+            {
+                MoveAndCollide(ref push, EntityLayers.Solid);
+                push = Vector2.Zero;
             }
         }
 

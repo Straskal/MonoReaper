@@ -14,7 +14,7 @@ namespace Engine
         {
             Position = position;
             Radius = radius;
-            LayerMask = layerMask;
+            Layer = layerMask;
         }
 
         public Vector2 Position { get; set; }
@@ -23,7 +23,7 @@ namespace Engine
 
         public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
 
-        public override void MoveToPosition(Vector2 position)
+        public override void SetPosition(Vector2 position)
         {
             Entity.Position = position - Position;
             UpdateBBox();

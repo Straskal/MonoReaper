@@ -22,7 +22,7 @@ namespace Adventure.Components
         {
             Width = width;
             Height = height;
-            LayerMask = layerMask;
+            Layer = layerMask;
 
             foreach (var tile in mapData.Tiles)
             {
@@ -84,12 +84,12 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void MoveToPosition(Vector2 position)
+        public override void SetPosition(Vector2 position)
         {
             throw new NotImplementedException();
         }
 
-        public override void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        public override void MoveAndCollide(ref Vector2 velocity, int layerMask)
         {
             throw new NotImplementedException();
         }

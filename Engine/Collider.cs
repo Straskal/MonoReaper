@@ -6,17 +6,19 @@ namespace Engine
 {
     public abstract class Collider
     {
-        internal List<Point> Cells { get; } = new();
+        private readonly HashSet<Collider> notifiedContacts = new();
+        private readonly Dictionary<int, CollisionResponseType> collisionResponses = new();
 
         public Collider(Entity entity)
         {
             Entity = entity;
         }
 
-        public event CollidedWithCallback CollidedWith;
-
+        internal List<Point> Cells { get; } = new();
         public Entity Entity { get; }
-        public int LayerMask { get; set; }
+        public int Layer { get; set; }
+        public bool IsMoving { get; private set; }
+        public CollisionResponseType DefaultResponse { get; set; } = CollisionResponseType.Slide;
         public abstract RectangleF Bounds { get; }
 
         public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
@@ -32,16 +34,13 @@ namespace Engine
             }
         }
 
-        internal void NotifyCollidedWith(Collider body, Collision collision)
-        {
-            CollidedWith?.Invoke(body, collision);
-        }
-
         public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
         public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
+        public abstract void DebugDraw(Renderer renderer, GameTime gameTime);
 
-        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
+        public void AddResponse(int layer, CollisionResponseType responseType) 
         {
+            collisionResponses.Add(layer, responseType);
         }
 
         public virtual void Move(Vector2 direction)
@@ -50,7 +49,7 @@ namespace Engine
             UpdateBBox();
         }
 
-        public virtual void MoveToPosition(Vector2 position)
+        public virtual void SetPosition(Vector2 position)
         {
             Entity.Position = position;
             UpdateBBox();
@@ -71,38 +70,101 @@ namespace Engine
             Entity.Level.Partition.Update(this);
         }
 
-        public virtual void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        public bool CheckMask(int mask) 
         {
+            return (mask & Layer) != 0;
+        }
+
+        internal void NotifyCollision(Collider other, Collision collision)
+        {
+            if (!HasContact(other))
+            {
+                Entity.Collision(other.Entity, collision);
+                AddContact(other);
+            }
+        }
+
+        internal void AddContact(Collider collider)
+        {
+            notifiedContacts.Add(collider);
+        }
+
+        internal bool HasContact(Collider collider)
+        {
+            return notifiedContacts.Contains(collider);
+        }
+
+        internal void ClearContacts()
+        {
+            notifiedContacts.Clear();
+        }
+
+        public virtual void MoveAndCollide(ref Vector2 velocity)
+        {
+            MoveAndCollide(ref velocity, int.MaxValue, 0);
+        }
+
+        public virtual void MoveAndCollide(ref Vector2 velocity, int layerMask)
+        {
+            MoveAndCollide(ref velocity, layerMask, 0);
+        }
+
+        public virtual void MoveAndCollide(ref Vector2 velocity, int layerMask, int ignoreMask)
+        {
+            IsMoving = true;
+
             var visited = new HashSet<Collider>();
 
-            if (RunMovementIteration(ref velocity, layerMask, response, visited)) 
+            if (RunMovementIteration(ref velocity, layerMask, ignoreMask, visited))
             {
-                RunMovementIteration(ref velocity, layerMask, response, visited);
+                RunMovementIteration(ref velocity, layerMask, ignoreMask, visited);
             }
+
+            IsMoving = false;
         }
 
-        private bool RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
+        private bool RunMovementIteration(ref Vector2 velocity, int layerMask, int ignoreMask, HashSet<Collider> visited)
         {
-            if (velocity == Vector2.Zero || Entity.IsDestroyed)
-            {
-                return false;
-            }
+            var runAnotherIteration = false;
 
-            if (!TryGetNearestCollision(velocity, layerMask, visited, out var collision))
+            if (velocity != Vector2.Zero && !Entity.IsDestroyed && TryGetFirstCollision(velocity, layerMask, ignoreMask, visited, out var hit, out var collision))
+            {
+                SetPosition(collision.Position);
+                NotifyCollision(hit, collision);
+                hit.NotifyCollision(this, collision);
+
+                if (!collisionResponses.TryGetValue(hit.Layer, out var response)) 
+                {
+                    response = DefaultResponse;
+                }
+
+                switch (response) 
+                {
+                    case CollisionResponseType.Ignore:
+                        velocity = collision.Ignore();
+                        break;
+                    case CollisionResponseType.Bounce:
+                        velocity = collision.Bounce();
+                        break;
+                    default:
+                        velocity = collision.Slide();
+                        break;
+                }
+
+                visited.Add(hit);
+                runAnotherIteration = true;
+            }
+            else
             {
                 Move(velocity);
-                return false;
             }
 
-            MoveToPosition(collision.Position);
-            velocity = response.Invoke(collision);
-            collision.Collider.NotifyCollidedWith(this, collision);
-            visited.Add(collision.Collider);
-            return true;
+            return runAnotherIteration;
         }
 
-        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, HashSet<Collider> visited, out Collision collision)
+        private bool TryGetFirstCollision(Vector2 velocity, int layerMask, int ignoreMask, HashSet<Collider> visited, out Collider hit, out Collision collision)
         {
+            hit = null;
             collision = Collision.Empty;
 
             var path = new IntersectionPath(Bounds.Center, velocity);
@@ -115,17 +177,18 @@ namespace Engine
                     continue;
                 }
 
-                if (!((collider.LayerMask | layerMask) == layerMask && broadphaseRectangle.Intersects(collider.Bounds)))
+                if (!(collider.CheckMask(layerMask) && collider.CheckMask(~ignoreMask)))
                 {
                     continue;
                 }
 
-                if (!(Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time))
+                if (!(broadphaseRectangle.Intersects(collider.Bounds) && Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time))
                 {
                     continue;
                 }
 
-                collision = new Collision(collider, velocity, normal, time, contact);
+                hit = collider;
+                collision = new Collision(velocity, normal, time, contact);
             }
 
             return !collision.IsEmpty;
