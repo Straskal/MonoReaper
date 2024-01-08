@@ -67,14 +67,24 @@ namespace Engine
             OnCollision(other, collision);
         }
 
-        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, int ignoreMask)
+        protected void Collide(Vector2 velocity, int layerMask)
         {
-            Collider?.MoveAndCollide(ref velocity, layerMask, ignoreMask);
+            Collider?.Collide(velocity, layerMask);
         }
 
-        protected void MoveAndCollide(ref Vector2 velocity, int layerMask)
+        protected void Collide(Vector2 velocity, int layerMask, int ignoreMask)
         {
-            Collider?.MoveAndCollide(ref velocity, layerMask);
+            Collider?.Collide(velocity, layerMask, ignoreMask);
+        }
+
+        protected void Collide(ref Vector2 velocity, int layerMask, int ignoreMask)
+        {
+            Collider?.Collide(ref velocity, layerMask, ignoreMask);
+        }
+
+        protected void Collide(ref Vector2 velocity, int layerMask)
+        {
+            Collider?.Collide(ref velocity, layerMask);
         }
 
         protected virtual void OnLoad(ContentManager content)

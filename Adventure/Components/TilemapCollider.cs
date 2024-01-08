@@ -89,11 +89,6 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void MoveAndCollide(ref Vector2 velocity, int layerMask)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             foreach (var box in _colliders) 

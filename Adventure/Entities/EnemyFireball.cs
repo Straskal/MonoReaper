@@ -25,7 +25,7 @@ namespace Adventure.Components
         {
             Collider = new CircleCollider(this, Vector2.Zero, 4);
             Collider.Layer = EntityLayers.Projectile;
-            Collider.DefaultResponse = CollisionResponseType.Ignore;
+            Collider.Resolver = CollisionResolvers.Ignore;
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
@@ -43,7 +43,7 @@ namespace Adventure.Components
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            MoveAndCollide(ref velocity, EntityLayers.Player | EntityLayers.Solid);
+            Collide(ref velocity, EntityLayers.Player | EntityLayers.Solid);
         }
 
         protected override void OnCollision(Entity other, Collision collision)

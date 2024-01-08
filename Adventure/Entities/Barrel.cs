@@ -50,8 +50,8 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             HurtEffect = content.Load<Effect>("shaders/SolidColor");
-            //Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
-            Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
+            Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
+            //Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
             GraphicsComponent = Sprite = new Sprite(this, content.Load<Texture2D>("art/common/barrel"))
             {
                 SourceRectangle = new Rectangle(0, 0, 16, 16)
@@ -84,7 +84,7 @@ namespace Adventure.Components
         {
             if (push != Vector2.Zero) 
             {
-                MoveAndCollide(ref push, EntityLayers.Solid);
+                Collide(ref push, EntityLayers.Solid);
                 push = Vector2.Zero;
             }
         }

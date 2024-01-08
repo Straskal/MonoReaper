@@ -20,9 +20,13 @@ namespace Adventure.Components
         protected override void OnLoad(ContentManager content)
         {
             Fireball.Preload(content);
-            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f, EntityLayers.Player);
-            Collider.AddResponse(EntityLayers.Projectile, CollisionResponseType.Ignore);
-            Collider.AddResponse(EntityLayers.Solid, CollisionResponseType.Ignore);
+        }
+
+        protected override void OnSpawn()
+        {
+            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
+            Collider.Layer = EntityLayers.Player;
+            Collider.AddResolver(EntityLayers.Projectile, CollisionResolvers.Ignore);
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
@@ -49,10 +53,10 @@ namespace Adventure.Components
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            var layer = EntityLayers.Solid | BoxLayers.Damage | BoxLayers.Trigger;
-            var ignore = BoxLayers.Player;
+            const int LAYER = EntityLayers.Solid | BoxLayers.Damage | BoxLayers.Trigger;
+            const int IGNORE = EntityLayers.PlayerProjectile;
 
-            MoveAndCollide(ref velocity, layer, ignore);
+            Collide(velocity, LAYER, IGNORE);
             Animate();
             HandleInteractInput(deltaTime);
             CameraFollow();

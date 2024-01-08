@@ -41,7 +41,7 @@ namespace Adventure.Components
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            MoveAndCollide(ref velocity, EntityLayers.Enemy | EntityLayers.Solid);
+            Collide(velocity, EntityLayers.Enemy | EntityLayers.Solid);
         }
 
         protected override void OnCollision(Entity other, Collision collision)
