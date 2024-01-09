@@ -87,10 +87,10 @@ namespace Adventure.Components
                 return;
             }
 
-            if (other is Barrel barrel)
-            {
-                barrel.Push(-collision.Normal);
-            }
+            //if (other is Barrel barrel)
+            //{
+            //    barrel.Push(-collision.Normal);
+            //}
         }
 
         private void Animate()

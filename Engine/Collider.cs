@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,42 +18,18 @@ namespace Engine
         }
 
         public Entity Entity { get; }
+        public CollisionResolver Resolver { get; set; } = CollisionResolvers.Slide;
         public int Layer { get; set; }
         public bool IsMoving { get; private set; }
-        public CollisionResolver Resolver { get; set; } = CollisionResolvers.Slide;
         public abstract RectangleF Bounds { get; }
 
-        public bool Overlaps(Collider collider)
-        {
-            switch (collider)
-            {
-                case BoxCollider box:
-                    return Overlaps(box);
-                case CircleCollider circle:
-                    return Overlaps(circle);
-                default:
-                    throw new ArgumentException($"Unknown collider type: {collider.GetType()}", nameof(collider));
-            }
-        }
-
-        public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
-        {
-            switch (collider)
-            {
-                case BoxCollider box:
-                    return Intersect(box, path, out time, out contact, out normal);
-                case CircleCollider circle:
-                    return Intersect(circle, path, out time, out contact, out normal);
-                default:
-                    throw new ArgumentException($"Unknown collider type: {collider.GetType()}", nameof(collider));
-            }
-        }
-
-        public abstract bool Overlaps(BoxCollider collider);
-        public abstract bool Overlaps(CircleCollider collider);
-        public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-        public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-        public abstract void DebugDraw(Renderer renderer, GameTime gameTime);
+        public abstract bool Overlaps(Collider collider);
+        public abstract bool IsOverlapped(BoxCollider collider);
+        public abstract bool IsOverlapped(CircleCollider collider);
+        public abstract bool Intersects(Collider collider, Segment segment, out Intersection intersection);
+        public abstract bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection);
+        public abstract bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection);
+        public abstract void Draw(Renderer renderer, GameTime gameTime);
 
         internal void NotifyCollision(Collider other, Collision collision)
         {
@@ -151,7 +126,7 @@ namespace Engine
         {
             IsMoving = true;
 
-            var visited = contacts.ToHashSet();
+            var visited = new HashSet<Collider>();
 
             if (Iterate(ref velocity, layerMask, ignoreMask, visited)) 
             {
@@ -177,7 +152,7 @@ namespace Engine
                 return false;
             }
 
-            SetPosition(collision.Contact);
+            SetPosition(collision.Point);
             velocity = GetResolver(other.Layer).Invoke(collision);
             visited.Add(other);
 
@@ -193,7 +168,7 @@ namespace Engine
         {
             collision = Collision.Empty;
 
-            var path = new IntersectionPath(Bounds.Center, velocity);
+            var path = new Segment(Bounds.Center, velocity);
             var broadphaseRectangle = Bounds.Union(velocity);
 
             Collider other = null;
@@ -210,13 +185,13 @@ namespace Engine
                     continue;
                 }
 
-                if (!(broadphaseRectangle.Intersects(collider.Bounds) && Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time))
+                if (!(broadphaseRectangle.Overlaps(collider.Bounds) && Intersects(collider, path, out var intersection) && intersection.Time < collision.Time))
                 {
                     continue;
                 }
 
                 other = collider;
-                collision = new Collision(velocity, normal, time, contact);
+                collision = new Collision(velocity, intersection);
             }
 
             return other;

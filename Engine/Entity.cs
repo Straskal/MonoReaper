@@ -58,7 +58,7 @@ namespace Engine
 
         internal void DebugDraw(Renderer renderer, GameTime gameTime)
         {
-            Collider?.DebugDraw(renderer, gameTime);
+            Collider?.Draw(renderer, gameTime);
             GraphicsComponent?.OnDebugDraw(renderer, gameTime);
         }
 

@@ -39,7 +39,7 @@ namespace Engine
             Height = height;
         }
 
-        public readonly bool Intersects(RectangleF other)
+        public readonly bool Overlaps(RectangleF other)
         {
             return other.Left < Right
                 && Left < other.Right

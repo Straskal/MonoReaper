@@ -232,22 +232,6 @@
 						}] },
 						{ "__identifier": "PlayerSpawnId", "__type": "String", "__value": "Default", "__tile": null, "defUid": 20, "realEditorValues": [] }
 					]
-				},
-				{
-					"__identifier": "FireballShooter",
-					"__grid": [6,4],
-					"__pivot": [0.5,0.5],
-					"__tags": [],
-					"__tile": null,
-					"__smartColor": "#D77643",
-					"__worldX": 120,
-					"__worldY": 88,
-					"iid": "604a61b0-8990-11ee-b141-6bdc48e5c8e0",
-					"width": 16,
-					"height": 16,
-					"defUid": 21,
-					"px": [104,72],
-					"fieldInstances": []
 				}
 			]
 		},

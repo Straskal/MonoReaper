@@ -29,27 +29,38 @@ namespace Engine
             UpdateBBox();
         }
 
-        public override bool Overlaps(BoxCollider collider)
+        public override bool Overlaps(Collider collider)
         {
-            return IntersectionTests.CircleVsRectanglOverlap(Circle, collider.Bounds);
+            return collider.IsOverlapped(this);
         }
 
-        public override bool Overlaps(CircleCollider collider)
+        public override bool IsOverlapped(BoxCollider collider)
         {
-            return IntersectionTests.CircleVsCircleOverlap(Circle, collider.Circle);
+            return OverlapTests.CircleVsRectangle(Circle, collider.Bounds);
         }
 
-        public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool IsOverlapped(CircleCollider collider)
         {
-            return IntersectionTests.MovingCircleVsRectangle(Circle, path, collider.Bounds, out time, out contact, out normal);
+            return OverlapTests.CircleVsCircle(Circle, collider.Circle);
         }
 
-        public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
         {
-            return IntersectionTests.MovingCircleVsCircle(Circle, path, collider.Circle, out time, out contact, out normal);
+            return collider.IsIntersected(this, segment, out intersection);
         }
 
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
+        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        {
+            // TODO: Make moving rectangle vs circle intersections work correctly. Right now they are treated as rectangle vs rectangle.
+            return IntersectionTests.MovingRectangleVsRectangle(collider.Bounds, segment, Bounds, out intersection);
+        }
+
+        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.MovingCircleVsCircle(collider.Circle, segment, Circle, out intersection);
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
         {
             renderer.DrawCircleOutline(Entity.Position.X - Position.X, Entity.Position.Y + Position.Y, Radius, 10, new Color(Color.White, 0.1f));
         }

@@ -2,9 +2,9 @@
 
 namespace Engine
 {
-    public readonly ref struct RayF
+    public readonly ref struct Ray
     {
-        public RayF(Vector2 position, Vector2 direction)
+        public Ray(Vector2 position, Vector2 direction)
         {
             Position = position;
             Direction = Vector2.Normalize(direction);
