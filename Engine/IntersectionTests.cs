@@ -7,17 +7,17 @@ namespace Engine
     {
         public static bool MovingCircleVsCircle(CircleF circle0, Segment segment, CircleF circle1, out Intersection intersection)
         {
-            return PathVsCircle(segment, CircleF.Inflate(circle1, circle0), out intersection);
+            return SegmentVsCircle(segment, CircleF.Inflate(circle1, circle0), out intersection);
         }
 
         public static bool MovingCircleVsRectangle(CircleF circle, Segment segment, RectangleF rectangle, out Intersection intersection)
         {
-            if (!PathVsRectangle(segment, RectangleF.Inflate(rectangle, circle), out intersection))
+            if (!SegmentVsRectangle(segment, RectangleF.Inflate(rectangle, circle), out intersection))
             {
                 return false;
             }
 
-            if (TryGetRectangleCorner(intersection.Point, rectangle, out var corner) && !PathVsCircle(segment, new CircleF(corner, circle.Radius), out intersection))
+            if (TryGetRectangleCorner(intersection.Point, rectangle, out var corner) && !SegmentVsCircle(segment, new CircleF(corner, circle.Radius), out intersection))
             {
                 return false;
             }
@@ -27,17 +27,17 @@ namespace Engine
 
         public static bool MovingRectangleVsRectangle(RectangleF rectangle0, Segment path, RectangleF rectangle1, out Intersection intersection)
         {
-            return PathVsRectangle(path, RectangleF.Inflate(rectangle1, rectangle0), out intersection);
+            return SegmentVsRectangle(path, RectangleF.Inflate(rectangle1, rectangle0), out intersection);
         }
 
-        public static bool PathVsCircle(Segment path, CircleF circle, out Intersection intersection)
+        public static bool SegmentVsCircle(Segment segment, CircleF circle, out Intersection intersection)
         {
-            return RayVsCircle(path.Ray, circle.Center, circle.Radius, out intersection) && intersection.Time <= path.Length;
+            return RayVsCircle(segment.Ray, circle.Center, circle.Radius, out intersection) && intersection.Time <= segment.Length;
         }
 
-        public static bool PathVsRectangle(Segment path, RectangleF rectangle, out Intersection intersection)
+        public static bool SegmentVsRectangle(Segment segment, RectangleF rectangle, out Intersection intersection)
         {
-            return RayVsRectangle(path.Ray, rectangle, out intersection) && intersection.Time <= path.Length;
+            return RayVsRectangle(segment.Ray, rectangle, out intersection) && intersection.Time <= segment.Length;
         }
 
         public static bool RayVsCircle(Ray ray, Vector2 center, float radius, out Intersection intersection)
