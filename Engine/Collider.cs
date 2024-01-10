@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Engine
 {
@@ -22,6 +22,7 @@ namespace Engine
         public int Layer { get; set; }
         public bool IsMoving { get; private set; }
         public abstract RectangleF Bounds { get; }
+        public float ContactOffset { get; } = 0.001f;
 
         public abstract bool Overlaps(Collider collider);
         public abstract bool IsOverlapped(BoxCollider collider);
@@ -126,45 +127,46 @@ namespace Engine
         {
             IsMoving = true;
 
-            var visited = new HashSet<Collider>();
+            const int MAX_ITERATIONS = 5;
 
-            if (Iterate(ref velocity, layerMask, ignoreMask, visited)) 
+            for (int i = 0; i < MAX_ITERATIONS; i++) 
             {
-                Iterate(ref velocity, layerMask, ignoreMask, visited);
-            }
+                if (!Iterate(ref velocity, layerMask, ignoreMask))
+                {
+                    break;
+                }
+            } 
 
             IsMoving = false;
         }
 
-        private bool Iterate(ref Vector2 velocity, int layerMask, int ignoreMask, HashSet<Collider> visited)
+        private bool Iterate(ref Vector2 velocity, int layerMask, int ignoreMask)
         {
             if (velocity == Vector2.Zero || Entity.IsDestroyed) 
             {
                 return false;
             }
 
-            var other = GetFirstCollision(velocity, layerMask, ignoreMask, visited, out var collision);
+            var other = GetFirstCollision(velocity, layerMask, ignoreMask, out var collision);
 
             if (other == null) 
             {
-                // No collision. Just straight up move the thang and stop iterating.
                 Move(velocity);
                 return false;
             }
 
-            SetPosition(collision.Point);
+            // Use offset time to prevent colliders from ending in a touching position.
+            var offsetTime = MathF.Max(0f, collision.Time - ContactOffset);
+            SetPosition(Bounds.Center + collision.Direction * offsetTime);
             velocity = GetResolver(other.Layer).Invoke(collision);
-            visited.Add(other);
 
-            // Notify the entities about the collision.
             NotifyCollision(other, collision);
             other.NotifyCollision(this, collision);
 
-            // Keep iterating
             return true;
         }
 
-        private Collider GetFirstCollision(Vector2 velocity, int layerMask, int ignoreMask, HashSet<Collider> visited, out Collision collision)
+        private Collider GetFirstCollision(Vector2 velocity, int layerMask, int ignoreMask, out Collision collision)
         {
             collision = Collision.Empty;
 
@@ -175,7 +177,7 @@ namespace Engine
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
-                if (collider == this || visited.Contains(collider))
+                if (collider == this)
                 {
                     continue;
                 }

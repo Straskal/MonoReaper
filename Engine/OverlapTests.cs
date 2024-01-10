@@ -26,7 +26,7 @@ namespace Engine
 
         public static bool CircleVsPoint(CircleF circle, Vector2 point)
         {
-            return (circle.Center - point).LengthSquared() - circle.Radius * circle.Radius < float.Epsilon;
+            return (circle.Center - point).LengthSquared() < circle.Radius * circle.Radius;
         }
     }
 }
