@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 
 namespace Engine
 {
     public abstract class Collider
     {
+        private const int MAX_ITERATIONS = 2;
+
         private readonly HashSet<Collider> contacts = new();
-        private readonly Dictionary<int, CollisionResolver> resolvers = new();
 
         // Cache partition cells in the collider to avoid frequent lookups.
         internal readonly List<Point> cells = new();
@@ -18,7 +18,6 @@ namespace Engine
         }
 
         public Entity Entity { get; }
-        public CollisionResolver Resolver { get; set; } = CollisionResolvers.Slide;
         public int Layer { get; set; }
         public bool IsMoving { get; private set; }
         public abstract RectangleF Bounds { get; }
@@ -59,11 +58,6 @@ namespace Engine
         public IEnumerable<Collider> GetContacts() 
         {
             return contacts;
-        }
-
-        public void AddResolver(int layer, CollisionResolver resolver) 
-        {
-            resolvers.Add(layer, resolver);
         }
 
         public bool CheckMask(int mask)
@@ -127,56 +121,44 @@ namespace Engine
         {
             IsMoving = true;
 
-            const int MAX_ITERATIONS = 5;
-
-            for (int i = 0; i < MAX_ITERATIONS; i++) 
+            if (velocity.LengthSquared() > float.Epsilon)
             {
-                if (!Iterate(ref velocity, layerMask, ignoreMask))
+                var iterations = MAX_ITERATIONS;
+
+                while (iterations-- > 0)
                 {
-                    break;
-                }
-            } 
+                    var other = Cast(velocity, layerMask, ignoreMask, out var collision);
+
+                    if (other == null)
+                    {
+                        Move(velocity);
+                        break;
+                    }
+                    
+                    if (collision.Time > ContactOffset)
+                    {
+                        Move(collision.Direction * (collision.Time - ContactOffset));
+                    }
+
+                    velocity = CollisionResolvers.Slide(collision);
+                    NotifyCollision(other, collision);
+                    other.NotifyCollision(this, collision);
+                };
+            }  
 
             IsMoving = false;
         }
 
-        private bool Iterate(ref Vector2 velocity, int layerMask, int ignoreMask)
-        {
-            if (velocity == Vector2.Zero || Entity.IsDestroyed) 
-            {
-                return false;
-            }
-
-            var other = GetFirstCollision(velocity, layerMask, ignoreMask, out var collision);
-
-            if (other == null) 
-            {
-                Move(velocity);
-                return false;
-            }
-
-            // Use offset time to prevent colliders from ending in a touching position.
-            var offsetTime = MathF.Max(0f, collision.Time - ContactOffset);
-            SetPosition(Bounds.Center + collision.Direction * offsetTime);
-            velocity = GetResolver(other.Layer).Invoke(collision);
-
-            NotifyCollision(other, collision);
-            other.NotifyCollision(this, collision);
-
-            return true;
-        }
-
-        private Collider GetFirstCollision(Vector2 velocity, int layerMask, int ignoreMask, out Collision collision)
+        private Collider Cast(Vector2 velocity, int layerMask, int ignoreMask, out Collision collision)
         {
             collision = Collision.Empty;
-
             var path = new Segment(Bounds.Center, velocity);
             var broadphaseRectangle = Bounds.Union(velocity);
-
             Collider other = null;
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
+                // Don't intersect self
                 if (collider == this)
                 {
                     continue;
@@ -193,20 +175,10 @@ namespace Engine
                 }
 
                 other = collider;
-                collision = new Collision(velocity, intersection);
+                collision = new Collision(velocity, intersection); ;
             }
 
             return other;
-        }
-
-        private CollisionResolver GetResolver(int layer)
-        {
-            if (!resolvers.TryGetValue(layer, out var resolver))
-            {
-                resolver = Resolver;
-            }
-
-            return resolver;
         }
     }
 }

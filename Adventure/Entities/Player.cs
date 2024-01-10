@@ -24,10 +24,8 @@ namespace Adventure.Components
 
         protected override void OnSpawn()
         {
-            //Collider = new BoxCollider(this, 12, 12);
             Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
             Collider.Layer = EntityLayers.Player;
-            Collider.AddResolver(EntityLayers.Projectile, CollisionResolvers.Ignore);
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
