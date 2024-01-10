@@ -20,13 +20,13 @@ namespace Engine
         internal void Spawn()
         {
             OnSpawn();
-            Collider?.Register();
+            Collider?.Enable();
         }
 
         internal void Destroy()
         {
             OnDestroy();
-            Collider?.Unregister();
+            Collider?.Disable();
         }
 
         internal void Start()
@@ -70,16 +70,6 @@ namespace Engine
         protected void Collide(Vector2 velocity, int layerMask)
         {
             Collider?.Collide(velocity, layerMask);
-        }
-
-        protected void Collide(Vector2 velocity, int layerMask, int ignoreMask)
-        {
-            Collider?.Collide(velocity, layerMask, ignoreMask);
-        }
-
-        protected void Collide(ref Vector2 velocity, int layerMask, int ignoreMask)
-        {
-            Collider?.Collide(ref velocity, layerMask, ignoreMask);
         }
 
         protected void Collide(ref Vector2 velocity, int layerMask)

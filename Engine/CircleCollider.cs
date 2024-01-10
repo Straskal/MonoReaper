@@ -26,7 +26,7 @@ namespace Engine
         public override void SetPosition(Vector2 position)
         {
             Entity.Position = position - Position;
-            UpdateBBox();
+            UpdateBounds();
         }
 
         public override bool Overlaps(Collider collider)

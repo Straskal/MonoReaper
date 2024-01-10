@@ -45,27 +45,27 @@ namespace Adventure.Components
             get => new(0, 0, Width, Height);
         }
 
-        public override void Register()
+        public override void Enable()
         {
             foreach (var box in _colliders)
             {
-                box.Register();
+                box.Enable();
             }
         }
 
-        public override void Unregister()
+        public override void Disable()
         {
             foreach (var box in _colliders)
             {
-                box.Unregister();
+                box.Disable();
             }
         }
 
-        public override void UpdateBBox()
+        public override void UpdateBounds()
         {
             foreach (var box in _colliders)
             {
-                box.UpdateBBox();
+                box.UpdateBounds();
             }
         }
 

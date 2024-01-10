@@ -7,11 +7,6 @@ namespace Engine
 
     public static class CollisionResolvers
     {
-        public static Vector2 Ignore(Collision collision) 
-        {
-            return collision.Direction * collision.RemainingTime;
-        }
-
         public static Vector2 Bounce(Collision collision)
         {
             var result = collision.Direction * collision.RemainingTime;

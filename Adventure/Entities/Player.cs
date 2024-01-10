@@ -52,10 +52,9 @@ namespace Adventure.Components
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            const int LAYER = EntityLayers.Solid | BoxLayers.Damage | BoxLayers.Trigger;
-            const int IGNORE = EntityLayers.PlayerProjectile;
+            const int LAYER = EntityLayers.Solid | BoxLayers.Trigger;
 
-            Collide(velocity, LAYER, IGNORE);
+            Collide(velocity, LAYER);
             Animate();
             HandleInteractInput(deltaTime);
             CameraFollow();
