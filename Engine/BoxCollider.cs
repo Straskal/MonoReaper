@@ -41,6 +41,16 @@ namespace Engine
 
         public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
 
+        public override bool Overlaps(CircleF circle)
+        {
+            return OverlapTests.RectangleVsCircle(Bounds, circle);
+        }
+
+        public override bool Overlaps(RectangleF rectangle)
+        {
+            return OverlapTests.RectangleVsRectangle(Bounds, rectangle);
+        }
+
         public override bool Overlaps(Collider collider)
         {
             return collider.IsOverlapped(this);
@@ -48,7 +58,7 @@ namespace Engine
 
         public override bool IsOverlapped(BoxCollider collider)
         {
-            return collider.Bounds.Overlaps(Bounds);
+            return OverlapTests.RectangleVsRectangle(Bounds, collider.Bounds);
         }
 
         public override bool IsOverlapped(CircleCollider collider)

@@ -23,14 +23,6 @@ namespace Engine
         public readonly Vector2 Size => new(Width, Height);
         public readonly Vector2 HalfSize => Size * 0.5f;
 
-        public RectangleF(float x, float y)
-        {
-            X = x;
-            Y = y;
-            Width = 0f;
-            Height = 0f;
-        }
-
         public RectangleF(float x, float y, float width, float height)
         {
             X = x;
@@ -41,15 +33,7 @@ namespace Engine
 
         public readonly bool Overlaps(RectangleF other)
         {
-            return other.Left < Right
-                && Left < other.Right
-                && other.Top < Bottom
-                && Top < other.Bottom;
-        }
-
-        public readonly bool Contains(Vector2 position) 
-        {
-            return position.X >= Left && position.X <= Right && position.Y >= Top && position.Y <= Bottom;
+            return OverlapTests.RectangleVsRectangle(this, other);
         }
 
         public readonly RectangleF Union(Vector2 direction)

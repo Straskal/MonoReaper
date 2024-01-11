@@ -29,6 +29,16 @@ namespace Engine
             UpdateBounds();
         }
 
+        public override bool Overlaps(CircleF circle)
+        {
+            return OverlapTests.CircleVsCircle(Circle, circle);
+        }
+
+        public override bool Overlaps(RectangleF rectangle)
+        {
+            return OverlapTests.CircleVsRectangle(Circle, rectangle);
+        }
+
         public override bool Overlaps(Collider collider)
         {
             return collider.IsOverlapped(this);
