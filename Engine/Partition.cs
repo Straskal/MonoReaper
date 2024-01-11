@@ -18,31 +18,27 @@ namespace Engine
 
         public void Add(Collider collider)
         {
-            if (collider.cells.Count != 0)
+            if (collider.cells.Count == 0)
             {
-                throw new InvalidOperationException("Cannot add box that is already added to partition.");
-            }
-
-            foreach (var point in GetIntersectingCells(collider.Bounds))
-            {
-                collider.cells.Add(point);
-                GetCellAtPoint(point).Add(collider);
+                foreach (var point in GetIntersectingCells(collider.Bounds))
+                {
+                    collider.cells.Add(point);
+                    GetCellAtPoint(point).Add(collider);
+                }
             }
         }
 
         public void Remove(Collider collider)
         {
-            if (collider.cells.Count == 0)
+            if (collider.cells.Count != 0)
             {
-                throw new InvalidOperationException("Cannot remove box that isn't contained in partition.");
-            }
+                foreach (var point in collider.cells)
+                {
+                    GetCellAtPoint(point).Remove(collider);
+                }
 
-            foreach (var point in collider.cells)
-            {
-                GetCellAtPoint(point).Remove(collider);
+                collider.cells.Clear();
             }
-
-            collider.cells.Clear();
         }
 
         public void Update(Collider box)

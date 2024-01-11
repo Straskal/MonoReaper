@@ -24,6 +24,7 @@ namespace Adventure.Components
         {
             Collider = new CircleCollider(this, Vector2.Zero, 4);
             Collider.Layer = EntityLayers.PlayerProjectile;
+            Collider.Enable();
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,

@@ -26,6 +26,7 @@ namespace Adventure.Components
         {
             Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
             Collider.Layer = EntityLayers.Player;
+            Collider.Enable();
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 

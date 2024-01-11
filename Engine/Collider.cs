@@ -113,9 +113,9 @@ namespace Engine
                         break;
                     }
 
-                    if (collision.Time > ContactOffset)
+                    if (collision.Intersection.Time > ContactOffset)
                     {
-                        Move(collision.Direction * (collision.Time - ContactOffset));
+                        Move(collision.Direction * (collision.Intersection.Time - ContactOffset));
                     }
 
                     velocity = CollisionResolvers.Slide(collision);
@@ -135,51 +135,53 @@ namespace Engine
 
         }
 
-        public void GetOverlaps(List<Collider> colliders, int layerMask) 
+        public void GetOverlaps(List<Collider> colliders, int layerMask)
         {
             foreach (var collider in Entity.Level.Partition.Query(Bounds))
             {
-                if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider)) 
+                if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider))
                 {
                     colliders.Add(this);
                 }
             }
         }
 
-        private Collider Cast(Vector2 velocity, int layerMask, out Collision collision)
+        public Collider Cast(Vector2 velocity, int layerMask, out Collision collision)
         {
-            var collider = Cast(velocity, layerMask, out Intersection intersection);
-            collision = new Collision(velocity, intersection);
-            return collider;
-        }
-
-        public Collider Cast(Vector2 direction, int layerMask, out Intersection intersection) 
-        {
-            intersection = Intersection.Empty;
-            var time = float.PositiveInfinity;
-            var path = new Segment(Bounds.Center, direction);
-            var broadphaseRectangle = Bounds.Union(direction);
+            collision = Collision.Empty;
+            var path = new Segment(Bounds.Center, velocity);
+            var broadphaseRectangle = Bounds.Union(velocity);
             Collider other = null;
 
             foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
             {
-                if (!(collider != this && collider.CheckMask(layerMask) && broadphaseRectangle.Overlaps(collider.Bounds)))
+                if (collider == this)
                 {
                     continue;
                 }
 
-                if (!(Intersects(collider, path, out var inter) && inter.Time < time))
+                if (!collider.CheckMask(layerMask))
                 {
                     continue;
                 }
 
-                if (Filter != null && Filter(collider.Entity, inter))
+                if (!broadphaseRectangle.Overlaps(collider.Bounds))
+                {
+                    continue;
+                }
+
+                if (!(Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time))
+                {
+                    continue;
+                }
+
+                if (Filter != null && Filter(collider.Entity, intersection))
                 {
                     continue;
                 }
 
                 other = collider;
-                intersection = inter;
+                collision = new Collision(velocity, intersection);
             }
 
             return other;

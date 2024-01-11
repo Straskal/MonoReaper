@@ -2,17 +2,15 @@
 
 namespace Engine
 {
-    public readonly ref struct Segment
+    public readonly struct Segment
     {
-        public Segment(Vector2 start, Vector2 velocity)
+        public Segment(Vector2 position, Vector2 direction)
         {
-            Ray = new Ray(start, velocity);
-            Velocity = velocity;
-            Length = Velocity.Length();
+            Ray = new Ray(position, direction);
+            Length = direction.Length();
         }
 
         public readonly Ray Ray;
-        public readonly Vector2 Velocity;
         public readonly float Length;
     }
 }

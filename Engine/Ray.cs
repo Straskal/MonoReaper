@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-    public readonly ref struct Ray
+    public readonly struct Ray
     {
         public Ray(Vector2 position, Vector2 direction)
         {

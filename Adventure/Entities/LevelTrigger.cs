@@ -23,6 +23,7 @@ namespace Adventure.Components
         protected override void OnSpawn()
         {
             Collider = new BoxCollider(this, Width, Height, EntityLayers.Trigger);
+            Collider.Enable();
         }
 
         protected override void OnCollision(Entity other, Collision collision) 

@@ -20,7 +20,6 @@ namespace Engine
         internal void Spawn()
         {
             OnSpawn();
-            Collider?.Enable();
         }
 
         internal void Destroy()

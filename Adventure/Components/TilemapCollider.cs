@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-
 using static Adventure.Components.Tilemap;
 using static Adventure.Constants;
 
@@ -10,44 +9,34 @@ namespace Adventure.Components
 {
     public sealed class TilemapCollider : Collider
     {
-        private readonly List<BoxCollider> _colliders = new();
+        private readonly List<BoxCollider> colliders = new();
 
         public TilemapCollider(Entity entity, int width, int height, MapData mapData)
             : this(entity, width, height, 0, mapData)
         {
         }
 
-        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData mapData) 
+        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData data)
             : base(entity)
         {
             Width = width;
             Height = height;
             Layer = layerMask;
 
-            foreach (var tile in mapData.Tiles)
-            {
-                _colliders.Add(new BoxCollider(entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
-            }
+            SetUpTileColliders(data);
         }
 
-        public int Width 
-        {
-            get;
-        }
+        public int Width { get; }
+        public int Height { get; }
 
-        public int Height 
-        {
-            get;
-        }
-
-        public override RectangleF Bounds 
+        public override RectangleF Bounds
         {
             get => new(0, 0, Width, Height);
         }
 
         public override void Enable()
         {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
                 box.Enable();
             }
@@ -55,7 +44,7 @@ namespace Adventure.Components
 
         public override void Disable()
         {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
                 box.Disable();
             }
@@ -63,7 +52,7 @@ namespace Adventure.Components
 
         public override void UpdateBounds()
         {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
                 box.UpdateBounds();
             }
@@ -79,12 +68,19 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
+        public override bool Overlaps(CircleF circle)
         {
-            foreach (var box in _colliders) 
-            {
-                box.Draw(renderer, gameTime);
-            }
+            throw new NotImplementedException();
+        }
+
+        public override bool Overlaps(RectangleF rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Overlaps(Collider collider)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool IsOverlapped(BoxCollider collider)
@@ -93,11 +89,6 @@ namespace Adventure.Components
         }
 
         public override bool IsOverlapped(CircleCollider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Overlaps(Collider collider)
         {
             throw new NotImplementedException();
         }
@@ -115,6 +106,22 @@ namespace Adventure.Components
         public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
         {
             throw new NotImplementedException();
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            foreach (var box in colliders)
+            {
+                box.Draw(renderer, gameTime);
+            }
+        }
+
+        private void SetUpTileColliders(MapData mapData)
+        {
+            foreach (var tile in mapData.Tiles)
+            {
+                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
+            }
         }
     }
 }

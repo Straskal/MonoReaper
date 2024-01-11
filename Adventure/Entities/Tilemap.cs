@@ -30,16 +30,14 @@ namespace Adventure.Components
             Data = data;
         }
 
-        public MapData Data 
-        { 
-            get; 
-        }
+        public MapData Data { get; }
 
         protected override void OnLoad(ContentManager content)
         {
             Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
-            GraphicsComponent = new TilemapRenderer(Data);
             Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
+            Collider.Enable();
+            GraphicsComponent = new TilemapRenderer(Data);
         }
     }
 }
