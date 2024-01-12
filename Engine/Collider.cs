@@ -38,7 +38,7 @@ namespace Engine
         {
             if (!contacts.Contains(other))
             {
-                Entity.Collision(other.Entity, collision);
+                Entity.OnCollision(other.Entity, collision);
                 contacts.Add(other);
             }
         }

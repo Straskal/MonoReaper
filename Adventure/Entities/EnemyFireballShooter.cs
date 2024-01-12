@@ -9,7 +9,7 @@ namespace Adventure.Entities
     {
         private float timer = 0f;
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             timer -= gameTime.GetDeltaTime();
 
@@ -19,7 +19,7 @@ namespace Adventure.Entities
                 timer = 0.5f;
             }
 
-            base.OnUpdate(gameTime);
+            base.Update(gameTime);
         }
     }
 }

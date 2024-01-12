@@ -18,7 +18,7 @@ namespace Adventure.Components
             content.Load<Texture2D>("art/common/explosion-1");
         }
 
-        protected override void OnSpawn()
+        public override void Spawn()
         {
             _sound = Adventure.Instance.Content.Load<SoundEffect>("audio/explosion4");
             _texture = Adventure.Instance.Content.Load<Texture2D>("art/common/explosion-1");
@@ -32,7 +32,7 @@ namespace Adventure.Components
             _sound.Play();
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             if (_animatedSprite.CurrentAnimationFinished)
             {

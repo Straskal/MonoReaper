@@ -18,12 +18,7 @@ namespace Adventure.Components
         private Vector2 direction = Vector2.One;
         private Vector2 velocity = Vector2.Zero;
 
-        protected override void OnLoad(ContentManager content)
-        {
-
-        }
-
-        protected override void OnSpawn()
+        public override void Spawn()
         {
             Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
             Collider.Layer = EntityLayers.Player;
@@ -31,12 +26,12 @@ namespace Adventure.Components
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
-        protected override void OnStart()
+        public override void Start()
         {
             Adventure.Instance.Camera.Position = Position;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
@@ -80,7 +75,7 @@ namespace Adventure.Components
             Others.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
-        protected override void OnCollision(Entity other, Collision collision)
+        public override void OnCollision(Entity other, Collision collision)
         {
             if (!Collider.IsMoving)
             {

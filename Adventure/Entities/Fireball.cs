@@ -20,7 +20,7 @@ namespace Adventure.Components
             Explosion.Preload(content);
         }
 
-        protected override void OnSpawn()
+        public override void Spawn()
         {
             Collider = new CircleCollider(this, Vector2.Zero, 4);
             Collider.Layer = EntityLayers.PlayerProjectile;
@@ -40,12 +40,12 @@ namespace Adventure.Components
             i.Play();
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             Collide(velocity, EntityLayers.Enemy | EntityLayers.Solid);
         }
 
-        protected override void OnCollision(Entity other, Collision collision)
+        public override void OnCollision(Entity other, Collision collision)
         {
             Others.Destroy(this);
             Others.Spawn(new Explosion(), Position);

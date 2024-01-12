@@ -23,7 +23,7 @@ namespace Adventure.Components
         public Effect HurtEffect { get; private set; }
         public float HurtTimer { get; set; }
 
-        protected override void OnSpawn()
+        public override void Spawn()
         {
             HurtEffect = Adventure.Instance.Content.Load<Effect>("shaders/SolidColor");
             Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
@@ -40,7 +40,7 @@ namespace Adventure.Components
             push += direction * 0.5f;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             float delta = gameTime.GetDeltaTime();
 
@@ -52,13 +52,15 @@ namespace Adventure.Components
             }
         }
 
-        protected override void OnPostUpdate(GameTime gameTime)
+        public override void PostUpdate(GameTime gameTime)
         {
             if (push != Vector2.Zero)
             {
                 Collide(ref push, EntityLayers.Solid);
                 push = Vector2.Zero;
             }
+
+            base.PostUpdate(gameTime);
         }
 
         public void Damage(int amount)

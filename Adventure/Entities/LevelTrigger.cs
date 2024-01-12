@@ -20,13 +20,13 @@ namespace Adventure.Components
         public int Width { get; }
         public int Height { get; }
 
-        protected override void OnSpawn()
+        public override void Spawn()
         {
             Collider = new BoxCollider(this, Width, Height, EntityLayers.Trigger);
             Collider.Enable();
         }
 
-        protected override void OnCollision(Entity other, Collision collision) 
+        public override void OnCollision(Entity other, Collision collision) 
         {
             if (other is Player) 
             {
