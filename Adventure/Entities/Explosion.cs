@@ -18,14 +18,11 @@ namespace Adventure.Components
             content.Load<Texture2D>("art/common/explosion-1");
         }
 
-        protected override void OnLoad(ContentManager content)
-        {
-            _sound = content.Load<SoundEffect>("audio/explosion4");
-            _texture = content.Load<Texture2D>("art/common/explosion-1");
-        }
-
         protected override void OnSpawn()
         {
+            _sound = Adventure.Instance.Content.Load<SoundEffect>("audio/explosion4");
+            _texture = Adventure.Instance.Content.Load<Texture2D>("art/common/explosion-1");
+
             GraphicsComponent = _animatedSprite = new AnimatedSprite(this, _texture, ExplosionAnimations.Frames)
             {
                 Speed = 0.1f,
@@ -39,7 +36,7 @@ namespace Adventure.Components
         {
             if (_animatedSprite.CurrentAnimationFinished)
             {
-                Level.Destroy(this);
+                Others.Destroy(this);
             }
         }
     }

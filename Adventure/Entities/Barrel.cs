@@ -23,13 +23,13 @@ namespace Adventure.Components
         public Effect HurtEffect { get; private set; }
         public float HurtTimer { get; set; }
 
-        protected override void OnLoad(ContentManager content)
+        protected override void OnSpawn()
         {
-            HurtEffect = content.Load<Effect>("shaders/SolidColor");
+            HurtEffect = Adventure.Instance.Content.Load<Effect>("shaders/SolidColor");
             Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
             //Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
             Collider.Enable();
-            GraphicsComponent = Sprite = new Sprite(this, content.Load<Texture2D>("art/common/barrel"))
+            GraphicsComponent = Sprite = new Sprite(this, Adventure.Instance.Content.Load<Texture2D>("art/common/barrel"))
             {
                 SourceRectangle = new Rectangle(0, 0, 16, 16)
             };
@@ -67,7 +67,7 @@ namespace Adventure.Components
 
             if (Health < 0)
             {
-                Level.Destroy(this);
+                Others.Destroy(this);
             }
             else
             {

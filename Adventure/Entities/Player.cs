@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Reflection.Metadata;
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -19,7 +20,7 @@ namespace Adventure.Components
 
         protected override void OnLoad(ContentManager content)
         {
-            Fireball.Preload(content);
+
         }
 
         protected override void OnSpawn()
@@ -32,7 +33,7 @@ namespace Adventure.Components
 
         protected override void OnStart()
         {
-            Level.Camera.Position = Position;
+            Adventure.Instance.Camera.Position = Position;
         }
 
         protected override void OnUpdate(GameTime gameTime)
@@ -63,7 +64,7 @@ namespace Adventure.Components
 
         private void CameraFollow()
         {
-            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Position, 0.15f);
+            Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Position, 0.15f);
         }
 
         private void HandleInteractInput(float deltaTime)
@@ -76,7 +77,7 @@ namespace Adventure.Components
 
         private void ShootFireball(float deltaTime)
         {
-            Level.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+            Others.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
         protected override void OnCollision(Entity other, Collision collision)

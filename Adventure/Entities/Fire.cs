@@ -29,7 +29,7 @@ namespace Adventure.Components
             private set;
         }
 
-        protected override void OnLoad(ContentManager content)
+        protected override void OnSpawn()
         {
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
@@ -57,7 +57,7 @@ namespace Adventure.Components
 
                 if (HitCount == 3)
                 {
-                    Level.Destroy(this);
+                    Others.Destroy(this);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace Adventure.Components
 
             if (Target.IsDestroyed)
             {
-                Level.Destroy(this);
+                Others.Destroy(this);
             }
         }
 

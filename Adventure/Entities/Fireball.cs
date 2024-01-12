@@ -47,8 +47,8 @@ namespace Adventure.Components
 
         protected override void OnCollision(Entity other, Collision collision)
         {
-            Level.Destroy(this);
-            Level.Spawn(new Explosion(), Position);
+            Others.Destroy(this);
+            Others.Spawn(new Explosion(), Position);
 
             if (other is IDamageable damageable) 
             {
@@ -56,7 +56,7 @@ namespace Adventure.Components
 
                 if (damageable.Flammable) 
                 {
-                    Level.Spawn(new Fire(other));
+                    Others.Spawn(new Fire(other));
                 }
             }
         }

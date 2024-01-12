@@ -30,7 +30,6 @@ namespace Adventure.Components
         {
             if (other is Player) 
             {
-                Level.Application.ChangeScreen(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
             }
         }
     }

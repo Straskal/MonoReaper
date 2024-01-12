@@ -32,9 +32,9 @@ namespace Adventure.Components
 
         public MapData Data { get; }
 
-        protected override void OnLoad(ContentManager content)
+        protected override void OnSpawn()
         {
-            Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
+            Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
             Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
             Collider.Enable();
             GraphicsComponent = new TilemapRenderer(Data);

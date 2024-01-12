@@ -1,16 +1,34 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using System.Collections.Generic;
 
 namespace Engine
 {
     public class Entity
     {
-        public Level Level { get; internal set; }
+        private readonly HashSet<string> tags = new();
+
+        public EntityManager Others { get; internal set; }
         public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
         public bool IsDestroyed { get; internal set; }
+
+        public void AddTag(string tag) 
+        {
+            tags.Add(tag);
+        }
+
+        public void RemoveTag(string tag)
+        {
+            tags.Remove(tag);
+        }
+
+        public void HasTag(string tag)
+        {
+            tags.Contains(tag);
+        }
 
         internal void Load(ContentManager content)
         {

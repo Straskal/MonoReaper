@@ -1,32 +1,46 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Engine
 {
-    internal sealed class EntityManager
+    public sealed class EntityManager
     {
+        public const int PARTITION_CELL_SIZE = 64;
+
+        private readonly Partition partition = new(PARTITION_CELL_SIZE);
         private readonly List<Entity> entities = new();
         private readonly List<Entity> entitiesToRemove = new();
-        private delegate void EntityAddedHandler(Entity entity);
-        private EntityAddedHandler entityAddedHandler;
         private bool shouldSortComponents;
 
-        public EntityManager(Level level)
+        public void Spawn(IEnumerable<Entity> entities)
         {
-            Level = level;
+            foreach (var entity in entities) 
+            {
+                entity.Others = this;
+                this.entities.Add(entity);
+                entity.Spawn();
+            }
+
+            foreach (var entity in entities)
+            {
+                entity.Start();
+            }
         }
 
-        public Level Level { get; }
+        public void Spawn(Entity entity)
+        {
+            Spawn(entity, entity.Position);
+        }
 
         public void Spawn(Entity entity, Vector2 position)
         {
-            if (entity.Level == null)
+            if (entity.Others == null)
             {
-                entity.Level = Level;
+                entity.Others = this;
                 entity.Position = position;
                 entities.Add(entity);
-                entityAddedHandler?.Invoke(entity);
+                entity.Spawn();
+                entity.Start();
             }
         }
 
@@ -39,44 +53,39 @@ namespace Engine
             }
         }
 
-        public IEnumerator Start()
+        public void EnableCollider(Collider collider) 
         {
-            var currentAssetCount = Level.Content.LoadedAssetCount;
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Load(Level.Content);
-
-                if (currentAssetCount != Level.Content.LoadedAssetCount)
-                {
-                    currentAssetCount = Level.Content.LoadedAssetCount;
-                    yield return null;
-                }
-            }
-
-            entityAddedHandler = OnEntityAdded_PostLoad;
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Spawn();
-            }
-
-            entityAddedHandler = OnEntityAdded_PostSpawn;
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Start();
-            }
-
-            entityAddedHandler = OnEntityAdded_PostStart;
+            partition.Add(collider);
         }
 
-        public void Stop()
+        public void DisableCollider(Collider collider) 
+        {
+            partition.Remove(collider);
+        }
+
+        public void UpdateCollider(Collider collider) 
+        {
+            partition.Update(collider);
+        }
+
+        public IEnumerable<Collider> GetCollidersWithinBounds(RectangleF bounds) 
+        {
+            return partition.Query(bounds);
+        }
+
+        public void Clear()
         {
             foreach (var entity in entities.ToArray())
             {
                 entity.End();
+
+                if (entity.Collider != null) 
+                {
+                    partition.Remove(entity.Collider);
+                }
             }
+
+            entities.Clear();
         }
 
         public void Update(GameTime gameTime)
@@ -110,24 +119,8 @@ namespace Engine
             {
                 entities[i].DebugDraw(renderer, gameTime);
             }
-        }
 
-        private void OnEntityAdded_PostLoad(Entity entity)
-        {
-            entity.Load(Level.Content);
-        }
-
-        private void OnEntityAdded_PostSpawn(Entity entity)
-        {
-            entity.Load(Level.Content);
-            entity.Spawn();
-        }
-
-        private void OnEntityAdded_PostStart(Entity entity)
-        {
-            entity.Load(Level.Content);
-            entity.Spawn();
-            entity.Start();
+            partition.DebugDraw(renderer);
         }
 
         private void ProcessDestroyedEntities()
@@ -136,7 +129,7 @@ namespace Engine
             {
                 entitiesToRemove[i].Destroy();
                 entitiesToRemove[i].End();
-                entitiesToRemove[i].Level = null;
+                entitiesToRemove[i].Others = null;
                 entities.Remove(entitiesToRemove[i]);
             }
 
@@ -147,12 +140,12 @@ namespace Engine
         {
             if (shouldSortComponents)
             {
-                entities.Sort(SortComponentsByZOrder);
+                entities.Sort(SortEntities);
                 shouldSortComponents = false;
             }
         }
 
-        private static int SortComponentsByZOrder(Entity a, Entity b)
+        private static int SortEntities(Entity a, Entity b)
         {
             return Comparer<int>.Default.Compare(a.GraphicsComponent.DrawOrder, b.GraphicsComponent.DrawOrder);
         }
