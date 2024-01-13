@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace Adventure
 {
-    internal static class LevelLoader
+    internal static class Level
     {
         public static readonly int PartitionCellSize = 64;
 
-        public static List<Entity> LoadEntities(LevelData levelData)
+        public static List<Entity> GetEntities(LevelData levelData)
         {
             var result = new List<Entity>();
 

@@ -36,6 +36,11 @@ namespace Engine
             Height = height;
         }
 
+        public readonly bool Contains(Vector2 point)
+        {
+            return OverlapTests.RectangleVsPoint(this, point);
+        }
+
         public readonly bool Overlaps(RectangleF other)
         {
             return OverlapTests.RectangleVsRectangle(this, other);

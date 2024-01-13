@@ -23,17 +23,12 @@ namespace Adventure
         public static Adventure Instance { get; private set; }
         public static bool IsPaused { get; set; }
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            LoadMap();
-        }
-
         protected override void LoadContent()
         {
             base.LoadContent();
             LoadSharedContent();
             LoadGUI();
+            LoadMap();
         }
 
         public void LoadMap()
@@ -47,9 +42,8 @@ namespace Adventure
         public void LoadLevel(string path)
         {
             var levelData = Content.Load<LevelData>(path);
-            var levelBounds = new LevelArea(new RectangleF(levelData.Bounds));
-            World.Spawn(LevelLoader.LoadEntities(levelData));
-            World.Spawn(levelBounds);
+            World.Spawn(Level.GetEntities(levelData));
+            World.Spawn(new CameraArea(new RectangleF(levelData.Bounds)));
         }
 
         protected override void Update(GameTime gameTime)

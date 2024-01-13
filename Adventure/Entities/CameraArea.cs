@@ -3,12 +3,11 @@ using Microsoft.Xna.Framework;
 
 namespace Adventure.Entities
 {
-    public class LevelArea : Entity
+    public class CameraArea : Entity
     {
-        private static LevelArea current;
         private Player player;
 
-        public LevelArea(RectangleF bounds)
+        public CameraArea(RectangleF bounds)
         {
             Bounds = bounds;
             Position = new Vector2(Bounds.X, Bounds.Y);
@@ -19,30 +18,14 @@ namespace Adventure.Entities
         public override void Start()
         {
             player = World.Find<Player>();
-
-            if (player.Overlaps(Bounds))
-            {
-                current = this;
-            }
         }
 
         public override void PostUpdate(GameTime gameTime)
         {
-            if (player.Overlaps(Bounds))
-            {
-                current ??= this;
-            }
-            else if (current == this)
-            {
-                current = null;
-            }
-
-            if (current == this) 
+            if (Bounds.Contains(player.Position)) 
             {
                 Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Bounds.Center, 0.16f);
             }
-
-            base.PostUpdate(gameTime);
         }
 
         public override void DebugDraw(Renderer renderer, GameTime gameTime)
