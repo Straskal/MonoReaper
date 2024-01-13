@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Engine;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
     internal class PlayerAnimations
     {

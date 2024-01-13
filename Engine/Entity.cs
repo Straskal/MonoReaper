@@ -43,6 +43,15 @@ namespace Engine
             Collider?.Disable();
         }
 
+        public bool Overlaps(RectangleF rectangle) 
+        {
+            if (Collider != null) 
+            {
+                return Collider.Overlaps(rectangle);
+            }
+            return false;
+        }
+
         public virtual void Update(GameTime gameTime)
         {
         }

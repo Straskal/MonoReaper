@@ -12,18 +12,16 @@ namespace Adventure
     {
         public static readonly int PartitionCellSize = 64;
 
-        public static List<Entity> LoadEntities(App game, string filename, string playerSpawnId = null)
+        public static List<Entity> LoadEntities(LevelData levelData)
         {
-            playerSpawnId ??= "Default";
             var result = new List<Entity>();
-            var data = game.Content.Load<LevelData>(filename);
 
-            foreach (var entity in GetEntitiesFromLevelData(data, playerSpawnId))
+            foreach (var entity in GetEntitiesFromLevelData(levelData))
             {
                 result.Add(entity);
             }
 
-            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(data))
+            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
             {
                 result.Add(tileMapEntity);
             }
@@ -31,7 +29,7 @@ namespace Adventure
             return result;
         }
 
-        private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData, string playerSpawnId)
+        private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData)
         {
             var offset = new Vector2(levelData.Bounds.X, levelData.Bounds.Y);
 
@@ -40,13 +38,10 @@ namespace Adventure
                 switch (entityData.Type)
                 {
                     case "PlayerSpawn":
-                        if (entityData.Fields.GetString("Id")?.Equals(playerSpawnId) == true)
+                        yield return new Player()
                         {
-                            yield return new Player()
-                            {
-                                Position = entityData.Position + offset
-                            };
-                        }
+                            Position = entityData.Position + offset
+                        };
                         break;
                     case "Barrel":
                         yield return new Barrel()
@@ -57,13 +52,6 @@ namespace Adventure
                     case "FireballShooter":
                         yield return new EnemyFireballShooter()
                         {
-                            Position = entityData.Position + offset
-                        };
-                        break;
-                    case "LevelTrigger":
-                        yield return new LevelTrigger(entityData)
-                        {
-                            Origin = Origin.TopLeft,
                             Position = entityData.Position + offset
                         };
                         break;

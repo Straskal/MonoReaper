@@ -14,7 +14,7 @@ namespace Engine
 
         public void Spawn(IEnumerable<Entity> entities)
         {
-            foreach (var entity in entities) 
+            foreach (var entity in entities)
             {
                 entity.World = this;
                 this.entities.Add(entity);
@@ -53,22 +53,34 @@ namespace Engine
             }
         }
 
+        public T Find<T>()
+        {
+            foreach (var entity in entities)
+            {
+                if (entity is T t)
+                {
+                    return t;
+                }
+            }
+            return default;
+        }
+
         public void Sort()
         {
             sort = true;
         }
 
-        public void EnableCollider(Collider collider) 
+        public void EnableCollider(Collider collider)
         {
             partition.Add(collider);
         }
 
-        public void DisableCollider(Collider collider) 
+        public void DisableCollider(Collider collider)
         {
             partition.Remove(collider);
         }
 
-        public void UpdateCollider(Collider collider) 
+        public void UpdateCollider(Collider collider)
         {
             partition.Update(collider);
         }
@@ -93,9 +105,9 @@ namespace Engine
             return partition.Query(bounds);
         }
 
-        public IEnumerable<Collider> GetCollidersWithinBounds(CircleF circle) 
+        public IEnumerable<Collider> GetCollidersWithinBounds(CircleF circle)
         {
-            return  partition.Query(new RectangleF(
+            return partition.Query(new RectangleF(
                 circle.Center.X - circle.Radius,
                 circle.Center.Y - circle.Radius,
                 circle.Radius * 2f,
@@ -108,7 +120,7 @@ namespace Engine
             {
                 entity.End();
 
-                if (entity.Collider != null) 
+                if (entity.Collider != null)
                 {
                     partition.Remove(entity.Collider);
                 }

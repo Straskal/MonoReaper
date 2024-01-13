@@ -78,7 +78,7 @@ namespace Adventure
         {
             var pressed = false;
             Color color;
-            var size = SharedContent.Fonts.Default.MeasureString(text);
+            var size = Store.Fonts.Default.MeasureString(text);
             size.Round();
             var buttonRectangle = new Rectangle(x, y, (int)size.X, (int)size.Y);
             buttonRectangle.Inflate(5, 0);
@@ -122,7 +122,7 @@ namespace Adventure
             }
 
             Renderer.DrawRectangle(buttonRectangle, color);
-            Renderer.DrawString(SharedContent.Fonts.Default, text, new Vector2(x, y), Color.Black);
+            Renderer.DrawString(Store.Fonts.Default, text, new Vector2(x, y), Color.Black);
 
             if (pressed) 
             {

@@ -23,7 +23,7 @@ namespace Adventure.Content.Pipeline.Ldtk
 
         private static Rectangle GetBounds(LdtkLevel input)
         {
-            return new Rectangle(input.WorldX, input.WorldY, input.WorldY, input.Height);
+            return new Rectangle(input.WorldX, input.WorldY, input.Width, input.Height);
         }
 
         private static EntityData[] GetEntities(LdtkLevel input)

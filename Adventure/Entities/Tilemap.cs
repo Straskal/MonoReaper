@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Adventure.Components;
 using Engine;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
     public class Tilemap : Entity
     {
@@ -36,7 +37,14 @@ namespace Adventure.Components
             Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
             Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
             Collider.Enable();
-            GraphicsComponent = new TilemapRenderer(this, Data);
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            foreach (var tile in Data.Tiles)
+            {
+                renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
+            }
         }
     }
 }

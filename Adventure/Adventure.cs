@@ -1,4 +1,6 @@
-﻿using Engine;
+﻿using Adventure.Content;
+using Adventure.Entities;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,9 +26,7 @@ namespace Adventure
         protected override void Initialize()
         {
             base.Initialize();
-            LoadLevel("Levels/world/level_0");
-            LoadLevel("Levels/world/level_1");
-            LoadLevel("Levels/world/level_2");
+            LoadMap();
         }
 
         protected override void LoadContent()
@@ -36,15 +36,20 @@ namespace Adventure
             LoadGUI();
         }
 
-        public void LoadMap(string path) 
+        public void LoadMap()
         {
             World.Clear();
-            World.Spawn(LevelLoader.LoadEntities(this, path));
+            LoadLevel("Levels/world/level_0");
+            LoadLevel("Levels/world/level_1");
+            LoadLevel("Levels/world/level_2");
         }
 
         public void LoadLevel(string path)
         {
-            World.Spawn(LevelLoader.LoadEntities(this, path));
+            var levelData = Content.Load<LevelData>(path);
+            var levelBounds = new LevelArea(new RectangleF(levelData.Bounds));
+            World.Spawn(LevelLoader.LoadEntities(levelData));
+            World.Spawn(levelBounds);
         }
 
         protected override void Update(GameTime gameTime)
@@ -65,6 +70,7 @@ namespace Adventure
                 Debug = !Debug;
             }
 
+            ScreenShake.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -88,10 +94,14 @@ namespace Adventure
 
         private void LoadSharedContent()
         {
-            SharedContent.Fonts.Default = Content.Load<SpriteFont>("Fonts/Font");
-            SharedContent.Graphics.Player = Content.Load<Texture2D>("Art/Player/Player");
-            SharedContent.Graphics.Fire = Content.Load<Texture2D>("Art/Player/Fire");
-            SharedContent.Sounds.Shoot = Content.Load<SoundEffect>("Audio/fireball_shoot");
+            Store.Fonts.Default = Content.Load<SpriteFont>("fonts/font");
+            Store.Gfx.Player = Content.Load<Texture2D>("art/player/player");
+            Store.Gfx.Fire = Content.Load<Texture2D>("art/player/fire");
+            Store.Gfx.Barrel = Content.Load<Texture2D>("art/common/barrel");
+            Store.Gfx.Explosion = Content.Load<Texture2D>("art/common/explosion-1");
+            Store.Vfx.SolidColor = Content.Load<Effect>("shaders/SolidColor");
+            Store.Sfx.Shoot = Content.Load<SoundEffect>("audio/fireball_shoot");
+            Store.Sfx.Explosion = Content.Load<SoundEffect>("audio/explosion4");
         }
 
         private void LoadGUI()

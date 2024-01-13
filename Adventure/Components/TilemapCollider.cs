@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using static Adventure.Components.Tilemap;
+using static Adventure.Entities.Tilemap;
 using static Adventure.Constants;
 
 namespace Adventure.Components

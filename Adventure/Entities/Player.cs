@@ -1,13 +1,11 @@
 ﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Reflection.Metadata;
 using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
     public class Player : Entity
     {
@@ -20,15 +18,10 @@ namespace Adventure.Components
 
         public override void Spawn()
         {
-            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
+            Collider = new CircleCollider(this, new Vector2(0f, 0f), 7.5f);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
-            GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
-        }
-
-        public override void Start()
-        {
-            Adventure.Instance.Camera.Position = Position;
+            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames);
         }
 
         public override void Update(GameTime gameTime)
@@ -54,12 +47,6 @@ namespace Adventure.Components
             Collide(velocity, LAYER);
             Animate();
             HandleInteractInput(deltaTime);
-            CameraFollow();
-        }
-
-        private void CameraFollow()
-        {
-            Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Position, 0.15f);
         }
 
         private void HandleInteractInput(float deltaTime)
