@@ -1,127 +1,80 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 
 namespace Engine
 {
-    /// <summary>
-    /// An entity is an object that has a physical position in a level
-    /// </summary>
-    /// <remarks>
-    /// Entities are composed of components, which hold the actual game and rendering logic.
-    /// </remarks>
     public class Entity
     {
-        public Entity(params Component[] components)
-        {
-            Components.AddRange(components);
-        }
+        public World World { get; internal set; }
+        public HashSet<string> Tags { get; }
+        public Origin Origin { get; set; } = Origin.Center;
+        public Vector2 Position { get; set; }
+        public Collider Collider { get; protected set; }
+        public GraphicsComponent GraphicsComponent { get; protected set; }
+        public bool IsDestroyed { get; internal set; }
 
-        /// <summary>
-        /// Gets the entity's component list
-        /// </summary>
-        internal List<Component> Components
+        public int DrawOrder 
         {
-            get;
-        } = new List<Component>();
-
-        /// <summary>
-        /// Gets the entity's level
-        /// </summary>
-        public Level Level
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Gets or sets the entity's position
-        /// </summary>
-        public Vector2 Position
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the entity's origin
-        /// </summary>
-        public Origin Origin
-        {
-            get;
-            init;
-        } = Origin.Center;
-
-        /// <summary>
-        /// True if the entity has been destroyed
-        /// </summary>
-        public bool IsDestroyed
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Adds the given component to the entity
-        /// </summary>
-        /// <param name="component"></param>
-        public void AddComponent(Component component)
-        {
-            Components.Add(component);
-            Level?.AddComponent(this, component);
-        }
-
-        /// <summary>
-        /// Removes the given component from the entity
-        /// </summary>
-        /// <param name="component"></param>
-        public void RemoveComponent(Component component)
-        {
-            Components.Remove(component);
-            Level?.RemoveComponent(component);
-        }
-
-        /// <summary>
-        /// Gets the first instance of a component of the given type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetComponent<T>() where T : class
-        {
-            var result = default(T);
-
-            foreach (var component in Components)
+            get 
             {
-                if (component is T t)
+                if (GraphicsComponent != null) 
                 {
-                    result = t;
-                    break;
+                    return GraphicsComponent.DrawOrder;
                 }
+                return 0;
             }
-
-            return result;
         }
 
-        /// <summary>
-        /// Returns true if the entity contains a component of the given type and outputs it
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        public bool TryGetComponent<T>(out T component) where T : class
+        public virtual void Spawn()
         {
-            return (component = GetComponent<T>()) != null;
         }
 
-        /// <summary>
-        /// Gets the first instance of a component of the given type and throws an exception if the component is not found.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public T RequireComponent<T>() where T : class
+        public virtual void Destroy()
         {
-            return GetComponent<T>() ?? throw new Exception($"Required behavior of type {typeof(T).Name} is missing.");
+            Collider?.Disable();
+        }
+
+        public virtual void Start()
+        {
+        }
+
+        public virtual void End()
+        {
+            Collider?.Disable();
+        }
+
+        public virtual void Update(GameTime gameTime)
+        {
+        }
+
+        public virtual void PostUpdate(GameTime gameTime)
+        {
+            GraphicsComponent?.PostUpdate(gameTime);
+        }
+
+        public virtual void Draw(Renderer renderer, GameTime gameTime)
+        {
+            GraphicsComponent?.Draw(renderer, gameTime);
+        }
+
+        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            Collider?.Draw(renderer, gameTime);
+            GraphicsComponent?.DebugDraw(renderer, gameTime);
+        }
+
+        public virtual void OnCollision(Entity other, Collision collision)
+        {
+        }
+
+        protected void Collide(Vector2 velocity, int layerMask)
+        {
+            Collider?.Collide(velocity, layerMask);
+        }
+
+        protected void Collide(ref Vector2 velocity, int layerMask)
+        {
+            Collider?.Collide(ref velocity, layerMask);
         }
     }
 }

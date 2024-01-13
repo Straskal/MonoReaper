@@ -12,6 +12,8 @@ namespace Engine
         {
         }
 
+        public int LoadedAssetCount => LoadedAssets.Count;
+
         /// <summary>
         /// Loads content without caching it.
         /// </summary>

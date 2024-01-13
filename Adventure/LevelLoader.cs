@@ -1,6 +1,8 @@
 ﻿using Adventure.Components;
 using Adventure.Content;
+using Adventure.Entities;
 using Engine;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +13,23 @@ namespace Adventure
     {
         public static readonly int PartitionCellSize = 64;
 
-        public static Level LoadLevel(this App game, string filename, string playerSpawnId = null)
+        public static List<Entity> LoadLevel(App game, string filename, string playerSpawnId = null)
         {
             playerSpawnId ??= "Default";
+            var result = new List<Entity>();
+            var data = game.Content.LoadWithoutCaching<LevelData>(filename);
 
-            var levelData = game.Content.LoadWithoutCaching<LevelData>(filename);
-            var level = new Level(game, PartitionCellSize, levelData.Width, levelData.Height);
-
-            foreach (var entity in GetEntitiesFromLevelData(levelData, playerSpawnId))
+            foreach (var entity in GetEntitiesFromLevelData(data, playerSpawnId))
             {
-                level.Spawn(entity);
+                result.Add(entity);
             }
 
-            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
+            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(data))
             {
-                level.Spawn(tileMapEntity);
+                result.Add(tileMapEntity);
             }
 
-            return level;
+            return result;
         }
 
         private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData, string playerSpawnId)
@@ -40,20 +41,26 @@ namespace Adventure
                     case "PlayerSpawn":
                         if (entityData.Fields.GetString("Id")?.Equals(playerSpawnId) == true)
                         {
-                            yield return new Entity(new Player())
+                            yield return new Player()
                             {
                                 Position = entityData.Position
                             };
                         }
                         break;
                     case "Barrel":
-                        yield return new Entity(new Barrel())
+                        yield return new Barrel()
+                        {
+                            Position = entityData.Position
+                        };
+                        break;
+                    case "FireballShooter":
+                        yield return new EnemyFireballShooter()
                         {
                             Position = entityData.Position
                         };
                         break;
                     case "LevelTrigger":
-                        yield return new Entity(new LevelTrigger(entityData))
+                        yield return new LevelTrigger(entityData)
                         {
                             Origin = Origin.TopLeft,
                             Position = entityData.Position
@@ -83,7 +90,7 @@ namespace Adventure
                     IsSolid = true
                 };
 
-                yield return new Entity(new Tilemap(mapData) { ZOrder = -100 })
+                yield return new Tilemap(mapData)
                 {
                     Origin = Origin.TopLeft
                 };
