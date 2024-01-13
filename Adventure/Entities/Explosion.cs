@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
+using static Adventure.Constants;
 
 namespace Adventure.Components
 {
@@ -30,6 +31,23 @@ namespace Adventure.Components
             };
 
             _sound.Play();
+        }
+
+        public override void Start()
+        {
+            foreach (var entity in World.GetOverlappingEntities(new CircleF(Position, 20), EntityLayers.Enemy))
+            {
+                if (entity is IDamageable damageable)
+                {
+                    damageable.Damage(1);
+
+                    if (damageable.Flammable)
+                    {
+                        World.Spawn(new Fire(entity));
+                    }
+                }
+            }
+            base.Start();
         }
 
         public override void Update(GameTime gameTime)

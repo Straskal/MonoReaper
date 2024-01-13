@@ -46,6 +46,12 @@ namespace Adventure.Components
         {
             Timer -= gameTime.GetDeltaTime();
 
+            if (Target.IsDestroyed)
+            {
+                World.Destroy(this);
+                return;
+            }
+
             if (Timer < 0f)
             {
                 if (Target is IDamageable damageable) 
@@ -55,7 +61,7 @@ namespace Adventure.Components
 
                 HitCount++;
 
-                if (HitCount == 3)
+                if (HitCount == 4)
                 {
                     World.Destroy(this);
                 }
@@ -63,11 +69,6 @@ namespace Adventure.Components
                 {
                     Timer = 1f;
                 }
-            }
-
-            if (Target.IsDestroyed)
-            {
-                World.Destroy(this);
             }
         }
 

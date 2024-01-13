@@ -1,13 +1,11 @@
-﻿using System;
-
+﻿using Microsoft.Xna.Framework;
 namespace Adventure.Content
 {
-    public sealed class LevelData
+    public class LevelData
     {
-        public string Name { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public EntityData[] Entities { get; set; } = Array.Empty<EntityData>();
-        public TileLayerData[] TileLayers { get; set; } = Array.Empty<TileLayerData>();
+        public string Name { get; init; }
+        public Rectangle Bounds { get; init; }
+        public EntityData[] Entities { get; init; }
+        public LayerData[] Layers { get; init; }
     }
 }

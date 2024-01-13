@@ -1,7 +1,6 @@
 ﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using static Adventure.Constants;
 
@@ -17,7 +16,7 @@ namespace Adventure.Components
     {
         private Vector2 push;
 
-        public int Health { get; private set; } = 3;
+        public int Health { get; private set; } = 1;
         public bool Flammable { get => true; }
         public Sprite Sprite { get; private set; }
         public Effect HurtEffect { get; private set; }
@@ -76,6 +75,12 @@ namespace Adventure.Components
                 Sprite.Effect = HurtEffect;
                 HurtTimer = 0.1f;
             }
+        }
+
+        public override void Destroy()
+        {
+            World.Spawn(new Explosion(), Position);
+            base.Destroy();
         }
     }
 }

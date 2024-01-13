@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace Adventure.Content.Readers
 {
@@ -6,17 +7,13 @@ namespace Adventure.Content.Readers
     {
         protected override LevelData Read(ContentReader input, LevelData existingInstance)
         {
-            var level = new LevelData
-            {
-                Name = input.ReadString(),
-                Width = input.ReadInt32(),
-                Height = input.ReadInt32(),
-                Entities = new EntityData[input.ReadInt32()]
-            };
+            var name = input.ReadString();
+            var bounds = new Rectangle(input.ReadInt32(), input.ReadInt32(), input.ReadInt32(), input.ReadInt32());
+            var entities = new EntityData[input.ReadInt32()];
 
-            for (int i = 0; i < level.Entities.Length; i++)
+            for (int i = 0; i < entities.Length; i++)
             {
-                level.Entities[i] = new EntityData
+                entities[i] = new EntityData
                 {
                     Name = input.ReadString(),
                     Type = input.ReadString(),
@@ -27,28 +24,28 @@ namespace Adventure.Content.Readers
 
                 var fieldCount = input.ReadInt32();
 
-                for (int j = 0; j < fieldCount; j++) 
+                for (int j = 0; j < fieldCount; j++)
                 {
-                    level.Entities[i].Fields.Add(input.ReadString(), input.ReadString());
+                    entities[i].Fields.Add(input.ReadString(), input.ReadString());
                 }
             }
 
-            level.TileLayers = new TileLayerData[input.ReadInt32()];
+            var layers = new LayerData[input.ReadInt32()];
 
-            for (int i = 0; i < level.TileLayers.Length; i++)
+            for (int i = 0; i < layers.Length; i++)
             {
-                level.TileLayers[i] = new TileLayerData
+                layers[i] = new LayerData
                 {
                     IsSolid = input.ReadBoolean(),
                     TileWidth = input.ReadInt32(),
                     TileHeight = input.ReadInt32(),
-                    TileSetRelativePath = input.ReadString(),
+                    TilesetPath = input.ReadString(),
                     Tiles = new TileData[input.ReadInt32()]
                 };
 
-                for (int j = 0; j < level.TileLayers[i].Tiles.Length; j++)
+                for (int j = 0; j < layers[i].Tiles.Length; j++)
                 {
-                    level.TileLayers[i].Tiles[j] = new TileData
+                    layers[i].Tiles[j] = new TileData
                     {
                         Position = input.ReadVector2(),
                         Source = input.ReadVector2()
@@ -56,7 +53,13 @@ namespace Adventure.Content.Readers
                 }
             }
 
-            return level;
+            return new LevelData
+            {
+                Name = name,
+                Bounds = bounds,
+                Entities = entities,
+                Layers = layers
+            };
         }
     }
 }

@@ -1,53 +1,60 @@
 ﻿using Adventure.Content.Readers;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using System;
 
 namespace Adventure.Content.Pipeline.Writers
 {
-    /// <summary>
-    /// Writes a Level to xnb format.
-    /// </summary>
     [ContentTypeWriter]
     public class LevelDataWriter : ContentTypeWriter<LevelData>
     {
         protected override void Write(ContentWriter output, LevelData value)
         {
-            output.Write(value.Name);
-            output.Write(value.Width);
-            output.Write(value.Height);
-            output.Write(value.Entities.Length);
-
-            foreach (var entity in value.Entities)
+            try
             {
-                output.Write(entity.Name);
-                output.Write(entity.Type);
-                output.Write(entity.Position);
-                output.Write(entity.Width);
-                output.Write(entity.Height);
-                output.Write(entity.Fields.Count);
+                output.Write(value.Name);
+                output.Write(value.Bounds.X);
+                output.Write(value.Bounds.Y);
+                output.Write(value.Bounds.Width);
+                output.Write(value.Bounds.Height);
+                output.Write(value.Entities.Length);
 
-                foreach (var kvp in entity.Fields) 
+                foreach (var entity in value.Entities)
                 {
-                    output.Write(kvp.Key);
-                    output.Write(kvp.Value);
+                    output.Write(entity.Name);
+                    output.Write(entity.Type);
+                    output.Write(entity.Position);
+                    output.Write(entity.Width);
+                    output.Write(entity.Height);
+                    output.Write(entity.Fields.Count);
+
+                    foreach (var kvp in entity.Fields)
+                    {
+                        output.Write(kvp.Key);
+                        output.Write(kvp.Value);
+                    }
+                }
+
+                output.Write(value.Layers.Length);
+
+                foreach (var tileLayer in value.Layers)
+                {
+                    output.Write(tileLayer.IsSolid);
+                    output.Write(tileLayer.TileWidth);
+                    output.Write(tileLayer.TileHeight);
+                    output.Write(tileLayer.TilesetPath);
+                    output.Write(tileLayer.Tiles.Length);
+
+                    foreach (var tile in tileLayer.Tiles)
+                    {
+                        output.Write(tile.Position);
+                        output.Write(tile.Source);
+                    }
                 }
             }
-
-            output.Write(value.TileLayers.Length);
-
-            foreach (var tileLayer in value.TileLayers)
+            catch (Exception e) 
             {
-                output.Write(tileLayer.IsSolid);
-                output.Write(tileLayer.TileWidth);
-                output.Write(tileLayer.TileHeight);
-                output.Write(tileLayer.TileSetRelativePath);
-                output.Write(tileLayer.Tiles.Length);
-
-                foreach (var tile in tileLayer.Tiles)
-                {
-                    output.Write(tile.Position);
-                    output.Write(tile.Source);
-                }
+                throw new Exception(value.Name + " -------------------- " + e.ToString());
             }
         }
 

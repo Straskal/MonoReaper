@@ -23,8 +23,10 @@ namespace Adventure
 
         protected override void Initialize()
         {
-            base.Initialize(); 
-            LoadMap("Levels/world/level_0");
+            base.Initialize();
+            LoadLevel("Levels/world/level_0");
+            LoadLevel("Levels/world/level_1");
+            LoadLevel("Levels/world/level_2");
         }
 
         protected override void LoadContent()
@@ -37,7 +39,12 @@ namespace Adventure
         public void LoadMap(string path) 
         {
             World.Clear();
-            World.Spawn(LevelLoader.LoadLevel(this, path));
+            World.Spawn(LevelLoader.LoadEntities(this, path));
+        }
+
+        public void LoadLevel(string path)
+        {
+            World.Spawn(LevelLoader.LoadEntities(this, path));
         }
 
         protected override void Update(GameTime gameTime)

@@ -2,7 +2,6 @@
 using Adventure.Content;
 using Adventure.Entities;
 using Engine;
-using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +12,11 @@ namespace Adventure
     {
         public static readonly int PartitionCellSize = 64;
 
-        public static List<Entity> LoadLevel(App game, string filename, string playerSpawnId = null)
+        public static List<Entity> LoadEntities(App game, string filename, string playerSpawnId = null)
         {
             playerSpawnId ??= "Default";
             var result = new List<Entity>();
-            var data = game.Content.LoadWithoutCaching<LevelData>(filename);
+            var data = game.Content.Load<LevelData>(filename);
 
             foreach (var entity in GetEntitiesFromLevelData(data, playerSpawnId))
             {
@@ -34,6 +33,8 @@ namespace Adventure
 
         private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData, string playerSpawnId)
         {
+            var offset = new Vector2(levelData.Bounds.X, levelData.Bounds.Y);
+
             foreach (var entityData in levelData.Entities)
             {
                 switch (entityData.Type)
@@ -43,27 +44,27 @@ namespace Adventure
                         {
                             yield return new Player()
                             {
-                                Position = entityData.Position
+                                Position = entityData.Position + offset
                             };
                         }
                         break;
                     case "Barrel":
                         yield return new Barrel()
                         {
-                            Position = entityData.Position
+                            Position = entityData.Position + offset
                         };
                         break;
                     case "FireballShooter":
                         yield return new EnemyFireballShooter()
                         {
-                            Position = entityData.Position
+                            Position = entityData.Position + offset
                         };
                         break;
                     case "LevelTrigger":
                         yield return new LevelTrigger(entityData)
                         {
                             Origin = Origin.TopLeft,
-                            Position = entityData.Position
+                            Position = entityData.Position + offset
                         };
                         break;
                     default:
@@ -74,18 +75,20 @@ namespace Adventure
 
         private static IEnumerable<Entity> GetTilemapEntitiesFromLevelData(LevelData levelData)
         {
-            foreach (var tileLayerData in levelData.TileLayers)
+            var offset = new Vector2(levelData.Bounds.X, levelData.Bounds.Y);
+
+            foreach (var tileLayerData in levelData.Layers)
             {
                 var mapData = new Tilemap.MapData
                 {
                     CellSize = tileLayerData.TileWidth,
                     CellsX = tileLayerData.TileWidth,
                     CellsY = tileLayerData.TileHeight,
-                    TilesetFilePath = tileLayerData.TileSetRelativePath.Substring(3),
+                    TilesetFilePath = tileLayerData.TilesetPath.Substring(3),
                     Tiles = tileLayerData.Tiles.Select(tile => new Tilemap.TileInfo
                     {
                         Source = new Rectangle((int)tile.Source.X, (int)tile.Source.Y, tileLayerData.TileWidth, tileLayerData.TileWidth),
-                        Position = tile.Position
+                        Position = tile.Position + offset
                     }).ToArray(),
                     IsSolid = true
                 };

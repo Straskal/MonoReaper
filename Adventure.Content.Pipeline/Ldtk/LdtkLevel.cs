@@ -7,6 +7,12 @@ namespace Adventure.Content.Pipeline.Ldtk
         [JsonPropertyName("identifier")]
         public string Identifier { get; set; }
 
+        [JsonPropertyName("worldX")]
+        public int WorldX { get; set; }
+
+        [JsonPropertyName("worldY")]
+        public int WorldY { get; set; }
+
         [JsonPropertyName("pxWid")]
         public int Width { get; set; }
 

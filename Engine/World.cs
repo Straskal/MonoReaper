@@ -73,9 +73,33 @@ namespace Engine
             partition.Update(collider);
         }
 
-        public IEnumerable<Collider> GetCollidersWithinBounds(RectangleF bounds) 
+        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, int layerMask)
+        {
+            var result = new List<Entity>();
+
+            foreach (var collider in GetCollidersWithinBounds(circle))
+            {
+                if (collider.CheckMask(layerMask) && collider.Overlaps(circle))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Collider> GetCollidersWithinBounds(RectangleF bounds)
         {
             return partition.Query(bounds);
+        }
+
+        public IEnumerable<Collider> GetCollidersWithinBounds(CircleF circle) 
+        {
+            return  partition.Query(new RectangleF(
+                circle.Center.X - circle.Radius,
+                circle.Center.Y - circle.Radius,
+                circle.Radius * 2f,
+                circle.Radius * 2f));
         }
 
         public void Clear()

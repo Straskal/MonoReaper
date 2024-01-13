@@ -334,6 +334,11 @@
 /processor:LdtkLevelProcessor
 /build:Levels/world/Level_1.ldtkl
 
+#begin Levels/world/Level_2.ldtkl
+/importer:LdtkLevelImporter
+/processor:LdtkLevelProcessor
+/build:Levels/world/Level_2.ldtkl
+
 #begin Shaders/Distortion.fx
 /importer:EffectImporter
 /processor:EffectProcessor

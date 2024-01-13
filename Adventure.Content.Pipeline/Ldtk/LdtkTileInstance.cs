@@ -5,12 +5,12 @@ namespace Adventure.Content.Pipeline.Ldtk
     public class LdtkTileInstance
     {
         [JsonPropertyName("__identifier")]
-        public string Id { get; set; }
+        public string Id { get; init; }
 
         [JsonPropertyName("px")]
-        public int[] Position { get; set; }
+        public int[] Position { get; init; }
 
         [JsonPropertyName("src")]
-        public int[] Source { get; set; }
+        public int[] Source { get; init; }
     }
 }
