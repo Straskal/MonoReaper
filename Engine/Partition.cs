@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Xna.Framework;
 
 namespace Engine

@@ -89,7 +89,7 @@ namespace Engine
         {
             var result = new List<Entity>();
 
-            foreach (var collider in GetCollidersWithinBounds(circle))
+            foreach (var collider in GetNearColliders(circle))
             {
                 if (collider.CheckMask(layerMask) && collider.Overlaps(circle))
                 {
@@ -100,18 +100,14 @@ namespace Engine
             return result;
         }
 
-        public IEnumerable<Collider> GetCollidersWithinBounds(RectangleF bounds)
+        public IEnumerable<Collider> GetNearColliders(RectangleF bounds)
         {
             return partition.Query(bounds);
         }
 
-        public IEnumerable<Collider> GetCollidersWithinBounds(CircleF circle)
+        public IEnumerable<Collider> GetNearColliders(CircleF circle)
         {
-            return partition.Query(new RectangleF(
-                circle.Center.X - circle.Radius,
-                circle.Center.Y - circle.Radius,
-                circle.Radius * 2f,
-                circle.Radius * 2f));
+            return partition.Query(circle.GetBounds());
         }
 
         public void Clear()
@@ -119,11 +115,6 @@ namespace Engine
             foreach (var entity in entities.ToArray())
             {
                 entity.End();
-
-                if (entity.Collider != null)
-                {
-                    partition.Remove(entity.Collider);
-                }
             }
 
             entities.Clear();

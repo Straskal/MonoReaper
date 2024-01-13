@@ -23,5 +23,10 @@ namespace Engine
             circle0.Radius += circle1.Radius;
             return circle0;
         }
+
+        public readonly RectangleF GetBounds()
+        {
+            return new RectangleF(Center.X - Radius, Center.Y - Radius, Radius * 2f, Radius * 2f);
+        }
     }
 }

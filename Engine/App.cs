@@ -16,6 +16,7 @@ namespace Engine
             Content = new ContentManagerExtended(Services, "Content");
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
+            GraphicsDeviceManager.IsFullScreen = false;
             GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
             IsFixedTimeStep = true;

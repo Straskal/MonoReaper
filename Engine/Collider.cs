@@ -137,7 +137,7 @@ namespace Engine
 
         public void GetOverlaps(List<Collider> colliders, int layerMask)
         {
-            foreach (var collider in Entity.World.GetCollidersWithinBounds(Bounds))
+            foreach (var collider in Entity.World.GetNearColliders(Bounds))
             {
                 if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider))
                 {
@@ -153,7 +153,7 @@ namespace Engine
             var broadphaseRectangle = Bounds.Union(velocity);
             Collider other = null;
 
-            foreach (var collider in Entity.World.GetCollidersWithinBounds(broadphaseRectangle))
+            foreach (var collider in Entity.World.GetNearColliders(broadphaseRectangle))
             {
                 if (collider == this)
                 {
