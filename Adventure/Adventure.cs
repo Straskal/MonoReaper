@@ -8,7 +8,7 @@ namespace Adventure
 {
     internal sealed class Adventure : App
     {
-        private readonly PauseScreen pause = new();
+        private readonly PauseScreen pauseScreen = new();
 
         public Adventure() : base(256, 256, ResolutionScaleMode.Viewport)
         {
@@ -23,8 +23,8 @@ namespace Adventure
 
         protected override void Initialize()
         {
-            base.Initialize();
-            ChangeScreen(new MainMenuScreen(this));
+            base.Initialize(); 
+            LoadMap("Levels/world/level_0");
         }
 
         protected override void LoadContent()
@@ -32,6 +32,12 @@ namespace Adventure
             base.LoadContent();
             LoadSharedContent();
             LoadGUI();
+        }
+
+        public void LoadMap(string path) 
+        {
+            World.Clear();
+            World.Spawn(LevelLoader.LoadLevel(this, path));
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,34 +48,34 @@ namespace Adventure
                 GraphicsDeviceManager.ApplyChanges();
             }
 
-            if (Input.IsKeyPressed(Keys.Escape) && Screen is Level) 
+            if (Input.IsKeyPressed(Keys.Escape)) 
             {
                 IsPaused = !IsPaused;
             }
 
             if (Input.IsKeyPressed(Keys.OemTilde))
             {
-                IsDebugModeEnabled = !IsDebugModeEnabled;
+                Debug = !Debug;
             }
 
             base.Update(gameTime);
         }
 
-        protected override void UpdateScreen(GameTime gameTime)
+        protected override void UpdateFrame(GameTime gameTime)
         {
             if (!IsPaused) 
             {
-                base.UpdateScreen(gameTime);
+                base.UpdateFrame(gameTime);
             } 
         }
 
-        protected override void DrawScreen(GameTime gameTime)
+        protected override void DrawFrame(GameTime gameTime)
         {
-            base.DrawScreen(gameTime);
+            base.DrawFrame(gameTime);
 
             if (IsPaused) 
             {
-                pause.Draw(Renderer, gameTime);
+                pauseScreen.Draw(Renderer, gameTime);
             }
         }
 

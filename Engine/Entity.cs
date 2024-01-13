@@ -1,97 +1,80 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+using System.Collections.Generic;
 
 namespace Engine
 {
     public class Entity
     {
-        public Level Level { get; internal set; }
+        public World World { get; internal set; }
+        public HashSet<string> Tags { get; }
         public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
         public bool IsDestroyed { get; internal set; }
 
-        internal void Load(ContentManager content)
+        public int DrawOrder 
         {
-            OnLoad(content);
+            get 
+            {
+                if (GraphicsComponent != null) 
+                {
+                    return GraphicsComponent.DrawOrder;
+                }
+                return 0;
+            }
         }
 
-        internal void Spawn()
-        {
-            OnSpawn();
-            Collider?.Register();
-        }
-
-        internal void Destroy()
-        {
-            OnDestroy();
-            Collider?.Unregister();
-        }
-
-        internal void Start()
-        {
-            OnStart();
-        }
-
-        internal void End()
-        {
-            OnEnd();
-        }
-
-        internal void Update(GameTime gameTime)
-        {
-            OnUpdate(gameTime);
-        }
-
-        internal void PostUpdate(GameTime gameTime)
-        {
-            OnPostUpdate(gameTime);
-            GraphicsComponent?.OnPostUpdate(gameTime);
-        }
-
-        internal void Draw(Renderer renderer, GameTime gameTime)
-        {
-            GraphicsComponent?.OnDraw(renderer, gameTime);
-        }
-
-        internal void DebugDraw(Renderer renderer, GameTime gameTime)
-        {
-            Collider?.DebugDraw(renderer, gameTime);
-            GraphicsComponent?.OnDebugDraw(renderer, gameTime);
-        }
-
-        protected void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
-        {
-            Collider?.MoveAndCollide(ref velocity, layerMask, response);
-        }
-
-        protected virtual void OnLoad(ContentManager content)
+        public virtual void Spawn()
         {
         }
 
-        protected virtual void OnSpawn()
+        public virtual void Destroy()
+        {
+            Collider?.Disable();
+        }
+
+        public virtual void Start()
         {
         }
 
-        protected virtual void OnDestroy()
+        public virtual void End()
+        {
+            Collider?.Disable();
+        }
+
+        public virtual void Update(GameTime gameTime)
         {
         }
 
-        protected virtual void OnStart()
+        public virtual void PostUpdate(GameTime gameTime)
+        {
+            GraphicsComponent?.PostUpdate(gameTime);
+        }
+
+        public virtual void Draw(Renderer renderer, GameTime gameTime)
+        {
+            GraphicsComponent?.Draw(renderer, gameTime);
+        }
+
+        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            Collider?.Draw(renderer, gameTime);
+            GraphicsComponent?.DebugDraw(renderer, gameTime);
+        }
+
+        public virtual void OnCollision(Entity other, Collision collision)
         {
         }
 
-        protected virtual void OnEnd()
+        protected void Collide(Vector2 velocity, int layerMask)
         {
+            Collider?.Collide(velocity, layerMask);
         }
 
-        protected virtual void OnUpdate(GameTime gameTime)
+        protected void Collide(ref Vector2 velocity, int layerMask)
         {
-        }
-
-        protected virtual void OnPostUpdate(GameTime gameTime)
-        {
+            Collider?.Collide(ref velocity, layerMask);
         }
     }
 }

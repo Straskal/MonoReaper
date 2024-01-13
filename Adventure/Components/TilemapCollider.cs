@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-
 using static Adventure.Components.Tilemap;
 using static Adventure.Constants;
 
@@ -10,72 +9,52 @@ namespace Adventure.Components
 {
     public sealed class TilemapCollider : Collider
     {
-        private readonly List<BoxCollider> _colliders = new();
+        private readonly List<BoxCollider> colliders = new();
 
         public TilemapCollider(Entity entity, int width, int height, MapData mapData)
             : this(entity, width, height, 0, mapData)
         {
         }
 
-        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData mapData) 
+        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData data)
             : base(entity)
         {
             Width = width;
             Height = height;
-            LayerMask = layerMask;
+            Layer = layerMask;
 
-            foreach (var tile in mapData.Tiles)
-            {
-                _colliders.Add(new BoxCollider(entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
-            }
+            SetUpTileColliders(data);
         }
 
-        public int Width 
-        {
-            get;
-        }
+        public int Width { get; }
+        public int Height { get; }
 
-        public int Height 
-        {
-            get;
-        }
-
-        public override RectangleF Bounds 
+        public override RectangleF Bounds
         {
             get => new(0, 0, Width, Height);
         }
 
-        public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override void Enable()
         {
-            throw new NotImplementedException();
-        }
-
-        public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Register()
-        {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
-                box.Register();
+                box.Enable();
             }
         }
 
-        public override void Unregister()
+        public override void Disable()
         {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
-                box.Unregister();
+                box.Disable();
             }
         }
 
-        public override void UpdateBBox()
+        public override void UpdateBounds()
         {
-            foreach (var box in _colliders)
+            foreach (var box in colliders)
             {
-                box.UpdateBBox();
+                box.UpdateBounds();
             }
         }
 
@@ -84,21 +63,64 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void MoveToPosition(Vector2 position)
+        public override void SetPosition(Vector2 position)
         {
             throw new NotImplementedException();
         }
 
-        public override void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        public override bool Overlaps(CircleF circle)
         {
             throw new NotImplementedException();
         }
 
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
+        public override bool Overlaps(RectangleF rectangle)
         {
-            foreach (var box in _colliders) 
+            throw new NotImplementedException();
+        }
+
+        public override bool Overlaps(Collider collider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsOverlapped(BoxCollider collider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsOverlapped(CircleCollider collider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            foreach (var box in colliders)
             {
-                box.DebugDraw(renderer, gameTime);
+                box.Draw(renderer, gameTime);
+            }
+        }
+
+        private void SetUpTileColliders(MapData mapData)
+        {
+            foreach (var tile in mapData.Tiles)
+            {
+                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
             }
         }
     }

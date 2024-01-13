@@ -4,14 +4,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Reflection.Metadata;
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
     public class Player : Entity
     {
-        private const int MovementCollisionLayerMask = EntityLayers.Enemy | EntityLayers.Solid | BoxLayers.Interactable;
-
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.75f;
 
@@ -19,19 +18,20 @@ namespace Adventure.Components
         private Vector2 direction = Vector2.One;
         private Vector2 velocity = Vector2.Zero;
 
-        protected override void OnLoad(ContentManager content)
+        public override void Spawn()
         {
-            Fireball.Preload(content);
-            Collider = new CircleCollider(this, new Vector2(0f, 3f), 5f, EntityLayers.Player);
+            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
+            Collider.Layer = EntityLayers.Player;
+            Collider.Enable();
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
         }
 
-        protected override void OnStart()
+        public override void Start()
         {
-            Level.Camera.Position = Position;
+            Adventure.Instance.Camera.Position = Position;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
@@ -49,18 +49,20 @@ namespace Adventure.Components
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            MoveAndCollide(ref velocity, MovementCollisionLayerMask, HandleCollision);
+            const int LAYER = EntityLayers.Solid | BoxLayers.Trigger;
+
+            Collide(velocity, LAYER);
             Animate();
             HandleInteractInput(deltaTime);
-            CameraFollow(); 
+            CameraFollow();
         }
 
-        private void CameraFollow() 
+        private void CameraFollow()
         {
-            Level.Camera.Position = Vector2.SmoothStep(Level.Camera.Position, Position, 0.15f);
+            Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Position, 0.15f);
         }
 
-        private void HandleInteractInput(float deltaTime) 
+        private void HandleInteractInput(float deltaTime)
         {
             if (Input.IsKeyPressed(Keys.E))
             {
@@ -68,19 +70,22 @@ namespace Adventure.Components
             }
         }
 
-        private void ShootFireball(float deltaTime) 
+        private void ShootFireball(float deltaTime)
         {
-            Level.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+            World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
-        private static Vector2 HandleCollision(Collision collision)
+        public override void OnCollision(Entity other, Collision collision)
         {
-            if (collision.Collider.IsSolid())
+            if (!Collider.IsMoving)
             {
-                return collision.Slide();
+                return;
             }
 
-            return collision.Ignore();
+            //if (other is Barrel barrel)
+            //{
+            //    barrel.Push(-collision.Normal);
+            //}
         }
 
         private void Animate()

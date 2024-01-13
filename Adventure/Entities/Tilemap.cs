@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine;
 using static Adventure.Constants;
@@ -30,16 +29,14 @@ namespace Adventure.Components
             Data = data;
         }
 
-        public MapData Data 
-        { 
-            get; 
-        }
+        public MapData Data { get; }
 
-        protected override void OnLoad(ContentManager content)
+        public override void Spawn()
         {
-            Data.Texture = content.Load<Texture2D>(Data.TilesetFilePath);
-            GraphicsComponent = new TilemapRenderer(Data);
+            Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
             Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
+            Collider.Enable();
+            GraphicsComponent = new TilemapRenderer(this, Data);
         }
     }
 }

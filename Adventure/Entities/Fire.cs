@@ -29,7 +29,7 @@ namespace Adventure.Components
             private set;
         }
 
-        protected override void OnLoad(ContentManager content)
+        public override void Spawn()
         {
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
@@ -42,7 +42,7 @@ namespace Adventure.Components
             };
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             Timer -= gameTime.GetDeltaTime();
 
@@ -57,7 +57,7 @@ namespace Adventure.Components
 
                 if (HitCount == 3)
                 {
-                    Level.Destroy(this);
+                    World.Destroy(this);
                 }
                 else
                 {
@@ -67,13 +67,14 @@ namespace Adventure.Components
 
             if (Target.IsDestroyed)
             {
-                Level.Destroy(this);
+                World.Destroy(this);
             }
         }
 
-        protected override void OnPostUpdate(GameTime gameTime)
+        public override void PostUpdate(GameTime gameTime)
         {
             Position = Target.Position;
+            base.PostUpdate(gameTime);
         }
     }
 }

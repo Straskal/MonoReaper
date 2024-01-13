@@ -31,7 +31,7 @@ namespace Engine
             Y = y;
             Width = width;
             Height = height;
-            LayerMask = layerMask;
+            Layer = layerMask;
         }
 
         public float X { get; set; }
@@ -41,18 +41,47 @@ namespace Engine
 
         public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + X, Entity.Position.Y + Y, Width, Height);
 
-        public override bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Overlaps(CircleF circle)
         {
-            return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
+            return OverlapTests.RectangleVsCircle(Bounds, circle);
         }
 
-        public override bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public override bool Overlaps(RectangleF rectangle)
         {
-            // TODO: Make moving rectangle vs circle intersections work correctly. Right now they are treated as tectangle vs rectangle.
-            return IntersectionTests.MovingRectangleVsRectangle(Bounds, path, collider.Bounds, out time, out contact, out normal);
+            return OverlapTests.RectangleVsRectangle(Bounds, rectangle);
         }
 
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
+        public override bool Overlaps(Collider collider)
+        {
+            return collider.IsOverlapped(this);
+        }
+
+        public override bool IsOverlapped(BoxCollider collider)
+        {
+            return OverlapTests.RectangleVsRectangle(Bounds, collider.Bounds);
+        }
+
+        public override bool IsOverlapped(CircleCollider collider)
+        {
+            return OverlapTests.CircleVsRectangle(collider.Circle, Bounds);
+        }
+
+        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
+        {
+            return collider.IsIntersected(this, segment, out intersection);
+        }
+
+        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.MovingRectangleVsRectangle(collider.Bounds, segment, Bounds, out intersection);
+        }
+
+        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.MovingCircleVsRectangle(collider.Circle, segment, Bounds, out intersection);
+        }
+
+        public override void Draw(Renderer renderer, GameTime gameTime)
         {
             renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.White);
         }

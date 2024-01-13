@@ -20,26 +20,16 @@ namespace Adventure.Components
         public int Width { get; }
         public int Height { get; }
 
-        protected override void OnSpawn()
+        public override void Spawn()
         {
-            Collider = new BoxCollider(this, Width, Height, BoxLayers.Interactable);
+            Collider = new BoxCollider(this, Width, Height, EntityLayers.Trigger);
+            Collider.Enable();
         }
 
-        protected override void OnStart()
+        public override void OnCollision(Entity other, Collision collision) 
         {
-            Collider.CollidedWith += OnCollidedWith;
-        }
-
-        protected override void OnEnd()
-        {
-            Collider.CollidedWith -= OnCollidedWith;
-        }
-
-        private void OnCollidedWith(Collider body, Collision collision) 
-        {
-            if (body.LayerMask == EntityLayers.Player) 
+            if (other is Player) 
             {
-                Level.Application.ChangeScreen(new LevelTransitionScreen(Level.Application, LevelLoader.LoadLevel(Level.Application, LevelPath, SpawnPointId)));
             }
         }
     }

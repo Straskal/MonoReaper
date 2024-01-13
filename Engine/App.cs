@@ -7,7 +7,6 @@ namespace Engine
     public class App : Game
     {
         private readonly CoroutineRunner coroutines = new();
-        private Screen nextScreen;
 
         public App(int resolutionWidth, int resolutionHeight, ResolutionScaleMode resolutionScaleMode)
         {
@@ -23,20 +22,22 @@ namespace Engine
         }
 
         public static Random Random { get; } = new();
-
         public int ResolutionWidth { get; }
         public int ResolutionHeight { get; }
         public ResolutionScaleMode ResolutionScaleMode { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
-        public Screen Screen { get; private set; }
-        public bool IsDebugModeEnabled { get; set; }
+        public Camera Camera { get; private set; }
+        public World World { get; private set; }
+        public bool Debug { get; set; }
 
         protected override void Initialize()
         {
             BackBuffer = new BackBuffer(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
             Renderer = new Renderer(GraphicsDevice, BackBuffer);
+            Camera = new Camera(BackBuffer);
+            World = new World();
             base.Initialize();
         }
 
@@ -52,16 +53,30 @@ namespace Engine
             BackBuffer.Update();
             Input.Update(BackBuffer);
             coroutines.Update();
-            UpdateScreen(gameTime);
-            HandleScreenChange();
+            UpdateFrame(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            BeginDrawFrame();
+            DrawFrame(gameTime);
+            EndDrawFrame();
+        }
+
+        protected virtual void UpdateFrame(GameTime gameTime) 
+        {
+            World.Update(gameTime);
+        }
+
+        protected void BeginDrawFrame() 
+        {
             Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
             Renderer.SetViewport(BackBuffer.FullViewport);
             Renderer.Clear();
-            DrawScreen(gameTime);
+        }
+
+        protected void EndDrawFrame()
+        {
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
@@ -70,19 +85,17 @@ namespace Engine
             Renderer.EndDraw();
         }
 
-        protected virtual void UpdateScreen(GameTime gameTime) 
+        protected virtual void DrawFrame(GameTime gameTime)
         {
-            Screen?.Update(gameTime);
-        }
+            Renderer.BeginDraw(Camera.TransformationMatrix);
+            World.Draw(Renderer, gameTime);
 
-        protected virtual void DrawScreen(GameTime gameTime)
-        {
-            Screen?.Draw(Renderer, gameTime);
-        }
+            if (Debug) 
+            {
+                World.DebugDraw(Renderer, gameTime);
+            }
 
-        public void ChangeScreen(Screen screen) 
-        {
-            nextScreen = screen;
+            Renderer.EndDraw();
         }
 
         public Coroutine StartCoroutine(IEnumerator routine)
@@ -93,17 +106,6 @@ namespace Engine
         public void StopCoroutine(Coroutine coroutine)
         {
             coroutines.Stop(coroutine);
-        }
-
-        private void HandleScreenChange() 
-        {
-            if (nextScreen != null) 
-            {
-                Screen?.Stop();
-                Screen = nextScreen;
-                Screen?.Start();
-                nextScreen = null;
-            }
         }
     }
 }

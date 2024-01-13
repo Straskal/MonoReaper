@@ -1,134 +1,190 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 
 namespace Engine
 {
     public abstract class Collider
     {
-        internal List<Point> Cells { get; } = new();
+        private const int MAX_COLLISION_ITERATIONS = 2;
+
+        private readonly HashSet<Collider> contacts = new();
+
+        // Cache partition cells in the collider to avoid frequent lookups.
+        internal readonly List<Point> cells = new();
 
         public Collider(Entity entity)
         {
             Entity = entity;
         }
 
-        public event CollidedWithCallback CollidedWith;
-
         public Entity Entity { get; }
-        public int LayerMask { get; set; }
+        public int Layer { get; set; }
+        public float ContactOffset { get; } = 0.001f;
+        public bool IsMoving { get; private set; }
+        public IntersectionFilter Filter { get; set; }
         public abstract RectangleF Bounds { get; }
 
-        public bool Intersect(Collider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal)
+        public abstract bool Overlaps(CircleF circle);
+        public abstract bool Overlaps(RectangleF rectangle);
+        public abstract bool Overlaps(Collider collider);
+        public abstract bool IsOverlapped(BoxCollider collider);
+        public abstract bool IsOverlapped(CircleCollider collider);
+        public abstract bool Intersects(Collider collider, Segment segment, out Intersection intersection);
+        public abstract bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection);
+        public abstract bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection);
+        public abstract void Draw(Renderer renderer, GameTime gameTime);
+
+        internal void NotifyCollision(Collider other, Collision collision)
         {
-            switch (collider)
+            if (!contacts.Contains(other))
             {
-                case BoxCollider box:
-                    return Intersect(box, path, out time, out contact, out normal);
-                case CircleCollider circle:
-                    return Intersect(circle, path, out time, out contact, out normal);
-                default:
-                    throw new ArgumentException($"Unknown collider type: {collider.GetType()}", nameof(collider));
+                Entity.OnCollision(other.Entity, collision);
+                contacts.Add(other);
             }
         }
 
-        internal void NotifyCollidedWith(Collider body, Collision collision)
+        internal void ClearContacts()
         {
-            CollidedWith?.Invoke(body, collision);
+            contacts.Clear();
         }
 
-        public abstract bool Intersect(BoxCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-        public abstract bool Intersect(CircleCollider collider, IntersectionPath path, out float time, out Vector2 contact, out Vector2 normal);
-
-        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
+        public bool CheckMask(int mask)
         {
+            return (mask & Layer) != 0;
         }
 
         public virtual void Move(Vector2 direction)
         {
             Entity.Position += direction;
-            UpdateBBox();
+            UpdateBounds();
         }
 
-        public virtual void MoveToPosition(Vector2 position)
+        public virtual void SetPosition(Vector2 position)
         {
             Entity.Position = position;
-            UpdateBBox();
+            UpdateBounds();
         }
 
-        public virtual void Register()
+        public virtual void Enable()
         {
-            Entity.Level.Partition.Add(this);
+            Entity.World.EnableCollider(this);
         }
 
-        public virtual void Unregister()
+        public virtual void Disable()
         {
-            Entity.Level.Partition.Remove(this);
+            Entity.World.DisableCollider(this);
         }
 
-        public virtual void UpdateBBox()
+        public virtual void UpdateBounds()
         {
-            Entity.Level.Partition.Update(this);
+            Entity.World.UpdateCollider(this);
         }
 
-        public virtual void MoveAndCollide(ref Vector2 velocity, int layerMask, CollisionCallback response)
+        public void Collide(Vector2 velocity)
         {
-            var visited = new HashSet<Collider>();
+            Collide(ref velocity, int.MaxValue);
+        }
 
-            if (RunMovementIteration(ref velocity, layerMask, response, visited)) 
+        public void Collide(Vector2 velocity, int layerMask)
+        {
+            Collide(ref velocity, layerMask);
+        }
+
+        public void Collide(ref Vector2 velocity)
+        {
+            Collide(ref velocity, int.MaxValue);
+        }
+
+        public virtual void Collide(ref Vector2 velocity, int layerMask)
+        {
+            IsMoving = true;
+
+            if (velocity.LengthSquared() > float.Epsilon)
             {
-                RunMovementIteration(ref velocity, layerMask, response, visited);
+                var iterations = MAX_COLLISION_ITERATIONS;
+
+                while (iterations-- > 0)
+                {
+                    var other = Cast(velocity, layerMask, out Collision collision);
+
+                    if (other == null)
+                    {
+                        Move(velocity);
+                        break;
+                    }
+
+                    if (collision.Intersection.Time > ContactOffset)
+                    {
+                        Move(collision.Direction * (collision.Intersection.Time - ContactOffset));
+                    }
+
+                    velocity = CollisionResolvers.Slide(collision);
+                    NotifyCollision(other, collision);
+                    other.NotifyCollision(this, collision);
+                };
+            }
+
+            IsMoving = false;
+        }
+
+        public List<Collider> GetOverlaps(int layerMask)
+        {
+            var result = new List<Collider>();
+            GetOverlaps(result, layerMask);
+            return result;
+
+        }
+
+        public void GetOverlaps(List<Collider> colliders, int layerMask)
+        {
+            foreach (var collider in Entity.World.GetCollidersWithinBounds(Bounds))
+            {
+                if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider))
+                {
+                    colliders.Add(this);
+                }
             }
         }
 
-        private bool RunMovementIteration(ref Vector2 velocity, int layerMask, CollisionCallback response, HashSet<Collider> visited)
-        {
-            if (velocity == Vector2.Zero || Entity.IsDestroyed)
-            {
-                return false;
-            }
-
-            if (!TryGetNearestCollision(velocity, layerMask, visited, out var collision))
-            {
-                Move(velocity);
-                return false;
-            }
-
-            MoveToPosition(collision.Position);
-            velocity = response.Invoke(collision);
-            collision.Collider.NotifyCollidedWith(this, collision);
-            visited.Add(collision.Collider);
-            return true;
-        }
-
-        private bool TryGetNearestCollision(Vector2 velocity, int layerMask, HashSet<Collider> visited, out Collision collision)
+        public Collider Cast(Vector2 velocity, int layerMask, out Collision collision)
         {
             collision = Collision.Empty;
-
-            var path = new IntersectionPath(Bounds.Center, velocity);
+            var path = new Segment(Bounds.Center, velocity);
             var broadphaseRectangle = Bounds.Union(velocity);
+            Collider other = null;
 
-            foreach (var collider in Entity.Level.Partition.Query(broadphaseRectangle))
+            foreach (var collider in Entity.World.GetCollidersWithinBounds(broadphaseRectangle))
             {
-                if (collider == this || visited.Contains(collider))
+                if (collider == this)
                 {
                     continue;
                 }
 
-                if (!((collider.LayerMask | layerMask) == layerMask && broadphaseRectangle.Intersects(collider.Bounds)))
+                if (!collider.CheckMask(layerMask))
                 {
                     continue;
                 }
 
-                if (!(Intersect(collider, path, out var time, out var contact, out var normal) && time < collision.Time))
+                if (!broadphaseRectangle.Overlaps(collider.Bounds))
                 {
                     continue;
                 }
 
-                collision = new Collision(collider, velocity, normal, time, contact);
+                if (!(Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time))
+                {
+                    continue;
+                }
+
+                if (Filter != null && Filter(collider.Entity, intersection))
+                {
+                    continue;
+                }
+
+                other = collider;
+                collision = new Collision(velocity, intersection);
             }
 
-            return !collision.IsEmpty;
+            return other;
         }
     }
 }

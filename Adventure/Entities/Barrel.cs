@@ -15,52 +15,32 @@ namespace Adventure.Components
 
     public sealed class Barrel : Entity, IDamageable
     {
-        public int Health
-        {
-            get;
-            private set;
-        } = 3;
+        private Vector2 push;
 
-        public bool Flammable 
-        {
-            get => true;
-        }
+        public int Health { get; private set; } = 3;
+        public bool Flammable { get => true; }
+        public Sprite Sprite { get; private set; }
+        public Effect HurtEffect { get; private set; }
+        public float HurtTimer { get; set; }
 
-        public Sprite Sprite 
+        public override void Spawn()
         {
-            get;
-            private set;
-        }
-
-        public Effect HurtEffect 
-        {
-            get;
-            private set;
-        }
-
-        public float HurtTimer 
-        {
-            get;
-            set;
-        }
-
-        protected override void OnLoad(ContentManager content)
-        {
-            HurtEffect = content.Load<Effect>("shaders/SolidColor");
-            //Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
-            Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
-            GraphicsComponent = Sprite = new Sprite(this, content.Load<Texture2D>("art/common/barrel"))
+            HurtEffect = Adventure.Instance.Content.Load<Effect>("shaders/SolidColor");
+            Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
+            //Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
+            Collider.Enable();
+            GraphicsComponent = Sprite = new Sprite(this, Adventure.Instance.Content.Load<Texture2D>("art/common/barrel"))
             {
                 SourceRectangle = new Rectangle(0, 0, 16, 16)
             };
         }
 
-        protected override void OnDestroy()
+        public void Push(Vector2 direction)
         {
-            DropLoot();
+            push += direction * 0.5f;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             float delta = gameTime.GetDeltaTime();
 
@@ -72,23 +52,30 @@ namespace Adventure.Components
             }
         }
 
+        public override void PostUpdate(GameTime gameTime)
+        {
+            if (push != Vector2.Zero)
+            {
+                Collide(ref push, EntityLayers.Solid);
+                push = Vector2.Zero;
+            }
+
+            base.PostUpdate(gameTime);
+        }
+
         public void Damage(int amount)
         {
             Health -= amount;
 
             if (Health < 0)
             {
-                Level.Destroy(this);
+                World.Destroy(this);
             }
             else
             {
                 Sprite.Effect = HurtEffect;
                 HurtTimer = 0.1f;
             }
-        }
-
-        private void DropLoot()
-        {
         }
     }
 }

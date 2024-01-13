@@ -17,7 +17,7 @@ namespace Adventure
             if (GUI.PrimaryButton(3, "Main menu", 100, 180))
             {
                 Adventure.IsPaused = false;
-                Adventure.Instance.ChangeScreen(new MainMenuScreen(Adventure.Instance));
+                Adventure.Instance.LoadMap("Levels/world/level_0");
             }
             renderer.EndDraw();
         }

@@ -1,16 +1,17 @@
 ﻿using Engine;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using System;
 using static Adventure.Constants;
 
 namespace Adventure.Components
 {
-    public sealed class Fireball : Entity
+    public sealed class EnemyFireball : Entity
     {
         private Vector2 velocity;
 
-        public Fireball(Vector2 velocity)
+        public EnemyFireball(Vector2 velocity)
         {
             this.velocity = velocity;
         }
@@ -23,7 +24,7 @@ namespace Adventure.Components
         public override void Spawn()
         {
             Collider = new CircleCollider(this, Vector2.Zero, 4);
-            Collider.Layer = EntityLayers.PlayerProjectile;
+            Collider.Layer = EntityLayers.Projectile;
             Collider.Enable();
             GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
             {
@@ -42,7 +43,7 @@ namespace Adventure.Components
 
         public override void Update(GameTime gameTime)
         {
-            Collide(velocity, EntityLayers.Enemy | EntityLayers.Solid);
+            Collide(ref velocity, EntityLayers.Player | EntityLayers.Solid);
         }
 
         public override void OnCollision(Entity other, Collision collision)
@@ -50,11 +51,11 @@ namespace Adventure.Components
             World.Destroy(this);
             World.Spawn(new Explosion(), Position);
 
-            if (other is IDamageable damageable) 
+            if (other is IDamageable damageable)
             {
                 damageable.Damage(1);
 
-                if (damageable.Flammable) 
+                if (damageable.Flammable)
                 {
                     World.Spawn(new Fire(other));
                 }
