@@ -7,7 +7,6 @@ namespace Adventure
     public static class ScreenShake
     {
         private static float duration;
-        private static Vector2 position = Vector2.Zero;
 
         public static void Shake(float duration) 
         {
@@ -18,20 +17,12 @@ namespace Adventure
         {
             if (duration > 0f)
             {
-                if (position == Vector2.Zero)
-                {
-                    position = Adventure.Instance.Camera.Position;
-                }
                 duration -= gameTime.GetDeltaTime();
                 var angle = Random.Shared.Next(360);
-                var x = position.X + 1f * MathF.Cos(angle);
-                var y = position.Y + 1f * MathF.Sin(angle);
-                Adventure.Instance.Camera.Position = new Vector2(x, y);
-            }
-            else if (position != Vector2.Zero)
-            {
-                Adventure.Instance.Camera.Position = position;
-                position = Vector2.Zero;
+                var x = 1f * MathF.Cos(angle);
+                var y = 1f * MathF.Sin(angle);
+                var position = Adventure.Instance.Camera.Position;
+                Adventure.Instance.Camera.Position = position + new Vector2(x, y);
             }
         }
     }

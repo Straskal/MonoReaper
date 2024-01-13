@@ -24,7 +24,7 @@ namespace Adventure.Entities
         {
             if (Bounds.Contains(player.Position)) 
             {
-                Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Bounds.Center, 0.16f);
+                Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Bounds.Center, 0.17f);
             }
         }
 

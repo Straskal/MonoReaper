@@ -48,6 +48,8 @@ namespace Adventure
 
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             if (Input.IsKeyPressed(Keys.F))
             {
                 GraphicsDeviceManager.ToggleFullScreen();
@@ -65,7 +67,6 @@ namespace Adventure
             }
 
             ScreenShake.Update(gameTime);
-            base.Update(gameTime);
         }
 
         protected override void UpdateFrame(GameTime gameTime)
