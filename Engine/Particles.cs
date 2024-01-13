@@ -20,14 +20,13 @@ namespace Engine
 
         private readonly List<Particle> particles = new();
 
-        public Particles(Entity entity, Texture2D texture, Rectangle sourceRectangle)
+        public Particles(Entity entity, Texture2D texture, Rectangle sourceRectangle) 
+            : base(entity)
         {
-            Entity = entity;
             Texture = texture;
             SourceRectangle = sourceRectangle;
         }
 
-        public Entity Entity { get; }
         public Texture2D Texture { get; }
         public Rectangle SourceRectangle { get; }
         public Vector2 Velocity { get; set; }
@@ -37,7 +36,7 @@ namespace Engine
         public Color MaxColor { get; set; }
         public float MaxTime { get; set; }
 
-        public override void OnPostUpdate(GameTime gameTime)
+        public override void PostUpdate(GameTime gameTime)
         {
             var dt = gameTime.GetDeltaTime();
             var diff = MaxParticles - particles.Count;
@@ -68,7 +67,7 @@ namespace Engine
             }
         }
 
-        public override void OnDraw(Renderer renderer, GameTime gameTime)
+        public override void Draw(Renderer renderer, GameTime gameTime)
         {
             foreach (var particle in particles)
             {

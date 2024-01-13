@@ -67,17 +67,17 @@ namespace Engine
 
         public virtual void Enable()
         {
-            Entity.Others.EnableCollider(this);
+            Entity.World.EnableCollider(this);
         }
 
         public virtual void Disable()
         {
-            Entity.Others.DisableCollider(this);
+            Entity.World.DisableCollider(this);
         }
 
         public virtual void UpdateBounds()
         {
-            Entity.Others.UpdateCollider(this);
+            Entity.World.UpdateCollider(this);
         }
 
         public void Collide(Vector2 velocity)
@@ -137,7 +137,7 @@ namespace Engine
 
         public void GetOverlaps(List<Collider> colliders, int layerMask)
         {
-            foreach (var collider in Entity.Others.GetCollidersWithinBounds(Bounds))
+            foreach (var collider in Entity.World.GetCollidersWithinBounds(Bounds))
             {
                 if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider))
                 {
@@ -153,7 +153,7 @@ namespace Engine
             var broadphaseRectangle = Bounds.Union(velocity);
             Collider other = null;
 
-            foreach (var collider in Entity.Others.GetCollidersWithinBounds(broadphaseRectangle))
+            foreach (var collider in Entity.World.GetCollidersWithinBounds(broadphaseRectangle))
             {
                 if (collider == this)
                 {

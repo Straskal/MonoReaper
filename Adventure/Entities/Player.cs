@@ -72,7 +72,7 @@ namespace Adventure.Components
 
         private void ShootFireball(float deltaTime)
         {
-            Others.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+            World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
         }
 
         public override void OnCollision(Entity other, Collision collision)

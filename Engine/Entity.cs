@@ -5,38 +5,24 @@ namespace Engine
 {
     public class Entity
     {
-        private readonly HashSet<string> tags = new();
-
-        public EntityManager Others { get; internal set; }
+        public World World { get; internal set; }
+        public HashSet<string> Tags { get; }
         public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
         public bool IsDestroyed { get; internal set; }
 
-        public void AddTag(string tag)
+        public int DrawOrder 
         {
-            tags.Add(tag);
-        }
-
-        public void RemoveTag(string tag)
-        {
-            tags.Remove(tag);
-        }
-
-        public void HasTag(string tag)
-        {
-            tags.Contains(tag);
-        }
-
-        protected void Collide(Vector2 velocity, int layerMask)
-        {
-            Collider?.Collide(velocity, layerMask);
-        }
-
-        protected void Collide(ref Vector2 velocity, int layerMask)
-        {
-            Collider?.Collide(ref velocity, layerMask);
+            get 
+            {
+                if (GraphicsComponent != null) 
+                {
+                    return GraphicsComponent.DrawOrder;
+                }
+                return 0;
+            }
         }
 
         public virtual void Spawn()
@@ -63,23 +49,32 @@ namespace Engine
 
         public virtual void PostUpdate(GameTime gameTime)
         {
-            GraphicsComponent?.OnPostUpdate(gameTime);
-            Collider?.ClearContacts();
+            GraphicsComponent?.PostUpdate(gameTime);
         }
 
         public virtual void Draw(Renderer renderer, GameTime gameTime)
         {
-            GraphicsComponent?.OnDraw(renderer, gameTime);
+            GraphicsComponent?.Draw(renderer, gameTime);
         }
 
         public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             Collider?.Draw(renderer, gameTime);
-            GraphicsComponent?.OnDebugDraw(renderer, gameTime);
+            GraphicsComponent?.DebugDraw(renderer, gameTime);
         }
 
         public virtual void OnCollision(Entity other, Collision collision)
         {
+        }
+
+        protected void Collide(Vector2 velocity, int layerMask)
+        {
+            Collider?.Collide(velocity, layerMask);
+        }
+
+        protected void Collide(ref Vector2 velocity, int layerMask)
+        {
+            Collider?.Collide(ref velocity, layerMask);
         }
     }
 }

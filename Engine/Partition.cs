@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Xna.Framework;
 
 namespace Engine
@@ -44,6 +45,19 @@ namespace Engine
         {
             Remove(box);
             Add(box);
+        }
+
+        internal void Clear() 
+        {
+            foreach (var kvp in cells) 
+            {
+                foreach (var collider in kvp.Value) 
+                {
+                    collider.cells.Clear();
+                }
+            }
+
+            cells.Clear();
         }
 
         public IEnumerable<Collider> Query(Vector2 position)

@@ -36,7 +36,7 @@ namespace Adventure.Components
             Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
             Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
             Collider.Enable();
-            GraphicsComponent = new TilemapRenderer(Data);
+            GraphicsComponent = new TilemapRenderer(this, Data);
         }
     }
 }

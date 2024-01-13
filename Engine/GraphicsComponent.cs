@@ -4,28 +4,32 @@ namespace Engine
 {
     public abstract class GraphicsComponent
     {
-        private sealed class EmptyGraphicsComponent : GraphicsComponent
+        public GraphicsComponent(Entity owner) 
         {
-            public override void OnDebugDraw(Renderer renderer, GameTime gameTime)
+            Entity = owner;
+        }
+
+        public Entity Entity { get; }
+
+        private int drawOrder;
+        public int DrawOrder 
+        {
+            get => drawOrder;
+            set 
             {
-            }
-
-            public override void OnDraw(Renderer renderer, GameTime gameTime)
-            {
+                drawOrder = value;
             }
         }
 
-        public int DrawOrder { get; set; }
-
-        public virtual void OnPostUpdate(GameTime gameTime)
+        public virtual void PostUpdate(GameTime gameTime)
         {
         }
 
-        public virtual void OnDraw(Renderer renderer, GameTime gameTime)
+        public virtual void Draw(Renderer renderer, GameTime gameTime)
         {
         }
 
-        public virtual void OnDebugDraw(Renderer renderer, GameTime gameTime)
+        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
         {
         }
     }

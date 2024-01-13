@@ -15,7 +15,7 @@ namespace Adventure.Entities
 
             if (timer <= 0f) 
             {
-                Others.Spawn(new EnemyFireball(Vector2.UnitY), Position);
+                World.Spawn(new EnemyFireball(Vector2.UnitY), Position);
                 timer = 0.5f;
             }
 

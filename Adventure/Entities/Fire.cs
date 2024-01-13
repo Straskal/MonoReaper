@@ -57,7 +57,7 @@ namespace Adventure.Components
 
                 if (HitCount == 3)
                 {
-                    Others.Destroy(this);
+                    World.Destroy(this);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace Adventure.Components
 
             if (Target.IsDestroyed)
             {
-                Others.Destroy(this);
+                World.Destroy(this);
             }
         }
 

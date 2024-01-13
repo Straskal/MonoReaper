@@ -68,7 +68,7 @@ namespace Engine
             }
         }
 
-        public override void OnPostUpdate(GameTime gameTime)
+        public override void PostUpdate(GameTime gameTime)
         {
             if (IsPaused || CurrentAnimationFinished || (timer += gameTime.GetDeltaTime()) <= Speed)
             {

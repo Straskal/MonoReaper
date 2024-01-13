@@ -69,7 +69,7 @@ namespace Adventure.Components
 
             if (Health < 0)
             {
-                Others.Destroy(this);
+                World.Destroy(this);
             }
             else
             {

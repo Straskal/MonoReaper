@@ -36,7 +36,7 @@ namespace Adventure.Components
         {
             if (_animatedSprite.CurrentAnimationFinished)
             {
-                Others.Destroy(this);
+                World.Destroy(this);
             }
         }
     }

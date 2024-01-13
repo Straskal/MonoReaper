@@ -29,7 +29,7 @@ namespace Engine
         public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
         public Camera Camera { get; private set; }
-        public EntityManager Entities { get; private set; }
+        public World World { get; private set; }
         public bool Debug { get; set; }
 
         protected override void Initialize()
@@ -37,7 +37,7 @@ namespace Engine
             BackBuffer = new BackBuffer(GraphicsDevice, ResolutionWidth, ResolutionHeight, ResolutionScaleMode);
             Renderer = new Renderer(GraphicsDevice, BackBuffer);
             Camera = new Camera(BackBuffer);
-            Entities = new EntityManager();
+            World = new World();
             base.Initialize();
         }
 
@@ -53,19 +53,19 @@ namespace Engine
             BackBuffer.Update();
             Input.Update(BackBuffer);
             coroutines.Update();
-            UpdateEntities(gameTime);
+            UpdateFrame(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             BeginDrawFrame();
-            DrawEntities(gameTime);
+            DrawFrame(gameTime);
             EndDrawFrame();
         }
 
-        protected virtual void UpdateEntities(GameTime gameTime) 
+        protected virtual void UpdateFrame(GameTime gameTime) 
         {
-            Entities.Update(gameTime);
+            World.Update(gameTime);
         }
 
         protected void BeginDrawFrame() 
@@ -85,14 +85,14 @@ namespace Engine
             Renderer.EndDraw();
         }
 
-        protected virtual void DrawEntities(GameTime gameTime)
+        protected virtual void DrawFrame(GameTime gameTime)
         {
             Renderer.BeginDraw(Camera.TransformationMatrix);
-            Entities.Draw(Renderer, gameTime);
+            World.Draw(Renderer, gameTime);
 
             if (Debug) 
             {
-                Entities.DebugDraw(Renderer, gameTime);
+                World.DebugDraw(Renderer, gameTime);
             }
 
             Renderer.EndDraw();

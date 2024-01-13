@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    public sealed class EntityManager
+    public sealed class World
     {
         public const int PARTITION_CELL_SIZE = 64;
 
         private readonly Partition partition = new(PARTITION_CELL_SIZE);
         private readonly List<Entity> entities = new();
         private readonly List<Entity> entitiesToRemove = new();
-        private bool shouldSortComponents;
+        private bool sort;
 
         public void Spawn(IEnumerable<Entity> entities)
         {
             foreach (var entity in entities) 
             {
-                entity.Others = this;
+                entity.World = this;
                 this.entities.Add(entity);
                 entity.Spawn();
             }
@@ -34,9 +34,9 @@ namespace Engine
 
         public void Spawn(Entity entity, Vector2 position)
         {
-            if (entity.Others == null)
+            if (entity.World == null)
             {
-                entity.Others = this;
+                entity.World = this;
                 entity.Position = position;
                 entities.Add(entity);
                 entity.Spawn();
@@ -51,6 +51,11 @@ namespace Engine
                 entity.IsDestroyed = true;
                 entitiesToRemove.Add(entity);
             }
+        }
+
+        public void Sort()
+        {
+            sort = true;
         }
 
         public void EnableCollider(Collider collider) 
@@ -86,6 +91,7 @@ namespace Engine
             }
 
             entities.Clear();
+            partition.Clear();
         }
 
         public void Update(GameTime gameTime)
@@ -98,6 +104,11 @@ namespace Engine
             for (int i = 0; i < entities.Count; i++)
             {
                 entities[i].PostUpdate(gameTime);
+            }
+
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].Collider?.ClearContacts();
             }
 
             ProcessDestroyedEntities();
@@ -120,7 +131,8 @@ namespace Engine
                 entities[i].DebugDraw(renderer, gameTime);
             }
 
-            partition.DebugDraw(renderer);
+            // Don't always need to see the partition.
+            // partition.DebugDraw(renderer);
         }
 
         private void ProcessDestroyedEntities()
@@ -129,7 +141,7 @@ namespace Engine
             {
                 entitiesToRemove[i].Destroy();
                 entitiesToRemove[i].End();
-                entitiesToRemove[i].Others = null;
+                entitiesToRemove[i].World = null;
                 entities.Remove(entitiesToRemove[i]);
             }
 
@@ -138,16 +150,16 @@ namespace Engine
 
         private void SortEntititesIfNeeded()
         {
-            if (shouldSortComponents)
+            if (sort)
             {
                 entities.Sort(SortEntities);
-                shouldSortComponents = false;
+                sort = false;
             }
         }
 
         private static int SortEntities(Entity a, Entity b)
         {
-            return Comparer<int>.Default.Compare(a.GraphicsComponent.DrawOrder, b.GraphicsComponent.DrawOrder);
+            return Comparer<int>.Default.Compare(a.DrawOrder, b.DrawOrder);
         }
     }
 }

@@ -36,8 +36,8 @@ namespace Adventure
 
         public void LoadMap(string path) 
         {
-            Entities.Clear();
-            Entities.Spawn(LevelLoader.LoadLevel(this, path));
+            World.Clear();
+            World.Spawn(LevelLoader.LoadLevel(this, path));
         }
 
         protected override void Update(GameTime gameTime)
@@ -61,17 +61,17 @@ namespace Adventure
             base.Update(gameTime);
         }
 
-        protected override void UpdateEntities(GameTime gameTime)
+        protected override void UpdateFrame(GameTime gameTime)
         {
             if (!IsPaused) 
             {
-                base.UpdateEntities(gameTime);
+                base.UpdateFrame(gameTime);
             } 
         }
 
-        protected override void DrawEntities(GameTime gameTime)
+        protected override void DrawFrame(GameTime gameTime)
         {
-            base.DrawEntities(gameTime);
+            base.DrawFrame(gameTime);
 
             if (IsPaused) 
             {
