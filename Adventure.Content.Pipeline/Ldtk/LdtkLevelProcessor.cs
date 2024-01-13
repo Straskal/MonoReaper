@@ -44,7 +44,7 @@ namespace Adventure.Content.Pipeline.Ldtk
         private static TileLayerData[] ProcessTileLayers(LdtkLevel input)
         {
             return input.LayerInstances
-                .Where(layer => StringComparer.OrdinalIgnoreCase.Equals(layer.Identifier, "tiles"))
+                .Where(layer => IsTileLayer(layer))
                 .Select(tileLayer => new TileLayerData
                 {
                     IsSolid = true,
