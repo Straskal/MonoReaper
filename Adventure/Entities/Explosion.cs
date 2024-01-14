@@ -18,10 +18,7 @@ namespace Adventure.Entities
                 DrawOrder = 10
             };
 
-            var sound = Store.Sfx.Explosion.CreateInstance();
-            sound.Pitch = 1f / Random.Shared.Next(8, 10);
-            sound.Play();
-
+            PlayExplosionSound();
             ScreenShake.Shake(0.5f);
         }
 
@@ -33,7 +30,7 @@ namespace Adventure.Entities
 
         private void DoRadialDamage() 
         {
-            if (sprite.CurrentFrame == 3 && !causedDamage)
+            if (!causedDamage && sprite.CurrentFrame == 3)
             {
                 foreach (var entity in World.GetOverlappingEntities(new CircleF(Position, 20), EntityLayers.Enemy))
                 {
@@ -58,6 +55,13 @@ namespace Adventure.Entities
             {
                 World.Destroy(this);
             }
+        }
+
+        private static void PlayExplosionSound()
+        {
+            var sound = Store.Sfx.Explosion.CreateInstance();
+            sound.Pitch = 1f / Random.Shared.Next(8, 10);
+            sound.Play();
         }
     }
 }

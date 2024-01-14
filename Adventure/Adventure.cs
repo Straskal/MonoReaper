@@ -8,11 +8,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Adventure
 {
-    internal sealed class Adventure : App
+    public sealed class Adventure : App
     {
+        public const int RESOLUTION_WIDTH = 256;
+        public const int RESOLUTION_HEIGHT = 256;
+
         private readonly PauseScreen pauseScreen = new();
 
-        public Adventure() : base(256, 256, ResolutionScaleMode.Viewport)
+        public Adventure() : base(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, ResolutionScaleMode.Viewport)
         {
             Instance = this;
             Window.Title = "Adventure Game 2000";
@@ -26,7 +29,7 @@ namespace Adventure
         protected override void LoadContent()
         {
             base.LoadContent();
-            LoadSharedContent();
+            LoadAllContent();
             LoadGUI();
             LoadMap();
         }
@@ -41,32 +44,17 @@ namespace Adventure
 
         public void LoadLevel(string path)
         {
-            var levelData = Content.Load<LevelData>(path);
-            World.Spawn(Level.GetEntities(levelData));
-            World.Spawn(new CameraArea(new RectangleF(levelData.Bounds)));
+            var data = Content.Load<LevelData>(path);
+            World.Spawn(Level.GetEntities(data));
+            World.Spawn(new CameraArea(new RectangleF(data.Bounds)));
         }
 
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            if (Input.IsKeyPressed(Keys.F))
-            {
-                GraphicsDeviceManager.ToggleFullScreen();
-                GraphicsDeviceManager.ApplyChanges();
-            }
-
-            if (Input.IsKeyPressed(Keys.Escape)) 
-            {
-                IsPaused = !IsPaused;
-            }
-
-            if (Input.IsKeyPressed(Keys.OemTilde))
-            {
-                Debug = !Debug;
-            }
-
+            HandleGlobalInput();
             ScreenShake.Update(gameTime);
+            RoundCameraPosition();
         }
 
         protected override void UpdateFrame(GameTime gameTime)
@@ -87,7 +75,7 @@ namespace Adventure
             }
         }
 
-        private void LoadSharedContent()
+        private void LoadAllContent()
         {
             Store.Fonts.Default = Content.Load<SpriteFont>("fonts/font");
             Store.Gfx.Player = Content.Load<Texture2D>("art/player/player");
@@ -103,6 +91,30 @@ namespace Adventure
         {
             GUI.Renderer = Renderer;
             GUI.BackBuffer = BackBuffer;
+        }
+
+        private void HandleGlobalInput()
+        {
+            if (Input.IsKeyPressed(Keys.F))
+            {
+                GraphicsDeviceManager.ToggleFullScreen();
+                GraphicsDeviceManager.ApplyChanges();
+            }
+
+            if (Input.IsKeyPressed(Keys.Escape))
+            {
+                IsPaused = !IsPaused;
+            }
+
+            if (Input.IsKeyPressed(Keys.OemTilde))
+            {
+                Debug = !Debug;
+            }
+        }
+
+        private void RoundCameraPosition()
+        {
+            Camera.Position = Vector2.Floor(Camera.Position + new Vector2(0.5f));
         }
     }
 }

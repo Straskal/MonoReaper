@@ -5,14 +5,14 @@
 		"doc": "https://ldtk.io/json",
 		"schema": "https://ldtk.io/files/JSON_SCHEMA.json",
 		"appAuthor": "Sebastien 'deepnight' Benard",
-		"appVersion": "1.5.1",
+		"appVersion": "1.5.2",
 		"url": "https://ldtk.io"
 	},
 	"identifier": "Level_0",
 	"iid": "56f0de40-8990-11ee-aec4-89c30acbeb3e",
 	"uid": 0,
-	"worldX": 16,
-	"worldY": 16,
+	"worldX": 0,
+	"worldY": 0,
 	"worldDepth": 0,
 	"pxWid": 256,
 	"pxHei": 256,
@@ -71,8 +71,8 @@
 							"params": ["Up"]
 						}] }
 					],
-					"__worldX": 144,
-					"__worldY": 144
+					"__worldX": 128,
+					"__worldY": 128
 				},
 				{
 					"__identifier": "Barrel",
@@ -87,8 +87,8 @@
 					"defUid": 10,
 					"px": [56,72],
 					"fieldInstances": [],
-					"__worldX": 72,
-					"__worldY": 88
+					"__worldX": 56,
+					"__worldY": 72
 				},
 				{
 					"__identifier": "Barrel",
@@ -103,8 +103,8 @@
 					"defUid": 10,
 					"px": [200,136],
 					"fieldInstances": [],
-					"__worldX": 216,
-					"__worldY": 152
+					"__worldX": 200,
+					"__worldY": 136
 				},
 				{
 					"__identifier": "Barrel",
@@ -119,8 +119,8 @@
 					"defUid": 10,
 					"px": [88,200],
 					"fieldInstances": [],
-					"__worldX": 104,
-					"__worldY": 216
+					"__worldX": 88,
+					"__worldY": 200
 				}
 			]
 		},

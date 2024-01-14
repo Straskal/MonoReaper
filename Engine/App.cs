@@ -64,12 +64,12 @@ namespace Engine
             EndDrawFrame();
         }
 
-        protected virtual void UpdateFrame(GameTime gameTime) 
+        protected virtual void UpdateFrame(GameTime gameTime)
         {
             World.Update(gameTime);
         }
 
-        protected void BeginDrawFrame() 
+        protected void BeginDrawFrame()
         {
             Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
             Renderer.SetViewport(BackBuffer.FullViewport);
@@ -91,7 +91,7 @@ namespace Engine
             Renderer.BeginDraw(Camera.TransformationMatrix);
             World.Draw(Renderer, gameTime);
 
-            if (Debug) 
+            if (Debug)
             {
                 World.DebugDraw(Renderer, gameTime);
             }

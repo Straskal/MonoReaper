@@ -22,9 +22,9 @@ namespace Adventure.Entities
 
         public override void PostUpdate(GameTime gameTime)
         {
-            if (Bounds.Contains(player.Position)) 
+            if (Bounds.Contains(player.Position))
             {
-                Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Bounds.Center, 0.17f);
+                Adventure.Instance.Camera.Position = Bounds.Center;
             }
         }
 

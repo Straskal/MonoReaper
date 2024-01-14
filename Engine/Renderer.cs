@@ -153,22 +153,6 @@ namespace Engine
             spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
         }
 
-        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
-        {
-            var distance = Vector2.Distance(point1, point2);
-            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-
-            DrawLine(point1, distance, angle, color, thickness);
-        }
-
-        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
-        {
-            var origin = new Vector2(0f, 0.5f);
-            var scale = new Vector2(length, thickness);
-
-            spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
-        }
-
         public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
             DrawLine(new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Top), color);
@@ -187,6 +171,22 @@ namespace Engine
 
                 DrawLine(pos + p1, pos + p2, color);
             }
+        }
+
+        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+            DrawLine(point1, distance, angle, color, thickness);
+        }
+
+        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+
+            spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         /// <summary>

@@ -5,14 +5,14 @@
 		"doc": "https://ldtk.io/json",
 		"schema": "https://ldtk.io/files/JSON_SCHEMA.json",
 		"appAuthor": "Sebastien 'deepnight' Benard",
-		"appVersion": "1.5.1",
+		"appVersion": "1.5.2",
 		"url": "https://ldtk.io"
 	},
 	"identifier": "Level_2",
 	"iid": "2afcf420-b0a0-11ee-9bd9-7da64b0a1838",
 	"uid": 22,
-	"worldX": 272,
-	"worldY": -240,
+	"worldX": 256,
+	"worldY": -256,
 	"worldDepth": 0,
 	"pxWid": 256,
 	"pxHei": 256,
@@ -65,8 +65,8 @@
 					"defUid": 10,
 					"px": [40,40],
 					"fieldInstances": [],
-					"__worldX": 312,
-					"__worldY": -200
+					"__worldX": 296,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -81,8 +81,8 @@
 					"defUid": 10,
 					"px": [72,40],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -200
+					"__worldX": 328,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -97,8 +97,8 @@
 					"defUid": 10,
 					"px": [104,40],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -200
+					"__worldX": 360,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -113,8 +113,8 @@
 					"defUid": 10,
 					"px": [136,40],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -200
+					"__worldX": 392,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -129,8 +129,8 @@
 					"defUid": 10,
 					"px": [184,40],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -200
+					"__worldX": 440,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -145,8 +145,8 @@
 					"defUid": 10,
 					"px": [216,40],
 					"fieldInstances": [],
-					"__worldX": 488,
-					"__worldY": -200
+					"__worldX": 472,
+					"__worldY": -216
 				},
 				{
 					"__identifier": "Barrel",
@@ -161,8 +161,8 @@
 					"defUid": 10,
 					"px": [56,72],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -168
+					"__worldX": 312,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -177,8 +177,8 @@
 					"defUid": 10,
 					"px": [104,88],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -152
+					"__worldX": 360,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -193,8 +193,8 @@
 					"defUid": 10,
 					"px": [104,72],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -168
+					"__worldX": 360,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -209,8 +209,8 @@
 					"defUid": 10,
 					"px": [72,72],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -168
+					"__worldX": 328,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -225,8 +225,8 @@
 					"defUid": 10,
 					"px": [168,88],
 					"fieldInstances": [],
-					"__worldX": 440,
-					"__worldY": -152
+					"__worldX": 424,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -241,8 +241,8 @@
 					"defUid": 10,
 					"px": [152,56],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -184
+					"__worldX": 408,
+					"__worldY": -200
 				},
 				{
 					"__identifier": "Barrel",
@@ -257,8 +257,8 @@
 					"defUid": 10,
 					"px": [136,72],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -168
+					"__worldX": 392,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -273,8 +273,8 @@
 					"defUid": 10,
 					"px": [216,104],
 					"fieldInstances": [],
-					"__worldX": 488,
-					"__worldY": -136
+					"__worldX": 472,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -289,8 +289,8 @@
 					"defUid": 10,
 					"px": [200,136],
 					"fieldInstances": [],
-					"__worldX": 472,
-					"__worldY": -104
+					"__worldX": 456,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -305,8 +305,8 @@
 					"defUid": 10,
 					"px": [152,136],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -104
+					"__worldX": 408,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -321,8 +321,8 @@
 					"defUid": 10,
 					"px": [136,104],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -136
+					"__worldX": 392,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -337,8 +337,8 @@
 					"defUid": 10,
 					"px": [88,120],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -120
+					"__worldX": 344,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -353,8 +353,8 @@
 					"defUid": 10,
 					"px": [72,88],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -152
+					"__worldX": 328,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -369,8 +369,8 @@
 					"defUid": 10,
 					"px": [24,104],
 					"fieldInstances": [],
-					"__worldX": 296,
-					"__worldY": -136
+					"__worldX": 280,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -385,8 +385,8 @@
 					"defUid": 10,
 					"px": [56,120],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -120
+					"__worldX": 312,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -401,8 +401,8 @@
 					"defUid": 10,
 					"px": [72,136],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -104
+					"__worldX": 328,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -417,8 +417,8 @@
 					"defUid": 10,
 					"px": [104,152],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -88
+					"__worldX": 360,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -433,8 +433,8 @@
 					"defUid": 10,
 					"px": [120,136],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -104
+					"__worldX": 376,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -449,8 +449,8 @@
 					"defUid": 10,
 					"px": [104,104],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -136
+					"__worldX": 360,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -465,8 +465,8 @@
 					"defUid": 10,
 					"px": [40,88],
 					"fieldInstances": [],
-					"__worldX": 312,
-					"__worldY": -152
+					"__worldX": 296,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -481,8 +481,8 @@
 					"defUid": 10,
 					"px": [24,56],
 					"fieldInstances": [],
-					"__worldX": 296,
-					"__worldY": -184
+					"__worldX": 280,
+					"__worldY": -200
 				},
 				{
 					"__identifier": "Barrel",
@@ -497,8 +497,8 @@
 					"defUid": 10,
 					"px": [40,152],
 					"fieldInstances": [],
-					"__worldX": 312,
-					"__worldY": -88
+					"__worldX": 296,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -513,8 +513,8 @@
 					"defUid": 10,
 					"px": [24,136],
 					"fieldInstances": [],
-					"__worldX": 296,
-					"__worldY": -104
+					"__worldX": 280,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -529,8 +529,8 @@
 					"defUid": 10,
 					"px": [88,200],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -40
+					"__worldX": 344,
+					"__worldY": -56
 				},
 				{
 					"__identifier": "Barrel",
@@ -545,8 +545,8 @@
 					"defUid": 10,
 					"px": [120,200],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -40
+					"__worldX": 376,
+					"__worldY": -56
 				},
 				{
 					"__identifier": "Barrel",
@@ -561,8 +561,8 @@
 					"defUid": 10,
 					"px": [152,168],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -72
+					"__worldX": 408,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -577,8 +577,8 @@
 					"defUid": 10,
 					"px": [216,152],
 					"fieldInstances": [],
-					"__worldX": 488,
-					"__worldY": -88
+					"__worldX": 472,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -593,8 +593,8 @@
 					"defUid": 10,
 					"px": [216,184],
 					"fieldInstances": [],
-					"__worldX": 488,
-					"__worldY": -56
+					"__worldX": 472,
+					"__worldY": -72
 				},
 				{
 					"__identifier": "Barrel",
@@ -609,8 +609,8 @@
 					"defUid": 10,
 					"px": [216,200],
 					"fieldInstances": [],
-					"__worldX": 488,
-					"__worldY": -40
+					"__worldX": 472,
+					"__worldY": -56
 				},
 				{
 					"__identifier": "Barrel",
@@ -625,8 +625,8 @@
 					"defUid": 10,
 					"px": [184,216],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -24
+					"__worldX": 440,
+					"__worldY": -40
 				},
 				{
 					"__identifier": "Barrel",
@@ -641,8 +641,8 @@
 					"defUid": 10,
 					"px": [168,216],
 					"fieldInstances": [],
-					"__worldX": 440,
-					"__worldY": -24
+					"__worldX": 424,
+					"__worldY": -40
 				},
 				{
 					"__identifier": "Barrel",
@@ -657,8 +657,8 @@
 					"defUid": 10,
 					"px": [136,168],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -72
+					"__worldX": 392,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -673,8 +673,8 @@
 					"defUid": 10,
 					"px": [56,184],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -56
+					"__worldX": 312,
+					"__worldY": -72
 				},
 				{
 					"__identifier": "Barrel",
@@ -689,8 +689,8 @@
 					"defUid": 10,
 					"px": [56,200],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -40
+					"__worldX": 312,
+					"__worldY": -56
 				},
 				{
 					"__identifier": "Barrel",
@@ -705,8 +705,8 @@
 					"defUid": 10,
 					"px": [56,232],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -8
+					"__worldX": 312,
+					"__worldY": -24
 				},
 				{
 					"__identifier": "Barrel",
@@ -721,8 +721,8 @@
 					"defUid": 10,
 					"px": [88,168],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -72
+					"__worldX": 344,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -737,8 +737,8 @@
 					"defUid": 10,
 					"px": [88,136],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -104
+					"__worldX": 344,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -753,8 +753,8 @@
 					"defUid": 10,
 					"px": [88,104],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -136
+					"__worldX": 344,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -769,8 +769,8 @@
 					"defUid": 10,
 					"px": [56,104],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -136
+					"__worldX": 312,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -785,8 +785,8 @@
 					"defUid": 10,
 					"px": [56,88],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -152
+					"__worldX": 312,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -801,8 +801,8 @@
 					"defUid": 10,
 					"px": [40,120],
 					"fieldInstances": [],
-					"__worldX": 312,
-					"__worldY": -120
+					"__worldX": 296,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -817,8 +817,8 @@
 					"defUid": 10,
 					"px": [72,152],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -88
+					"__worldX": 328,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -833,8 +833,8 @@
 					"defUid": 10,
 					"px": [56,168],
 					"fieldInstances": [],
-					"__worldX": 328,
-					"__worldY": -72
+					"__worldX": 312,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -849,8 +849,8 @@
 					"defUid": 10,
 					"px": [40,168],
 					"fieldInstances": [],
-					"__worldX": 312,
-					"__worldY": -72
+					"__worldX": 296,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -865,8 +865,8 @@
 					"defUid": 10,
 					"px": [24,152],
 					"fieldInstances": [],
-					"__worldX": 296,
-					"__worldY": -88
+					"__worldX": 280,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -881,8 +881,8 @@
 					"defUid": 10,
 					"px": [88,56],
 					"fieldInstances": [],
-					"__worldX": 360,
-					"__worldY": -184
+					"__worldX": 344,
+					"__worldY": -200
 				},
 				{
 					"__identifier": "Barrel",
@@ -897,8 +897,8 @@
 					"defUid": 10,
 					"px": [120,56],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -184
+					"__worldX": 376,
+					"__worldY": -200
 				},
 				{
 					"__identifier": "Barrel",
@@ -913,8 +913,8 @@
 					"defUid": 10,
 					"px": [120,72],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -168
+					"__worldX": 376,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -929,8 +929,8 @@
 					"defUid": 10,
 					"px": [120,88],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -152
+					"__worldX": 376,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -945,8 +945,8 @@
 					"defUid": 10,
 					"px": [120,104],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -136
+					"__worldX": 376,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -961,8 +961,8 @@
 					"defUid": 10,
 					"px": [120,120],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -120
+					"__worldX": 376,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -977,8 +977,8 @@
 					"defUid": 10,
 					"px": [104,120],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -120
+					"__worldX": 360,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -993,8 +993,8 @@
 					"defUid": 10,
 					"px": [104,136],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -104
+					"__worldX": 360,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -1009,8 +1009,8 @@
 					"defUid": 10,
 					"px": [136,136],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -104
+					"__worldX": 392,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -1025,8 +1025,8 @@
 					"defUid": 10,
 					"px": [152,104],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -136
+					"__worldX": 408,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -1041,8 +1041,8 @@
 					"defUid": 10,
 					"px": [168,56],
 					"fieldInstances": [],
-					"__worldX": 440,
-					"__worldY": -184
+					"__worldX": 424,
+					"__worldY": -200
 				},
 				{
 					"__identifier": "Barrel",
@@ -1057,8 +1057,8 @@
 					"defUid": 10,
 					"px": [184,72],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -168
+					"__worldX": 440,
+					"__worldY": -184
 				},
 				{
 					"__identifier": "Barrel",
@@ -1073,8 +1073,8 @@
 					"defUid": 10,
 					"px": [184,88],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -152
+					"__worldX": 440,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -1089,8 +1089,8 @@
 					"defUid": 10,
 					"px": [184,104],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -136
+					"__worldX": 440,
+					"__worldY": -152
 				},
 				{
 					"__identifier": "Barrel",
@@ -1105,8 +1105,8 @@
 					"defUid": 10,
 					"px": [168,120],
 					"fieldInstances": [],
-					"__worldX": 440,
-					"__worldY": -120
+					"__worldX": 424,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -1121,8 +1121,8 @@
 					"defUid": 10,
 					"px": [152,88],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -152
+					"__worldX": 408,
+					"__worldY": -168
 				},
 				{
 					"__identifier": "Barrel",
@@ -1137,8 +1137,8 @@
 					"defUid": 10,
 					"px": [136,120],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -120
+					"__worldX": 392,
+					"__worldY": -136
 				},
 				{
 					"__identifier": "Barrel",
@@ -1153,8 +1153,8 @@
 					"defUid": 10,
 					"px": [120,152],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -88
+					"__worldX": 376,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -1169,8 +1169,8 @@
 					"defUid": 10,
 					"px": [136,152],
 					"fieldInstances": [],
-					"__worldX": 408,
-					"__worldY": -88
+					"__worldX": 392,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -1185,8 +1185,8 @@
 					"defUid": 10,
 					"px": [168,152],
 					"fieldInstances": [],
-					"__worldX": 440,
-					"__worldY": -88
+					"__worldX": 424,
+					"__worldY": -104
 				},
 				{
 					"__identifier": "Barrel",
@@ -1201,8 +1201,8 @@
 					"defUid": 10,
 					"px": [184,136],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -104
+					"__worldX": 440,
+					"__worldY": -120
 				},
 				{
 					"__identifier": "Barrel",
@@ -1217,8 +1217,8 @@
 					"defUid": 10,
 					"px": [184,168],
 					"fieldInstances": [],
-					"__worldX": 456,
-					"__worldY": -72
+					"__worldX": 440,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -1233,8 +1233,8 @@
 					"defUid": 10,
 					"px": [152,184],
 					"fieldInstances": [],
-					"__worldX": 424,
-					"__worldY": -56
+					"__worldX": 408,
+					"__worldY": -72
 				},
 				{
 					"__identifier": "Barrel",
@@ -1249,8 +1249,8 @@
 					"defUid": 10,
 					"px": [120,168],
 					"fieldInstances": [],
-					"__worldX": 392,
-					"__worldY": -72
+					"__worldX": 376,
+					"__worldY": -88
 				},
 				{
 					"__identifier": "Barrel",
@@ -1265,8 +1265,8 @@
 					"defUid": 10,
 					"px": [104,184],
 					"fieldInstances": [],
-					"__worldX": 376,
-					"__worldY": -56
+					"__worldX": 360,
+					"__worldY": -72
 				},
 				{
 					"__identifier": "Barrel",
@@ -1281,8 +1281,8 @@
 					"defUid": 10,
 					"px": [72,184],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -56
+					"__worldX": 328,
+					"__worldY": -72
 				},
 				{
 					"__identifier": "Barrel",
@@ -1297,8 +1297,8 @@
 					"defUid": 10,
 					"px": [72,168],
 					"fieldInstances": [],
-					"__worldX": 344,
-					"__worldY": -72
+					"__worldX": 328,
+					"__worldY": -88
 				}
 			]
 		},
