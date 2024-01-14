@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Engine
@@ -25,6 +26,8 @@ namespace Engine
             {
                 entity.Start();
             }
+
+            Sort();
         }
 
         public void Spawn(Entity entity)
@@ -41,6 +44,7 @@ namespace Engine
                 entities.Add(entity);
                 entity.Spawn();
                 entity.Start();
+                Sort();
             }
         }
 
@@ -53,11 +57,23 @@ namespace Engine
             }
         }
 
-        public T Find<T>()
+        public T First<T>()
         {
             foreach (var entity in entities)
             {
                 if (entity is T t)
+                {
+                    return t;
+                }
+            }
+            return default;
+        }
+
+        public T FirstOrDefault<T>(Func<T, bool> predicate)
+        {
+            foreach (var entity in entities)
+            {
+                if (entity is T t && predicate(t))
                 {
                     return t;
                 }
@@ -83,6 +99,36 @@ namespace Engine
         public void UpdateCollider(Collider collider)
         {
             partition.Update(collider);
+        }
+
+        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle)
+        {
+            var result = new List<Entity>();
+
+            foreach (var collider in GetNearColliders(rectangle))
+            {
+                if (collider.Overlaps(rectangle))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle)
+        {
+            var result = new List<Entity>();
+
+            foreach (var collider in GetNearColliders(circle))
+            {
+                if (collider.Overlaps(circle))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
         }
 
         public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, int layerMask)

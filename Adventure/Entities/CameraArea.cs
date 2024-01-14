@@ -17,7 +17,7 @@ namespace Adventure.Entities
 
         public override void Start()
         {
-            player = World.Find<Player>();
+            player = World.First<Player>();
         }
 
         public override void PostUpdate(GameTime gameTime)

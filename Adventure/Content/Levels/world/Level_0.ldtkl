@@ -121,6 +121,44 @@
 					"fieldInstances": [],
 					"__worldX": 88,
 					"__worldY": 200
+				},
+				{
+					"__identifier": "PressurePlate",
+					"__grid": [12,10],
+					"__pivot": [0.5,0.5],
+					"__tags": ["Triggers"],
+					"__tile": { "tilesetUid": 2, "x": 432, "y": 16, "w": 16, "h": 16 },
+					"__smartColor": "#EAD4AA",
+					"iid": "18c32f70-b0a0-11ee-8541-d356c0f6fe72",
+					"width": 16,
+					"height": 16,
+					"defUid": 23,
+					"px": [200,168],
+					"fieldInstances": [{ "__identifier": "DoorId", "__type": "String", "__value": "door_0", "__tile": null, "defUid": 26, "realEditorValues": [{
+						"id": "V_String",
+						"params": ["door_0"]
+					}] }],
+					"__worldX": 200,
+					"__worldY": 168
+				},
+				{
+					"__identifier": "LargeDoor",
+					"__grid": [9,3],
+					"__pivot": [0.5,0.5],
+					"__tags": [],
+					"__tile": null,
+					"__smartColor": "#E47272",
+					"iid": "5a2417e0-b0a0-11ee-b40c-47ba3431e862",
+					"width": 32,
+					"height": 16,
+					"defUid": 24,
+					"px": [144,56],
+					"fieldInstances": [{ "__identifier": "Id", "__type": "String", "__value": "door_0", "__tile": null, "defUid": 25, "realEditorValues": [{
+						"id": "V_String",
+						"params": ["door_0"]
+					}] }],
+					"__worldX": 144,
+					"__worldY": 56
 				}
 			]
 		},

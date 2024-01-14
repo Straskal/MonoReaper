@@ -82,6 +82,8 @@ namespace Adventure
             Store.Gfx.Fire = Content.Load<Texture2D>("art/player/fire");
             Store.Gfx.Barrel = Content.Load<Texture2D>("art/common/barrel");
             Store.Gfx.Explosion = Content.Load<Texture2D>("art/common/explosion-1");
+            Store.Gfx.LargeDoor = Content.Load<Texture2D>("art/large_door");
+            Store.Gfx.PressurePlate = Content.Load<Texture2D>("art/pressure_plate");
             Store.Vfx.SolidColor = Content.Load<Effect>("shaders/SolidColor");
             Store.Sfx.Shoot = Content.Load<SoundEffect>("audio/fireball_shoot");
             Store.Sfx.Explosion = Content.Load<SoundEffect>("audio/explosion4");

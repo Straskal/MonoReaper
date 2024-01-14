@@ -18,10 +18,13 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
-            Collider = new CircleCollider(this, new Vector2(0f, 0f), 7.5f);
+            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
-            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames);
+            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames) 
+            {
+                DrawOrder = 5
+            };
         }
 
         public override void Update(GameTime gameTime)
@@ -69,10 +72,10 @@ namespace Adventure.Entities
                 return;
             }
 
-            //if (other is Barrel barrel)
-            //{
-            //    barrel.Push(-collision.Normal);
-            //}
+            if (other is Barrel barrel)
+            {
+                barrel.Push(-collision.Intersection.Normal);
+            }
         }
 
         private void Animate()

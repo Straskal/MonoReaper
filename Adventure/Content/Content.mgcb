@@ -122,6 +122,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Enemies/shooter.png
 
+#begin Art/large_door.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/large_door.png
+
 #begin Art/Player/fire.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -217,6 +229,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Player/player.png
+
+#begin Art/pressure_plate.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/pressure_plate.png
 
 #begin Art/Tilesets/dungeon.png
 /importer:TextureImporter

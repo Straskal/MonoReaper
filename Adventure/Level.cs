@@ -55,6 +55,18 @@ namespace Adventure
                             Position = entityData.Position + offset
                         };
                         break;
+                    case "PressurePlate":
+                        yield return new PressurePlate(entityData)
+                        {
+                            Position = entityData.Position + offset
+                        };
+                        break;
+                    case "LargeDoor":
+                        yield return new Door(entityData)
+                        {
+                            Position = entityData.Position + offset
+                        };
+                        break;
                     default:
                         continue;
                 }

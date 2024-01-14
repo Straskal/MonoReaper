@@ -16,6 +16,8 @@ namespace Adventure
             public static Texture2D Barrel;
             public static Texture2D Fire;
             public static Texture2D Explosion;
+            public static Texture2D LargeDoor;
+            public static Texture2D PressurePlate;
         }
         public static class Vfx
         {
