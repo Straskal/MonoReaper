@@ -10,7 +10,7 @@ namespace Adventure.Entities
     public class Player : Actor
     {
         public const float Speed = 1000f;
-        public const float MaxSpeed = 0.7f;
+        public const float MaxSpeed = 0.75f;
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction = Vector2.One;

@@ -43,10 +43,10 @@ namespace Adventure.Entities
                 // Only move if theres room for a full pixel
                 if (collision.Intersection.Time >= 1f)
                 {
-                    move = collision.Direction * collision.Intersection.Time;
-                    move.X = MathF.Round(move.X, MidpointRounding.ToEven);
-                    move.Y = MathF.Round(move.Y, MidpointRounding.ToEven);
+                    var time = MathF.Round(collision.Intersection.Time, MidpointRounding.ToZero);
+                    move = collision.Direction * time;
                     Collider.Move(move);
+                    movementAccumulator -= move;
                 }
                 // Cancel out velocity on colliding axis to cause slide
                 if (collision.Intersection.Normal.X != 0f)
