@@ -19,7 +19,6 @@ namespace Engine
 
         public Entity Entity { get; }
         public int Layer { get; set; }
-        public float ContactOffset { get; } = 0.001f;
         public bool IsMoving { get; private set; }
         public IntersectionFilter Filter { get; set; }
         public abstract RectangleF Bounds { get; }
@@ -78,53 +77,6 @@ namespace Engine
         public virtual void UpdateBounds()
         {
             Entity.World.UpdateCollider(this);
-        }
-
-        public void Collide(Vector2 velocity)
-        {
-            Collide(ref velocity, int.MaxValue);
-        }
-
-        public void Collide(Vector2 velocity, int layerMask)
-        {
-            Collide(ref velocity, layerMask);
-        }
-
-        public void Collide(ref Vector2 velocity)
-        {
-            Collide(ref velocity, int.MaxValue);
-        }
-
-        public virtual void Collide(ref Vector2 velocity, int layerMask)
-        {
-            IsMoving = true;
-
-            if (velocity.LengthSquared() > float.Epsilon)
-            {
-                var iterations = MAX_COLLISION_ITERATIONS;
-
-                while (iterations-- > 0)
-                {
-                    var other = Cast(velocity, layerMask, out Collision collision);
-
-                    if (other == null)
-                    {
-                        Move(velocity);
-                        break;
-                    }
-
-                    if (collision.Intersection.Time > ContactOffset)
-                    {
-                        Move(collision.Direction * (collision.Intersection.Time - ContactOffset));
-                    }
-
-                    velocity = CollisionResolvers.Slide(collision);
-                    NotifyCollision(other, collision);
-                    other.NotifyCollision(this, collision);
-                };
-            }
-
-            IsMoving = false;
         }
 
         public List<Collider> GetOverlaps(int layerMask)

@@ -24,7 +24,7 @@ namespace Adventure
 
         private void DrawOverlay(Renderer renderer)
         {
-            renderer.DrawRectangle(0, 0, Adventure.Instance.ResolutionWidth, Adventure.Instance.ResolutionHeight, new Color(Color.Black, 0.6f));
+            renderer.DrawRectangle(0, 0, Adventure.RESOLUTION_WIDTH, Adventure.RESOLUTION_HEIGHT, new Color(Color.Black, 0.6f));
             renderer.DrawString(Store.Fonts.Default, "Paused", 100f, 100f, Color.White);
         }
     }

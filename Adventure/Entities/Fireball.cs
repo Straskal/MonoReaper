@@ -5,7 +5,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public sealed class Fireball : Entity
+    public sealed class Fireball : Actor
     {
         private Vector2 velocity;
 
@@ -30,13 +30,13 @@ namespace Adventure.Entities
                 DrawOrder = 5
             };
             var i = Store.Sfx.Shoot.CreateInstance();
-            i.Pitch = Math.Clamp(App.Random.NextSingle(), 0.6f, 1f);
+            i.Pitch = Math.Clamp(Random.Shared.NextSingle(), 0.6f, 1f);
             i.Play();
         }
 
         public override void Update(GameTime gameTime)
         {
-            Collide(velocity, EntityLayers.Enemy | EntityLayers.Solid);
+            Collide(velocity);
         }
 
         public override void OnCollision(Entity other, Collision collision)

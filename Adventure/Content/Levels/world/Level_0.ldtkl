@@ -54,7 +54,7 @@
 			"entityInstances": [
 				{
 					"__identifier": "PlayerSpawn",
-					"__grid": [8,8],
+					"__grid": [8,7],
 					"__pivot": [0.5,0.5],
 					"__tags": [ "Player", "Damageable" ],
 					"__tile": { "tilesetUid": 2, "x": 80, "y": 240, "w": 16, "h": 16 },
@@ -63,7 +63,7 @@
 					"width": 16,
 					"height": 16,
 					"defUid": 1,
-					"px": [128,128],
+					"px": [128,112],
 					"fieldInstances": [
 						{ "__identifier": "Id", "__type": "String", "__value": "Default", "__tile": null, "defUid": 18, "realEditorValues": [] },
 						{ "__identifier": "FaceDirection", "__type": "LocalEnum.FaceDirection", "__value": "Up", "__tile": null, "defUid": 17, "realEditorValues": [{
@@ -72,11 +72,11 @@
 						}] }
 					],
 					"__worldX": 128,
-					"__worldY": 128
+					"__worldY": 112
 				},
 				{
 					"__identifier": "Barrel",
-					"__grid": [3,4],
+					"__grid": [7,8],
 					"__pivot": [0.5,0.5],
 					"__tags": ["Damageable"],
 					"__tile": { "tilesetUid": 2, "x": 224, "y": 256, "w": 16, "h": 16 },
@@ -85,10 +85,10 @@
 					"width": 16,
 					"height": 16,
 					"defUid": 10,
-					"px": [56,72],
+					"px": [120,136],
 					"fieldInstances": [],
-					"__worldX": 56,
-					"__worldY": 72
+					"__worldX": 120,
+					"__worldY": 136
 				},
 				{
 					"__identifier": "Barrel",

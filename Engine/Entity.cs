@@ -75,15 +75,5 @@ namespace Engine
         public virtual void OnCollision(Entity other, Collision collision)
         {
         }
-
-        protected void Collide(Vector2 velocity, int layerMask)
-        {
-            Collider?.Collide(velocity, layerMask);
-        }
-
-        protected void Collide(ref Vector2 velocity, int layerMask)
-        {
-            Collider?.Collide(ref velocity, layerMask);
-        }
     }
 }

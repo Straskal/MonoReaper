@@ -8,7 +8,7 @@ namespace Engine
         private static KeyboardState KeyState;
         private static KeyboardState PreviousKeyState;
 
-        internal static void Update(BackBuffer backBuffer)
+        public static void Update(BackBuffer backBuffer)
         {
             UpdateKeyboardState();
             UpdateMouseState(backBuffer);

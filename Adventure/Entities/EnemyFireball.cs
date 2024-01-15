@@ -4,7 +4,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public sealed class EnemyFireball : Entity
+    public sealed class EnemyFireball : Actor
     {
         private Vector2 velocity;
 
@@ -33,7 +33,7 @@ namespace Adventure.Entities
 
         public override void Update(GameTime gameTime)
         {
-            Collide(ref velocity, EntityLayers.Player | EntityLayers.Solid);
+            Collide(velocity);
         }
 
         public override void OnCollision(Entity other, Collision collision)

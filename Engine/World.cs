@@ -10,6 +10,7 @@ namespace Engine
 
         private readonly Partition partition = new(PARTITION_CELL_SIZE);
         private readonly List<Entity> entities = new();
+        private readonly Dictionary<Type, List<Entity>> entitiesByType = new();
         private readonly List<Entity> entitiesToRemove = new();
         private bool sort;
 
@@ -18,7 +19,7 @@ namespace Engine
             foreach (var entity in entities)
             {
                 entity.World = this;
-                this.entities.Add(entity);
+                AddEntity(entity);
                 entity.Spawn();
             }
 
@@ -41,7 +42,7 @@ namespace Engine
             {
                 entity.World = this;
                 entity.Position = position;
-                entities.Add(entity);
+                AddEntity(entity);
                 entity.Spawn();
                 entity.Start();
                 Sort();
@@ -57,25 +58,25 @@ namespace Engine
             }
         }
 
-        public T First<T>()
+        public T First<T>() where T : Entity
         {
-            foreach (var entity in entities)
+            if (entitiesByType.TryGetValue(typeof(T), out var entities)) 
             {
-                if (entity is T t)
-                {
-                    return t;
-                }
+                return entities[0] as T;
             }
             return default;
         }
 
         public T FirstOrDefault<T>(Func<T, bool> predicate)
         {
-            foreach (var entity in entities)
+            if (entitiesByType.TryGetValue(typeof(T), out var entities))
             {
-                if (entity is T t && predicate(t))
+                foreach (var entity in entities) 
                 {
-                    return t;
+                    if (entity is T t && predicate(t))
+                    {
+                        return t;
+                    }
                 }
             }
             return default;
@@ -164,6 +165,7 @@ namespace Engine
             }
 
             entities.Clear();
+            entitiesByType.Clear();
             partition.Clear();
         }
 
@@ -215,7 +217,7 @@ namespace Engine
                 entitiesToRemove[i].Destroy();
                 entitiesToRemove[i].End();
                 entitiesToRemove[i].World = null;
-                entities.Remove(entitiesToRemove[i]);
+                RemoveEntity(entitiesToRemove[i]);
             }
 
             entitiesToRemove.Clear();
@@ -227,6 +229,32 @@ namespace Engine
             {
                 entities.Sort(SortEntities);
                 sort = false;
+            }
+        }
+
+        private void AddEntity(Entity entity)
+        {
+            var type = entity.GetType();
+            entities.Add(entity);
+            if (!entitiesByType.TryGetValue(type, out var list)) 
+            {
+                entitiesByType[type] = list = new List<Entity>();
+            }
+            list.Add(entity);
+        }
+
+        private void RemoveEntity(Entity entity)
+        {
+            var type = entity.GetType();
+            entities.Remove(entity);
+            if (!entitiesByType.TryGetValue(type, out var list))
+            {
+                entitiesByType[type] = list = new List<Entity>();
+            }
+            list.Remove(entity);
+            if (list.Count == 0) 
+            {
+                entitiesByType.Remove(type);
             }
         }
 

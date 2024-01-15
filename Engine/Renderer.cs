@@ -35,7 +35,7 @@ namespace Engine
             BlankTexture.SetData(new[] { Color.White });
         }
 
-        internal void Dispose()
+        public void Dispose()
         {
             spriteBatch.Dispose();
             BlankTexture.Dispose();

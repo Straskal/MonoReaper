@@ -7,21 +7,20 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public class Player : Entity
+    public class Player : Actor
     {
         public const float Speed = 1000f;
-        public const float MaxSpeed = 0.75f;
+        public const float MaxSpeed = 0.7f;
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction = Vector2.One;
-        private Vector2 velocity = Vector2.Zero;
 
         public override void Spawn()
         {
-            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
+            Collider = new BoxCollider(this, 10, 16);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
-            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames) 
+            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames)
             {
                 DrawOrder = 5
             };
@@ -32,22 +31,16 @@ namespace Adventure.Entities
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
             var movementLength = movementInput.LengthSquared();
-
-            // Normalize movement input so that the player doesn't travel faster diagonally.
             if (movementLength > 1f)
             {
                 movementInput.Normalize();
             }
-
             animatedSprite.IsPaused = movementLength == 0f;
             direction = movementLength > 0f ? movementInput : direction;
-            velocity = movementInput * Speed * deltaTime;
+            var velocity = movementInput * Speed * deltaTime;
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
-
-            const int LAYER = EntityLayers.Solid | BoxLayers.Trigger;
-
-            Collide(velocity, LAYER);
+            Collide(velocity);
             Animate();
             HandleInteractInput(deltaTime);
         }
@@ -67,7 +60,7 @@ namespace Adventure.Entities
 
         public override void OnCollision(Entity other, Collision collision)
         {
-            if (!Collider.IsMoving)
+            if (!IsMoving)
             {
                 return;
             }

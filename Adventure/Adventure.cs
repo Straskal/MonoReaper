@@ -3,35 +3,66 @@ using Adventure.Entities;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Adventure
 {
-    public sealed class Adventure : App
+    public sealed class Adventure : Game
     {
         public const int RESOLUTION_WIDTH = 256;
         public const int RESOLUTION_HEIGHT = 256;
 
         private readonly PauseScreen pauseScreen = new();
 
-        public Adventure() : base(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, ResolutionScaleMode.Viewport)
+        public Adventure()
         {
             Instance = this;
             Window.Title = "Adventure Game 2000";
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
+            Content = new ContentManager(Services, "Content");
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager.HardwareModeSwitch = false;
+            GraphicsDeviceManager.IsFullScreen = false;
+            GraphicsDeviceManager.PreferredBackBufferWidth = RESOLUTION_WIDTH;
+            GraphicsDeviceManager.PreferredBackBufferHeight = RESOLUTION_HEIGHT;
+            IsFixedTimeStep = true;
         }
 
         public static Adventure Instance { get; private set; }
         public static bool IsPaused { get; set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; }
+        public BackBuffer BackBuffer { get; private set; }
+        public Renderer Renderer { get; private set; }
+        public Camera Camera { get; private set; }
+        public World World { get; private set; }
+        public bool Debug { get; set; }
+
+        protected override void Initialize()
+        {
+            BackBuffer = new BackBuffer(GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, ResolutionScaleMode.Viewport);
+            Renderer = new Renderer(GraphicsDevice, BackBuffer);
+            Camera = new Camera(BackBuffer);
+            World = new World();
+            base.Initialize();
+        }
 
         protected override void LoadContent()
         {
-            base.LoadContent();
             LoadAllContent();
             LoadGUI();
             LoadMap();
+            base.LoadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            BackBuffer.Dispose();
+            Renderer.Dispose();
+            Content.Unload();
+            base.UnloadContent();
         }
 
         public void LoadMap()
@@ -51,28 +82,39 @@ namespace Adventure
 
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
+            BackBuffer.Update();
+            Input.Update(BackBuffer);
+            if (!IsPaused)
+            {
+                World.Update(gameTime);
+            }
             HandleGlobalInput();
             ScreenShake.Update(gameTime);
             RoundCameraPosition();
         }
 
-        protected override void UpdateFrame(GameTime gameTime)
+        protected override void Draw(GameTime gameTime)
         {
-            if (!IsPaused) 
+            Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
+            Renderer.SetViewport(BackBuffer.FullViewport);
+            Renderer.Clear();
+            Renderer.BeginDraw(Camera.TransformationMatrix);
+            World.Draw(Renderer, gameTime);
+            if (Debug)
             {
-                base.UpdateFrame(gameTime);
-            } 
-        }
-
-        protected override void DrawFrame(GameTime gameTime)
-        {
-            base.DrawFrame(gameTime);
-
-            if (IsPaused) 
+                World.DebugDraw(Renderer, gameTime);
+            }
+            Renderer.EndDraw();
+            if (IsPaused)
             {
                 pauseScreen.Draw(Renderer, gameTime);
             }
+            Renderer.SetTarget(null);
+            Renderer.SetViewport(BackBuffer.LetterboxViewport);
+            Renderer.Clear();
+            Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
+            Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
+            Renderer.EndDraw();
         }
 
         private void LoadAllContent()
@@ -111,6 +153,16 @@ namespace Adventure
             if (Input.IsKeyPressed(Keys.OemTilde))
             {
                 Debug = !Debug;
+            }
+
+            if (Input.IsKeyPressed(Keys.Space))
+            {
+                Camera.Zoom = Camera.Zoom - 0.25f;
+
+                if (Camera.Zoom <= 0f)
+                {
+                    Camera.Zoom = 2f;
+                }
             }
         }
 

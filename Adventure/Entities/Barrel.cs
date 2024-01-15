@@ -6,7 +6,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public sealed class Barrel : Entity, IDamageable
+    public sealed class Barrel : Actor, IDamageable
     {
         private Vector2 push;
 
@@ -19,6 +19,8 @@ namespace Adventure.Entities
         {
             Health = Random.Shared.Next(2, 5);
             Collider = new BoxCollider(this, 16, 16, EntityLayers.Enemy | EntityLayers.Solid);
+            //Collider = new CircleCollider(this, Vector2.Zero, 7);
+            Collider.Layer = EntityLayers.Enemy | EntityLayers.Solid;
             Collider.Enable();
             GraphicsComponent = Sprite = new Sprite(this, Store.Gfx.Barrel)
             {
@@ -28,7 +30,7 @@ namespace Adventure.Entities
 
         public void Push(Vector2 direction)
         {
-            push += direction * 0.5f;
+            push += direction;
         }
 
         public override void Update(GameTime gameTime)
@@ -47,7 +49,7 @@ namespace Adventure.Entities
         {
             if (push != Vector2.Zero)
             {
-                Collide(ref push, EntityLayers.Solid);
+                Collide(push);
                 push = Vector2.Zero;
             }
 

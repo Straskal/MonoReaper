@@ -58,11 +58,6 @@ namespace Adventure.Components
             }
         }
 
-        public override void Move(Vector2 direction)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetPosition(Vector2 position)
         {
             throw new NotImplementedException();
