@@ -168,7 +168,7 @@ namespace Adventure
 
         private void RoundCameraPosition()
         {
-            Camera.Position = Vector2.Floor(Camera.Position + new Vector2(0.5f));
+
         }
     }
 }

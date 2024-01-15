@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 
 namespace Adventure.Entities
@@ -6,6 +7,8 @@ namespace Adventure.Entities
     public class CameraArea : Entity
     {
         private Player player;
+        private bool isMoving;
+        private float duration;
 
         public CameraArea(RectangleF bounds)
         {
@@ -24,7 +27,22 @@ namespace Adventure.Entities
         {
             if (Bounds.Contains(player.Position))
             {
-                Adventure.Instance.Camera.Position = Bounds.Center;
+                if (!isMoving) 
+                {
+                    duration = 5f;
+                    isMoving = true;
+                }
+                duration -= gameTime.GetDeltaTime();
+                if (duration < 1f)
+                {
+                    duration = 1f;
+                }
+                var direction = Bounds.Center - Adventure.Instance.Camera.Position;
+                Adventure.Instance.Camera.Position = Adventure.Instance.Camera.Position + direction * (1f / duration);
+            }
+            else 
+            {
+                isMoving = false;
             }
         }
 
