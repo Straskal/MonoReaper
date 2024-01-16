@@ -29,29 +29,19 @@ namespace Engine
             UpdateBounds();
         }
 
-        public override bool Overlaps(CircleF circle)
+        public override bool Overlaps(Collider collider)
+        {
+            return collider.OverlapCircle(Circle);
+        }
+
+        public override bool OverlapCircle(CircleF circle)
         {
             return OverlapTests.CircleVsCircle(Circle, circle);
         }
 
-        public override bool Overlaps(RectangleF rectangle)
+        public override bool OverlapRectangle(RectangleF rectangle)
         {
             return OverlapTests.CircleVsRectangle(Circle, rectangle);
-        }
-
-        public override bool Overlaps(Collider collider)
-        {
-            return collider.IsOverlapped(this);
-        }
-
-        public override bool IsOverlapped(BoxCollider collider)
-        {
-            return OverlapTests.CircleVsRectangle(Circle, collider.Bounds);
-        }
-
-        public override bool IsOverlapped(CircleCollider collider)
-        {
-            return OverlapTests.CircleVsCircle(Circle, collider.Circle);
         }
 
         public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)

@@ -12,7 +12,7 @@ namespace Adventure.Entities
         public Door(EntityData data)
         {
             this.data = data;
-            Id = data.Fields.GetString("Id");
+            Tags.Add(data.Fields.GetString("Id"));
         }
 
         public string Id { get; set; }

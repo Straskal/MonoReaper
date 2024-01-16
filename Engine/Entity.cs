@@ -6,7 +6,7 @@ namespace Engine
     public class Entity
     {
         public World World { get; internal set; }
-        public HashSet<string> Tags { get; }
+        public HashSet<string> Tags { get; } = new();
         public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
@@ -31,25 +31,6 @@ namespace Engine
 
         public virtual void Destroy()
         {
-            Collider?.Disable();
-        }
-
-        public virtual void Start()
-        {
-        }
-
-        public virtual void End()
-        {
-            Collider?.Disable();
-        }
-
-        public bool Overlaps(RectangleF rectangle) 
-        {
-            if (Collider != null) 
-            {
-                return Collider.Overlaps(rectangle);
-            }
-            return false;
         }
 
         public virtual void Update(GameTime gameTime)

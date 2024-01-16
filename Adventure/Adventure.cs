@@ -45,7 +45,7 @@ namespace Adventure
             BackBuffer = new BackBuffer(GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, ResolutionScaleMode.Viewport);
             Renderer = new Renderer(GraphicsDevice, BackBuffer);
             Camera = new Camera(BackBuffer);
-            World = new World();
+            World = new World(128);
             base.Initialize();
         }
 

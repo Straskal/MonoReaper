@@ -6,7 +6,6 @@ namespace Adventure.Entities
 {
     public class CameraArea : Entity
     {
-        private Player player;
         private bool isMoving;
         private float duration;
 
@@ -18,14 +17,9 @@ namespace Adventure.Entities
 
         public RectangleF Bounds { get; }
 
-        public override void Start()
-        {
-            player = World.First<Player>();
-        }
-
         public override void PostUpdate(GameTime gameTime)
         {
-            if (Bounds.Contains(player.Position))
+            if (Bounds.Contains(World.Find<Player>().Position))
             {
                 if (!isMoving) 
                 {

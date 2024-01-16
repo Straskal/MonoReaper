@@ -17,12 +17,9 @@ namespace Engine
         public int Layer { get; set; }
         public IntersectionFilter Filter { get; set; }
         public abstract RectangleF Bounds { get; }
-
-        public abstract bool Overlaps(CircleF circle);
-        public abstract bool Overlaps(RectangleF rectangle);
         public abstract bool Overlaps(Collider collider);
-        public abstract bool IsOverlapped(BoxCollider collider);
-        public abstract bool IsOverlapped(CircleCollider collider);
+        public abstract bool OverlapCircle(CircleF circle);
+        public abstract bool OverlapRectangle(RectangleF rectangle);
         public abstract bool Intersects(Collider collider, Segment segment, out Intersection intersection);
         public abstract bool IntersectSegment(Segment segment, out Intersection intersection);
         public abstract bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection);

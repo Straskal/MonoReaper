@@ -159,22 +159,6 @@
 					}] }],
 					"__worldX": 144,
 					"__worldY": 56
-				},
-				{
-					"__identifier": "FireballShooter",
-					"__grid": [5,4],
-					"__pivot": [0.5,0.5],
-					"__tags": [],
-					"__tile": null,
-					"__smartColor": "#D77643",
-					"iid": "0e3a67e0-b0a0-11ee-a626-bb29c812743b",
-					"width": 16,
-					"height": 16,
-					"defUid": 21,
-					"px": [88,72],
-					"fieldInstances": [],
-					"__worldX": 88,
-					"__worldY": 72
 				}
 			]
 		},

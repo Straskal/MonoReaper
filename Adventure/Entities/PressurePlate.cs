@@ -8,7 +8,6 @@ namespace Adventure.Entities
     {
         private readonly EntityData data;
         private Sprite sprite;
-        private Door door;
 
         public PressurePlate(EntityData data) 
         {
@@ -28,13 +27,6 @@ namespace Adventure.Entities
             base.Spawn();
         }
 
-        public override void Start()
-        {
-            door = World.FirstOrDefault<Door>(door => door.Id == data.Fields.GetString("DoorId"));
-
-            base.Start();
-        }
-
         public override void Update(GameTime gameTime)
         {
             var isDown = false;
@@ -50,6 +42,7 @@ namespace Adventure.Entities
 
             if (isDown && !IsDown)
             {
+                var door = World.FindWithTag<Door>(data.Fields.GetString("DoorId"));
                 // Play trigger sound
 
                 sprite.SourceRectangle = new Rectangle(16, 16, 16, 16);
@@ -57,6 +50,7 @@ namespace Adventure.Entities
             }
             else if (!isDown && IsDown) 
             {
+                var door = World.FindWithTag<Door>(data.Fields.GetString("DoorId"));
                 // Play release sound
 
                 sprite.SourceRectangle = new Rectangle(0, 0, 16, 16);

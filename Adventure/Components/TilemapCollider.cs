@@ -63,27 +63,17 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override bool Overlaps(CircleF circle)
+        public override bool OverlapCircle(CircleF circle)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Overlaps(RectangleF rectangle)
+        public override bool OverlapRectangle(RectangleF rectangle)
         {
             throw new NotImplementedException();
         }
 
         public override bool Overlaps(Collider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsOverlapped(BoxCollider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsOverlapped(CircleCollider collider)
         {
             throw new NotImplementedException();
         }
