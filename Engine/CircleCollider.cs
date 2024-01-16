@@ -56,18 +56,22 @@ namespace Engine
 
         public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
         {
-            return collider.IsIntersected(this, segment, out intersection);
+            return collider.IntersectCircleSegment(Circle, segment, out intersection);
         }
 
-        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectSegment(Segment segment, out Intersection intersection)
         {
-            // TODO: Make moving rectangle vs circle intersections work correctly. Right now they are treated as rectangle vs rectangle.
-            return IntersectionTests.MovingRectangleVsRectangle(collider.Bounds, segment, Bounds, out intersection);
+            return IntersectionTests.SegmentVsCircle(segment, Circle, out intersection);
         }
 
-        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
         {
-            return IntersectionTests.MovingCircleVsCircle(collider.Circle, segment, Circle, out intersection);
+            return IntersectionTests.CircleSegmentVsCircle(circle, segment, Circle, out intersection);
+        }
+
+        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.RectangleSegmentVsRectangle(rectangle, segment, Bounds, out intersection);
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)

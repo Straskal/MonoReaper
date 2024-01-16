@@ -5,7 +5,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public sealed class Fireball : Actor
+    public sealed class Fireball : KinematicEntity
     {
         private Vector2 velocity;
 

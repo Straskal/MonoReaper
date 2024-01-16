@@ -6,7 +6,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public sealed class Barrel : Actor, IDamageable
+    public sealed class Barrel : KinematicEntity, IDamageable
     {
         private Vector2 push;
 

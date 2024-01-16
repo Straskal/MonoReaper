@@ -5,12 +5,12 @@ namespace Engine
 {
     public static class IntersectionTests
     {
-        public static bool MovingCircleVsCircle(CircleF circle0, Segment segment, CircleF circle1, out Intersection intersection)
+        public static bool CircleSegmentVsCircle(CircleF circle0, Segment segment, CircleF circle1, out Intersection intersection)
         {
             return SegmentVsCircle(segment, CircleF.Inflate(circle1, circle0), out intersection);
         }
 
-        public static bool MovingCircleVsRectangle(CircleF circle, Segment segment, RectangleF rectangle, out Intersection intersection)
+        public static bool CircleSegmentVsRectangle(CircleF circle, Segment segment, RectangleF rectangle, out Intersection intersection)
         {
             if (!SegmentVsRectangle(segment, RectangleF.Inflate(rectangle, circle), out intersection))
             {
@@ -25,9 +25,9 @@ namespace Engine
             return true;
         }
 
-        public static bool MovingRectangleVsRectangle(RectangleF rectangle0, Segment path, RectangleF rectangle1, out Intersection intersection)
+        public static bool RectangleSegmentVsRectangle(RectangleF rectangle0, Segment segment, RectangleF rectangle1, out Intersection intersection)
         {
-            return SegmentVsRectangle(path, RectangleF.Inflate(rectangle1, rectangle0), out intersection);
+            return SegmentVsRectangle(segment, RectangleF.Inflate(rectangle1, rectangle0), out intersection);
         }
 
         public static bool SegmentVsCircle(Segment segment, CircleF circle, out Intersection intersection)

@@ -7,7 +7,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public class Player : Actor
+    public class Player : KinematicEntity
     {
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.75f;

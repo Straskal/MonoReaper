@@ -181,11 +181,6 @@ namespace Engine
                 entities[i].PostUpdate(gameTime);
             }
 
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Collider?.ClearContacts();
-            }
-
             ProcessDestroyedEntities();
         }
 

@@ -93,16 +93,6 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             foreach (var box in colliders)
@@ -117,6 +107,21 @@ namespace Adventure.Components
             {
                 colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
             }
+        }
+
+        public override bool IntersectSegment(Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
         }
     }
 }

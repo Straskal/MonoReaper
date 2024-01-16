@@ -5,10 +5,6 @@ namespace Engine
 {
     public abstract class Collider
     {
-        private const int MAX_COLLISION_ITERATIONS = 2;
-
-        private readonly HashSet<Collider> contacts = new();
-
         // Cache partition cells in the collider to avoid frequent lookups.
         internal readonly List<Point> cells = new();
 
@@ -19,7 +15,6 @@ namespace Engine
 
         public Entity Entity { get; }
         public int Layer { get; set; }
-        public bool IsMoving { get; private set; }
         public IntersectionFilter Filter { get; set; }
         public abstract RectangleF Bounds { get; }
 
@@ -29,23 +24,10 @@ namespace Engine
         public abstract bool IsOverlapped(BoxCollider collider);
         public abstract bool IsOverlapped(CircleCollider collider);
         public abstract bool Intersects(Collider collider, Segment segment, out Intersection intersection);
-        public abstract bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection);
-        public abstract bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection);
+        public abstract bool IntersectSegment(Segment segment, out Intersection intersection);
+        public abstract bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection);
+        public abstract bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection);
         public abstract void Draw(Renderer renderer, GameTime gameTime);
-
-        internal void NotifyCollision(Collider other, Collision collision)
-        {
-            if (!contacts.Contains(other))
-            {
-                Entity.OnCollision(other.Entity, collision);
-                contacts.Add(other);
-            }
-        }
-
-        internal void ClearContacts()
-        {
-            contacts.Clear();
-        }
 
         public bool CheckMask(int mask)
         {

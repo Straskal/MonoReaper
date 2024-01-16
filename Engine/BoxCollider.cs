@@ -68,17 +68,22 @@ namespace Engine
 
         public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
         {
-            return collider.IsIntersected(this, segment, out intersection);
+            return collider.IntersectRectangleSegment(Bounds, segment, out intersection);
         }
 
-        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectSegment(Segment segment, out Intersection intersection)
         {
-            return IntersectionTests.MovingRectangleVsRectangle(collider.Bounds, segment, Bounds, out intersection);
+            return IntersectionTests.SegmentVsRectangle(segment, Bounds, out intersection);
         }
 
-        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
         {
-            return IntersectionTests.MovingCircleVsRectangle(collider.Circle, segment, Bounds, out intersection);
+            return IntersectionTests.CircleSegmentVsRectangle(circle, segment, Bounds, out intersection);
+        }
+
+        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.RectangleSegmentVsRectangle(rectangle, segment, Bounds, out intersection);
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)
