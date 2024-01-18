@@ -77,7 +77,7 @@ namespace Adventure.Entities
         {
             base.DebugDraw(renderer, gameTime);
 
-            renderer.DrawString(Store.Fonts.Default, accumulator.ToString(), Position.X, Position.Y, Color.White);
+            renderer.DrawString(Store.Fonts.Default, Position.ToString(), Position.X, Position.Y, Color.White);
         }
     }
 }

@@ -76,7 +76,8 @@ namespace Engine
                     Matrix.CreateScale(ref scale, out scaleMatrix);
                     Matrix.CreateTranslation(ref center, out centerTranslationMatrix);
 
-                    transformationMatrix = translationMatrix * rotationMatrix * scaleMatrix * centerTranslationMatrix * backBuffer.RendererScaleMatrix;
+                    transformationMatrix = translationMatrix * rotationMatrix * scaleMatrix * centerTranslationMatrix * backBuffer.CameraScaleMatrix;
+                    InverseTransformationMatrix = Matrix.Invert(transformationMatrix);
                     isDirty = false;
                 }
 
@@ -84,20 +85,16 @@ namespace Engine
             }
         }
 
+        public Matrix InverseTransformationMatrix { get; private set; }
+
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += backBuffer.LetterboxViewport.X;
-            position.Y += backBuffer.LetterboxViewport.Y;
-
-            return Vector2.Transform(position, TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix);
         }
 
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= backBuffer.LetterboxViewport.X;
-            position.Y -= backBuffer.LetterboxViewport.Y;
-
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix));
+            return Vector2.Transform(position, InverseTransformationMatrix);
         }
     }
 }

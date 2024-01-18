@@ -13,6 +13,7 @@ namespace Adventure
     {
         public const int RESOLUTION_WIDTH = 256;
         public const int RESOLUTION_HEIGHT = 256;
+        public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
 
@@ -42,10 +43,10 @@ namespace Adventure
 
         protected override void Initialize()
         {
-            BackBuffer = new BackBuffer(GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, ResolutionScaleMode.Viewport);
+            BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, false);
             Renderer = new Renderer(GraphicsDevice, BackBuffer);
             Camera = new Camera(BackBuffer);
-            World = new World(128);
+            World = new World(WORLD_CELL_SIZE);
             base.Initialize();
         }
 
@@ -82,7 +83,6 @@ namespace Adventure
 
         protected override void Update(GameTime gameTime)
         {
-            BackBuffer.Update();
             Input.Update(BackBuffer);
             if (!IsPaused)
             {
@@ -95,8 +95,8 @@ namespace Adventure
 
         protected override void Draw(GameTime gameTime)
         {
-            Renderer.SetTarget(BackBuffer.VirtualBackBuffer);
-            Renderer.SetViewport(BackBuffer.FullViewport);
+            Renderer.SetTarget(BackBuffer.RenderTarget);
+            Renderer.SetViewport(BackBuffer.CameraViewport);
             Renderer.Clear();
             Renderer.BeginDraw(Camera.TransformationMatrix);
             World.Draw(Renderer, gameTime);
@@ -110,10 +110,10 @@ namespace Adventure
                 pauseScreen.Draw(Renderer, gameTime);
             }
             Renderer.SetTarget(null);
-            Renderer.SetViewport(BackBuffer.LetterboxViewport);
+            Renderer.SetViewport(BackBuffer.RenderTargetViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(BackBuffer.VirtualBackBufferScaleMatrix);
-            Renderer.Draw(BackBuffer.VirtualBackBuffer, Vector2.Zero);
+            Renderer.BeginDraw(BackBuffer.RenderTargetScaleMatrix);
+            Renderer.Draw(BackBuffer.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
         }
 

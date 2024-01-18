@@ -31,7 +31,7 @@ namespace Adventure.Entities
         {
             var isDown = false;
 
-            foreach (var entity in World.GetOverlappingEntities(Origin.Center.Tranform(Position.X, Position.Y, 16, 16))) 
+            foreach (var entity in World.GetOverlappingEntities(new RectangleF(Position.X - 8, Position.Y - 8, 16, 16))) 
             {
                 if (entity is Barrel || entity is Player) 
                 {

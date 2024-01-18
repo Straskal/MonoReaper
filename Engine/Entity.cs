@@ -3,11 +3,18 @@ using System.Collections.Generic;
 
 namespace Engine
 {
+    public enum EntityOrigin 
+    {
+        TopLeft,
+        TopRight,
+        Center
+    }
+
     public class Entity
     {
         public World World { get; internal set; }
         public HashSet<string> Tags { get; } = new();
-        public Origin Origin { get; set; } = Origin.Center;
+        public EntityOrigin EntityOrigin { get; set; } = EntityOrigin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
@@ -55,6 +62,27 @@ namespace Engine
 
         public virtual void OnCollision(Entity other, Collision collision)
         {
+        }
+
+        public RectangleF TransformOrigin(float width, float height)
+        {
+            return TransformOrigin(0f, 0f, width, height);
+        }
+
+        public RectangleF TransformOrigin(float xOffset, float yOffset, float width, float height) 
+        {
+            // Default top left
+            var result = new RectangleF(Position.X + xOffset, Position.Y + yOffset, width, height);
+
+            switch (EntityOrigin) 
+            {
+                case EntityOrigin.Center:
+                    result.X -= result.Width * 0.5f;
+                    result.Y -= result.Height * 0.5f;
+                    break;
+            }
+
+            return result;
         }
     }
 }

@@ -37,12 +37,6 @@ namespace Engine
             UpdateBounds();
         }
 
-        public virtual void SetPosition(Vector2 position)
-        {
-            Entity.Position = position;
-            UpdateBounds();
-        }
-
         public virtual void Enable()
         {
             Entity.World.EnableCollider(this);

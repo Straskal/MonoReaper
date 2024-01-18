@@ -18,13 +18,9 @@ namespace Engine
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            var origin = Entity.Origin.Tranform(
-                Entity.Position.X,
-                Entity.Position.Y,
-                SourceRectangle.Width,
-                SourceRectangle.Height);
+            var bounds = Entity.TransformOrigin(SourceRectangle.Width, SourceRectangle.Height);
 
-            renderer.Draw(Texture, origin.Position, SourceRectangle, Color, SpriteEffects, Effect);
+            renderer.Draw(Texture, bounds.Position, SourceRectangle, Color, SpriteEffects, Effect);
         }
     }
 }

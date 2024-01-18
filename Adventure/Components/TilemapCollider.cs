@@ -58,11 +58,6 @@ namespace Adventure.Components
             }
         }
 
-        public override void SetPosition(Vector2 position)
-        {
-            throw new NotImplementedException();
-        }
-
         public override bool OverlapCircle(CircleF circle)
         {
             throw new NotImplementedException();

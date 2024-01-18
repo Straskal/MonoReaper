@@ -14,10 +14,11 @@ namespace Adventure.Entities
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction = Vector2.One;
+        private float lastAttackTimer = 0f;
 
         public override void Spawn()
         {
-            Collider = new BoxCollider(this, 10, 16);
+            Collider = new BoxCollider(this, 0, 4, 10, 8);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames)
@@ -31,12 +32,25 @@ namespace Adventure.Entities
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
             var movementLength = movementInput.LengthSquared();
+            
             if (movementLength > 1f)
             {
                 movementInput.Normalize();
             }
+
             animatedSprite.IsPaused = movementLength == 0f;
-            direction = movementLength > 0f ? movementInput : direction;
+
+            if ((lastAttackTimer -= deltaTime) > 0f)
+            {
+                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - new Vector2(4, 4);
+                direction = mousePosition - Position;
+                direction.Normalize();
+            }
+            else 
+            {
+                direction = movementLength > 0f ? movementInput : direction;
+            }
+
             var velocity = movementInput * Speed * deltaTime;
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
@@ -47,6 +61,15 @@ namespace Adventure.Entities
 
         private void HandleInteractInput(float deltaTime)
         {
+            if (Input.IsMouseLeftPressed())
+            {
+                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - new Vector2(4, 4);
+                direction = mousePosition - Position;
+                direction.Normalize();
+                World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+                lastAttackTimer = 3f;
+            }
+
             if (Input.IsKeyPressed(Keys.E))
             {
                 ShootFireball(deltaTime);
@@ -96,6 +119,14 @@ namespace Adventure.Entities
 
                 }
             }
+        }
+
+        public override void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            base.DebugDraw(renderer, gameTime);  
+            var mp = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
+            //mp = Input.MousePosition;
+            renderer.DrawString(Store.Fonts.Default, mp.ToString(), mp, Color.White);
         }
     }
 }

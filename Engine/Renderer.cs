@@ -69,7 +69,7 @@ namespace Engine
 
         public void BeginDraw()
         {
-            transformationMatrix = backBuffer.RendererScaleMatrix;
+            transformationMatrix = backBuffer.CameraScaleMatrix;
             BeginSpriteBatch();
         }
 

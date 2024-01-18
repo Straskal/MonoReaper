@@ -95,7 +95,7 @@ namespace Adventure
 
                 yield return new Tilemap(mapData)
                 {
-                    Origin = Origin.TopLeft
+                    EntityOrigin = EntityOrigin.TopLeft
                 };
             }
         }

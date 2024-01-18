@@ -1,5 +1,4 @@
 ﻿using System;
-using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,99 +6,93 @@ namespace Engine
 {
     public sealed class BackBuffer : IDisposable
     {
+        private readonly GameWindow window;
         private readonly GraphicsDevice graphicsDevice;
-        private int previousBackBufferWidth;
-        private int previousBackBufferHeight;
 
-        public BackBuffer(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
+        public BackBuffer(GameWindow window, GraphicsDevice graphicsDevice, int width, int height, bool isPixelPerfect = true)
         {
+            this.window = window ?? throw new ArgumentNullException(nameof(window));
             this.graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
-
             Width = width;
             Height = height;
-            ScaleMode = scaleMode;
-
-            int virtualBufferWidth;
-            int virtualBufferHeight;
-
-            switch (scaleMode)
-            {
-                case ResolutionScaleMode.Renderer:
-                    virtualBufferWidth = graphicsDevice.DisplayMode.Width;
-                    virtualBufferHeight = graphicsDevice.DisplayMode.Height;
-                    break;
-                case ResolutionScaleMode.Viewport:
-                default:
-                    virtualBufferWidth = width;
-                    virtualBufferHeight = height;
-                    break;
-            }
-
-            VirtualBackBuffer = new RenderTarget2D(graphicsDevice, virtualBufferWidth, virtualBufferHeight);
+            IsPixelPerfect = isPixelPerfect;
+            RenderTarget = new RenderTarget2D(graphicsDevice, isPixelPerfect ? width : graphicsDevice.DisplayMode.Width, isPixelPerfect ? height : graphicsDevice.DisplayMode.Height);
+            window.ClientSizeChanged += OnWindowClientSizeChanged;
+            Update();
         }
 
         public int Width { get; }
         public int Height { get; }
-        public ResolutionScaleMode ScaleMode { get; }
-        public RenderTarget2D VirtualBackBuffer { get; }
-        public Viewport FullViewport { get; private set; }
+        public bool IsPixelPerfect { get; }
+        public RenderTarget2D RenderTarget { get; }
         public Viewport LetterboxViewport { get; private set; }
+        public Viewport CameraViewport { get; private set; }
+        public Viewport RenderTargetViewport { get; private set; }
         public Matrix ScaleMatrix { get; private set; }
         public Matrix InvertedScaleMatrix { get; private set; }
-        public Matrix RendererScaleMatrix { get; private set; }
-        public Matrix VirtualBackBufferScaleMatrix { get; private set; }
+        public Matrix CameraScaleMatrix { get; private set; }
+        public Matrix RenderTargetScaleMatrix { get; private set; }
 
         public void Update()
         {
             var backBufferWidth = graphicsDevice.PresentationParameters.BackBufferWidth;
             var backBufferHeight = graphicsDevice.PresentationParameters.BackBufferHeight;
+            var scale = MathF.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
 
-            if (!(backBufferWidth == previousBackBufferWidth && backBufferHeight == previousBackBufferHeight))
+            ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
+            InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
+
+            var targetRatio = Width / (float)Height;
+            var width = backBufferWidth;
+            var height = (int)(backBufferWidth / targetRatio + 0.5f);
+
+            if (height > backBufferHeight)
             {
-                previousBackBufferWidth = backBufferWidth;
-                previousBackBufferHeight = backBufferHeight;
+                height = backBufferHeight;
+                width = (int)(height * targetRatio + 0.5f);
+            }
 
-                var scale = Math.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
+            LetterboxViewport = new Viewport(backBufferWidth / 2 - width / 2, backBufferHeight / 2 - height / 2, width, height);
 
-                ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
-                InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
-                FullViewport = graphicsDevice.GetFullViewport();
-                LetterboxViewport = graphicsDevice.GetLetterboxViewport(Width, Height);
-
-                switch (ScaleMode)
-                {
-                    case ResolutionScaleMode.Renderer:
-                        RendererScaleMatrix = ScaleMatrix;
-                        VirtualBackBufferScaleMatrix = Matrix.Identity;
-                        break;
-                    case ResolutionScaleMode.Viewport:
-                    default:
-                        RendererScaleMatrix = Matrix.Identity;
-                        VirtualBackBufferScaleMatrix = ScaleMatrix;
-                        break;
-                }
+            if (IsPixelPerfect)
+            {
+                CameraScaleMatrix = Matrix.Identity;
+                RenderTargetScaleMatrix = ScaleMatrix;
+                CameraViewport = new Viewport(0, 0, Width, Height);
+                RenderTargetViewport = LetterboxViewport;
+            }
+            else
+            {
+                CameraScaleMatrix = ScaleMatrix;
+                RenderTargetScaleMatrix = Matrix.Identity;
+                CameraViewport = new Viewport(0, 0, backBufferWidth, backBufferHeight);
+                RenderTargetViewport = LetterboxViewport;
             }
         }
 
         public Vector2 Project(Vector2 position)
         {
-            position.X += LetterboxViewport.X;
-            position.Y += LetterboxViewport.Y;
-
-            return Vector2.Transform(position, ScaleMatrix);
+            position.X += RenderTargetViewport.X;
+            position.Y += RenderTargetViewport.Y;
+            return Vector2.Transform(position, RenderTargetScaleMatrix);
         }
 
         public Vector2 Unproject(Vector2 position)
         {
-            position.X -= LetterboxViewport.X;
-            position.Y -= LetterboxViewport.Y;
-
-            return Vector2.Transform(position, InvertedScaleMatrix);
+            position.X -= RenderTargetViewport.X;
+            position.Y -= RenderTargetViewport.Y;
+            return Vector2.Transform(position, Matrix.Invert(RenderTargetScaleMatrix));
         }
 
         public void Dispose()
         {
-            VirtualBackBuffer.Dispose();
+            window.ClientSizeChanged -= OnWindowClientSizeChanged;
+            RenderTarget.Dispose();
+        }
+
+        private void OnWindowClientSizeChanged(object sender, EventArgs eventArgs)
+        {
+            Update();
         }
     }
 }
