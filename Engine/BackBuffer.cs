@@ -9,29 +9,28 @@ namespace Engine
         private readonly GameWindow window;
         private readonly GraphicsDevice graphicsDevice;
 
-        public BackBuffer(GameWindow window, GraphicsDevice graphicsDevice, int width, int height, bool isPixelPerfect = true)
+        public BackBuffer(GameWindow window, GraphicsDevice graphicsDevice, int width, int height)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window));
             this.graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+
             Width = width;
             Height = height;
-            IsPixelPerfect = isPixelPerfect;
-            RenderTarget = new RenderTarget2D(graphicsDevice, isPixelPerfect ? width : graphicsDevice.DisplayMode.Width, isPixelPerfect ? height : graphicsDevice.DisplayMode.Height);
+            AspectRatio = width / (float)height;
+            RenderTarget = new RenderTarget2D(graphicsDevice, width, height);    
+            
             window.ClientSizeChanged += OnWindowClientSizeChanged;
             Update();
         }
 
         public int Width { get; }
         public int Height { get; }
-        public bool IsPixelPerfect { get; }
+        public float AspectRatio { get; }
         public RenderTarget2D RenderTarget { get; }
-        public Viewport LetterboxViewport { get; private set; }
-        public Viewport CameraViewport { get; private set; }
         public Viewport RenderTargetViewport { get; private set; }
+        public Viewport LetterboxViewport { get; private set; }
         public Matrix ScaleMatrix { get; private set; }
         public Matrix InvertedScaleMatrix { get; private set; }
-        public Matrix CameraScaleMatrix { get; private set; }
-        public Matrix RenderTargetScaleMatrix { get; private set; }
 
         public void Update()
         {
@@ -42,46 +41,33 @@ namespace Engine
             ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
             InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
 
-            var targetRatio = Width / (float)Height;
             var width = backBufferWidth;
-            var height = (int)(backBufferWidth / targetRatio + 0.5f);
+            var height = (int)(backBufferWidth / AspectRatio + 0.5f);
 
             if (height > backBufferHeight)
             {
                 height = backBufferHeight;
-                width = (int)(height * targetRatio + 0.5f);
+                width = (int)(height * AspectRatio + 0.5f);
             }
 
+            RenderTargetViewport = new Viewport(0, 0, Width, Height);
             LetterboxViewport = new Viewport(backBufferWidth / 2 - width / 2, backBufferHeight / 2 - height / 2, width, height);
-
-            if (IsPixelPerfect)
-            {
-                CameraScaleMatrix = Matrix.Identity;
-                RenderTargetScaleMatrix = ScaleMatrix;
-                CameraViewport = new Viewport(0, 0, Width, Height);
-                RenderTargetViewport = LetterboxViewport;
-            }
-            else
-            {
-                CameraScaleMatrix = ScaleMatrix;
-                RenderTargetScaleMatrix = Matrix.Identity;
-                CameraViewport = new Viewport(0, 0, backBufferWidth, backBufferHeight);
-                RenderTargetViewport = LetterboxViewport;
-            }
         }
 
         public Vector2 Project(Vector2 position)
         {
-            position.X += RenderTargetViewport.X;
-            position.Y += RenderTargetViewport.Y;
-            return Vector2.Transform(position, RenderTargetScaleMatrix);
+            position.X += LetterboxViewport.X;
+            position.Y += LetterboxViewport.Y;
+
+            return Vector2.Transform(position, ScaleMatrix);
         }
 
         public Vector2 Unproject(Vector2 position)
         {
-            position.X -= RenderTargetViewport.X;
-            position.Y -= RenderTargetViewport.Y;
-            return Vector2.Transform(position, Matrix.Invert(RenderTargetScaleMatrix));
+            position.X -= LetterboxViewport.X;
+            position.Y -= LetterboxViewport.Y;
+
+            return Vector2.Transform(position, InvertedScaleMatrix);
         }
 
         public void Dispose()

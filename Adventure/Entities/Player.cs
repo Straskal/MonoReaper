@@ -125,7 +125,7 @@ namespace Adventure.Entities
         {
             base.DebugDraw(renderer, gameTime);  
             var mp = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-            //mp = Input.MousePosition;
+            mp.Round();
             renderer.DrawString(Store.Fonts.Default, mp.ToString(), mp, Color.White);
         }
     }

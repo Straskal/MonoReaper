@@ -39,10 +39,5 @@ namespace Adventure.Entities
                 isMoving = false;
             }
         }
-
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
-        {
-            renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.Purple);
-        }
     }
 }

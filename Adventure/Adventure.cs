@@ -43,9 +43,9 @@ namespace Adventure
 
         protected override void Initialize()
         {
-            BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, false);
-            Renderer = new Renderer(GraphicsDevice, BackBuffer);
-            Camera = new Camera(BackBuffer);
+            BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+            Renderer = new Renderer(GraphicsDevice);
+            Camera = new Camera(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
             World = new World(WORLD_CELL_SIZE);
             base.Initialize();
         }
@@ -84,35 +84,41 @@ namespace Adventure
         protected override void Update(GameTime gameTime)
         {
             Input.Update(BackBuffer);
+
             if (!IsPaused)
             {
                 World.Update(gameTime);
             }
+
             HandleGlobalInput();
             ScreenShake.Update(gameTime);
-            RoundCameraPosition();
+            Camera.Position.Round();
         }
 
         protected override void Draw(GameTime gameTime)
         {
             Renderer.SetTarget(BackBuffer.RenderTarget);
-            Renderer.SetViewport(BackBuffer.CameraViewport);
+            Renderer.SetViewport(BackBuffer.RenderTargetViewport);
             Renderer.Clear();
             Renderer.BeginDraw(Camera.TransformationMatrix);
             World.Draw(Renderer, gameTime);
+
             if (Debug)
             {
                 World.DebugDraw(Renderer, gameTime);
             }
+
             Renderer.EndDraw();
+
             if (IsPaused)
             {
                 pauseScreen.Draw(Renderer, gameTime);
             }
+
             Renderer.SetTarget(null);
-            Renderer.SetViewport(BackBuffer.RenderTargetViewport);
+            Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
-            Renderer.BeginDraw(BackBuffer.RenderTargetScaleMatrix);
+            Renderer.BeginDraw(BackBuffer.ScaleMatrix);
             Renderer.Draw(BackBuffer.RenderTarget, Vector2.Zero);
             Renderer.EndDraw();
         }
@@ -154,21 +160,6 @@ namespace Adventure
             {
                 Debug = !Debug;
             }
-
-            if (Input.IsKeyPressed(Keys.Space))
-            {
-                Camera.Zoom = Camera.Zoom - 0.25f;
-
-                if (Camera.Zoom <= 0f)
-                {
-                    Camera.Zoom = 2f;
-                }
-            }
-        }
-
-        private void RoundCameraPosition()
-        {
-
         }
     }
 }

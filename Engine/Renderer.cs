@@ -4,31 +4,18 @@ using System;
 
 namespace Engine
 {
-    /// <summary>
-    /// This class contains all draw functions as well as graphics device functions.
-    /// </summary>
     public class Renderer
     {
         private readonly GraphicsDevice graphicsDevice;
-        private readonly BackBuffer backBuffer;
         private readonly SpriteBatch spriteBatch;
-
         private Matrix transformationMatrix;
         private Effect effect;
 
-        /// <summary>
-        /// A blank 1px x 1px white texture. Used for drawing rectangles and missing textures.
-        /// </summary>
-        public static Texture2D BlankTexture
-        {
-            get;
-            private set;
-        }
+        public static Texture2D BlankTexture { get; private set; }
 
-        public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer)
+        public Renderer(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            this.backBuffer = backBuffer;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
@@ -41,27 +28,16 @@ namespace Engine
             BlankTexture.Dispose();
         }
 
-        /// <summary>
-        /// Sets the current render target on the graphics device.
-        /// </summary>
-        /// <param name="renderTarget2D"></param>
         public void SetTarget(RenderTarget2D renderTarget2D)
         {
             graphicsDevice.SetRenderTarget(renderTarget2D);
         }
 
-        /// <summary>
-        /// Sets the graphics device viewport
-        /// </summary>
-        /// <param name="viewport"></param>
         public void SetViewport(Viewport viewport)
         {
             graphicsDevice.Viewport = viewport;
         }
 
-        /// <summary>
-        /// Clears the current render target
-        /// </summary>
         public void Clear()
         {
             graphicsDevice.Clear(Color.Black);
@@ -69,7 +45,7 @@ namespace Engine
 
         public void BeginDraw()
         {
-            transformationMatrix = backBuffer.CameraScaleMatrix;
+            transformationMatrix = Matrix.Identity;
             BeginSpriteBatch();
         }
 
