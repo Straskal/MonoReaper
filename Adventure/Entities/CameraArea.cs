@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace Adventure.Entities
 {
-    public class CameraArea : Entity
+    public class CameraArea
     {
-        private bool isMoving;
+        private bool reset = true;
         private float duration;
 
         public CameraArea(RectangleF bounds)
@@ -15,29 +15,55 @@ namespace Adventure.Entities
             Position = new Vector2(Bounds.X, Bounds.Y);
         }
 
+        public Vector2 Position { get; }
         public RectangleF Bounds { get; }
 
-        public override void PostUpdate(GameTime gameTime)
+        public void CheckForPlayer(GameTime gameTime)
         {
-            if (Bounds.Contains(World.Find<Player>().Position))
+            var player = Adventure.Instance.World.Find<Player>();
+
+            if (player == null) 
             {
-                if (!isMoving) 
-                {
-                    duration = 5f;
-                    isMoving = true;
-                }
-                duration -= gameTime.GetDeltaTime();
-                if (duration < 1f)
-                {
-                    duration = 1f;
-                }
-                var direction = Bounds.Center - Adventure.Instance.Camera.Position;
-                Adventure.Instance.Camera.Position = Adventure.Instance.Camera.Position + direction * (1f / duration);
+                return;
+            }
+
+            if (!Bounds.Contains(player.Position)) 
+            {
+                reset = true;
+                return;
+            }
+
+            if (Adventure.Instance.Camera.Position == Bounds.Center) 
+            {
+                Adventure.Instance.isTransitioningAreas = false;
+                return;
+            }
+
+            if (!reset) 
+            {
+                return;
+            }
+
+            if (duration == 0f) 
+            {
+                duration = 6f; 
+                Adventure.Instance.isTransitioningAreas = true;
+            }
+
+            duration -= gameTime.GetDeltaTime();
+
+            if (Vector2.Distance(Bounds.Center, Adventure.Instance.Camera.Position) < 0.5f)
+            {
+                Adventure.Instance.Camera.Position = Bounds.Center;
+                duration = 0f;
+                reset = false;
             }
             else 
             {
-                isMoving = false;
-            }
+                var direction = Bounds.Center - Adventure.Instance.Camera.Position;
+
+                Adventure.Instance.Camera.Position = Adventure.Instance.Camera.Position + direction * (1f / duration);
+            }   
         }
     }
 }

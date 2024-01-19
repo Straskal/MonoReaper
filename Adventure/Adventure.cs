@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Adventure
 {
@@ -16,6 +17,8 @@ namespace Adventure
         public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
+        private readonly List<CameraArea> areas = new();
+        public bool isTransitioningAreas;
 
         public Adventure()
         {
@@ -69,6 +72,7 @@ namespace Adventure
         public void LoadMap()
         {
             World.Clear();
+            areas.Clear();
             LoadLevel("Levels/world/level_0");
             LoadLevel("Levels/world/level_1");
             LoadLevel("Levels/world/level_2");
@@ -77,21 +81,28 @@ namespace Adventure
         public void LoadLevel(string path)
         {
             var data = Content.Load<LevelData>(path);
+            areas.Add(new CameraArea(new RectangleF(data.Bounds)));
             World.Spawn(Level.GetEntities(data));
-            World.Spawn(new CameraArea(new RectangleF(data.Bounds)));
         }
 
         protected override void Update(GameTime gameTime)
         {
             Input.Update(BackBuffer);
 
-            if (!IsPaused)
+            if (!IsPaused && !isTransitioningAreas)
             {
                 World.Update(gameTime);
             }
 
             HandleGlobalInput();
+
+            foreach (var area in areas) 
+            {
+                area.CheckForPlayer(gameTime);
+            }
+
             ScreenShake.Update(gameTime);
+
             Camera.Position.Round();
         }
 
