@@ -5,7 +5,7 @@ namespace Engine
 {
     public sealed class Partition
     {
-        private readonly Dictionary<Point, HashSet<Collider>> cells = new();
+        private readonly Dictionary<Point, List<Collider>> cells = new();
         private readonly int cellSize;
         private readonly float inverseCellSize;
 
@@ -90,11 +90,11 @@ namespace Engine
             return result;
         }
 
-        private HashSet<Collider> GetCellAtPoint(Point point)
+        private List<Collider> GetCellAtPoint(Point point)
         {
             if (!cells.TryGetValue(point, out var cell))
             {
-                cells[point] = cell = new HashSet<Collider>();
+                cells[point] = cell = new List<Collider>();
             }
 
             return cell;

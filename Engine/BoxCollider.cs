@@ -14,7 +14,7 @@ namespace Engine
         {
         }
 
-        public BoxCollider(Entity entity, float width, float height, int layerMask)
+        public BoxCollider(Entity entity, float width, float height, uint layerMask)
             : this(entity, 0f, 0f, width, height, layerMask)
         {
         }
@@ -24,7 +24,7 @@ namespace Engine
         {
         }
 
-        public BoxCollider(Entity entity, float x, float y, float width, float height, int layerMask)
+        public BoxCollider(Entity entity, float x, float y, float width, float height, uint layerMask)
             : base(entity)
         {
             X = x;

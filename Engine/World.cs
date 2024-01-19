@@ -152,7 +152,7 @@ namespace Engine
             return result;
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, int layerMask)
+        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, uint layerMask)
         {
             var result = new List<Entity>();
 

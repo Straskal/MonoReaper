@@ -14,8 +14,7 @@ namespace Engine
         }
 
         public Entity Entity { get; }
-        public int Layer { get; set; }
-        public IntersectionFilter Filter { get; set; }
+        public uint Layer { get; set; }
 
         public abstract RectangleF Bounds { get; }
         public abstract bool Overlaps(Collider collider);
@@ -26,17 +25,6 @@ namespace Engine
         public abstract bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection);
         public abstract bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection);
         public abstract void Draw(Renderer renderer, GameTime gameTime);
-
-        public bool CheckMask(int mask)
-        {
-            return (mask & Layer) != 0;
-        }
-
-        public virtual void Move(Vector2 direction)
-        {
-            Entity.Position += direction;
-            UpdateBounds();
-        }
 
         public virtual void Enable()
         {
@@ -53,14 +41,19 @@ namespace Engine
             Entity.World.UpdateCollider(this);
         }
 
-        public List<Collider> GetOverlaps(int layerMask)
+        public bool CheckMask(uint mask)
+        {
+            return (mask & Layer) != 0;
+        }
+
+        public List<Collider> GetOverlaps(uint layerMask)
         {
             var result = new List<Collider>();
             GetOverlaps(result, layerMask);
             return result;
         }
 
-        public void GetOverlaps(List<Collider> colliders, int layerMask)
+        public void GetOverlaps(List<Collider> colliders, uint layerMask)
         {
             foreach (var collider in Entity.World.GetNearColliders(Bounds))
             {
@@ -71,45 +64,23 @@ namespace Engine
             }
         }
 
-        public Collider Cast(Vector2 velocity, int layerMask, out Collision collision)
+        public Collider Cast(Vector2 velocity, uint layerMask, out Collision collision)
         {
             collision = Collision.Empty;
             var path = new Segment(Bounds.Center, velocity);
             var broadphaseRectangle = Bounds.Union(velocity);
-            Collider other = null;
+            Collider collidedWith = null;
 
             foreach (var collider in Entity.World.GetNearColliders(broadphaseRectangle))
             {
-                if (collider == this)
+                if (collider != this && collider.CheckMask(layerMask) && Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
                 {
-                    continue;
-                }
-
-                if (!collider.CheckMask(layerMask))
-                {
-                    continue;
-                }
-
-                if (!broadphaseRectangle.Overlaps(collider.Bounds))
-                {
-                    continue;
-                }
-
-                if (!(Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time))
-                {
-                    continue;
-                }
-
-                if (Filter != null && Filter(collider.Entity, intersection))
-                {
-                    continue;
-                }
-
-                other = collider;
-                collision = new Collision(velocity, intersection);
+                    collidedWith = collider;
+                    collision = new Collision(velocity, intersection);
+                }          
             }
 
-            return other;
+            return collidedWith;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Adventure.Entities
 
         public override void Update(GameTime gameTime)
         {
-            Collide(velocity);
+            SlideMove(velocity);
         }
 
         public override void OnCollision(Entity other, Collision collision)

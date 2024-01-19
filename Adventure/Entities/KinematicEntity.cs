@@ -14,19 +14,12 @@ namespace Adventure.Entities
 
         public bool IsMoving { get; private set; }
 
-        public void Collide(Vector2 velocity)
+        public void SlideMove(Vector2 velocity)
         {
             accumulator += velocity;
 
-            if (velocity.X == 0f) 
-            {
-                accumulator.X = 0f;
-            }
-
-            if (velocity.Y == 0f)
-            {
-                accumulator.Y = 0f;
-            }
+            if (velocity.X == 0f) accumulator.X = 0f;
+            if (velocity.Y == 0f) accumulator.Y = 0f;
 
             if (MathF.Abs(accumulator.X) >= 1f || MathF.Abs(accumulator.Y) >= 1f)
             {
@@ -38,39 +31,39 @@ namespace Adventure.Entities
                     precise.X = MathF.Round(accumulator.X, MidpointRounding.ToZero);
                     precise.Y = MathF.Round(accumulator.Y, MidpointRounding.ToZero);
 
-                    var other = Collider.Cast(precise, EntityLayers.Solid, out var collision);
-                    if (other == null)
+                    var collider = Collider.Cast(precise, EntityLayers.Solid, out var collision);
+                    if (collider == null)
                     {
-                        Collider.Move(precise);
+                        Move(precise);
                         accumulator -= precise;
                         break;
                     }
 
                     if (collision.Intersection.Time >= 1f)
                     {
-                        var preciseTime = MathF.Round(collision.Intersection.Time, MidpointRounding.ToZero);
-                        precise = collision.Direction * preciseTime;
-
-                        Collider.Move(precise);
+                        precise = collision.Direction * collision.Intersection.Time;
+                        precise.X = MathF.Round(precise.X, MidpointRounding.ToEven);
+                        precise.Y = MathF.Round(precise.Y, MidpointRounding.ToEven);
+                        Move(precise);
                         accumulator -= precise;
                     }
 
-                    if (collision.Intersection.Normal.X != 0f)
-                    {
-                        accumulator.X = 0f;
-                    }
+                    if (collision.Intersection.Normal.X != 0f) accumulator.X = 0f;
+                    if (collision.Intersection.Normal.Y != 0f) accumulator.Y = 0f;
 
-                    if (collision.Intersection.Normal.Y != 0f)
-                    {
-                        accumulator.Y = 0f;
-                    }
-
-                    OnCollision(other.Entity, collision);
-                    other.Entity.OnCollision(this, collision);
+                    OnCollision(collider.Entity, collision);
+                    collider.Entity.OnCollision(this, collision);
                 }
 
                 IsMoving = false;
             }
+        }
+
+        public virtual void Move(Vector2 direction)
+        {
+            Position += direction;
+            Position = Vector2.Round(Position);
+            Collider.UpdateBounds();
         }
 
         public override void DebugDraw(Renderer renderer, GameTime gameTime)

@@ -54,7 +54,8 @@ namespace Adventure.Entities
             var velocity = movementInput * Speed * deltaTime;
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
-            Collide(velocity);
+
+            SlideMove(velocity);
             Animate();
             HandleInteractInput(deltaTime);
         }

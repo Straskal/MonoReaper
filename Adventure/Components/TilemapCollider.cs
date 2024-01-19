@@ -16,7 +16,7 @@ namespace Adventure.Components
         {
         }
 
-        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData data)
+        public TilemapCollider(Entity entity, int width, int height, uint layerMask, MapData data)
             : base(entity)
         {
             Width = width;

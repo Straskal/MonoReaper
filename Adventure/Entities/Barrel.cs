@@ -49,7 +49,7 @@ namespace Adventure.Entities
         {
             if (push != Vector2.Zero)
             {
-                Collide(push);
+                SlideMove(push);
                 push = Vector2.Zero;
             }
 

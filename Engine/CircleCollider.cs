@@ -9,7 +9,7 @@ namespace Engine
         {
         }
 
-        public CircleCollider(Entity entity, Vector2 position, float radius, int layerMask)
+        public CircleCollider(Entity entity, Vector2 position, float radius, uint layerMask)
             : base(entity)
         {
             Position = position;

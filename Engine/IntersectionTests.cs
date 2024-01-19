@@ -71,7 +71,7 @@ namespace Engine
         {
             intersection = Intersection.Empty;
 
-            var tmin = float.MinValue;
+            var tmin = 0f;
             var tmax = float.MaxValue;
 
             if (!RayVsEdges(ray.Position.X, ray.Direction.X, ray.InverseDirection.X, rectangle.TopLeft.X, rectangle.BottomRight.X, ref tmin, ref tmax))
@@ -109,7 +109,7 @@ namespace Engine
             tmin = MathF.Max(tmin, t1);
             tmax = MathF.Min(tmax, t2);
 
-            return tmin <= tmax;
+            return tmin < tmax;
         }
 
         private static bool TryGetRectangleCorner(Vector2 point, RectangleF rectangle, out Vector2 corner)
