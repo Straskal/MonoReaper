@@ -16,6 +16,7 @@ namespace Engine
         public Entity Entity { get; }
         public int Layer { get; set; }
         public IntersectionFilter Filter { get; set; }
+
         public abstract RectangleF Bounds { get; }
         public abstract bool Overlaps(Collider collider);
         public abstract bool OverlapCircle(CircleF circle);
@@ -57,7 +58,6 @@ namespace Engine
             var result = new List<Collider>();
             GetOverlaps(result, layerMask);
             return result;
-
         }
 
         public void GetOverlaps(List<Collider> colliders, int layerMask)

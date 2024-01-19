@@ -1,5 +1,4 @@
-﻿using Adventure.Components;
-using Adventure.Content;
+﻿using Adventure.Content;
 using Adventure.Entities;
 using Engine;
 using Microsoft.Xna.Framework;
@@ -95,7 +94,7 @@ namespace Adventure
 
                 yield return new Tilemap(mapData)
                 {
-                    EntityOrigin = EntityOrigin.TopLeft
+                    EntityOrigin = Origin.TopLeft
                 };
             }
         }

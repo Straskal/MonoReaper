@@ -3,18 +3,11 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    public enum EntityOrigin 
-    {
-        TopLeft,
-        TopRight,
-        Center
-    }
-
     public class Entity
     {
         public World World { get; internal set; }
         public HashSet<string> Tags { get; } = new();
-        public EntityOrigin EntityOrigin { get; set; } = EntityOrigin.Center;
+        public Origin EntityOrigin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
@@ -76,7 +69,7 @@ namespace Engine
 
             switch (EntityOrigin) 
             {
-                case EntityOrigin.Center:
+                case Origin.Center:
                     result.X -= result.Width * 0.5f;
                     result.Y -= result.Height * 0.5f;
                     break;
