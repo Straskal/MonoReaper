@@ -57,6 +57,11 @@ namespace Engine
             }
         }
 
+        public RectangleF Bounds
+        {
+            get => new(Position.X - Width * 0.5f, Position.Y - Height * 0.5f, Width, Height);
+        }
+
         private Matrix transformationMatrix;
         public Matrix TransformationMatrix
         {

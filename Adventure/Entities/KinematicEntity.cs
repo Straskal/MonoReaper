@@ -65,12 +65,5 @@ namespace Adventure.Entities
             Position = Vector2.Round(Position);
             Collider.UpdateBounds();
         }
-
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
-        {
-            base.DebugDraw(renderer, gameTime);
-
-            renderer.DrawString(Store.Fonts.Default, Position.ToString(), Position.X, Position.Y, Color.White);
-        }
     }
 }

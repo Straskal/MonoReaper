@@ -1,4 +1,5 @@
 ﻿using Adventure.Content;
+using Adventure.Entities;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -35,6 +36,7 @@ namespace Adventure
 
         public static Adventure Instance { get; private set; }
         public static GameTime Time { get; private set; }
+        public static Player Player { get; private set; }
         public static bool IsPaused { get; set; }
         public static bool IsTransitioningAreas { get; set; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
@@ -74,9 +76,13 @@ namespace Adventure
         {
             World.Clear();
             cameraZones.Clear();
+            Player = null;
+
             LoadLevel("Levels/world/level_0");
             LoadLevel("Levels/world/level_1");
             LoadLevel("Levels/world/level_2");
+
+            Player = World.Find<Player>();
         }
 
         public void LoadLevel(string path)
@@ -115,13 +121,16 @@ namespace Adventure
             Renderer.Clear();
             Renderer.BeginDraw(Camera.TransformationMatrix);
             World.Draw(Renderer, gameTime);
+            Renderer.EndDraw();
 
             if (Debug)
             {
+                Renderer.BeginDraw(Camera.TransformationMatrix);
                 World.DebugDraw(Renderer, gameTime);
+                DebugOverlay.Draw(Renderer);
+                Renderer.EndDraw();
             }
 
-            Renderer.EndDraw();
 
             if (IsPaused)
             {

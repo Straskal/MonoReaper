@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Engine
@@ -22,7 +23,7 @@ namespace Engine
                 foreach (var point in GetIntersectingCells(collider.Bounds))
                 {
                     collider.cells.Add(point);
-                    GetCellAtPoint(point).Add(collider);
+                    GetOrCreateCellAtPoint(point).Add(collider);
                 }
             }
         }
@@ -33,7 +34,7 @@ namespace Engine
             {
                 foreach (var point in collider.cells)
                 {
-                    GetCellAtPoint(point).Remove(collider);
+                    GetOrCreateCellAtPoint(point).Remove(collider);
                 }
 
                 collider.cells.Clear();
@@ -61,7 +62,7 @@ namespace Engine
 
         public IEnumerable<Collider> Query(Vector2 point)
         {
-            foreach (var collider in GetCellAtPoint(point.ToPoint()))
+            foreach (var collider in GetCellAtPoint(point))
             {
                 if (collider.OverlapPoint(point))
                 {
@@ -113,7 +114,19 @@ namespace Engine
             return result;
         }
 
-        private List<Collider> GetCellAtPoint(Point point)
+        private List<Collider> GetCellAtPoint(Vector2 point)
+        {
+            point = Vector2.Floor(point * inverseCellSize);
+
+            if (cells.TryGetValue(point.ToPoint(), out var cell))
+            {
+                return cell;
+            }
+
+            return new List<Collider>();
+        }
+
+        private List<Collider> GetOrCreateCellAtPoint(Point point)
         {
             if (!cells.TryGetValue(point, out var cell))
             {

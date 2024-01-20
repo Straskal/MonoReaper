@@ -122,9 +122,29 @@ namespace Engine
             sort = true;
         }
 
+        public IEnumerable<Entity> GetOverlappingEntities(Vector2 point)
+        {
+            return GetOverlappingEntities(point, uint.MaxValue);
+        }
+
         public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle)
         {
             return GetOverlappingEntities(rectangle, uint.MaxValue);
+        }
+
+        public IEnumerable<Entity> GetOverlappingEntities(Vector2 point, uint layerMask)
+        {
+            var result = new List<Entity>();
+
+            foreach (var collider in partition.Query(point))
+            {
+                if (collider.CheckMask(layerMask))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
         }
 
         public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, uint layerMask)
@@ -155,6 +175,11 @@ namespace Engine
             }
 
             return result;
+        }
+
+        public IEnumerable<Collider> GetOverlappingColliders(Vector2 point)
+        {
+            return partition.Query(point);
         }
 
         public IEnumerable<Collider> GetOverlappingColliders(RectangleF rectangle)
