@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Adventure
@@ -11,7 +12,22 @@ namespace Adventure
         {
             HandleInput();
 
-            DrawTextBox(renderer, "Hello World!");
+            var text = "Hello World!";
+
+            if (hasDialog)
+            {
+                renderer.BeginDraw();
+
+                var x = 0;
+                var y = 175;
+
+                renderer.DrawRectangle(new Rectangle(x + 5, y, 245, 75), Color.Orange);
+                renderer.DrawRectangle(new Rectangle(x + 10, y + 5, 235, 65), Color.Pink);
+
+                renderer.DrawString(Store.Fonts.Default, text, new Vector2(x + 20, y + 5), Color.Black);
+
+                renderer.EndDraw();
+            }
         }
 
         private void HandleInput()
@@ -19,18 +35,6 @@ namespace Adventure
             if (Input.IsKeyPressed(Keys.T))
             {
                 hasDialog = !hasDialog;
-            }
-        }
-
-        private void DrawTextBox(Renderer renderer, string text)
-        {
-            if (hasDialog)
-            {
-                renderer.BeginDraw();
-
-                GUI.DialogBox(text, 0, 175);
-
-                renderer.EndDraw();
             }
         }
     }
