@@ -34,7 +34,7 @@ namespace Adventure.Entities
             {
                 foreach (var collider in World.OverlapCircle(new CircleF(Position, 20), EntityLayers.Enemy))
                 {
-                    if (collider is IDamageable damageable)
+                    if (collider.Entity is IDamageable damageable)
                     {
                         damageable.Damage(1);
 
