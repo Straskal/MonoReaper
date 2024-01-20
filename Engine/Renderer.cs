@@ -137,6 +137,11 @@ namespace Engine
             DrawLine(new Vector2(rectangle.Right, rectangle.Top), new Vector2(rectangle.Right, rectangle.Bottom), color);
         }
 
+        public void DrawCircleOutline(Vector2 position, float radius, int resolution, Color color)
+        {
+            DrawCircleOutline(position.X, position.Y, radius, resolution, color);
+        }
+
         public void DrawCircleOutline(float x, float y, float radius, int resolution, Color color)
         {
             for (var i = 0; i < 360; i += resolution)

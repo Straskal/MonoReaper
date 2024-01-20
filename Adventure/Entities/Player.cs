@@ -121,14 +121,5 @@ namespace Adventure.Entities
                 }
             }
         }
-
-        public override void DebugDraw(Renderer renderer, GameTime gameTime)
-        {
-            base.DebugDraw(renderer, gameTime);  
-            var mp = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-            mp.Round();
-            renderer.DrawString(Store.Fonts.Default, mp.ToString(), mp, Color.White);
-            renderer.DrawLine(Position, mp, Color.Violet);
-        }
     }
 }
