@@ -17,15 +17,15 @@ namespace Adventure
             if (GUI.PrimaryButton(3, "Main menu", 100, 180))
             {
                 Adventure.IsPaused = false;
-                Adventure.Instance.LoadMap("Levels/world/level_0");
+                Adventure.Instance.LoadMap();
             }
             renderer.EndDraw();
         }
 
-        private void DrawOverlay(Renderer renderer) 
+        private void DrawOverlay(Renderer renderer)
         {
-            renderer.DrawRectangle(0, 0, Adventure.Instance.ResolutionWidth, Adventure.Instance.ResolutionHeight, new Color(Color.Black, 0.6f));
-            renderer.DrawString(SharedContent.Fonts.Default, "Paused", 100f, 100f, Color.White);
+            renderer.DrawRectangle(0, 0, Adventure.RESOLUTION_WIDTH, Adventure.RESOLUTION_HEIGHT, new Color(Color.Black, 0.6f));
+            renderer.DrawString(Store.Fonts.Default, "Paused", 100f, 100f, Color.White);
         }
     }
 }

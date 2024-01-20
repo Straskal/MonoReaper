@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,8 +80,8 @@ namespace Engine
         {
             var origin = Entity.Position;
 
-            var vx = (float)(App.Random.NextDouble() * Velocity.X - Velocity.X / 2);
-            var vy = (float)(App.Random.NextDouble() * Velocity.Y - Velocity.Y / 2);
+            var vx = (float)(Random.Shared.NextDouble() * Velocity.X - Velocity.X / 2);
+            var vy = (float)(Random.Shared.NextDouble() * Velocity.Y - Velocity.Y / 2);
 
             var particle = new Particle
             {

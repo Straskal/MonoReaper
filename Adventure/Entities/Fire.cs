@@ -1,37 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Engine;
 using Engine.Extensions;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
     public sealed class Fire : Entity
     {
+        private readonly Entity target;
+        private float timer;
+        private int hitCount;
+
         public Fire(Entity target)
         {
-            Target = target;
-        }
-
-        public Entity Target 
-        {
-            get;
-        }
-
-        public float Timer 
-        {
-            get;
-            private set;
-        }
-
-        public int HitCount 
-        {
-            get;
-            private set;
+            this.target = target;
         }
 
         public override void Spawn()
         {
-            GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
+            GraphicsComponent = new Particles(this, Store.Gfx.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(10f, -50f),
@@ -44,36 +30,33 @@ namespace Adventure.Components
 
         public override void Update(GameTime gameTime)
         {
-            Timer -= gameTime.GetDeltaTime();
-
-            if (Timer < 0f)
+            if (target.IsDestroyed)
             {
-                if (Target is IDamageable damageable) 
+                World.Destroy(this);
+                return;
+            }
+
+            if ((timer -= gameTime.GetDeltaTime()) <= 0f)
+            {
+                if (target is IDamageable damageable)
                 {
                     damageable.Damage(1);
                 }
 
-                HitCount++;
-
-                if (HitCount == 3)
+                if (++hitCount == 3)
                 {
                     World.Destroy(this);
                 }
                 else
                 {
-                    Timer = 1f;
+                    timer = 1f;
                 }
-            }
-
-            if (Target.IsDestroyed)
-            {
-                World.Destroy(this);
             }
         }
 
         public override void PostUpdate(GameTime gameTime)
         {
-            Position = Target.Position;
+            Position = target.Position;
             base.PostUpdate(gameTime);
         }
     }

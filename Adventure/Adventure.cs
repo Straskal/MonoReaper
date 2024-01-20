@@ -1,46 +1,179 @@
-﻿using Engine;
+﻿using Adventure.Content;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Adventure
 {
-    internal sealed class Adventure : App
+    public sealed class Adventure : Game
     {
-        private readonly PauseScreen pauseScreen = new();
+        public const int RESOLUTION_WIDTH = 256;
+        public const int RESOLUTION_HEIGHT = 256;
+        public const int WORLD_CELL_SIZE = 128;
 
-        public Adventure() : base(256, 256, ResolutionScaleMode.Viewport)
+        private readonly PauseScreen pauseScreen = new();
+        private readonly List<CameraZone> cameraZones = new();
+
+        public Adventure()
         {
             Instance = this;
             Window.Title = "Adventure Game 2000";
             Window.AllowUserResizing = true;
-            IsMouseVisible = true;
+            IsMouseVisible = false;
+            Content = new ContentManager(Services, "Content");
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager.HardwareModeSwitch = false;
+            GraphicsDeviceManager.IsFullScreen = false;
+            GraphicsDeviceManager.PreferredBackBufferWidth = RESOLUTION_WIDTH;
+            GraphicsDeviceManager.PreferredBackBufferHeight = RESOLUTION_HEIGHT;
+            IsFixedTimeStep = true;
         }
 
         public static Adventure Instance { get; private set; }
+        public static GameTime Time { get; private set; }
         public static bool IsPaused { get; set; }
+        public static bool IsTransitioningAreas { get; set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; }
+        public BackBuffer BackBuffer { get; private set; }
+        public Renderer Renderer { get; private set; }
+        public Camera Camera { get; private set; }
+        public World World { get; private set; }
+        public CoroutineRunner Coroutines { get; } = new();
+        public bool Debug { get; set; }
 
         protected override void Initialize()
         {
-            base.Initialize(); 
-            LoadMap("Levels/world/level_0");
+            BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+            Renderer = new Renderer(GraphicsDevice);
+            Camera = new Camera(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+            World = new World(WORLD_CELL_SIZE);
+            base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            base.LoadContent();
-            LoadSharedContent();
+            LoadAllContent();
             LoadGUI();
+            LoadMap();
+            base.LoadContent();
         }
 
-        public void LoadMap(string path) 
+        protected override void UnloadContent()
+        {
+            BackBuffer.Dispose();
+            Renderer.Dispose();
+            Content.Unload();
+            base.UnloadContent();
+        }
+
+        public void LoadMap()
         {
             World.Clear();
-            World.Spawn(LevelLoader.LoadLevel(this, path));
+            cameraZones.Clear();
+            LoadLevel("Levels/world/level_0");
+            LoadLevel("Levels/world/level_1");
+            LoadLevel("Levels/world/level_2");
+        }
+
+        public void LoadLevel(string path)
+        {
+            var data = Content.Load<LevelData>(path);
+            cameraZones.Add(new CameraZone(new RectangleF(data.Bounds)));
+            World.Spawn(Level.GetEntities(data));
         }
 
         protected override void Update(GameTime gameTime)
+        {
+            Time = gameTime;
+            HandleGlobalInput();
+            Input.Update(BackBuffer);
+            Coroutines.Update();
+
+            if (!IsPaused && !IsTransitioningAreas)
+            {
+                World.Update(gameTime);
+            }
+
+            foreach (var cameraZone in cameraZones)
+            {
+                cameraZone.CheckForPlayer();
+            }
+
+            ScreenShake.Update(gameTime);
+
+            Camera.Position.Round();
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            Renderer.SetTarget(BackBuffer.RenderTarget);
+            Renderer.SetViewport(BackBuffer.RenderTargetViewport);
+            Renderer.Clear();
+            Renderer.BeginDraw(Camera.TransformationMatrix);
+            World.Draw(Renderer, gameTime);
+
+            if (Debug)
+            {
+                World.DebugDraw(Renderer, gameTime);
+            }
+
+            Renderer.EndDraw();
+
+            if (IsPaused)
+            {
+                pauseScreen.Draw(Renderer, gameTime);
+            }
+
+            DrawCursor();
+
+            Renderer.SetTarget(null);
+            Renderer.SetViewport(BackBuffer.LetterboxViewport);
+            Renderer.Clear();
+            Renderer.BeginDraw(BackBuffer.ScaleMatrix);
+            Renderer.Draw(BackBuffer.RenderTarget, Vector2.Zero);
+            Renderer.EndDraw();
+        }
+
+        private void DrawCursor()
+        {
+            var source = Input.IsMouseLeftDown()
+                ? new Rectangle(0, 0, 8, 8)
+                : new Rectangle(8, 0, 8, 8);
+
+            var cursorOffset = source.Size.ToVector2() / 2f;
+            var cursorPosition = Input.MousePosition - cursorOffset;
+
+            Renderer.BeginDraw();
+            Renderer.Draw(Store.Gfx.Cursor, cursorPosition, source);
+            Renderer.EndDraw();
+        }
+
+        private void LoadAllContent()
+        {
+            Store.Fonts.Default = Content.Load<SpriteFont>("fonts/font");
+            Store.Gfx.Cursor = Content.Load<Texture2D>("art/cursor");
+            Store.Gfx.Player = Content.Load<Texture2D>("art/player/player");
+            Store.Gfx.Fire = Content.Load<Texture2D>("art/player/fire");
+            Store.Gfx.Barrel = Content.Load<Texture2D>("art/common/barrel");
+            Store.Gfx.Explosion = Content.Load<Texture2D>("art/common/explosion-1");
+            Store.Gfx.LargeDoor = Content.Load<Texture2D>("art/large_door");
+            Store.Gfx.PressurePlate = Content.Load<Texture2D>("art/pressure_plate");
+            Store.Vfx.SolidColor = Content.Load<Effect>("shaders/SolidColor");
+            Store.Sfx.Shoot = Content.Load<SoundEffect>("audio/fireball_shoot");
+            Store.Sfx.Explosion = Content.Load<SoundEffect>("audio/explosion4");
+        }
+
+        private void LoadGUI()
+        {
+            GUI.Renderer = Renderer;
+            GUI.BackBuffer = BackBuffer;
+        }
+
+        private void HandleGlobalInput()
         {
             if (Input.IsKeyPressed(Keys.F))
             {
@@ -48,7 +181,7 @@ namespace Adventure
                 GraphicsDeviceManager.ApplyChanges();
             }
 
-            if (Input.IsKeyPressed(Keys.Escape)) 
+            if (Input.IsKeyPressed(Keys.Escape))
             {
                 IsPaused = !IsPaused;
             }
@@ -57,40 +190,6 @@ namespace Adventure
             {
                 Debug = !Debug;
             }
-
-            base.Update(gameTime);
-        }
-
-        protected override void UpdateFrame(GameTime gameTime)
-        {
-            if (!IsPaused) 
-            {
-                base.UpdateFrame(gameTime);
-            } 
-        }
-
-        protected override void DrawFrame(GameTime gameTime)
-        {
-            base.DrawFrame(gameTime);
-
-            if (IsPaused) 
-            {
-                pauseScreen.Draw(Renderer, gameTime);
-            }
-        }
-
-        private void LoadSharedContent()
-        {
-            SharedContent.Fonts.Default = Content.Load<SpriteFont>("Fonts/Font");
-            SharedContent.Graphics.Player = Content.Load<Texture2D>("Art/Player/Player");
-            SharedContent.Graphics.Fire = Content.Load<Texture2D>("Art/Player/Fire");
-            SharedContent.Sounds.Shoot = Content.Load<SoundEffect>("Audio/fireball_shoot");
-        }
-
-        private void LoadGUI()
-        {
-            GUI.Renderer = Renderer;
-            GUI.BackBuffer = BackBuffer;
         }
     }
 }

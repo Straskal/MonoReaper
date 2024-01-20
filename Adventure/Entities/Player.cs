@@ -1,34 +1,30 @@
 ﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Reflection.Metadata;
 using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
-    public class Player : Entity
+    public class Player : KinematicEntity
     {
         public const float Speed = 1000f;
         public const float MaxSpeed = 0.75f;
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction = Vector2.One;
-        private Vector2 velocity = Vector2.Zero;
+        private float lastAttackTimer = 0f;
 
         public override void Spawn()
         {
-            Collider = new CircleCollider(this, new Vector2(0f, 0f), 6f);
+            Collider = new BoxCollider(this, 0, 4, 10, 8);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
-            GraphicsComponent = animatedSprite = new AnimatedSprite(this, SharedContent.Graphics.Player, PlayerAnimations.Frames);
-        }
-
-        public override void Start()
-        {
-            Adventure.Instance.Camera.Position = Position;
+            GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames)
+            {
+                DrawOrder = 5
+            };
         }
 
         public override void Update(GameTime gameTime)
@@ -36,34 +32,45 @@ namespace Adventure.Components
             var deltaTime = gameTime.GetDeltaTime();
             var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
             var movementLength = movementInput.LengthSquared();
-
-            // Normalize movement input so that the player doesn't travel faster diagonally.
+            
             if (movementLength > 1f)
             {
                 movementInput.Normalize();
             }
 
             animatedSprite.IsPaused = movementLength == 0f;
-            direction = movementLength > 0f ? movementInput : direction;
-            velocity = movementInput * Speed * deltaTime;
+
+            if ((lastAttackTimer -= deltaTime) > 0f)
+            {
+                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - new Vector2(4, 4);
+                direction = mousePosition - Position;
+                direction.Normalize();
+            }
+            else 
+            {
+                direction = movementLength > 0f ? movementInput : direction;
+            }
+
+            var velocity = movementInput * Speed * deltaTime;
             velocity.X = MathHelper.Clamp(velocity.X, -MaxSpeed, MaxSpeed);
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
-            const int LAYER = EntityLayers.Solid | BoxLayers.Trigger;
-
-            Collide(velocity, LAYER);
+            SlideMove(velocity);
             Animate();
             HandleInteractInput(deltaTime);
-            CameraFollow();
-        }
-
-        private void CameraFollow()
-        {
-            Adventure.Instance.Camera.Position = Vector2.SmoothStep(Adventure.Instance.Camera.Position, Position, 0.15f);
         }
 
         private void HandleInteractInput(float deltaTime)
         {
+            if (Input.IsMouseLeftPressed())
+            {
+                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
+                direction = mousePosition - Position;
+                direction.Normalize();
+                World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
+                lastAttackTimer = 3f;
+            }
+
             if (Input.IsKeyPressed(Keys.E))
             {
                 ShootFireball(deltaTime);
@@ -72,20 +79,20 @@ namespace Adventure.Components
 
         private void ShootFireball(float deltaTime)
         {
-            World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+            World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
         }
 
         public override void OnCollision(Entity other, Collision collision)
         {
-            if (!Collider.IsMoving)
+            if (!IsMoving)
             {
                 return;
             }
 
-            //if (other is Barrel barrel)
-            //{
-            //    barrel.Push(-collision.Normal);
-            //}
+            if (other is Barrel barrel)
+            {
+                barrel.Push(-collision.Intersection.Normal);
+            }
         }
 
         private void Animate()
@@ -113,6 +120,15 @@ namespace Adventure.Components
 
                 }
             }
+        }
+
+        public override void DebugDraw(Renderer renderer, GameTime gameTime)
+        {
+            base.DebugDraw(renderer, gameTime);  
+            var mp = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
+            mp.Round();
+            renderer.DrawString(Store.Fonts.Default, mp.ToString(), mp, Color.White);
+            renderer.DrawLine(Position, mp, Color.Violet);
         }
     }
 }

@@ -1,43 +1,67 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Engine;
+﻿using Engine;
+using Microsoft.Xna.Framework;
+using System;
+using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
     public sealed class Explosion : Entity
     {
-        private Texture2D _texture;
-        private AnimatedSprite _animatedSprite;
-        private SoundEffect _sound;
-
-        public static void Preload(ContentManager content) 
-        {
-            content.Load<SoundEffect>("audio/explosion4");
-            content.Load<Texture2D>("art/common/explosion-1");
-        }
+        private AnimatedSprite sprite;
+        private bool causedDamage;
 
         public override void Spawn()
         {
-            _sound = Adventure.Instance.Content.Load<SoundEffect>("audio/explosion4");
-            _texture = Adventure.Instance.Content.Load<Texture2D>("art/common/explosion-1");
-
-            GraphicsComponent = _animatedSprite = new AnimatedSprite(this, _texture, ExplosionAnimations.Frames)
+            GraphicsComponent = sprite = new AnimatedSprite(this, Store.Gfx.Explosion, ExplosionAnimations.Frames)
             {
                 Speed = 0.1f,
                 DrawOrder = 10
             };
 
-            _sound.Play();
+            PlayExplosionSound();
+            ScreenShake.Shake(0.5f);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (_animatedSprite.CurrentAnimationFinished)
+            DoRadialDamage();
+            DestroyAfterAnimation();
+        }
+
+        private void DoRadialDamage() 
+        {
+            if (!causedDamage && sprite.CurrentFrame == 3)
+            {
+                foreach (var entity in World.GetOverlappingEntities(new CircleF(Position, 20), EntityLayers.Enemy))
+                {
+                    if (entity is IDamageable damageable)
+                    {
+                        damageable.Damage(1);
+
+                        if (damageable.Flammable)
+                        {
+                            World.Spawn(new Fire(entity));
+                        }
+                    }
+                }
+
+                causedDamage = true;
+            }
+        }
+
+        private void DestroyAfterAnimation() 
+        {
+            if (sprite.CurrentAnimationFinished)
             {
                 World.Destroy(this);
             }
+        }
+
+        private static void PlayExplosionSound()
+        {
+            var sound = Store.Sfx.Explosion.CreateInstance();
+            sound.Pitch = 1f / Random.Shared.Next(8, 10);
+            sound.Play();
         }
     }
 }

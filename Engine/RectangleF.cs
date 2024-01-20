@@ -23,12 +23,22 @@ namespace Engine
         public readonly Vector2 Size => new(Width, Height);
         public readonly Vector2 HalfSize => Size * 0.5f;
 
+        public RectangleF(Rectangle rectangle)
+            : this(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
+        {
+        }
+
         public RectangleF(float x, float y, float width, float height)
         {
             X = x;
             Y = y;
             Width = width;
             Height = height;
+        }
+
+        public readonly bool Contains(Vector2 point)
+        {
+            return OverlapTests.RectangleVsPoint(this, point);
         }
 
         public readonly bool Overlaps(RectangleF other)

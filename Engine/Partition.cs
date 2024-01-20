@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Xna.Framework;
 
 namespace Engine
 {
     public sealed class Partition
     {
-        private readonly Dictionary<Point, HashSet<Collider>> cells = new();
+        private readonly Dictionary<Point, List<Collider>> cells = new();
         private readonly int cellSize;
         private readonly float inverseCellSize;
 
@@ -60,14 +59,37 @@ namespace Engine
             cells.Clear();
         }
 
-        public IEnumerable<Collider> Query(Vector2 position)
+        public IEnumerable<Collider> Query(Vector2 point)
         {
-            return GetCellAtPoint(position.ToPoint());
+            foreach (var collider in GetCellAtPoint(point.ToPoint()))
+            {
+                if (collider.OverlapPoint(point))
+                {
+                    yield return collider;
+                }
+            }
+        }
+
+        public IEnumerable<Collider> Query(CircleF circle)
+        {
+            foreach (var collider in QueryCells(GetIntersectingCells(circle.GetBounds())))
+            {
+                if (collider.OverlapCircle(circle))
+                {
+                    yield return collider;
+                }
+            }
         }
 
         public IEnumerable<Collider> Query(RectangleF bounds)
         {
-            return QueryCells(GetIntersectingCells(bounds));
+            foreach (var collider in QueryCells(GetIntersectingCells(bounds))) 
+            {
+                if (collider.OverlapRectangle(bounds)) 
+                {
+                    yield return collider;
+                }
+            }
         }
 
         private List<Point> GetIntersectingCells(RectangleF bounds)
@@ -91,11 +113,11 @@ namespace Engine
             return result;
         }
 
-        private HashSet<Collider> GetCellAtPoint(Point point)
+        private List<Collider> GetCellAtPoint(Point point)
         {
             if (!cells.TryGetValue(point, out var cell))
             {
-                cells[point] = cell = new HashSet<Collider>();
+                cells[point] = cell = new List<Collider>();
             }
 
             return cell;

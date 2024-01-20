@@ -1,35 +1,28 @@
 ﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
+using System;
 using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
-    public interface IDamageable
-    {
-        bool Flammable { get; }
-        void Damage(int amount);
-    }
-
-    public sealed class Barrel : Entity, IDamageable
+    public sealed class Barrel : KinematicEntity, IDamageable
     {
         private Vector2 push;
 
         public int Health { get; private set; } = 3;
-        public bool Flammable { get => true; }
+        public bool Flammable => true;
         public Sprite Sprite { get; private set; }
-        public Effect HurtEffect { get; private set; }
         public float HurtTimer { get; set; }
 
         public override void Spawn()
         {
-            HurtEffect = Adventure.Instance.Content.Load<Effect>("shaders/SolidColor");
-            Collider = new CircleCollider(this, new Vector2(0, 3), 6, EntityLayers.Enemy | EntityLayers.Solid);
-            //Collider = new BoxCollider(this, 12, 12, EntityLayers.Enemy | EntityLayers.Solid);
+            Health = Random.Shared.Next(2, 5);
+            Collider = new BoxCollider(this, 16, 16, EntityLayers.Enemy | EntityLayers.Solid);
+            //Collider = new CircleCollider(this, Vector2.Zero, 7);
+            Collider.Layer = EntityLayers.Enemy | EntityLayers.Solid;
             Collider.Enable();
-            GraphicsComponent = Sprite = new Sprite(this, Adventure.Instance.Content.Load<Texture2D>("art/common/barrel"))
+            GraphicsComponent = Sprite = new Sprite(this, Store.Gfx.Barrel)
             {
                 SourceRectangle = new Rectangle(0, 0, 16, 16)
             };
@@ -37,7 +30,7 @@ namespace Adventure.Components
 
         public void Push(Vector2 direction)
         {
-            push += direction * 0.5f;
+            push += direction;
         }
 
         public override void Update(GameTime gameTime)
@@ -56,7 +49,7 @@ namespace Adventure.Components
         {
             if (push != Vector2.Zero)
             {
-                Collide(ref push, EntityLayers.Solid);
+                SlideMove(push);
                 push = Vector2.Zero;
             }
 
@@ -73,9 +66,15 @@ namespace Adventure.Components
             }
             else
             {
-                Sprite.Effect = HurtEffect;
+                Sprite.Effect = Store.Vfx.SolidColor;
                 HurtTimer = 0.1f;
             }
+        }
+
+        public override void Destroy()
+        {
+            World.Spawn(new Explosion(), Position);
+            base.Destroy();
         }
     }
 }

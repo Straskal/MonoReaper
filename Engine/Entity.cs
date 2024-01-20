@@ -6,8 +6,8 @@ namespace Engine
     public class Entity
     {
         public World World { get; internal set; }
-        public HashSet<string> Tags { get; }
-        public Origin Origin { get; set; } = Origin.Center;
+        public HashSet<string> Tags { get; } = new();
+        public Origin EntityOrigin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
@@ -31,16 +31,6 @@ namespace Engine
 
         public virtual void Destroy()
         {
-            Collider?.Disable();
-        }
-
-        public virtual void Start()
-        {
-        }
-
-        public virtual void End()
-        {
-            Collider?.Disable();
         }
 
         public virtual void Update(GameTime gameTime)
@@ -67,14 +57,25 @@ namespace Engine
         {
         }
 
-        protected void Collide(Vector2 velocity, int layerMask)
+        public RectangleF TransformOrigin(float width, float height)
         {
-            Collider?.Collide(velocity, layerMask);
+            return TransformOrigin(0f, 0f, width, height);
         }
 
-        protected void Collide(ref Vector2 velocity, int layerMask)
+        public RectangleF TransformOrigin(float xOffset, float yOffset, float width, float height) 
         {
-            Collider?.Collide(ref velocity, layerMask);
+            // Default top left
+            var result = new RectangleF(Position.X + xOffset, Position.Y + yOffset, width, height);
+
+            switch (EntityOrigin) 
+            {
+                case Origin.Center:
+                    result.X -= result.Width * 0.5f;
+                    result.Y -= result.Height * 0.5f;
+                    break;
+            }
+
+            return result;
         }
     }
 }

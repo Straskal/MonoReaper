@@ -9,7 +9,7 @@ namespace Engine
         {
         }
 
-        public CircleCollider(Entity entity, Vector2 position, float radius, int layerMask)
+        public CircleCollider(Entity entity, Vector2 position, float radius, uint layerMask)
             : base(entity)
         {
             Position = position;
@@ -21,53 +21,49 @@ namespace Engine
         public float Radius { get; set; }
         public CircleF Circle { get => new(Bounds.Center, Radius); }
 
-        public override RectangleF Bounds => Entity.Origin.Tranform(Entity.Position.X + Position.X, Entity.Position.Y + Position.Y, Radius * 2f, Radius * 2f);
-
-        public override void SetPosition(Vector2 position)
+        public override RectangleF Bounds
         {
-            Entity.Position = position - Position;
-            UpdateBounds();
-        }
-
-        public override bool Overlaps(CircleF circle)
-        {
-            return OverlapTests.CircleVsCircle(Circle, circle);
-        }
-
-        public override bool Overlaps(RectangleF rectangle)
-        {
-            return OverlapTests.CircleVsRectangle(Circle, rectangle);
+            get => Entity.TransformOrigin(Position.X, Position.Y, Radius * 2f, Radius * 2f);
         }
 
         public override bool Overlaps(Collider collider)
         {
-            return collider.IsOverlapped(this);
+            return collider.OverlapCircle(Circle);
         }
 
-        public override bool IsOverlapped(BoxCollider collider)
+        public override bool OverlapPoint(Vector2 point)
         {
-            return OverlapTests.CircleVsRectangle(Circle, collider.Bounds);
+            return OverlapTests.CircleVsPoint(Circle, point);
         }
 
-        public override bool IsOverlapped(CircleCollider collider)
+        public override bool OverlapCircle(CircleF circle)
         {
-            return OverlapTests.CircleVsCircle(Circle, collider.Circle);
+            return OverlapTests.CircleVsCircle(Circle, circle);
+        }
+
+        public override bool OverlapRectangle(RectangleF rectangle)
+        {
+            return OverlapTests.CircleVsRectangle(Circle, rectangle);
         }
 
         public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
         {
-            return collider.IsIntersected(this, segment, out intersection);
+            return collider.IntersectCircleSegment(Circle, segment, out intersection);
         }
 
-        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectSegment(Segment segment, out Intersection intersection)
         {
-            // TODO: Make moving rectangle vs circle intersections work correctly. Right now they are treated as rectangle vs rectangle.
-            return IntersectionTests.MovingRectangleVsRectangle(collider.Bounds, segment, Bounds, out intersection);
+            return IntersectionTests.SegmentVsCircle(segment, Circle, out intersection);
         }
 
-        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
+        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
         {
-            return IntersectionTests.MovingCircleVsCircle(collider.Circle, segment, Circle, out intersection);
+            return IntersectionTests.CircleSegmentVsCircle(circle, segment, Circle, out intersection);
+        }
+
+        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
+        {
+            return IntersectionTests.RectangleSegmentVsRectangle(rectangle, segment, Bounds, out intersection);
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)

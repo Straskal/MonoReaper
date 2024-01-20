@@ -4,20 +4,25 @@ namespace Engine
 {
     public sealed class Camera
     {
-        private readonly BackBuffer backBuffer;
         private Vector3 translation;
         private Vector3 scale;
         private Vector3 center;
+
         private Matrix translationMatrix;
         private Matrix rotationMatrix;
         private Matrix scaleMatrix;
         private Matrix centerTranslationMatrix;
+
         private bool isDirty;
 
-        public Camera(BackBuffer backBuffer)
+        public Camera(int width, int height)
         {
-            this.backBuffer = backBuffer;
+            Width = width;
+            Height = height;
         }
+
+        public int Width { get; }
+        public int Height { get; }
 
         private Vector2 position;
         public Vector2 Position
@@ -67,8 +72,8 @@ namespace Engine
                     scale.Y = Zoom;
                     scale.Z = 1f;
 
-                    center.X = backBuffer.Width * 0.5f;
-                    center.Y = backBuffer.Height * 0.5f;
+                    center.X = Width * 0.5f;
+                    center.Y = Height * 0.5f;
                     center.Z = 0f;
 
                     Matrix.CreateTranslation(ref translation, out translationMatrix);
@@ -76,7 +81,8 @@ namespace Engine
                     Matrix.CreateScale(ref scale, out scaleMatrix);
                     Matrix.CreateTranslation(ref center, out centerTranslationMatrix);
 
-                    transformationMatrix = translationMatrix * rotationMatrix * scaleMatrix * centerTranslationMatrix * backBuffer.RendererScaleMatrix;
+                    transformationMatrix = translationMatrix * rotationMatrix * scaleMatrix * centerTranslationMatrix;
+                    InverseTransformationMatrix = Matrix.Invert(transformationMatrix);
                     isDirty = false;
                 }
 
@@ -84,20 +90,16 @@ namespace Engine
             }
         }
 
+        public Matrix InverseTransformationMatrix { get; private set; }
+
         public Vector2 ToScreen(Vector2 position)
         {
-            position.X += backBuffer.LetterboxViewport.X;
-            position.Y += backBuffer.LetterboxViewport.Y;
-
-            return Vector2.Transform(position, TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix);
+            return Vector2.Transform(position, TransformationMatrix);
         }
 
         public Vector2 ToWorld(Vector2 position)
         {
-            position.X -= backBuffer.LetterboxViewport.X;
-            position.Y -= backBuffer.LetterboxViewport.Y;
-
-            return Vector2.Transform(position, Matrix.Invert(TransformationMatrix * backBuffer.VirtualBackBufferScaleMatrix));
+            return Vector2.Transform(position, InverseTransformationMatrix);
         }
     }
 }

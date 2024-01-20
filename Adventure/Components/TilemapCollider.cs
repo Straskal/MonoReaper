@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using static Adventure.Components.Tilemap;
+using static Adventure.Entities.Tilemap;
 using static Adventure.Constants;
 
 namespace Adventure.Components
@@ -16,7 +16,7 @@ namespace Adventure.Components
         {
         }
 
-        public TilemapCollider(Entity entity, int width, int height, int layerMask, MapData data)
+        public TilemapCollider(Entity entity, int width, int height, uint layerMask, MapData data)
             : base(entity)
         {
             Width = width;
@@ -58,22 +58,12 @@ namespace Adventure.Components
             }
         }
 
-        public override void Move(Vector2 direction)
+        public override bool OverlapCircle(CircleF circle)
         {
             throw new NotImplementedException();
         }
 
-        public override void SetPosition(Vector2 position)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Overlaps(CircleF circle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Overlaps(RectangleF rectangle)
+        public override bool OverlapRectangle(RectangleF rectangle)
         {
             throw new NotImplementedException();
         }
@@ -83,27 +73,7 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override bool IsOverlapped(BoxCollider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsOverlapped(CircleCollider collider)
-        {
-            throw new NotImplementedException();
-        }
-
         public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsIntersected(BoxCollider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsIntersected(CircleCollider collider, Segment segment, out Intersection intersection)
         {
             throw new NotImplementedException();
         }
@@ -122,6 +92,26 @@ namespace Adventure.Components
             {
                 colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
             }
+        }
+
+        public override bool IntersectSegment(Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool OverlapPoint(Vector2 point)
+        {
+            throw new NotImplementedException();
         }
     }
 }

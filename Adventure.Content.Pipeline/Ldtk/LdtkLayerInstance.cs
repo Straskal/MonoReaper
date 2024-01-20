@@ -1,32 +1,31 @@
-﻿using Microsoft.Xna.Framework.Content.Pipeline;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Adventure.Content.Pipeline.Ldtk
 {
     public sealed class LdtkLayerInstance
     {
         [JsonPropertyName("__identifier")]
-        public string Identifier { get; set; }
+        public string Identifier { get; init; }
 
         [JsonPropertyName("__cWid")]
-        public int CellWidth { get; set; }
+        public int CellWidth { get; init; }
 
         [JsonPropertyName("__cHei")]
-        public int CellHeight { get; set; }
+        public int CellHeight { get; init; }
 
         [JsonPropertyName("__gridSize")]
-        public int GridSize { get; set; }
+        public int GridSize { get; init; }
 
         [JsonPropertyName("__tilesetRelPath")]
-        public string TileSetRelativePath { get; set; }
+        public string TileSetRelativePath { get; init; }
 
         [JsonPropertyName("entityInstances")]
-        public LdtkEntityInstance[] EntityInstances { get; set; }
+        public LdtkEntityInstance[] EntityInstances { get; init; }
 
         [JsonPropertyName("gridTiles")]
-        public LdtkTileInstance[] GridTiles { get; set; }
+        public LdtkTileInstance[] GridTiles { get; init; }
 
         [JsonPropertyName("intGridCsv")]
-        public int[] IntGridCsv { get; set; }
+        public int[] IntGridCsv { get; init; }
     }
 }

@@ -1,30 +1,46 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Engine
 {
-    public sealed class World
+    public sealed class World : IEnumerable<Entity>
     {
-        public const int PARTITION_CELL_SIZE = 64;
-
-        private readonly Partition partition = new(PARTITION_CELL_SIZE);
-        private readonly List<Entity> entities = new();
-        private readonly List<Entity> entitiesToRemove = new();
+        private readonly Partition partition;
+        private readonly List<Entity> entities;
+        private readonly Dictionary<Type, List<Entity>> entitiesByType;
+        private readonly List<Entity> entitiesToRemove;
         private bool sort;
+
+        public World(int cellSize) 
+        {
+            partition = new Partition(cellSize);
+            entities = new List<Entity>();
+            entitiesByType = new Dictionary<Type, List<Entity>>();
+            entitiesToRemove = new List<Entity>();
+        }
+
+        public IEnumerator<Entity> GetEnumerator()
+        {
+            return entities.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         public void Spawn(IEnumerable<Entity> entities)
         {
-            foreach (var entity in entities) 
-            {
-                entity.World = this;
-                this.entities.Add(entity);
-                entity.Spawn();
-            }
-
             foreach (var entity in entities)
             {
-                entity.Start();
+                entity.World = this;
+                AddEntity(entity);
+                entity.Spawn();
             }
+            Sort();
         }
 
         public void Spawn(Entity entity)
@@ -38,9 +54,9 @@ namespace Engine
             {
                 entity.World = this;
                 entity.Position = position;
-                entities.Add(entity);
+                AddEntity(entity);
                 entity.Spawn();
-                entity.Start();
+                Sort();
             }
         }
 
@@ -53,44 +69,103 @@ namespace Engine
             }
         }
 
+        public IEnumerable<T> All<T>() where T : Entity
+        {
+            if (entitiesByType.TryGetValue(typeof(T), out var entities))
+            {
+                return entities.Cast<T>();
+            }
+            return Enumerable.Empty<T>();
+        }
+
+        public T Find<T>() where T : Entity
+        {
+            if (entitiesByType.TryGetValue(typeof(T), out var entities))
+            {
+                return entities[0] as T;
+            }
+            return default;
+        }
+
+        public T FindWithTag<T>(string tag) where T : Entity
+        {
+            if (entitiesByType.TryGetValue(typeof(T), out var entities))
+            {
+                foreach (var entity in entities) 
+                {
+                    if (entity.Tags.Contains(tag)) 
+                    {
+                        return entity as T;
+                    }
+                }
+            }
+            return default;
+        }
+
+        public void EnableCollider(Collider collider)
+        {
+            partition.Add(collider);
+        }
+
+        public void DisableCollider(Collider collider)
+        {
+            partition.Remove(collider);
+        }
+
+        public void UpdateCollider(Collider collider)
+        {
+            partition.Update(collider);
+        }
+
         public void Sort()
         {
             sort = true;
         }
 
-        public void EnableCollider(Collider collider) 
+        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle)
         {
-            partition.Add(collider);
+            return GetOverlappingEntities(rectangle, uint.MaxValue);
         }
 
-        public void DisableCollider(Collider collider) 
+        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, uint layerMask)
         {
-            partition.Remove(collider);
+            var result = new List<Entity>();
+
+            foreach (var collider in partition.Query(circle))
+            {
+                if (collider.CheckMask(layerMask))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
         }
 
-        public void UpdateCollider(Collider collider) 
+        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle, uint layerMask)
         {
-            partition.Update(collider);
+            var result = new List<Entity>();
+
+            foreach (var collider in partition.Query(rectangle))
+            {
+                if (collider.CheckMask(layerMask))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
         }
 
-        public IEnumerable<Collider> GetCollidersWithinBounds(RectangleF bounds) 
+        public IEnumerable<Collider> GetOverlappingColliders(RectangleF rectangle)
         {
-            return partition.Query(bounds);
+            return partition.Query(rectangle);
         }
 
         public void Clear()
         {
-            foreach (var entity in entities.ToArray())
-            {
-                entity.End();
-
-                if (entity.Collider != null) 
-                {
-                    partition.Remove(entity.Collider);
-                }
-            }
-
             entities.Clear();
+            entitiesByType.Clear();
             partition.Clear();
         }
 
@@ -104,11 +179,6 @@ namespace Engine
             for (int i = 0; i < entities.Count; i++)
             {
                 entities[i].PostUpdate(gameTime);
-            }
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Collider?.ClearContacts();
             }
 
             ProcessDestroyedEntities();
@@ -140,9 +210,9 @@ namespace Engine
             for (int i = 0; i < entitiesToRemove.Count; i++)
             {
                 entitiesToRemove[i].Destroy();
-                entitiesToRemove[i].End();
+                entitiesToRemove[i].Collider?.Disable();
                 entitiesToRemove[i].World = null;
-                entities.Remove(entitiesToRemove[i]);
+                RemoveEntity(entitiesToRemove[i]);
             }
 
             entitiesToRemove.Clear();
@@ -154,6 +224,32 @@ namespace Engine
             {
                 entities.Sort(SortEntities);
                 sort = false;
+            }
+        }
+
+        private void AddEntity(Entity entity)
+        {
+            var type = entity.GetType();
+            entities.Add(entity);
+            if (!entitiesByType.TryGetValue(type, out var list)) 
+            {
+                entitiesByType[type] = list = new List<Entity>();
+            }
+            list.Add(entity);
+        }
+
+        private void RemoveEntity(Entity entity)
+        {
+            var type = entity.GetType();
+            entities.Remove(entity);
+            if (!entitiesByType.TryGetValue(type, out var list))
+            {
+                entitiesByType[type] = list = new List<Entity>();
+            }
+            list.Remove(entity);
+            if (list.Count == 0) 
+            {
+                entitiesByType.Remove(type);
             }
         }
 

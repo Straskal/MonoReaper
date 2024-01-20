@@ -4,64 +4,40 @@ using System;
 
 namespace Engine
 {
-    /// <summary>
-    /// This class contains all draw functions as well as graphics device functions.
-    /// </summary>
     public class Renderer
     {
         private readonly GraphicsDevice graphicsDevice;
-        private readonly BackBuffer backBuffer;
         private readonly SpriteBatch spriteBatch;
-
         private Matrix transformationMatrix;
         private Effect effect;
 
-        /// <summary>
-        /// A blank 1px x 1px white texture. Used for drawing rectangles and missing textures.
-        /// </summary>
-        public static Texture2D BlankTexture
-        {
-            get;
-            private set;
-        }
+        public static Texture2D BlankTexture { get; private set; }
 
-        public Renderer(GraphicsDevice graphicsDevice, BackBuffer backBuffer)
+        public Renderer(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            this.backBuffer = backBuffer;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             BlankTexture = new Texture2D(graphicsDevice, 1, 1);
             BlankTexture.SetData(new[] { Color.White });
         }
 
-        internal void Dispose()
+        public void Dispose()
         {
             spriteBatch.Dispose();
             BlankTexture.Dispose();
         }
 
-        /// <summary>
-        /// Sets the current render target on the graphics device.
-        /// </summary>
-        /// <param name="renderTarget2D"></param>
         public void SetTarget(RenderTarget2D renderTarget2D)
         {
             graphicsDevice.SetRenderTarget(renderTarget2D);
         }
 
-        /// <summary>
-        /// Sets the graphics device viewport
-        /// </summary>
-        /// <param name="viewport"></param>
         public void SetViewport(Viewport viewport)
         {
             graphicsDevice.Viewport = viewport;
         }
 
-        /// <summary>
-        /// Clears the current render target
-        /// </summary>
         public void Clear()
         {
             graphicsDevice.Clear(Color.Black);
@@ -69,7 +45,7 @@ namespace Engine
 
         public void BeginDraw()
         {
-            transformationMatrix = backBuffer.RendererScaleMatrix;
+            transformationMatrix = Matrix.Identity;
             BeginSpriteBatch();
         }
 
@@ -153,22 +129,6 @@ namespace Engine
             spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
         }
 
-        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
-        {
-            var distance = Vector2.Distance(point1, point2);
-            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-
-            DrawLine(point1, distance, angle, color, thickness);
-        }
-
-        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
-        {
-            var origin = new Vector2(0f, 0.5f);
-            var scale = new Vector2(length, thickness);
-
-            spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
-        }
-
         public void DrawRectangleOutline(Rectangle rectangle, Color color)
         {
             DrawLine(new Vector2(rectangle.Left, rectangle.Top), new Vector2(rectangle.Right, rectangle.Top), color);
@@ -187,6 +147,22 @@ namespace Engine
 
                 DrawLine(pos + p1, pos + p2, color);
             }
+        }
+
+        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+            DrawLine(point1, distance, angle, color, thickness);
+        }
+
+        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+
+            spriteBatch.Draw(BlankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         /// <summary>

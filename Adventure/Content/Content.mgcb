@@ -98,6 +98,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Common/spikes.png
 
+#begin Art/cursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/cursor.png
+
 #begin Art/Enemies/blob.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -121,6 +133,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Enemies/shooter.png
+
+#begin Art/large_door.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/large_door.png
 
 #begin Art/Player/fire.png
 /importer:TextureImporter
@@ -217,6 +241,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Art/Player/player.png
+
+#begin Art/pressure_plate.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/pressure_plate.png
 
 #begin Art/Tilesets/dungeon.png
 /importer:TextureImporter
@@ -333,6 +369,11 @@
 /importer:LdtkLevelImporter
 /processor:LdtkLevelProcessor
 /build:Levels/world/Level_1.ldtkl
+
+#begin Levels/world/Level_2.ldtkl
+/importer:LdtkLevelImporter
+/processor:LdtkLevelProcessor
+/build:Levels/world/Level_2.ldtkl
 
 #begin Shaders/Distortion.fx
 /importer:EffectImporter

@@ -1,13 +1,10 @@
 ﻿using Engine;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using System;
 using static Adventure.Constants;
 
-namespace Adventure.Components
+namespace Adventure.Entities
 {
-    public sealed class EnemyFireball : Entity
+    public sealed class EnemyFireball : KinematicEntity
     {
         private Vector2 velocity;
 
@@ -16,17 +13,12 @@ namespace Adventure.Components
             this.velocity = velocity;
         }
 
-        public static void Preload(ContentManager content) 
-        {
-            Explosion.Preload(content);
-        }
-
         public override void Spawn()
         {
             Collider = new CircleCollider(this, Vector2.Zero, 4);
             Collider.Layer = EntityLayers.Projectile;
             Collider.Enable();
-            GraphicsComponent = new Particles(this, SharedContent.Graphics.Fire, new Rectangle(8, 8, 8, 8))
+            GraphicsComponent = new Particles(this, Store.Gfx.Fire, new Rectangle(8, 8, 8, 8))
             {
                 MaxParticles = 100,
                 Velocity = new Vector2(25f),
@@ -36,14 +28,12 @@ namespace Adventure.Components
                 MaxTime = 0.25f,
                 DrawOrder = 5
             };
-            var i = SharedContent.Sounds.Shoot.CreateInstance();
-            i.Pitch = Math.Clamp(App.Random.NextSingle(), 0.6f, 1f);
-            i.Play();
+            Store.Sfx.Shoot.Play();
         }
 
         public override void Update(GameTime gameTime)
         {
-            Collide(ref velocity, EntityLayers.Player | EntityLayers.Solid);
+            SlideMove(velocity);
         }
 
         public override void OnCollision(Entity other, Collision collision)

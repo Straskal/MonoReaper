@@ -1,5 +1,4 @@
 ﻿using System;
-using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,78 +6,52 @@ namespace Engine
 {
     public sealed class BackBuffer : IDisposable
     {
+        private readonly GameWindow window;
         private readonly GraphicsDevice graphicsDevice;
-        private int previousBackBufferWidth;
-        private int previousBackBufferHeight;
 
-        public BackBuffer(GraphicsDevice graphicsDevice, int width, int height, ResolutionScaleMode scaleMode)
+        public BackBuffer(GameWindow window, GraphicsDevice graphicsDevice, int width, int height)
         {
+            this.window = window ?? throw new ArgumentNullException(nameof(window));
             this.graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 
             Width = width;
             Height = height;
-            ScaleMode = scaleMode;
-
-            int virtualBufferWidth;
-            int virtualBufferHeight;
-
-            switch (scaleMode)
-            {
-                case ResolutionScaleMode.Renderer:
-                    virtualBufferWidth = graphicsDevice.DisplayMode.Width;
-                    virtualBufferHeight = graphicsDevice.DisplayMode.Height;
-                    break;
-                case ResolutionScaleMode.Viewport:
-                default:
-                    virtualBufferWidth = width;
-                    virtualBufferHeight = height;
-                    break;
-            }
-
-            VirtualBackBuffer = new RenderTarget2D(graphicsDevice, virtualBufferWidth, virtualBufferHeight);
+            AspectRatio = width / (float)height;
+            RenderTarget = new RenderTarget2D(graphicsDevice, width, height);    
+            
+            window.ClientSizeChanged += OnWindowClientSizeChanged;
+            Update();
         }
 
         public int Width { get; }
         public int Height { get; }
-        public ResolutionScaleMode ScaleMode { get; }
-        public RenderTarget2D VirtualBackBuffer { get; }
-        public Viewport FullViewport { get; private set; }
+        public float AspectRatio { get; }
+        public RenderTarget2D RenderTarget { get; }
+        public Viewport RenderTargetViewport { get; private set; }
         public Viewport LetterboxViewport { get; private set; }
         public Matrix ScaleMatrix { get; private set; }
         public Matrix InvertedScaleMatrix { get; private set; }
-        public Matrix RendererScaleMatrix { get; private set; }
-        public Matrix VirtualBackBufferScaleMatrix { get; private set; }
 
         public void Update()
         {
             var backBufferWidth = graphicsDevice.PresentationParameters.BackBufferWidth;
             var backBufferHeight = graphicsDevice.PresentationParameters.BackBufferHeight;
+            var scale = MathF.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
 
-            if (!(backBufferWidth == previousBackBufferWidth && backBufferHeight == previousBackBufferHeight))
+            ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
+            InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
+
+            var width = backBufferWidth;
+            var height = (int)(backBufferWidth / AspectRatio + 0.5f);
+
+            if (height > backBufferHeight)
             {
-                previousBackBufferWidth = backBufferWidth;
-                previousBackBufferHeight = backBufferHeight;
-
-                var scale = Math.Min((float)backBufferWidth / Width, (float)backBufferHeight / Height);
-
-                ScaleMatrix = Matrix.CreateScale(scale, scale, 1f);
-                InvertedScaleMatrix = Matrix.Invert(ScaleMatrix);
-                FullViewport = graphicsDevice.GetFullViewport();
-                LetterboxViewport = graphicsDevice.GetLetterboxViewport(Width, Height);
-
-                switch (ScaleMode)
-                {
-                    case ResolutionScaleMode.Renderer:
-                        RendererScaleMatrix = ScaleMatrix;
-                        VirtualBackBufferScaleMatrix = Matrix.Identity;
-                        break;
-                    case ResolutionScaleMode.Viewport:
-                    default:
-                        RendererScaleMatrix = Matrix.Identity;
-                        VirtualBackBufferScaleMatrix = ScaleMatrix;
-                        break;
-                }
+                height = backBufferHeight;
+                width = (int)(height * AspectRatio + 0.5f);
             }
+
+            RenderTargetViewport = new Viewport(0, 0, Width, Height);
+            LetterboxViewport = new Viewport(backBufferWidth / 2 - width / 2, backBufferHeight / 2 - height / 2, width, height);
         }
 
         public Vector2 Project(Vector2 position)
@@ -99,7 +72,13 @@ namespace Engine
 
         public void Dispose()
         {
-            VirtualBackBuffer.Dispose();
+            window.ClientSizeChanged -= OnWindowClientSizeChanged;
+            RenderTarget.Dispose();
+        }
+
+        private void OnWindowClientSizeChanged(object sender, EventArgs eventArgs)
+        {
+            Update();
         }
     }
 }
