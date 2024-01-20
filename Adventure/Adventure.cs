@@ -102,7 +102,7 @@ namespace Adventure
             Input.Update(BackBuffer);
             Coroutines.Update();
 
-            if (!IsPaused && !IsTransitioningAreas)
+            if (!(IsPaused || IsTransitioningAreas))
             {
                 World.Update(gameTime);
             }
