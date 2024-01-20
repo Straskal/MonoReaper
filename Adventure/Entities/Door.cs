@@ -1,17 +1,16 @@
 ﻿using Adventure.Content;
 using Engine;
 using Microsoft.Xna.Framework;
+using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
     public class Door : Entity
     {
-        private readonly EntityData data;
         private Sprite sprite;
 
         public Door(EntityData data)
         {
-            this.data = data;
             Tags.Add(data.Fields.GetString("Id"));
         }
 
@@ -25,8 +24,8 @@ namespace Adventure.Entities
                 DrawOrder = 0
             };
             Collider = new BoxCollider(this, 32, 16);
+            Collider.Layer = EntityLayers.Solid;
             Collider.Enable();
-            base.Spawn();
         }
 
         public void Open() 
@@ -35,8 +34,10 @@ namespace Adventure.Entities
             Collider.Disable();
         }
 
-        public void Close() 
+        public void Close()
         {
+            GraphicsComponent = sprite;
+            Collider.Enable();
         }
     }
 }

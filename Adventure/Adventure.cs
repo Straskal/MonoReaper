@@ -92,7 +92,7 @@ namespace Adventure
         {
             var data = Content.Load<LevelData>(path);
             zones.Add(data);
-            World.Spawn(Level.GetEntities(data));
+            World.Spawn(data.GetEntities());
         }
 
         protected override void Update(GameTime gameTime)
@@ -204,6 +204,8 @@ namespace Adventure
                         }
                         else if (!IsTransitioningAreas)
                         {
+                            // If player is still within the same zone, but the transition finished,
+                            // Keep forcing the position to the center to account for screen shake offsets
                             Camera.Position = boundsF.Center;
                         }
 
@@ -215,11 +217,11 @@ namespace Adventure
 
         private IEnumerator TransitionCameraBetweenZones(RectangleF bounds)
         {
+            const float EPSILON = 0.05f;
+            var duration = 5.5f;
             IsTransitioningAreas = true;
 
-            var duration = 6f;
-
-            while (Vector2.Distance(bounds.Center, Camera.Position) > 0.5f)
+            while (Vector2.Distance(bounds.Center, Camera.Position) > EPSILON)
             {
                 var direction = bounds.Center - Camera.Position;
                 Camera.Position = Camera.Position + direction * (1f / duration);
@@ -227,6 +229,7 @@ namespace Adventure
                 yield return null;
             }
 
+            // Force camera position to zone center once we've reached epsilon
             Camera.Position = bounds.Center;
             IsTransitioningAreas = false;
         }

@@ -14,7 +14,7 @@ namespace Adventure
             {
                 Adventure.IsPaused = false;
             }
-            if (GUI.PrimaryButton(3, "Main menu", 100, 180))
+            if (GUI.PrimaryButton(3, "Restart", 100, 180))
             {
                 Adventure.IsPaused = false;
                 Adventure.Instance.LoadMap();

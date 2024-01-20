@@ -6,15 +6,16 @@ namespace Adventure.Entities
 {
     public class PressurePlate : Entity
     {
-        private readonly EntityData data;
+        private readonly string doorId;
         private Sprite sprite;
+        private Door door;
 
         public PressurePlate(EntityData data) 
         {
-            this.data = data;
+            this.doorId = data.Fields.GetString("DoorId");
         }
 
-        public bool IsDown { get; private set; }
+        public bool IsPressed { get; private set; }
 
         public override void Spawn()
         {
@@ -23,41 +24,48 @@ namespace Adventure.Entities
                 SourceRectangle = new Rectangle(0, 0, 16, 16),
                 DrawOrder = 0
             };
-
-            base.Spawn();
         }
 
         public override void Update(GameTime gameTime)
         {
-            var isDown = false;
+            var wasPressed = IsPressed;
 
-            foreach (var entity in World.OverlapRectangle(new RectangleF(Position.X - 8, Position.Y - 8, 16, 16))) 
+            CheckIsPressed();
+
+            if (wasPressed != IsPressed)
             {
-                if (entity is Barrel || entity is Player) 
+                if (!wasPressed && IsPressed)
                 {
-                    isDown = true;
+                    sprite.SourceRectangle = new Rectangle(16, 16, 16, 16);
+                    FindDoor()?.Open();
+                }
+                else if (wasPressed && !IsPressed)
+                {
+                    sprite.SourceRectangle = new Rectangle(0, 0, 16, 16);
+                    FindDoor()?.Close();
+                }
+            }
+        }
+
+        private void CheckIsPressed()
+        {
+            IsPressed = false;
+
+            // It would be cool to NOT check every frame, but instead have entities notify the pressure plate when they move.
+            foreach (var collider in World.OverlapRectangle(new RectangleF(Position.X - 8, Position.Y - 8, 16, 16)))
+            {
+                if (collider.Entity is Barrel || collider.Entity is Player)
+                {
+                    IsPressed = true;
                     break;
                 }
             }
+        }
 
-            if (isDown && !IsDown)
-            {
-                var door = World.FindWithTag<Door>(data.Fields.GetString("DoorId"));
-                // Play trigger sound
-
-                sprite.SourceRectangle = new Rectangle(16, 16, 16, 16);
-                door?.Open();
-            }
-            else if (!isDown && IsDown) 
-            {
-                var door = World.FindWithTag<Door>(data.Fields.GetString("DoorId"));
-                // Play release sound
-
-                sprite.SourceRectangle = new Rectangle(0, 0, 16, 16);
-                door?.Close();
-            }
-
-            IsDown = isDown;
+        private Door FindDoor() 
+        {
+            door ??= World.FindWithTag<Door>(doorId);
+            return door;
         }
     }
 }

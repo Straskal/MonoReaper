@@ -35,7 +35,8 @@ namespace Adventure.Entities
         public override void Spawn()
         {
             Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
-            Collider = new TilemapCollider(this, 0, 0, EntityLayers.Solid, Data);
+            Collider = new TilemapCollider(this, 0, 0, Data);
+            Collider.Layer = EntityLayers.Solid;
             Collider.Enable();
         }
 
