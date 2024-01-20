@@ -137,27 +137,11 @@ namespace Adventure
                 pauseScreen.Draw(Renderer, gameTime);
             }
 
-            DrawCursor();
-
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
             Renderer.BeginDraw(BackBuffer.ScaleMatrix);
             Renderer.Draw(BackBuffer.RenderTarget, Vector2.Zero);
-            Renderer.EndDraw();
-        }
-
-        private void DrawCursor()
-        {
-            var source = Input.IsMouseLeftDown()
-                ? new Rectangle(0, 0, 8, 8)
-                : new Rectangle(8, 0, 8, 8);
-
-            var cursorOffset = source.Size.ToVector2() / 2f;
-            var cursorPosition = Input.MousePosition - cursorOffset;
-
-            Renderer.BeginDraw();
-            Renderer.Draw(Store.Gfx.Cursor, cursorPosition, source);
             Renderer.EndDraw();
         }
 
