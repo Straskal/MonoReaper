@@ -18,6 +18,7 @@ namespace Adventure
         public const int RESOLUTION_HEIGHT = 256;
         public const int WORLD_CELL_SIZE = 128;
 
+        private readonly DialogOverlay dialogOverlay = new();
         private readonly PauseScreen pauseScreen = new();
         private readonly List<LevelData> zones = new();
         private LevelData currentZone;
@@ -131,6 +132,8 @@ namespace Adventure
             {
                 pauseScreen.Draw(Renderer, gameTime);
             }
+
+            dialogOverlay.Draw(Renderer);
 
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
