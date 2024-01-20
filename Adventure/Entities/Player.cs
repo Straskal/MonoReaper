@@ -45,7 +45,7 @@ namespace Adventure.Entities
             animatedSprite.IsPaused = movementLength == 0f;
 
             var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-            isMouseOverlappingEntity = World.OverlapsAny(mousePosition, BoxLayers.Enemy, this);
+            isMouseOverlappingEntity = World.OverlapPointAny(mousePosition, BoxLayers.Enemy, Collider);
 
             if (isAiming)
             {

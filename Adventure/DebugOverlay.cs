@@ -28,7 +28,7 @@ namespace Adventure
 
         private static void DrawHoveredEntityInfo(Renderer renderer, Vector2 mouseWorldPosition) 
         {
-            foreach (var collider in Adventure.Instance.World.GetOverlappingColliders(mouseWorldPosition)) 
+            foreach (var collider in Adventure.Instance.World.OverlapPoint(mouseWorldPosition)) 
             {
                 var positionString = collider.Bounds.TopLeft.ToString();
                 var positionStringSize = Store.Fonts.Default.MeasureString(positionString);

@@ -56,7 +56,7 @@ namespace Engine
 
         public void GetOverlaps(List<Collider> colliders, uint layerMask)
         {
-            foreach (var collider in Entity.World.GetOverlappingColliders(Bounds))
+            foreach (var collider in Entity.World.OverlapRectangle(Bounds))
             {
                 if (collider != this && collider.CheckMask(layerMask))
                 {
@@ -72,9 +72,9 @@ namespace Engine
             var broadphaseRectangle = Bounds.Union(velocity);
             Collider collidedWith = null;
 
-            foreach (var collider in Entity.World.GetOverlappingColliders(broadphaseRectangle))
+            foreach (var collider in Entity.World.OverlapRectangle(broadphaseRectangle, layerMask, this))
             {
-                if (collider != this && collider.CheckMask(layerMask) && Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
+                if (Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
                 {
                     collidedWith = collider;
                     collision = new Collision(velocity, intersection);
