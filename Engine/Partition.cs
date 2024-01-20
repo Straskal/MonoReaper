@@ -59,14 +59,37 @@ namespace Engine
             cells.Clear();
         }
 
-        public IEnumerable<Collider> Query(Vector2 position)
+        public IEnumerable<Collider> Query(Vector2 point)
         {
-            return GetCellAtPoint(position.ToPoint());
+            foreach (var collider in GetCellAtPoint(point.ToPoint()))
+            {
+                if (collider.OverlapPoint(point))
+                {
+                    yield return collider;
+                }
+            }
+        }
+
+        public IEnumerable<Collider> Query(CircleF circle)
+        {
+            foreach (var collider in QueryCells(GetIntersectingCells(circle.GetBounds())))
+            {
+                if (collider.OverlapCircle(circle))
+                {
+                    yield return collider;
+                }
+            }
         }
 
         public IEnumerable<Collider> Query(RectangleF bounds)
         {
-            return QueryCells(GetIntersectingCells(bounds));
+            foreach (var collider in QueryCells(GetIntersectingCells(bounds))) 
+            {
+                if (collider.OverlapRectangle(bounds)) 
+                {
+                    yield return collider;
+                }
+            }
         }
 
         private List<Point> GetIntersectingCells(RectangleF bounds)

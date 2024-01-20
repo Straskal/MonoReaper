@@ -124,41 +124,16 @@ namespace Engine
 
         public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle)
         {
-            var result = new List<Entity>();
-
-            foreach (var collider in GetNearColliders(rectangle))
-            {
-                if (collider.OverlapRectangle(rectangle))
-                {
-                    result.Add(collider.Entity);
-                }
-            }
-
-            return result;
-        }
-
-        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle)
-        {
-            var result = new List<Entity>();
-
-            foreach (var collider in GetNearColliders(circle))
-            {
-                if (collider.OverlapCircle(circle))
-                {
-                    result.Add(collider.Entity);
-                }
-            }
-
-            return result;
+            return GetOverlappingEntities(rectangle, uint.MaxValue);
         }
 
         public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, uint layerMask)
         {
             var result = new List<Entity>();
 
-            foreach (var collider in GetNearColliders(circle))
+            foreach (var collider in partition.Query(circle))
             {
-                if (collider.CheckMask(layerMask) && collider.OverlapCircle(circle))
+                if (collider.CheckMask(layerMask))
                 {
                     result.Add(collider.Entity);
                 }
@@ -167,14 +142,24 @@ namespace Engine
             return result;
         }
 
-        public IEnumerable<Collider> GetNearColliders(RectangleF bounds)
+        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle, uint layerMask)
         {
-            return partition.Query(bounds);
+            var result = new List<Entity>();
+
+            foreach (var collider in partition.Query(rectangle))
+            {
+                if (collider.CheckMask(layerMask))
+                {
+                    result.Add(collider.Entity);
+                }
+            }
+
+            return result;
         }
 
-        public IEnumerable<Collider> GetNearColliders(CircleF circle)
+        public IEnumerable<Collider> GetOverlappingColliders(RectangleF rectangle)
         {
-            return partition.Query(circle.GetBounds());
+            return partition.Query(rectangle);
         }
 
         public void Clear()

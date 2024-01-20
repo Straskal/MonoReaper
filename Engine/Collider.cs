@@ -18,6 +18,7 @@ namespace Engine
 
         public abstract RectangleF Bounds { get; }
         public abstract bool Overlaps(Collider collider);
+        public abstract bool OverlapPoint(Vector2 point);
         public abstract bool OverlapCircle(CircleF circle);
         public abstract bool OverlapRectangle(RectangleF rectangle);
         public abstract bool Intersects(Collider collider, Segment segment, out Intersection intersection);
@@ -55,9 +56,9 @@ namespace Engine
 
         public void GetOverlaps(List<Collider> colliders, uint layerMask)
         {
-            foreach (var collider in Entity.World.GetNearColliders(Bounds))
+            foreach (var collider in Entity.World.GetOverlappingColliders(Bounds))
             {
-                if (collider != this && collider.CheckMask(layerMask) && Overlaps(collider))
+                if (collider != this && collider.CheckMask(layerMask))
                 {
                     colliders.Add(this);
                 }
@@ -71,7 +72,7 @@ namespace Engine
             var broadphaseRectangle = Bounds.Union(velocity);
             Collider collidedWith = null;
 
-            foreach (var collider in Entity.World.GetNearColliders(broadphaseRectangle))
+            foreach (var collider in Entity.World.GetOverlappingColliders(broadphaseRectangle))
             {
                 if (collider != this && collider.CheckMask(layerMask) && Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
                 {

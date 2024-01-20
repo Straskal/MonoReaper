@@ -39,7 +39,7 @@ namespace Engine
         public float Width { get; set; }
         public float Height { get; set; }
 
-        public override RectangleF Bounds 
+        public override RectangleF Bounds
         {
             get => Entity.TransformOrigin(X, Y, Width, Height);
         }
@@ -47,6 +47,11 @@ namespace Engine
         public override bool Overlaps(Collider collider)
         {
             return collider.OverlapRectangle(Bounds);
+        }
+
+        public override bool OverlapPoint(Vector2 point)
+        {
+            return OverlapTests.RectangleVsPoint(Bounds, point);
         }
 
         public override bool OverlapCircle(CircleF circle)

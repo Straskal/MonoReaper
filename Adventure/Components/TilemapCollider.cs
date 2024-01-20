@@ -108,5 +108,10 @@ namespace Adventure.Components
         {
             throw new NotImplementedException();
         }
+
+        public override bool OverlapPoint(Vector2 point)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

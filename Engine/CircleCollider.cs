@@ -21,7 +21,7 @@ namespace Engine
         public float Radius { get; set; }
         public CircleF Circle { get => new(Bounds.Center, Radius); }
 
-        public override RectangleF Bounds 
+        public override RectangleF Bounds
         {
             get => Entity.TransformOrigin(Position.X, Position.Y, Radius * 2f, Radius * 2f);
         }
@@ -29,6 +29,11 @@ namespace Engine
         public override bool Overlaps(Collider collider)
         {
             return collider.OverlapCircle(Circle);
+        }
+
+        public override bool OverlapPoint(Vector2 point)
+        {
+            return OverlapTests.CircleVsPoint(Circle, point);
         }
 
         public override bool OverlapCircle(CircleF circle)
