@@ -1,11 +1,13 @@
 ﻿using Adventure.Content;
 using Adventure.Entities;
 using Engine;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Adventure
@@ -17,7 +19,8 @@ namespace Adventure
         public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
-        private readonly List<CameraZone> cameraZones = new();
+        private readonly List<LevelData> zones = new();
+        private LevelData currentZone;
 
         public Adventure()
         {
@@ -75,7 +78,7 @@ namespace Adventure
         public void LoadMap()
         {
             World.Clear();
-            cameraZones.Clear();
+            zones.Clear();
             Player = null;
 
             LoadLevel("Levels/world/level_0");
@@ -88,7 +91,7 @@ namespace Adventure
         public void LoadLevel(string path)
         {
             var data = Content.Load<LevelData>(path);
-            cameraZones.Add(new CameraZone(new RectangleF(data.Bounds)));
+            zones.Add(data);
             World.Spawn(Level.GetEntities(data));
         }
 
@@ -104,14 +107,7 @@ namespace Adventure
                 World.Update(gameTime);
             }
 
-            foreach (var cameraZone in cameraZones)
-            {
-                cameraZone.CheckForPlayer();
-            }
-
-            ScreenShake.Update(gameTime);
-
-            Camera.Position.Round();
+            DoCameraEffects(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -182,6 +178,57 @@ namespace Adventure
             {
                 Debug = !Debug;
             }
+        }
+
+        private void DoCameraEffects(GameTime gameTime) 
+        {
+            CameraFollow();
+            ScreenShake.Update(gameTime);
+            Camera.Position.Round();
+        }
+
+        private void CameraFollow() 
+        {
+            if (Player != null) 
+            {
+                foreach (var zone in zones)
+                {
+                    if (zone.Bounds.Contains(Player.Position))
+                    {
+                        var boundsF = new RectangleF(zone.Bounds);
+
+                        if (currentZone != zone)
+                        {
+                            currentZone = zone;
+                            Coroutines.Start(TransitionCameraBetweenZones(boundsF));
+                        }
+                        else if (!IsTransitioningAreas)
+                        {
+                            Camera.Position = boundsF.Center;
+                        }
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        private IEnumerator TransitionCameraBetweenZones(RectangleF bounds)
+        {
+            IsTransitioningAreas = true;
+
+            var duration = 6f;
+
+            while (Vector2.Distance(bounds.Center, Camera.Position) > 0.5f)
+            {
+                var direction = bounds.Center - Camera.Position;
+                Camera.Position = Camera.Position + direction * (1f / duration);
+                duration -= Time.GetDeltaTime();
+                yield return null;
+            }
+
+            Camera.Position = bounds.Center;
+            IsTransitioningAreas = false;
         }
     }
 }
