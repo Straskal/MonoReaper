@@ -122,6 +122,41 @@ namespace Engine
             sort = true;
         }
 
+        public Collider Raycast(Vector2 position, Vector2 direction, uint layerMask, Entity ignore) 
+        {
+            var collision = Collision.Empty;
+            var segment = new Segment(position, direction);
+            var broadphaseRectangle = new RectangleF();
+            broadphaseRectangle.X = MathF.Min(position.X, position.X + direction.X);
+            broadphaseRectangle.Y = MathF.Min(position.Y, position.Y + direction.Y);
+            broadphaseRectangle.Width = MathF.Abs(direction.X);
+            broadphaseRectangle.Height = MathF.Abs(direction.Y);
+            Collider collidedWith = null;
+
+            foreach (var collider in GetOverlappingColliders(broadphaseRectangle))
+            {
+                if (collider.Entity != ignore && collider.CheckMask(layerMask) && collider.IntersectSegment(segment, out var intersection) && intersection.Time < collision.Intersection.Time)
+                {
+                    collidedWith = collider;
+                    collision = new Collision(direction, intersection);
+                }
+            }
+
+            return collidedWith;
+        }
+
+        public bool OverlapsAny(Vector2 point, uint layerMask, Entity ignore) 
+        {
+            foreach (var collider in GetOverlappingColliders(point)) 
+            {
+                if (collider.Entity != ignore && collider.CheckMask(layerMask))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public IEnumerable<Entity> GetOverlappingEntities(Vector2 point)
         {
             return GetOverlappingEntities(point, uint.MaxValue);

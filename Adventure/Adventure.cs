@@ -131,7 +131,6 @@ namespace Adventure
                 Renderer.EndDraw();
             }
 
-
             if (IsPaused)
             {
                 pauseScreen.Draw(Renderer, gameTime);
