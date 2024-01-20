@@ -28,9 +28,5 @@ namespace Engine
         public virtual void Draw(Renderer renderer, GameTime gameTime)
         {
         }
-
-        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
-        {
-        }
     }
 }

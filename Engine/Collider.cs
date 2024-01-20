@@ -47,22 +47,9 @@ namespace Engine
             return (mask & Layer) != 0;
         }
 
-        public List<Collider> GetOverlaps(uint layerMask)
+        public IEnumerable<Collider> GetOverlaps(uint layerMask)
         {
-            var result = new List<Collider>();
-            GetOverlaps(result, layerMask);
-            return result;
-        }
-
-        public void GetOverlaps(List<Collider> colliders, uint layerMask)
-        {
-            foreach (var collider in Entity.World.GetOverlappingColliders(Bounds))
-            {
-                if (collider != this && collider.CheckMask(layerMask))
-                {
-                    colliders.Add(this);
-                }
-            }
+            return Entity.World.OverlapRectangle(Bounds, layerMask, this);
         }
 
         public Collider Cast(Vector2 velocity, uint layerMask, out Collision collision)
@@ -72,9 +59,9 @@ namespace Engine
             var broadphaseRectangle = Bounds.Union(velocity);
             Collider collidedWith = null;
 
-            foreach (var collider in Entity.World.GetOverlappingColliders(broadphaseRectangle))
+            foreach (var collider in Entity.World.OverlapRectangle(broadphaseRectangle, layerMask, this))
             {
-                if (collider != this && collider.CheckMask(layerMask) && Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
+                if (Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
                 {
                     collidedWith = collider;
                     collision = new Collision(velocity, intersection);

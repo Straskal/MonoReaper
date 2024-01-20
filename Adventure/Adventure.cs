@@ -1,11 +1,13 @@
 ﻿using Adventure.Content;
 using Adventure.Entities;
 using Engine;
+using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Adventure
@@ -17,7 +19,8 @@ namespace Adventure
         public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
-        private readonly List<CameraZone> cameraZones = new();
+        private readonly List<LevelData> zones = new();
+        private LevelData currentZone;
 
         public Adventure()
         {
@@ -75,7 +78,7 @@ namespace Adventure
         public void LoadMap()
         {
             World.Clear();
-            cameraZones.Clear();
+            zones.Clear();
             Player = null;
 
             LoadLevel("Levels/world/level_0");
@@ -88,8 +91,8 @@ namespace Adventure
         public void LoadLevel(string path)
         {
             var data = Content.Load<LevelData>(path);
-            cameraZones.Add(new CameraZone(new RectangleF(data.Bounds)));
-            World.Spawn(Level.GetEntities(data));
+            zones.Add(data);
+            World.Spawn(data.GetEntities());
         }
 
         protected override void Update(GameTime gameTime)
@@ -99,19 +102,12 @@ namespace Adventure
             Input.Update(BackBuffer);
             Coroutines.Update();
 
-            if (!IsPaused && !IsTransitioningAreas)
+            if (!(IsPaused || IsTransitioningAreas))
             {
                 World.Update(gameTime);
             }
 
-            foreach (var cameraZone in cameraZones)
-            {
-                cameraZone.CheckForPlayer();
-            }
-
-            ScreenShake.Update(gameTime);
-
-            Camera.Position.Round();
+            DoCameraEffects(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -130,7 +126,6 @@ namespace Adventure
                 DebugOverlay.Draw(Renderer);
                 Renderer.EndDraw();
             }
-
 
             if (IsPaused)
             {
@@ -183,6 +178,60 @@ namespace Adventure
             {
                 Debug = !Debug;
             }
+        }
+
+        private void DoCameraEffects(GameTime gameTime)
+        {
+            CameraFollow();
+            ScreenShake.Update(gameTime);
+            Camera.Position.Round();
+        }
+
+        private void CameraFollow()
+        {
+            if (Player != null)
+            {
+                foreach (var zone in zones)
+                {
+                    if (zone.Bounds.Contains(Player.Position))
+                    {
+                        var boundsF = new RectangleF(zone.Bounds);
+
+                        if (currentZone != zone)
+                        {
+                            currentZone = zone;
+                            Coroutines.Start(TransitionCameraBetweenZones(boundsF));
+                        }
+                        else if (!IsTransitioningAreas)
+                        {
+                            // If player is still within the same zone, but the transition finished,
+                            // Keep forcing the position to the center to account for screen shake offsets
+                            Camera.Position = boundsF.Center;
+                        }
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        private IEnumerator TransitionCameraBetweenZones(RectangleF bounds)
+        {
+            const float EPSILON = 0.05f;
+            var duration = 5.5f;
+            IsTransitioningAreas = true;
+
+            while (Vector2.Distance(bounds.Center, Camera.Position) > EPSILON)
+            {
+                var direction = bounds.Center - Camera.Position;
+                Camera.Position = Camera.Position + direction * (1f / duration);
+                duration -= Time.GetDeltaTime();
+                yield return null;
+            }
+
+            // Force camera position to zone center once we've reached epsilon
+            Camera.Position = bounds.Center;
+            IsTransitioningAreas = false;
         }
     }
 }

@@ -19,7 +19,6 @@ namespace Adventure.Entities
         {
             Health = Random.Shared.Next(2, 5);
             Collider = new BoxCollider(this, 16, 16, EntityLayers.Enemy | EntityLayers.Solid);
-            //Collider = new CircleCollider(this, Vector2.Zero, 7);
             Collider.Layer = EntityLayers.Enemy | EntityLayers.Solid;
             Collider.Enable();
             GraphicsComponent = Sprite = new Sprite(this, Store.Gfx.Barrel)

@@ -69,15 +69,6 @@ namespace Engine
             }
         }
 
-        public IEnumerable<T> All<T>() where T : Entity
-        {
-            if (entitiesByType.TryGetValue(typeof(T), out var entities))
-            {
-                return entities.Cast<T>();
-            }
-            return Enumerable.Empty<T>();
-        }
-
         public T Find<T>() where T : Entity
         {
             if (entitiesByType.TryGetValue(typeof(T), out var entities))
@@ -122,69 +113,119 @@ namespace Engine
             sort = true;
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(Vector2 point)
+        public bool OverlapPointAny(Vector2 point)
         {
-            return GetOverlappingEntities(point, uint.MaxValue);
+            return OverlapPoint(point, uint.MaxValue, null).Any();
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle)
+        public bool OverlapPointAny(Vector2 point, uint layerMask)
         {
-            return GetOverlappingEntities(rectangle, uint.MaxValue);
+            return OverlapPoint(point, layerMask, null).Any();
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(Vector2 point, uint layerMask)
+        public bool OverlapPointAny(Vector2 point, uint layerMask, Collider ignore) 
         {
-            var result = new List<Entity>();
+            return OverlapPoint(point, layerMask, ignore).Any();
+        }
+
+        public IEnumerable<Collider> OverlapPoint(Vector2 point)
+        {
+            return OverlapPoint(point, uint.MaxValue, null);
+        }
+
+        public IEnumerable<Collider> OverlapPoint(Vector2 point, uint layerMask)
+        {
+            return OverlapPoint(point, layerMask, null);
+        }
+
+        public IEnumerable<Collider> OverlapPoint(Vector2 point, uint layerMask, Collider ignore)
+        {
+            var result = new List<Collider>();
 
             foreach (var collider in partition.Query(point))
             {
-                if (collider.CheckMask(layerMask))
+                if (collider != ignore && collider.CheckMask(layerMask))
                 {
-                    result.Add(collider.Entity);
+                    result.Add(collider);
                 }
             }
 
             return result;
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(CircleF circle, uint layerMask)
+        public IEnumerable<Collider> OverlapCircle(CircleF circle)
         {
-            var result = new List<Entity>();
+            return OverlapCircle(circle, uint.MaxValue, null);
+        }
+
+        public IEnumerable<Collider> OverlapCircle(CircleF circle, uint layerMask)
+        {
+            return OverlapCircle(circle, layerMask, null);
+        }
+
+        public IEnumerable<Collider> OverlapCircle(CircleF circle, uint layerMask, Collider ignore)
+        {
+            var result = new List<Collider>();
 
             foreach (var collider in partition.Query(circle))
             {
-                if (collider.CheckMask(layerMask))
+                if (collider != ignore && collider.CheckMask(layerMask))
                 {
-                    result.Add(collider.Entity);
+                    result.Add(collider);
                 }
             }
 
             return result;
         }
 
-        public IEnumerable<Entity> GetOverlappingEntities(RectangleF rectangle, uint layerMask)
+        public IEnumerable<Collider> OverlapRectangle(RectangleF rectangle)
         {
-            var result = new List<Entity>();
+            return OverlapRectangle(rectangle, uint.MaxValue, null);
+        }
+
+        public IEnumerable<Collider> OverlapRectangle(RectangleF rectangle, uint layerMask)
+        {
+            return OverlapRectangle(rectangle, layerMask, null);
+        }
+
+        public IEnumerable<Collider> OverlapRectangle(RectangleF rectangle, uint layerMask, Collider ignore)
+        {
+            var result = new List<Collider>();
 
             foreach (var collider in partition.Query(rectangle))
             {
-                if (collider.CheckMask(layerMask))
+                if (collider != ignore && collider.CheckMask(layerMask))
                 {
-                    result.Add(collider.Entity);
+                    result.Add(collider);
                 }
             }
 
             return result;
         }
 
-        public IEnumerable<Collider> GetOverlappingColliders(Vector2 point)
+        public Collider LineCast(Vector2 position, Vector2 direction, uint layerMask, Collider ignore)
         {
-            return partition.Query(point);
-        }
+            var collision = Collision.Empty;
+            var segment = new Segment(position, direction);
+            var broadphaseRectangle = new RectangleF(
+                MathF.Min(position.X, position.X + direction.X), 
+                MathF.Min(position.Y, position.Y + direction.Y),
+                MathF.Abs(direction.X),
+                MathF.Abs(direction.Y));
 
-        public IEnumerable<Collider> GetOverlappingColliders(RectangleF rectangle)
-        {
-            return partition.Query(rectangle);
+            Collider collidedWith = default;
+
+            // TODO: Overlap segment
+            foreach (var collider in OverlapRectangle(broadphaseRectangle, layerMask, ignore))
+            {
+                if (collider.IntersectSegment(segment, out var intersection) && intersection.Time < collision.Intersection.Time)
+                {
+                    collidedWith = collider;
+                    collision = new Collision(direction, intersection);
+                }
+            }
+
+            return collidedWith;
         }
 
         public void Clear()
@@ -225,9 +266,6 @@ namespace Engine
             {
                 entities[i].DebugDraw(renderer, gameTime);
             }
-
-            // Don't always need to see the partition.
-            // partition.DebugDraw(renderer);
         }
 
         private void ProcessDestroyedEntities()

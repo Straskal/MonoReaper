@@ -13,11 +13,11 @@ namespace Engine
         public GraphicsComponent GraphicsComponent { get; protected set; }
         public bool IsDestroyed { get; internal set; }
 
-        public int DrawOrder 
+        public int DrawOrder
         {
-            get 
+            get
             {
-                if (GraphicsComponent != null) 
+                if (GraphicsComponent != null)
                 {
                     return GraphicsComponent.DrawOrder;
                 }
@@ -50,11 +50,6 @@ namespace Engine
         public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
         {
             Collider?.Draw(renderer, gameTime);
-            GraphicsComponent?.DebugDraw(renderer, gameTime);
-        }
-
-        public virtual void OnCollision(Entity other, Collision collision)
-        {
         }
 
         public RectangleF TransformOrigin(float width, float height)
@@ -62,12 +57,12 @@ namespace Engine
             return TransformOrigin(0f, 0f, width, height);
         }
 
-        public RectangleF TransformOrigin(float xOffset, float yOffset, float width, float height) 
+        public RectangleF TransformOrigin(float xOffset, float yOffset, float width, float height)
         {
             // Default top left
             var result = new RectangleF(Position.X + xOffset, Position.Y + yOffset, width, height);
 
-            switch (EntityOrigin) 
+            switch (EntityOrigin)
             {
                 case Origin.Center:
                     result.X -= result.Width * 0.5f;

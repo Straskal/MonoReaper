@@ -52,18 +52,26 @@ namespace Adventure.Entities
                     if (collision.Intersection.Normal.Y != 0f) accumulator.Y = 0f;
 
                     OnCollision(collider.Entity, collision);
-                    collider.Entity.OnCollision(this, collision);
+
+                    if (collider.Entity is KinematicEntity kinematic) 
+                    {
+                        kinematic.OnCollision(this, collision);
+                    }
                 }
 
                 IsMoving = false;
             }
         }
 
-        public virtual void Move(Vector2 direction)
+        public void Move(Vector2 direction)
         {
             Position += direction;
             Position = Vector2.Round(Position);
             Collider.UpdateBounds();
+        }
+
+        public virtual void OnCollision(Entity other, Collision collision) 
+        {
         }
     }
 }
