@@ -14,7 +14,7 @@ namespace Adventure.Entities
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction = Vector2.One;
-        private float lastAttackTimer = 0f;
+        private bool isAiming;
 
         public override void Spawn()
         {
@@ -40,7 +40,7 @@ namespace Adventure.Entities
 
             animatedSprite.IsPaused = movementLength == 0f;
 
-            if ((lastAttackTimer -= deltaTime) > 0f)
+            if (isAiming)
             {
                 var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - new Vector2(4, 4);
                 direction = mousePosition - Position;
@@ -60,15 +60,25 @@ namespace Adventure.Entities
             HandleInteractInput(deltaTime);
         }
 
+        public override void Draw(Renderer renderer, GameTime gameTime)
+        {
+            base.Draw(renderer, gameTime);
+            DrawCursor(renderer);
+        }
+
         private void HandleInteractInput(float deltaTime)
         {
-            if (Input.IsMouseLeftPressed())
+            isAiming = Input.IsMouseRightDown();
+
+            if (isAiming) 
             {
-                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-                direction = mousePosition - Position;
-                direction.Normalize();
-                World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
-                lastAttackTimer = 3f;
+                if (Input.IsMouseLeftPressed())
+                {
+                    var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
+                    direction = mousePosition - Position;
+                    direction.Normalize();
+                    World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
+                }
             }
 
             if (Input.IsKeyPressed(Keys.E))
@@ -120,6 +130,18 @@ namespace Adventure.Entities
 
                 }
             }
+        }
+
+        private void DrawCursor(Renderer renderer)
+        {
+            var source = Input.IsMouseLeftDown()
+                ? isAiming ? new Rectangle(8, 0, 8, 8) : new Rectangle(0, 0, 8, 8)
+                : isAiming ? new Rectangle(16, 0, 8, 8) : new Rectangle(8, 0, 8, 8);
+
+            var cursorOffset = source.Size.ToVector2() / 2f;
+            var cursorPosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - cursorOffset;
+
+            renderer.Draw(Store.Gfx.Cursor, cursorPosition, source);
         }
     }
 }

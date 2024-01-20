@@ -49,6 +49,21 @@ namespace Engine
             return PreviousMouseState.LeftButton == ButtonState.Released && MouseState.LeftButton == ButtonState.Pressed && IsMouseWithinViewport;
         }
 
+        public static bool IsMouseRightDown()
+        {
+            return MouseState.RightButton == ButtonState.Pressed && IsMouseWithinViewport;
+        }
+
+        public static bool IsMouseRightUp()
+        {
+            return MouseState.RightButton == ButtonState.Released;
+        }
+
+        public static bool IsMouseRightPressed()
+        {
+            return PreviousMouseState.RightButton == ButtonState.Released && MouseState.RightButton == ButtonState.Pressed && IsMouseWithinViewport;
+        }
+
         public static float GetAxis(Keys negative, Keys positive)
         {
             var result = 0f;
