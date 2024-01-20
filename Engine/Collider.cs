@@ -47,22 +47,9 @@ namespace Engine
             return (mask & Layer) != 0;
         }
 
-        public List<Collider> GetOverlaps(uint layerMask)
+        public IEnumerable<Collider> GetOverlaps(uint layerMask)
         {
-            var result = new List<Collider>();
-            GetOverlaps(result, layerMask);
-            return result;
-        }
-
-        public void GetOverlaps(List<Collider> colliders, uint layerMask)
-        {
-            foreach (var collider in Entity.World.OverlapRectangle(Bounds))
-            {
-                if (collider != this && collider.CheckMask(layerMask))
-                {
-                    colliders.Add(this);
-                }
-            }
+            return Entity.World.OverlapRectangle(Bounds, layerMask, this);
         }
 
         public Collider Cast(Vector2 velocity, uint layerMask, out Collision collision)
