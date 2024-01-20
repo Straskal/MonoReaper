@@ -12,6 +12,7 @@ namespace Adventure
 
         public static class Gfx
         {
+            public static Texture2D Cursor;
             public static Texture2D Player;
             public static Texture2D Barrel;
             public static Texture2D Fire;

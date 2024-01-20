@@ -9,7 +9,7 @@ namespace Engine
         private static KeyboardState PreviousKeyState;
         private static MouseState MouseState;
         private static MouseState PreviousMouseState;
-
+        private static bool IsMouseWithinViewport;
         public static void Update(BackBuffer backBuffer)
         {
             UpdateKeyboardState();
@@ -36,7 +36,7 @@ namespace Engine
 
         public static bool IsMouseLeftDown()
         {
-            return MouseState.LeftButton == ButtonState.Pressed;
+            return MouseState.LeftButton == ButtonState.Pressed && IsMouseWithinViewport;
         }
 
         public static bool IsMouseLeftUp()
@@ -46,7 +46,7 @@ namespace Engine
 
         public static bool IsMouseLeftPressed()
         {
-            return PreviousMouseState.LeftButton == ButtonState.Released && MouseState.LeftButton == ButtonState.Pressed;
+            return PreviousMouseState.LeftButton == ButtonState.Released && MouseState.LeftButton == ButtonState.Pressed && IsMouseWithinViewport;
         }
 
         public static float GetAxis(Keys negative, Keys positive)
@@ -82,6 +82,7 @@ namespace Engine
             PreviousMouseState = MouseState;
             MouseState = Mouse.GetState();
             MousePosition = backBuffer.Unproject(MouseState.Position.ToVector2());
+            IsMouseWithinViewport = backBuffer.LetterboxViewport.Bounds.Contains(MouseState.Position);
         }
     }
 }

@@ -98,6 +98,18 @@
 /processorParam:TextureFormat=Color
 /build:Art/Common/spikes.png
 
+#begin Art/cursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Art/cursor.png
+
 #begin Art/Enemies/blob.png
 /importer:TextureImporter
 /processor:TextureProcessor

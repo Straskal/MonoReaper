@@ -1,5 +1,4 @@
 ﻿using Adventure.Content;
-using Adventure.Entities;
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -17,15 +16,14 @@ namespace Adventure
         public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
-        private readonly List<CameraArea> areas = new();
-        public bool isTransitioningAreas;
+        private readonly List<CameraZone> cameraZones = new();
 
         public Adventure()
         {
             Instance = this;
             Window.Title = "Adventure Game 2000";
             Window.AllowUserResizing = true;
-            IsMouseVisible = true;
+            IsMouseVisible = false;
             Content = new ContentManager(Services, "Content");
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
@@ -36,12 +34,15 @@ namespace Adventure
         }
 
         public static Adventure Instance { get; private set; }
+        public static GameTime Time { get; private set; }
         public static bool IsPaused { get; set; }
+        public static bool IsTransitioningAreas { get; set; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
         public Camera Camera { get; private set; }
         public World World { get; private set; }
+        public CoroutineRunner Coroutines { get; } = new();
         public bool Debug { get; set; }
 
         protected override void Initialize()
@@ -72,7 +73,7 @@ namespace Adventure
         public void LoadMap()
         {
             World.Clear();
-            areas.Clear();
+            cameraZones.Clear();
             LoadLevel("Levels/world/level_0");
             LoadLevel("Levels/world/level_1");
             LoadLevel("Levels/world/level_2");
@@ -81,24 +82,25 @@ namespace Adventure
         public void LoadLevel(string path)
         {
             var data = Content.Load<LevelData>(path);
-            areas.Add(new CameraArea(new RectangleF(data.Bounds)));
+            cameraZones.Add(new CameraZone(new RectangleF(data.Bounds)));
             World.Spawn(Level.GetEntities(data));
         }
 
         protected override void Update(GameTime gameTime)
         {
+            Time = gameTime;
+            HandleGlobalInput();
             Input.Update(BackBuffer);
+            Coroutines.Update();
 
-            if (!IsPaused && !isTransitioningAreas)
+            if (!IsPaused && !IsTransitioningAreas)
             {
                 World.Update(gameTime);
             }
 
-            HandleGlobalInput();
-
-            foreach (var area in areas) 
+            foreach (var cameraZone in cameraZones)
             {
-                area.CheckForPlayer(gameTime);
+                cameraZone.CheckForPlayer();
             }
 
             ScreenShake.Update(gameTime);
@@ -126,6 +128,8 @@ namespace Adventure
                 pauseScreen.Draw(Renderer, gameTime);
             }
 
+            DrawCursor();
+
             Renderer.SetTarget(null);
             Renderer.SetViewport(BackBuffer.LetterboxViewport);
             Renderer.Clear();
@@ -134,9 +138,24 @@ namespace Adventure
             Renderer.EndDraw();
         }
 
+        private void DrawCursor()
+        {
+            var source = Input.IsMouseLeftDown()
+                ? new Rectangle(0, 0, 8, 8)
+                : new Rectangle(8, 0, 8, 8);
+
+            var cursorOffset = source.Size.ToVector2() / 2f;
+            var cursorPosition = Input.MousePosition - cursorOffset;
+
+            Renderer.BeginDraw();
+            Renderer.Draw(Store.Gfx.Cursor, cursorPosition, source);
+            Renderer.EndDraw();
+        }
+
         private void LoadAllContent()
         {
             Store.Fonts.Default = Content.Load<SpriteFont>("fonts/font");
+            Store.Gfx.Cursor = Content.Load<Texture2D>("art/cursor");
             Store.Gfx.Player = Content.Load<Texture2D>("art/player/player");
             Store.Gfx.Fire = Content.Load<Texture2D>("art/player/fire");
             Store.Gfx.Barrel = Content.Load<Texture2D>("art/common/barrel");

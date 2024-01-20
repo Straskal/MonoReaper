@@ -64,10 +64,10 @@ namespace Adventure.Entities
         {
             if (Input.IsMouseLeftPressed())
             {
-                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - new Vector2(4, 4);
+                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
                 direction = mousePosition - Position;
                 direction.Normalize();
-                World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+                World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
                 lastAttackTimer = 3f;
             }
 
@@ -79,7 +79,7 @@ namespace Adventure.Entities
 
         private void ShootFireball(float deltaTime)
         {
-            World.Spawn(new Fireball(direction * 100f * deltaTime), Collider.Bounds.Center + direction);
+            World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
         }
 
         public override void OnCollision(Entity other, Collision collision)
@@ -128,6 +128,7 @@ namespace Adventure.Entities
             var mp = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
             mp.Round();
             renderer.DrawString(Store.Fonts.Default, mp.ToString(), mp, Color.White);
+            renderer.DrawLine(Position, mp, Color.Violet);
         }
     }
 }
