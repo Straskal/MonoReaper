@@ -180,16 +180,16 @@ namespace Adventure
             }
         }
 
-        private void DoCameraEffects(GameTime gameTime) 
+        private void DoCameraEffects(GameTime gameTime)
         {
             CameraFollow();
             ScreenShake.Update(gameTime);
             Camera.Position.Round();
         }
 
-        private void CameraFollow() 
+        private void CameraFollow()
         {
-            if (Player != null) 
+            if (Player != null)
             {
                 foreach (var zone in zones)
                 {
