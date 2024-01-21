@@ -29,11 +29,6 @@ namespace Adventure.Components
         public int Width { get; }
         public int Height { get; }
 
-        public override RectangleF Bounds
-        {
-            get => new(0, 0, Width, Height);
-        }
-
         public override void Enable()
         {
             foreach (var box in colliders)
@@ -50,11 +45,11 @@ namespace Adventure.Components
             }
         }
 
-        public override void UpdateBounds()
+        public override void Update()
         {
             foreach (var box in colliders)
             {
-                box.UpdateBounds();
+                box.Update();
             }
         }
 
@@ -78,11 +73,11 @@ namespace Adventure.Components
             throw new NotImplementedException();
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
+        public override void Draw(Renderer renderer)
         {
             foreach (var box in colliders)
             {
-                box.Draw(renderer, gameTime);
+                box.Draw(renderer);
             }
         }
 
@@ -90,7 +85,10 @@ namespace Adventure.Components
         {
             foreach (var tile in mapData.Tiles)
             {
-                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize, EntityLayers.Solid));
+                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize) 
+                {
+                    Layer = EntityLayers.Solid
+                });
             }
         }
 
@@ -110,6 +108,11 @@ namespace Adventure.Components
         }
 
         public override bool OverlapPoint(Vector2 point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override RectangleF CalculateBounds()
         {
             throw new NotImplementedException();
         }

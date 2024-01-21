@@ -67,7 +67,7 @@ namespace Adventure.Entities
         {
             Position += direction;
             Position = Vector2.Round(Position);
-            Collider.UpdateBounds();
+            Collider.Update();
         }
 
         public virtual void OnCollision(Entity other, Collision collision) 

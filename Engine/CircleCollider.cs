@@ -4,26 +4,20 @@ namespace Engine
 {
     public class CircleCollider : Collider
     {
-        public CircleCollider(Entity entity, Vector2 position, float radius)
-            : this(entity, position, radius, 0)
-        {
-        }
-
-        public CircleCollider(Entity entity, Vector2 position, float radius, uint layerMask)
-            : base(entity)
+        public CircleCollider(Entity entity, Vector2 position, float radius) : base(entity)
         {
             Position = position;
             Radius = radius;
-            Layer = layerMask;
         }
 
         public Vector2 Position { get; set; }
         public float Radius { get; set; }
-        public CircleF Circle { get => new(Bounds.Center, Radius); }
+        public CircleF Circle => new(Bounds.Center, Radius);
 
-        public override RectangleF Bounds
+        public override RectangleF CalculateBounds()
         {
-            get => Entity.TransformOrigin(Position.X, Position.Y, Radius * 2f, Radius * 2f);
+            var size = Radius * 2f;
+            return Entity.TransformOrigin(Position.X, Position.Y, size, size);
         }
 
         public override bool Overlaps(Collider collider)
@@ -66,7 +60,7 @@ namespace Engine
             return IntersectionTests.RectangleSegmentVsRectangle(rectangle, segment, Bounds, out intersection);
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
+        public override void Draw(Renderer renderer)
         {
             renderer.DrawCircleOutline(Entity.Position.X - Position.X, Entity.Position.Y + Position.Y, Radius, 10, new Color(Color.White, 0.1f));
         }

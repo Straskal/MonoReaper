@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace Engine
@@ -9,6 +8,10 @@ namespace Engine
         private readonly Dictionary<Point, List<Collider>> cells = new();
         private readonly int cellSize;
         private readonly float inverseCellSize;
+
+        private readonly List<Point> cellResults = new();
+        private readonly HashSet<Collider> unionResults = new();
+        private readonly List<Collider> queryResults = new();
 
         public Partition(int cellSize)
         {
@@ -20,10 +23,10 @@ namespace Engine
         {
             if (collider.cells.Count == 0)
             {
-                foreach (var point in GetIntersectingCells(collider.Bounds))
+                foreach (var point in GetOverlappingCells(collider.Bounds))
                 {
                     collider.cells.Add(point);
-                    GetOrCreateCellAtPoint(point).Add(collider);
+                    AddColliderToCell(collider, point);
                 }
             }
         }
@@ -34,7 +37,7 @@ namespace Engine
             {
                 foreach (var point in collider.cells)
                 {
-                    GetOrCreateCellAtPoint(point).Remove(collider);
+                    RemoveColliderFromCell(collider, point);
                 }
 
                 collider.cells.Clear();
@@ -62,106 +65,134 @@ namespace Engine
 
         public IEnumerable<Collider> Query(Vector2 point)
         {
-            foreach (var collider in GetCellAtPoint(point))
+            queryResults.Clear();
+
+            var cellPoint = point * inverseCellSize;
+            cellPoint.Floor();
+
+            if (cells.TryGetValue(cellPoint.ToPoint(), out var cell))
             {
-                if (collider.OverlapPoint(point))
+                foreach (var collider in cell)
                 {
-                    yield return collider;
+                    if (collider.OverlapPoint(point))
+                    {
+                        queryResults.Add(collider);
+                    }
                 }
             }
+
+            return queryResults;
         }
 
         public IEnumerable<Collider> Query(CircleF circle)
         {
-            foreach (var collider in QueryCells(GetIntersectingCells(circle.GetBounds())))
+            queryResults.Clear();
+
+            foreach (var collider in QueryCells(GetOverlappingCells(circle.GetBounds())))
             {
                 if (collider.OverlapCircle(circle))
                 {
-                    yield return collider;
+                    queryResults.Add(collider);
                 }
             }
+
+            return queryResults;
         }
 
         public IEnumerable<Collider> Query(RectangleF bounds)
         {
-            foreach (var collider in QueryCells(GetIntersectingCells(bounds))) 
+            queryResults.Clear();
+
+            foreach (var collider in QueryCells(GetOverlappingCells(bounds))) 
             {
                 if (collider.OverlapRectangle(bounds)) 
                 {
-                    yield return collider;
-                }
-            }
-        }
-
-        private List<Point> GetIntersectingCells(RectangleF bounds)
-        {
-            var result = new List<Point>();
-            var min = Vector2.Floor(bounds.TopLeft * inverseCellSize).ToPoint();
-            var max = Vector2.Floor(bounds.BottomRight * inverseCellSize).ToPoint();
-            var length = max - min;
-            var current = new Point();
-
-            for (int y = 0; y <= length.Y; y++)
-            {
-                for (int x = 0; x <= length.X; x++)
-                {
-                    current.X = min.X + x;
-                    current.Y = min.Y + y;
-                    result.Add(current);
+                    queryResults.Add(collider);
                 }
             }
 
-            return result;
+            return queryResults;
         }
 
-        private List<Collider> GetCellAtPoint(Vector2 point)
-        {
-            point = Vector2.Floor(point * inverseCellSize);
-
-            if (cells.TryGetValue(point.ToPoint(), out var cell))
-            {
-                return cell;
-            }
-
-            return new List<Collider>();
-        }
-
-        private List<Collider> GetOrCreateCellAtPoint(Point point)
+        private void AddColliderToCell(Collider collider, in Point point)
         {
             if (!cells.TryGetValue(point, out var cell))
             {
                 cells[point] = cell = new List<Collider>();
             }
 
-            return cell;
+            cell.Add(collider);
+        }
+
+        private void RemoveColliderFromCell(Collider collider, in Point point)
+        {
+            if (cells.TryGetValue(point, out var cell))
+            {
+                if (cell.Remove(collider))
+                {
+                    if (cell.Count == 0)
+                    {
+                        cells.Remove(point);
+                    }
+                }
+            }
+        }
+
+        private List<Point> GetOverlappingCells(RectangleF bounds)
+        {
+            cellResults.Clear();
+
+            var minF = bounds.TopLeft * inverseCellSize;
+            var maxF = bounds.BottomRight * inverseCellSize;
+            minF.Floor();
+            maxF.Floor();
+
+            var min = minF.ToPoint();
+            var max = maxF.ToPoint();
+            var len = max - min;
+
+            for (int y = 0; y <= len.Y; y++)
+            {
+                for (int x = 0; x <= len.X; x++)
+                {
+                    cellResults.Add(new Point(min.X + x, min.Y + y));
+                }
+            }
+
+            return cellResults;
         }
 
         private IEnumerable<Collider> QueryCells(List<Point> cellPoints)
         {
-            var result = new HashSet<Collider>();
+            unionResults.Clear();
 
             foreach (var point in cellPoints)
             {
                 if (cells.TryGetValue(point, out var cell))
                 {
-                    result.UnionWith(cell);
+                    unionResults.UnionWith(cell);
                 }
             }
 
-            return result;
+            return unionResults;
         }
 
         internal void DebugDraw(Renderer renderer)
         {
             foreach (var kvp in cells)
             {
-                var row = kvp.Key.Y;
-                var col = kvp.Key.X;
-                var y = row * cellSize;
-                var x = col * cellSize;
-                var opacity = kvp.Value.Count > 0 ? 0.8f : 0.05f;
+                var y = kvp.Key.Y * cellSize;
+                var x = kvp.Key.X * cellSize;
 
-                renderer.DrawRectangleOutline(new Rectangle(x, y, cellSize - 1, cellSize - 1), Color.DarkBlue * opacity);
+                renderer.DrawRectangleOutline(new Rectangle(x, y, cellSize - 1, cellSize - 1), Color.DarkBlue);
+            }
+
+            foreach (var kvp in cells)
+            {
+                foreach (var collider in kvp.Value) 
+                {
+                    collider.Draw(renderer);
+                }
             }
         }
     }

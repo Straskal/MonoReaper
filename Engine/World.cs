@@ -260,11 +260,13 @@ namespace Engine
             }
         }
 
-        public void DebugDraw(Renderer renderer, GameTime gameTime)
+        public void DebugDraw(Renderer renderer)
         {
+            partition.DebugDraw(renderer);
+
             for (int i = 0; i < entities.Count; i++)
             {
-                entities[i].DebugDraw(renderer, gameTime);
+                entities[i].DebugDraw(renderer);
             }
         }
 

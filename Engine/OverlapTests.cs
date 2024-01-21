@@ -12,7 +12,10 @@ namespace Engine
 
         public static bool CircleVsRectangle(CircleF circle, RectangleF rectangle)
         {
-            var closestPoint = new Vector2(Math.Clamp(circle.Center.X, rectangle.Left, rectangle.Right), Math.Clamp(circle.Center.Y, rectangle.Top, rectangle.Bottom));
+            var closestPoint = new Vector2(
+                Math.Clamp(circle.Center.X, rectangle.Left, rectangle.Right), 
+                Math.Clamp(circle.Center.Y, rectangle.Top, rectangle.Bottom));
+
             return CircleVsPoint(circle, closestPoint);
         }
 
@@ -23,7 +26,10 @@ namespace Engine
 
         public static bool RectangleVsRectangle(RectangleF rectangle0, RectangleF rectangle1)
         {
-            return rectangle1.Left < rectangle0.Right && rectangle0.Left < rectangle1.Right && rectangle1.Top < rectangle0.Bottom && rectangle0.Top < rectangle1.Bottom;
+            return rectangle1.X < rectangle0.Right 
+                && rectangle0.X < rectangle1.Right
+                && rectangle1.Y < rectangle0.Bottom 
+                && rectangle0.Y < rectangle1.Bottom;
         }
 
         public static bool RectangleVsCircle(RectangleF rectangle, CircleF circle)
@@ -33,7 +39,10 @@ namespace Engine
 
         public static bool RectangleVsPoint(RectangleF rectangle0, Vector2 point)
         {
-            return point.X > rectangle0.Left && point.X < rectangle0.Right && point.Y > rectangle0.Top && point.Y < rectangle0.Bottom;
+            return point.X > rectangle0.X 
+                && point.X < rectangle0.Right 
+                && point.Y > rectangle0.Y 
+                && point.Y < rectangle0.Bottom;
         }
     }
 }

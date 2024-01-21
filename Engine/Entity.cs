@@ -7,7 +7,7 @@ namespace Engine
     {
         public World World { get; internal set; }
         public HashSet<string> Tags { get; } = new();
-        public Origin EntityOrigin { get; set; } = Origin.Center;
+        public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
         public Collider Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
@@ -47,9 +47,8 @@ namespace Engine
             GraphicsComponent?.Draw(renderer, gameTime);
         }
 
-        public virtual void DebugDraw(Renderer renderer, GameTime gameTime)
+        public virtual void DebugDraw(Renderer renderer)
         {
-            Collider?.Draw(renderer, gameTime);
         }
 
         public RectangleF TransformOrigin(float width, float height)
@@ -62,7 +61,7 @@ namespace Engine
             // Default top left
             var result = new RectangleF(Position.X + xOffset, Position.Y + yOffset, width, height);
 
-            switch (EntityOrigin)
+            switch (Origin)
             {
                 case Origin.Center:
                     result.X -= result.Width * 0.5f;

@@ -4,34 +4,20 @@ namespace Engine
 {
     public class BoxCollider : Collider
     {
-        public BoxCollider(Entity entity)
-            : this(entity, 0f, 0f)
+        public BoxCollider(Entity entity) : this(entity, 0f, 0f)
         {
         }
 
-        public BoxCollider(Entity entity, float width, float height)
-            : this(entity, width, height, 0)
+        public BoxCollider(Entity entity, float width, float height) : this(entity, 0, 0, width, height)
         {
         }
 
-        public BoxCollider(Entity entity, float width, float height, uint layerMask)
-            : this(entity, 0f, 0f, width, height, layerMask)
-        {
-        }
-
-        public BoxCollider(Entity entity, float x, float y, float width, float height)
-            : this(entity, x, y, width, height, 0)
-        {
-        }
-
-        public BoxCollider(Entity entity, float x, float y, float width, float height, uint layerMask)
-            : base(entity)
+        public BoxCollider(Entity entity, float x, float y, float width, float height) : base(entity)
         {
             X = x;
             Y = y;
             Width = width;
             Height = height;
-            Layer = layerMask;
         }
 
         public float X { get; set; }
@@ -39,9 +25,9 @@ namespace Engine
         public float Width { get; set; }
         public float Height { get; set; }
 
-        public override RectangleF Bounds
+        public override RectangleF CalculateBounds()
         {
-            get => Entity.TransformOrigin(X, Y, Width, Height);
+            return Entity.TransformOrigin(X, Y, Width, Height);
         }
 
         public override bool Overlaps(Collider collider)
@@ -84,7 +70,7 @@ namespace Engine
             return IntersectionTests.RectangleSegmentVsRectangle(rectangle, segment, Bounds, out intersection);
         }
 
-        public override void Draw(Renderer renderer, GameTime gameTime)
+        public override void Draw(Renderer renderer)
         {
             renderer.DrawRectangleOutline(Bounds.ToXnaRect(), Color.White);
         }

@@ -122,7 +122,7 @@ namespace Adventure
             if (Debug)
             {
                 Renderer.BeginDraw(Camera.TransformationMatrix);
-                World.DebugDraw(Renderer, gameTime);
+                World.DebugDraw(Renderer);
                 DebugOverlay.Draw(Renderer);
                 Renderer.EndDraw();
             }
