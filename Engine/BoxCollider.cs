@@ -25,9 +25,9 @@ namespace Engine
         public float Width { get; set; }
         public float Height { get; set; }
 
-        public override RectangleF CalculateBounds()
+        public override void CalculateBounds()
         {
-            return Entity.TransformOrigin(X, Y, Width, Height);
+            Bounds = Entity.TransformOrigin(X, Y, Width, Height);
         }
 
         public override bool Overlaps(Collider collider)

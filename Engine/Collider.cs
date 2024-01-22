@@ -10,10 +10,10 @@ namespace Engine
         }
 
         public Entity Entity { get; }
-        public RectangleF Bounds { get; private set; }
+        public RectangleF Bounds { get; protected set; }
         public uint Layer { get; set; }
 
-        public abstract RectangleF CalculateBounds();
+        public abstract void CalculateBounds();
         public abstract bool Overlaps(Collider collider);
         public abstract bool OverlapPoint(Vector2 point);
         public abstract bool OverlapCircle(CircleF circle);
@@ -24,26 +24,26 @@ namespace Engine
         public abstract bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection);
         public abstract void Draw(Renderer renderer);
 
+        public bool CheckMask(uint mask)
+        {
+            return (mask & Layer) != 0;
+        }
+
         public virtual void Enable()
         {
-            Bounds = CalculateBounds();
+            CalculateBounds();
             Entity.World.EnableCollider(this);
         }
 
         public virtual void Disable()
         {
-            Bounds = CalculateBounds();
+            CalculateBounds();
             Entity.World.DisableCollider(this);
         }
 
         public virtual void Update()
         {
-            Bounds = CalculateBounds();
-        }
-
-        public bool CheckMask(uint mask)
-        {
-            return (mask & Layer) != 0;
+            CalculateBounds();
         }
     }
 }

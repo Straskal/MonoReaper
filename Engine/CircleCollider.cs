@@ -12,12 +12,12 @@ namespace Engine
 
         public Vector2 Position { get; set; }
         public float Radius { get; set; }
-        public CircleF Circle => new(Bounds.Center, Radius);
+        public CircleF Circle { get; private set; }
 
-        public override RectangleF CalculateBounds()
+        public override void CalculateBounds()
         {
-            var size = Radius * 2f;
-            return Entity.TransformOrigin(Position.X, Position.Y, size, size);
+            Bounds = Entity.TransformOrigin(Position.X, Position.Y, Radius * 2f, Radius * 2f);
+            Circle = new CircleF(Bounds.Center, Radius);
         }
 
         public override bool Overlaps(Collider collider)

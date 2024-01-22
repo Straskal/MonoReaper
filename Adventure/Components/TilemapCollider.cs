@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using static Adventure.Entities.Tilemap;
 using static Adventure.Constants;
+using static Adventure.Entities.Tilemap;
 
 namespace Adventure.Components
 {
@@ -53,26 +53,6 @@ namespace Adventure.Components
             }
         }
 
-        public override bool OverlapCircle(CircleF circle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool OverlapRectangle(RectangleF rectangle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Overlaps(Collider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Draw(Renderer renderer)
         {
             foreach (var box in colliders)
@@ -85,11 +65,41 @@ namespace Adventure.Components
         {
             foreach (var tile in mapData.Tiles)
             {
-                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize) 
+                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize)
                 {
                     Layer = EntityLayers.Solid
                 });
             }
+        }
+
+        public override void CalculateBounds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Overlaps(Collider collider)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool OverlapPoint(Vector2 point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool OverlapCircle(CircleF circle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool OverlapRectangle(RectangleF rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool IntersectSegment(Segment segment, out Intersection intersection)
@@ -103,16 +113,6 @@ namespace Adventure.Components
         }
 
         public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool OverlapPoint(Vector2 point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override RectangleF CalculateBounds()
         {
             throw new NotImplementedException();
         }
