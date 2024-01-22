@@ -97,7 +97,7 @@ namespace Adventure
         protected override void Update(GameTime gameTime)
         {
             Time = gameTime;
-            HandleGlobalInput();
+            HandleInput();
             Input.Update(BackBuffer);
             Coroutines.Update();
 
@@ -160,7 +160,7 @@ namespace Adventure
             GUI.BackBuffer = BackBuffer;
         }
 
-        private void HandleGlobalInput()
+        private void HandleInput()
         {
             if (Input.IsKeyPressed(Keys.F))
             {
@@ -176,6 +176,39 @@ namespace Adventure
             if (Input.IsKeyPressed(Keys.OemTilde))
             {
                 Debug = !Debug;
+            }
+
+            SetPlayerInput();
+        }
+
+        private void SetPlayerInput()
+        {
+            if (Player != null)
+            {
+                Vector2 aim, arrowAim;
+                bool shoot;
+
+                if (Input.IsMouseRightDown())
+                {
+                    var mousePosition = Camera.ToWorld(Input.MousePosition);
+                    var direction = mousePosition - Player.Position;
+                    direction.Normalize();
+                    aim = direction;
+                    shoot = Input.IsMouseLeftDown();
+                }
+                else if ((arrowAim = Input.GetVector(Keys.Left, Keys.Right, Keys.Up, Keys.Down)) != Vector2.Zero)
+                {
+                    arrowAim.Normalize();
+                    aim = arrowAim;
+                    shoot = true;
+                }
+                else
+                {
+                    aim = Vector2.Zero;
+                    shoot = false;
+                }
+
+                Player.SetInput(new PlayerInput(Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S), aim, shoot));
             }
         }
 

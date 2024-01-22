@@ -1,7 +1,6 @@
 ﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using System;
 using static Adventure.Constants;
 
@@ -13,14 +12,27 @@ namespace Adventure.Entities
         public const float MaxSpeed = 0.75f;
 
         private AnimatedSprite animatedSprite;
+        private CircleCollider hurtArea;
         private Vector2 direction;
         private bool isAiming;
+        private PlayerInput input;
+        private float attackTimer;
+
+        public void SetInput(PlayerInput input)
+        {
+            this.input = input;
+        }
 
         public override void Spawn()
         {
-            Collider = new BoxCollider(this, 0, 4, 10, 8);
+            hurtArea = new CircleCollider(this, Vector2.Zero, 6f);
+            hurtArea.Layer = BoxLayers.Damageable;
+            hurtArea.Enable();
+
+            Collider = new BoxCollider(this, 0f, 4f, 9f, 8f);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
+
             GraphicsComponent = animatedSprite = new AnimatedSprite(this, Store.Gfx.Player, PlayerAnimations.Frames)
             {
                 DrawOrder = 5
@@ -30,10 +42,7 @@ namespace Adventure.Entities
         public override void Update(GameTime gameTime)
         {
             var deltaTime = gameTime.GetDeltaTime();
-
-            HandleInput(deltaTime);
-
-            var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
+            var movementInput = input.Move;
             var movementLength = movementInput.LengthSquared();
 
             if (movementLength > 1f)
@@ -42,17 +51,23 @@ namespace Adventure.Entities
             }
 
             animatedSprite.IsPaused = movementLength == 0f;
-
-            var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
+            isAiming = input.Aim != Vector2.Zero;
 
             if (isAiming)
             {
-                direction = mousePosition - Position;
-                direction.Normalize();
+                direction = input.Aim;
             }
             else
             {
                 direction = movementLength > 0f ? movementInput : direction;
+            }
+
+            attackTimer = MathF.Max(0f, attackTimer - deltaTime);
+
+            if (isAiming && input.Shoot && attackTimer <= 0f)
+            {
+                attackTimer = 0.5f;
+                World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
             }
 
             var velocity = movementInput * Speed * deltaTime;
@@ -60,6 +75,7 @@ namespace Adventure.Entities
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
             SlideMove(velocity);
+            hurtArea.Update();
             OverlapTriggers();
             Animate();
         }
@@ -68,19 +84,6 @@ namespace Adventure.Entities
         {
             animatedSprite.Draw(renderer, gameTime);
             DrawCursor(renderer);
-        }
-
-        private void HandleInput(float deltaTime)
-        {
-            isAiming = Input.IsMouseRightDown();
-
-            if (isAiming && Input.IsMouseLeftPressed())
-            {
-                var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-                direction = mousePosition - Position;
-                direction.Normalize();
-                World.Spawn(new Fireball(direction * 100f * deltaTime), Position);
-            }
         }
 
         public override void OnCollision(Entity other, Collision collision)
@@ -116,7 +119,7 @@ namespace Adventure.Entities
 
         private void DrawCursor(Renderer renderer)
         {
-            var source = Input.IsMouseLeftDown()
+            var source = input.Shoot
                 ? isAiming ? new Rectangle(8, 0, 8, 8) : new Rectangle(0, 0, 8, 8)
                 : isAiming ? new Rectangle(16, 0, 8, 8) : new Rectangle(8, 0, 8, 8);
 

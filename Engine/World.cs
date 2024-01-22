@@ -40,7 +40,7 @@ namespace Engine
                 AddEntity(entity);
                 entity.Spawn();
             }
-            Sort();
+            sort = true;
         }
 
         public void Spawn(Entity entity)
@@ -57,7 +57,7 @@ namespace Engine
                 entity.Position = position;
                 AddEntity(entity);
                 entity.Spawn();
-                Sort();
+                sort = true;
             }
         }
 
@@ -70,13 +70,21 @@ namespace Engine
             }
         }
 
+        public void Clear()
+        {
+            entities.Clear();
+            entitiesToRemove.Clear();
+            entitiesByType.Clear();
+            colliders.Clear();
+        }
+
         public T Find<T>() where T : Entity
         {
             if (entitiesByType.TryGetValue(typeof(T), out var entities))
             {
                 return (T)entities[0];
             }
-            return default;
+            return null;
         }
 
         public T FindWithTag<T>(string tag) where T : Entity
@@ -91,8 +99,48 @@ namespace Engine
                     }
                 }
             }
-            return default;
+            return null;
         }
+
+        public void Update(GameTime gameTime)
+        {
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].Update(gameTime);
+            }
+
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].PostUpdate(gameTime);
+            }
+
+            ProcessDestroyedEntities();
+        }
+
+        public void Draw(Renderer renderer, GameTime gameTime)
+        {
+            SortEntititesIfNeeded();
+
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].Draw(renderer, gameTime);
+            }
+        }
+
+        public void DebugDraw(Renderer renderer)
+        {
+            for (int i = 0; i < entities.Count; i++)
+            {
+                entities[i].DebugDraw(renderer);
+            }
+
+            foreach (var collider in colliders)
+            {
+                collider.Draw(renderer);
+            }
+        }
+
+        #region Collision
 
         public void EnableCollider(Collider collider)
         {
@@ -102,11 +150,6 @@ namespace Engine
         public void DisableCollider(Collider collider)
         {
             colliders.Remove(collider);
-        }
-
-        public void Sort()
-        {
-            sort = true;
         }
 
         public List<Collider> OverlapPoint(Vector2 point)
@@ -294,51 +337,7 @@ namespace Engine
             return collidedWith;
         }
 
-        public void Clear()
-        {
-            entities.Clear();
-            entitiesToRemove.Clear();
-            entitiesByType.Clear();
-            colliders.Clear();
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Update(gameTime);
-            }
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].PostUpdate(gameTime);
-            }
-
-            ProcessDestroyedEntities();
-        }
-
-        public void Draw(Renderer renderer, GameTime gameTime)
-        {
-            SortEntititesIfNeeded();
-
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].Draw(renderer, gameTime);
-            }
-        }
-
-        public void DebugDraw(Renderer renderer)
-        {
-            for (int i = 0; i < entities.Count; i++)
-            {
-                entities[i].DebugDraw(renderer);
-            }
-
-            foreach (var collider in colliders)
-            {
-                collider.Draw(renderer);
-            }
-        }
+        #endregion Collision
 
         private void ProcessDestroyedEntities()
         {
