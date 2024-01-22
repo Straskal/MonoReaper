@@ -16,7 +16,6 @@ namespace Adventure
     {
         public const int RESOLUTION_WIDTH = 256;
         public const int RESOLUTION_HEIGHT = 256;
-        public const int WORLD_CELL_SIZE = 128;
 
         private readonly PauseScreen pauseScreen = new();
         private readonly List<LevelData> zones = new();
@@ -55,7 +54,7 @@ namespace Adventure
             BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
             Renderer = new Renderer(GraphicsDevice);
             Camera = new Camera(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            World = new World(WORLD_CELL_SIZE);
+            World = new World();
             base.Initialize();
         }
 

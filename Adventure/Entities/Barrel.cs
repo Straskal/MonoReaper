@@ -49,6 +49,7 @@ namespace Adventure.Entities
             if (push != Vector2.Zero)
             {
                 SlideMove(push);
+                OverlapTriggers();
                 push = Vector2.Zero;
             }
 

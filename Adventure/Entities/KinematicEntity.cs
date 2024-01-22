@@ -24,14 +24,14 @@ namespace Adventure.Entities
             if (MathF.Abs(accumulator.X) >= 1f || MathF.Abs(accumulator.Y) >= 1f)
             {
                 IsMoving = true;
-                
+
                 var iterations = MAX_ITERATIONS;
                 while (iterations-- > 0)
                 {
                     precise.X = MathF.Round(accumulator.X, MidpointRounding.ToZero);
                     precise.Y = MathF.Round(accumulator.Y, MidpointRounding.ToZero);
 
-                    var collider = Collider.Cast(precise, EntityLayers.Solid, out var collision);
+                    var collider = World.Cast(Collider, precise, EntityLayers.Solid, out var collision);
                     if (collider == null)
                     {
                         Move(precise);
@@ -53,13 +53,21 @@ namespace Adventure.Entities
 
                     OnCollision(collider.Entity, collision);
 
-                    if (collider.Entity is KinematicEntity kinematic) 
+                    if (collider.Entity is KinematicEntity kinematic)
                     {
                         kinematic.OnCollision(this, collision);
                     }
                 }
 
                 IsMoving = false;
+            }
+        }
+
+        public void OverlapTriggers()
+        {
+            foreach (var trigger in World.OverlapCollider<Trigger>(Collider, EntityLayers.Trigger))
+            {
+                trigger.OnTouch(this);
             }
         }
 
@@ -70,7 +78,7 @@ namespace Adventure.Entities
             Collider.Update();
         }
 
-        public virtual void OnCollision(Entity other, Collision collision) 
+        public virtual void OnCollision(Entity other, Collision collision)
         {
         }
     }

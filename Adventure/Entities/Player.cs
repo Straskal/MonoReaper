@@ -14,7 +14,6 @@ namespace Adventure.Entities
 
         private AnimatedSprite animatedSprite;
         private Vector2 direction;
-        private bool isMouseOverlappingEntity;
         private bool isAiming;
 
         public override void Spawn()
@@ -45,7 +44,6 @@ namespace Adventure.Entities
             animatedSprite.IsPaused = movementLength == 0f;
 
             var mousePosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition);
-            isMouseOverlappingEntity = World.OverlapPointAny(mousePosition, BoxLayers.Enemy, Collider);
 
             if (isAiming)
             {
@@ -62,6 +60,7 @@ namespace Adventure.Entities
             velocity.Y = MathHelper.Clamp(velocity.Y, -MaxSpeed, MaxSpeed);
 
             SlideMove(velocity);
+            OverlapTriggers();
             Animate();
         }
 
@@ -101,16 +100,16 @@ namespace Adventure.Entities
         {
             if (Math.Abs(direction.X) > Math.Abs(direction.Y))
             {
-                if (direction.X < 0f) 
+                if (direction.X < 0f)
                     animatedSprite.Play("walk_left");
-                else 
+                else
                     animatedSprite.Play("walk_right");
             }
             else
             {
-                if (direction.Y < 0f) 
+                if (direction.Y < 0f)
                     animatedSprite.Play("walk_up");
-                else 
+                else
                     animatedSprite.Play("walk_down");
             }
         }
@@ -119,12 +118,12 @@ namespace Adventure.Entities
         {
             var source = Input.IsMouseLeftDown()
                 ? isAiming ? new Rectangle(8, 0, 8, 8) : new Rectangle(0, 0, 8, 8)
-                : isAiming ? new Rectangle(16, 0, 8, 8) : isMouseOverlappingEntity ? new Rectangle(24, 0, 8, 8) : new Rectangle(8, 0, 8, 8);
+                : isAiming ? new Rectangle(16, 0, 8, 8) : new Rectangle(8, 0, 8, 8);
 
             var cursorOffset = source.Size.ToVector2() / 2f;
             var cursorPosition = Adventure.Instance.Camera.ToWorld(Input.MousePosition) - cursorOffset;
 
-            renderer.Draw(Store.Gfx.Cursor, cursorPosition, source, isAiming && isMouseOverlappingEntity ? Color.OrangeRed : Color.White);
+            renderer.Draw(Store.Gfx.Cursor, cursorPosition, source, Color.White);
         }
     }
 }

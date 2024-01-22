@@ -1,16 +1,19 @@
 ﻿using Adventure.Content;
 using Engine;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public class PressurePlate : Entity
+    public class PressurePlate : Trigger
     {
         private readonly string doorId;
+        private readonly List<Entity> pressingEntities = new();
         private Sprite sprite;
         private Door door;
 
-        public PressurePlate(EntityData data) 
+        public PressurePlate(EntityData data)
         {
             this.doorId = data.Fields.GetString("DoorId");
         }
@@ -19,6 +22,9 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
+            Collider = new BoxCollider(this, 16, 16);
+            Collider.Layer = EntityLayers.Trigger;
+            Collider.Enable();
             GraphicsComponent = sprite = new Sprite(this, Store.Gfx.PressurePlate)
             {
                 SourceRectangle = new Rectangle(0, 0, 16, 16),
@@ -30,42 +36,47 @@ namespace Adventure.Entities
         {
             var wasPressed = IsPressed;
 
-            CheckIsPressed();
-
-            if (wasPressed != IsPressed)
+            for (int i = 0; i < pressingEntities.Count; i++)
             {
-                if (!wasPressed && IsPressed)
+                if (!(pressingEntities[i].IsAlive && pressingEntities[i].Collider.Overlaps(Collider)))
                 {
-                    sprite.SourceRectangle = new Rectangle(16, 16, 16, 16);
-                    FindDoor()?.Open();
+                    pressingEntities.RemoveAt(i);
+                    i--;
                 }
-                else if (wasPressed && !IsPressed)
-                {
-                    sprite.SourceRectangle = new Rectangle(0, 0, 16, 16);
-                    FindDoor()?.Close();
-                }
+            }
+
+            IsPressed = pressingEntities.Count > 0;
+
+            if (!wasPressed && IsPressed)
+            {
+                OpenDoor();
+            }
+            else if (wasPressed && !IsPressed)
+            {
+                CloseDoor();
             }
         }
 
-        private void CheckIsPressed()
+        public override void OnTouch(Entity entity)
         {
-            IsPressed = false;
-
-            // It would be cool to NOT check every frame, but instead have entities notify the pressure plate when they move.
-            foreach (var collider in World.OverlapRectangle(new RectangleF(Position.X - 8, Position.Y - 8, 16, 16)))
+            if (entity is Barrel || entity is Player && !pressingEntities.Contains(entity))
             {
-                if (collider.Entity is Barrel || collider.Entity is Player)
-                {
-                    IsPressed = true;
-                    break;
-                }
+                pressingEntities.Add(entity);
             }
         }
 
-        private Door FindDoor() 
+        private void OpenDoor()
         {
             door ??= World.FindWithTag<Door>(doorId);
-            return door;
+            door?.Open();
+            sprite.SourceRectangle = new Rectangle(16, 16, 16, 16);
+        }
+
+        private void CloseDoor()
+        {
+            door ??= World.FindWithTag<Door>(doorId);
+            door?.Close();
+            sprite.SourceRectangle = new Rectangle(0, 0, 16, 16);
         }
     }
 }

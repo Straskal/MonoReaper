@@ -1,13 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace Engine
 {
     public abstract class Collider
     {
-        // Cache partition cells in the collider to avoid frequent lookups.
-        internal readonly List<Point> cells = new();
-
         public Collider(Entity entity)
         {
             Entity = entity;
@@ -43,36 +39,11 @@ namespace Engine
         public virtual void Update()
         {
             Bounds = CalculateBounds();
-            Entity.World.UpdateCollider(this);
         }
 
         public bool CheckMask(uint mask)
         {
             return (mask & Layer) != 0;
-        }
-
-        public IEnumerable<Collider> GetOverlaps(uint layerMask)
-        {
-            return Entity.World.OverlapRectangle(Bounds, layerMask, this);
-        }
-
-        public Collider Cast(Vector2 velocity, uint layerMask, out Collision collision)
-        {
-            collision = Collision.Empty;
-            var path = new Segment(Bounds.Center, velocity);
-            var broadphaseRectangle = Bounds.Union(velocity);
-            Collider collidedWith = null;
-
-            foreach (var collider in Entity.World.OverlapRectangle(broadphaseRectangle, layerMask, this))
-            {
-                if (Intersects(collider, path, out var intersection) && intersection.Time < collision.Intersection.Time) 
-                {
-                    collidedWith = collider;
-                    collision = new Collision(velocity, intersection);
-                }          
-            }
-
-            return collidedWith;
         }
     }
 }

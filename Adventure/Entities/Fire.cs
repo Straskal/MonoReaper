@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Engine;
+﻿using Engine;
 using Engine.Extensions;
+using Microsoft.Xna.Framework;
 
 namespace Adventure.Entities
 {
@@ -30,7 +30,7 @@ namespace Adventure.Entities
 
         public override void Update(GameTime gameTime)
         {
-            if (target.IsDestroyed)
+            if (!target.IsAlive)
             {
                 World.Destroy(this);
                 return;
