@@ -150,6 +150,12 @@ namespace Engine
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int SortEntities(Entity a, Entity b)
+        {
+            return Comparer<int>.Default.Compare(a.DrawOrder, b.DrawOrder);
+        }
+
         #region Collision
 
         public void EnableCollider(Collider collider)
@@ -330,48 +336,45 @@ namespace Engine
         public Collider Cast(Collider collider, Vector2 direction, uint layerMask, out Collision collision)
         {
             collision = Collision.Empty;
+            Collider result = null;
+
             var path = new Segment(collider.Bounds.Center, direction);
-            Collider collidedWith = null;
 
             foreach (var other in OverlapColliders(collider.Bounds.Union(direction), layerMask, collider))
             {
                 if (collider.Intersects(other, path, out var intersection) && intersection.Time < collision.Intersection.Time)
                 {
-                    collidedWith = other;
+                    result = other;
                     collision = new Collision(direction, intersection);
                 }
             }
 
-            return collidedWith;
+            return result;
         }
 
-        // TODO: This needs some love
-        public Collider LineCast(Vector2 position, Vector2 direction, uint layerMask, Collider ignore)
+        public Collider Cast(Vector2 position, Vector2 direction, uint layerMask, Collider ignore)
         {
             var collision = Collision.Empty;
+            Collider result = null;
+
             var segment = new Segment(position, direction);
             var broadphaseRectangle = new RectangleF(
                 MathF.Min(position.X, position.X + direction.X),
                 MathF.Min(position.Y, position.Y + direction.Y),
-                MathF.Abs(direction.X),
-                MathF.Abs(direction.Y));
+                MathF.Max(position.X, position.X + direction.X),
+                MathF.Max(position.Y, position.Y + direction.Y));
 
-            Collider collidedWith = default;
-
-            // TODO: Overlap segment
             foreach (var collider in OverlapColliders(broadphaseRectangle, layerMask, ignore))
             {
                 if (collider.IntersectSegment(segment, out var intersection) && intersection.Time < collision.Intersection.Time)
                 {
-                    collidedWith = collider;
+                    result = collider;
                     collision = new Collision(direction, intersection);
                 }
             }
 
-            return collidedWith;
+            return result;
         }
-
-        #endregion Collision
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CanOverlapCollider(Collider collider, uint layerMask)
@@ -385,10 +388,6 @@ namespace Engine
             return collider.CheckMask(layerMask) && collider != ignore;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int SortEntities(Entity a, Entity b)
-        {
-            return Comparer<int>.Default.Compare(a.DrawOrder, b.DrawOrder);
-        }
+        #endregion Collision
     }
 }
