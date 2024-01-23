@@ -28,8 +28,9 @@ namespace Adventure.Entities
                 var iterations = MAX_ITERATIONS;
                 while (iterations-- > 0)
                 {
-                    precise.X = MathF.Round(accumulator.X, MidpointRounding.ToZero);
-                    precise.Y = MathF.Round(accumulator.Y, MidpointRounding.ToZero);
+                    // Round towards zero
+                    precise.X = MathF.Truncate(accumulator.X);
+                    precise.Y = MathF.Truncate(accumulator.Y);
 
                     var collider = World.Cast(Collider, precise, EntityLayers.Solid, out var collision);
                     if (collider == null)
@@ -42,8 +43,8 @@ namespace Adventure.Entities
                     if (collision.Intersection.Time >= 1f)
                     {
                         precise = collision.Direction * collision.Intersection.Time;
-                        precise.X = MathF.Round(precise.X, MidpointRounding.ToEven);
-                        precise.Y = MathF.Round(precise.Y, MidpointRounding.ToEven);
+                        precise.X = MathF.Round(precise.X);
+                        precise.Y = MathF.Round(precise.Y);
                         Move(precise);
                         accumulator -= precise;
                     }
@@ -65,7 +66,7 @@ namespace Adventure.Entities
 
         public void OverlapTriggers()
         {
-            foreach (var trigger in World.OverlapCollider<Trigger>(Collider, EntityLayers.Trigger))
+            foreach (var trigger in World.OverlapEntities<Trigger>(Collider, EntityLayers.Trigger))
             {
                 trigger.OnTouch(this);
             }

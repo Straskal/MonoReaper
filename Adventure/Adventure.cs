@@ -97,9 +97,10 @@ namespace Adventure
         protected override void Update(GameTime gameTime)
         {
             Time = gameTime;
-            HandleInput();
             Input.Update(BackBuffer);
             Coroutines.Update();
+
+            HandleInput();
 
             if (!(IsPaused || IsTransitioningAreas))
             {

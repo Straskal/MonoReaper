@@ -32,7 +32,7 @@ namespace Adventure.Entities
         {
             if (!causedDamage && sprite.CurrentFrame == 3)
             {
-                foreach (var collider in World.OverlapCircle(new CircleF(Position, 20), EntityLayers.Enemy))
+                foreach (var collider in World.OverlapColliders(new CircleF(Position, 20), EntityLayers.Enemy))
                 {
                     if (collider.Entity is IDamageable damageable)
                     {

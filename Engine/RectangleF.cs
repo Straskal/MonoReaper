@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Engine
 {
@@ -20,8 +20,6 @@ namespace Engine
         public readonly Vector2 BottomRight => new(Right, Bottom);
         public readonly Vector2 Center => new(X + Width * 0.5f, Y + Height * 0.5f);
         public readonly Vector2 Position => new(X, Y);
-        public readonly Vector2 Size => new(Width, Height);
-        public readonly Vector2 HalfSize => Size * 0.5f;
 
         public RectangleF(Rectangle rectangle)
             : this(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)
@@ -48,46 +46,52 @@ namespace Engine
 
         public readonly RectangleF Union(Vector2 direction)
         {
-            return Union(new RectangleF(X + direction.X, Y + direction.Y, Width, Height));
+            var minx = MathF.Min(X, X + direction.X);
+            var miny = MathF.Min(Y, Y + direction.Y);
+            var maxx = MathF.Max(X + Width, X + Width + direction.X);
+            var maxy = MathF.Max(Y + Height, Y + Height + direction.Y);
+
+            return new RectangleF(minx, miny, maxx, maxy);
         }
 
         public readonly RectangleF Union(RectangleF other)
         {
-            RectangleF result;
-            result.X = Math.Min(X, other.X);
-            result.Y = Math.Min(Y, other.Y);
-            result.Width = Math.Max(Right, other.Right) - result.X;
-            result.Height = Math.Max(Bottom, other.Bottom) - result.Y;
-            return result;
+            var minx = MathF.Min(X, other.X);
+            var miny = MathF.Min(Y, other.Y);
+            var maxx = MathF.Max(Right, other.Right);
+            var maxy = MathF.Max(Bottom, other.Bottom);
+
+            return new RectangleF(minx, miny, maxx, maxy);
         }
 
         public readonly Rectangle ToXnaRect()
         {
-            return new(
-                (int)Math.Floor(X),
-                (int)Math.Floor(Y),
-                (int)Math.Floor(Width),
-                (int)Math.Floor(Height));
+            var minx = (int)X;
+            var miny = (int)Y;
+            var maxx = (int)Width;
+            var maxy = (int)Height;
+
+            return new Rectangle(minx, miny, maxx, maxy);
         }
 
-        public static RectangleF Inflate(RectangleF rectangle, CircleF circle) 
+        public static RectangleF Inflate(RectangleF rectangle, CircleF circle)
         {
-            var result = rectangle;
-            result.X -= circle.Radius;
-            result.Y -= circle.Radius;
-            result.Width += circle.Radius * 2f;
-            result.Height += circle.Radius * 2f;
-            return result;
+            var minx = rectangle.X - circle.Radius;
+            var miny = rectangle.Y - circle.Radius;
+            var maxx = rectangle.Width + circle.Radius * 2f;
+            var maxy = rectangle.Height + circle.Radius * 2f;
+
+            return new RectangleF(minx, miny, maxx, maxy);
         }
 
         public static RectangleF Inflate(RectangleF rectangle0, RectangleF rectangle1)
         {
-            var result = rectangle0;
-            result.X -= rectangle1.HalfSize.X;
-            result.Y -= rectangle1.HalfSize.Y;
-            result.Width += rectangle1.Width;
-            result.Height += rectangle1.Height;
-            return result;
+            var minx = rectangle0.X - rectangle1.Width * 0.5f;
+            var miny = rectangle0.Y - rectangle1.Height * 0.5f;
+            var maxx = rectangle0.Width + rectangle1.Width;
+            var maxy = rectangle0.Height + rectangle1.Height;
+
+            return new RectangleF(minx, miny, maxx, maxy);
         }
     }
 }
