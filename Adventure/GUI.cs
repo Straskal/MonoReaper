@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Engine;
 
 namespace Adventure
 {
@@ -53,7 +53,7 @@ namespace Adventure
 
                 if (_activeId == id && !_mouseDown)
                 {
-                    isChecked = !isChecked; 
+                    isChecked = !isChecked;
                     _activeId = 0;
                 }
             }
@@ -66,7 +66,7 @@ namespace Adventure
             {
                 Renderer.DrawRectangle(checkboxRectangle, Color.White);
             }
-            else 
+            else
             {
                 Renderer.DrawRectangleOutline(checkboxRectangle, Color.White);
             }
@@ -124,7 +124,7 @@ namespace Adventure
             Renderer.DrawRectangle(buttonRectangle, color);
             Renderer.DrawString(Store.Fonts.Default, text, new Vector2(x, y), Color.Black);
 
-            if (pressed) 
+            if (pressed)
             {
                 _activeId = 0;
             }
