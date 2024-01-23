@@ -14,10 +14,11 @@ namespace Adventure
         {
             HandleInput();
 
-            var text = WrapText(Store.Fonts.Default, "1WWWW 2WWWW 3WWWW 4WWWW 5WWWW 6WWWW 7WWWW 8WWWW 9fWWWW", 225);
-
             if (hasDialog)
             {
+                // for sample purposes only. text should be passed in
+                var text = WrapText(Store.Fonts.Default, "1WWWW 2WWWW 3WWWW 4WWWW 5WWWW 6WWWW 7WWWW 8WWWW 9fWWWW", 225);
+
                 renderer.BeginDraw();
 
                 var x = 0;
