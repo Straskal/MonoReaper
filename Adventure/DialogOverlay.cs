@@ -17,6 +17,7 @@ namespace Adventure
             if (hasDialog)
             {
                 // for sample purposes only. text should be passed in
+
                 var text = WrapText(Store.Fonts.Default, "1WWWW 2WWWW 3WWWW 4WWWW 5WWWW 6WWWW 7WWWW 8WWWW 9fWWWW", 225);
 
                 renderer.BeginDraw();
@@ -25,7 +26,7 @@ namespace Adventure
                 var y = 200;
 
                 renderer.DrawRectangle(new Rectangle(x + 7, y, 245, 75), Color.DarkRed);
-                renderer.DrawRectangle(new Rectangle(x + 10, y + 3, 38, 50), Color.Black);
+                renderer.DrawRectangle(new Rectangle(x + 10, y + 3, 238, 50), Color.Black);
 
                 renderer.DrawString(Store.Fonts.Default, text, new Vector2(x + 20, y), Color.White);
 
