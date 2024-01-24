@@ -25,7 +25,7 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
-            hurtArea = new CircleCollider(this, Vector2.Zero, 6f);
+            hurtArea = new CircleCollider(this, 6f);
             hurtArea.Layer = BoxLayers.Damageable;
             hurtArea.Enable();
 

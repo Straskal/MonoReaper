@@ -48,8 +48,8 @@ namespace Engine
         {
             var minx = MathF.Min(X, X + direction.X);
             var miny = MathF.Min(Y, Y + direction.Y);
-            var maxx = MathF.Max(X + Width, X + Width + direction.X);
-            var maxy = MathF.Max(Y + Height, Y + Height + direction.Y);
+            var maxx = MathF.Max(Width, Width + direction.X);
+            var maxy = MathF.Max(Height, Height + direction.Y);
 
             return new RectangleF(minx, miny, maxx, maxy);
         }

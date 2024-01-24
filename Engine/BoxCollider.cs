@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-    public class BoxCollider : Collider
+    public sealed class BoxCollider : Collider
     {
         public BoxCollider(Entity entity) : this(entity, 0f, 0f)
         {

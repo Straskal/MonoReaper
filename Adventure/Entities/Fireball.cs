@@ -16,7 +16,7 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
-            Collider = new CircleCollider(this, Vector2.Zero, 4);
+            Collider = new CircleCollider(this, 4f);
             Collider.Layer = EntityLayers.PlayerProjectile;
             Collider.Enable();
             GraphicsComponent = new Particles(this, Store.Gfx.Fire, new Rectangle(8, 8, 8, 8))
