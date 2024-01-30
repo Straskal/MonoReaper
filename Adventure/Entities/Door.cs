@@ -23,12 +23,12 @@ namespace Adventure.Entities
                 SourceRectangle = new Rectangle(0, 0, 32, 16),
                 DrawOrder = 0
             };
-            Collider = new BoxCollider(this, 32, 16);
+            Collider = CollisionComponent.CreateBox(this, 0f, 0f, 32, 16);
             Collider.Layer = EntityLayers.Solid;
             Collider.Enable();
         }
 
-        public void Open() 
+        public void Open()
         {
             GraphicsComponent = null;
             Collider.Disable();

@@ -13,6 +13,7 @@ namespace Adventure.Entities
         private Vector2 precise;
 
         public bool IsMoving { get; private set; }
+        public bool OverlapsTriggers { get; protected set; }
 
         public void SlideMove(Vector2 velocity)
         {
@@ -60,15 +61,15 @@ namespace Adventure.Entities
                     }
                 }
 
-                IsMoving = false;
-            }
-        }
+                if (OverlapsTriggers)
+                {
+                    foreach (var trigger in World.OverlapEntities<Trigger>(Collider, EntityLayers.Trigger))
+                    {
+                        trigger.OnTouch(this);
+                    }
+                }
 
-        public void OverlapTriggers()
-        {
-            foreach (var trigger in World.OverlapEntities<Trigger>(Collider, EntityLayers.Trigger))
-            {
-                trigger.OnTouch(this);
+                IsMoving = false;
             }
         }
 

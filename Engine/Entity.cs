@@ -10,7 +10,7 @@ namespace Engine
         public HashSet<string> Tags { get; } = new();
         public Origin Origin { get; set; } = Origin.Center;
         public Vector2 Position { get; set; }
-        public Collider Collider { get; protected set; }
+        public CollisionComponent Collider { get; protected set; }
         public GraphicsComponent GraphicsComponent { get; protected set; }
 
         public int DrawOrder

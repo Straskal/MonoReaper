@@ -10,14 +10,14 @@ namespace Engine
     {
         private readonly List<Entity> entities;
         private readonly List<Entity> entitiesToRemove;
-        private readonly List<Collider> colliders;
+        private readonly List<CollisionComponent> colliders;
         private bool sort;
 
         public World()
         {
             entities = new List<Entity>();
             entitiesToRemove = new List<Entity>();
-            colliders = new List<Collider>();
+            colliders = new List<CollisionComponent>();
         }
 
         public IEnumerator<Entity> GetEnumerator()
@@ -158,19 +158,19 @@ namespace Engine
 
         #region Collision
 
-        public void EnableCollider(Collider collider)
+        public void EnableCollider(CollisionComponent collider)
         {
             colliders.Add(collider);
         }
 
-        public void DisableCollider(Collider collider)
+        public void DisableCollider(CollisionComponent collider)
         {
             colliders.Remove(collider);
         }
 
-        public List<Collider> OverlapColliders(Vector2 point)
+        public List<CollisionComponent> OverlapColliders(Vector2 point)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -183,9 +183,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(Vector2 point, uint layerMask)
+        public List<CollisionComponent> OverlapColliders(Vector2 point, uint layerMask)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -198,9 +198,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(Vector2 point, uint layerMask, Collider ignore)
+        public List<CollisionComponent> OverlapColliders(Vector2 point, uint layerMask, CollisionComponent ignore)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -213,9 +213,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(CircleF circle, uint layerMask)
+        public List<CollisionComponent> OverlapColliders(CircleF circle, uint layerMask)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -228,9 +228,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(CircleF circle, uint layerMask, Collider ignore)
+        public List<CollisionComponent> OverlapColliders(CircleF circle, uint layerMask, CollisionComponent ignore)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -243,9 +243,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(RectangleF rectangle, uint layerMask)
+        public List<CollisionComponent> OverlapColliders(RectangleF rectangle, uint layerMask)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -258,9 +258,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(RectangleF rectangle, uint layerMask, Collider ignore)
+        public List<CollisionComponent> OverlapColliders(RectangleF rectangle, uint layerMask, CollisionComponent ignore)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var collider in colliders)
             {
@@ -273,9 +273,9 @@ namespace Engine
             return result;
         }
 
-        public List<Collider> OverlapColliders(Collider collider, uint layerMask)
+        public List<CollisionComponent> OverlapColliders(CollisionComponent collider, uint layerMask)
         {
-            var result = new List<Collider>();
+            var result = new List<CollisionComponent>();
 
             foreach (var other in colliders)
             {
@@ -288,7 +288,7 @@ namespace Engine
             return result;
         }
 
-        public List<T> OverlapEntities<T>(CircleF circle, uint layerMask, Collider ignore) where T : Entity
+        public List<T> OverlapEntities<T>(CircleF circle, uint layerMask, CollisionComponent ignore) where T : Entity
         {
             var result = new List<T>();
 
@@ -303,7 +303,7 @@ namespace Engine
             return result;
         }
 
-        public List<T> OverlapEntities<T>(RectangleF rectangle, uint layerMask, Collider ignore) where T : Entity
+        public List<T> OverlapEntities<T>(RectangleF rectangle, uint layerMask, CollisionComponent ignore) where T : Entity
         {
             var result = new List<T>();
 
@@ -318,7 +318,7 @@ namespace Engine
             return result;
         }
 
-        public List<T> OverlapEntities<T>(Collider collider, uint layerMask) where T : Entity
+        public List<T> OverlapEntities<T>(CollisionComponent collider, uint layerMask) where T : Entity
         {
             var result = new List<T>();
 
@@ -333,10 +333,10 @@ namespace Engine
             return result;
         }
 
-        public Collider Cast(Collider collider, Vector2 direction, uint layerMask, out Collision collision)
+        public CollisionComponent Cast(CollisionComponent collider, Vector2 direction, uint layerMask, out Collision collision)
         {
             collision = Collision.Empty;
-            Collider result = null;
+            CollisionComponent result = null;
 
             var path = new Segment(collider.Bounds.Center, direction);
 
@@ -352,10 +352,10 @@ namespace Engine
             return result;
         }
 
-        public Collider Cast(Vector2 position, Vector2 direction, uint layerMask, Collider ignore)
+        public CollisionComponent Cast(Vector2 position, Vector2 direction, uint layerMask, CollisionComponent ignore)
         {
             var collision = Collision.Empty;
-            Collider result = null;
+            CollisionComponent result = null;
 
             var segment = new Segment(position, direction);
             var broadphaseRectangle = new RectangleF(
@@ -377,15 +377,15 @@ namespace Engine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CanOverlapCollider(Collider collider, uint layerMask)
+        private static bool CanOverlapCollider(CollisionComponent collider, uint layerMask)
         {
-            return collider.CheckMask(layerMask);
+            return collider.CheckLayer(layerMask);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CanOverlapCollider(Collider collider, uint layerMask, Collider ignore)
+        private static bool CanOverlapCollider(CollisionComponent collider, uint layerMask, CollisionComponent ignore)
         {
-            return collider.CheckMask(layerMask) && collider != ignore;
+            return collider.CheckLayer(layerMask) && collider != ignore;
         }
 
         #endregion Collision

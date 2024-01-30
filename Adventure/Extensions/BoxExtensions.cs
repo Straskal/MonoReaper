@@ -5,7 +5,7 @@ namespace Adventure.Extensions
 {
     public static class BoxExtensions
     {
-        public static bool IsSolid(this Collider box)
+        public static bool IsSolid(this CollisionComponent box)
         {
             return (box.Layer & EntityLayers.Solid) == EntityLayers.Solid;
         }

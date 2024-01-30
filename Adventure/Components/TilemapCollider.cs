@@ -1,120 +1,43 @@
 ﻿using Engine;
-using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using static Adventure.Constants;
 using static Adventure.Entities.Tilemap;
 
 namespace Adventure.Components
 {
-    public sealed class TilemapCollider : Collider
+    public sealed class TilemapCollider
     {
-        private readonly List<BoxCollider> colliders = new();
+        private readonly List<CollisionComponent> colliders = new();
 
-        public TilemapCollider(Entity entity, int width, int height, MapData mapData)
-            : this(entity, width, height, 0, mapData)
+        public TilemapCollider(Entity entity, MapData mapData)
         {
+            SetUpTileColliders(entity, mapData);
         }
 
-        public TilemapCollider(Entity entity, int width, int height, uint layerMask, MapData data)
-            : base(entity)
+        public void Enable()
         {
-            Width = width;
-            Height = height;
-            Layer = layerMask;
-
-            SetUpTileColliders(data);
-        }
-
-        public int Width { get; }
-        public int Height { get; }
-
-        public override void Enable()
-        {
-            foreach (var box in colliders)
+            foreach (var collider in colliders)
             {
-                box.Enable();
+                collider.Enable();
             }
         }
 
-        public override void Disable()
+        public void Disable()
         {
-            foreach (var box in colliders)
+            foreach (var collider in colliders)
             {
-                box.Disable();
+                collider.Disable();
             }
         }
 
-        public override void Update()
-        {
-            foreach (var box in colliders)
-            {
-                box.Update();
-            }
-        }
-
-        public override void Draw(Renderer renderer)
-        {
-            foreach (var box in colliders)
-            {
-                box.Draw(renderer);
-            }
-        }
-
-        private void SetUpTileColliders(MapData mapData)
+        private void SetUpTileColliders(Entity entity, MapData mapData)
         {
             foreach (var tile in mapData.Tiles)
             {
-                colliders.Add(new BoxCollider(Entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize)
-                {
-                    Layer = EntityLayers.Solid
-                });
+                var collider = CollisionComponent.CreateBox(entity, tile.Position.X, tile.Position.Y, mapData.CellSize, mapData.CellSize);
+                collider.Layer = EntityLayers.Solid;
+                colliders.Add(collider);
             }
-        }
-
-        public override void CalculateBounds()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Overlaps(Collider collider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool OverlapPoint(Vector2 point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool OverlapCircle(CircleF circle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool OverlapRectangle(RectangleF rectangle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Intersects(Collider collider, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IntersectSegment(Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IntersectCircleSegment(CircleF circle, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IntersectRectangleSegment(RectangleF rectangle, Segment segment, out Intersection intersection)
-        {
-            throw new NotImplementedException();
         }
     }
 }

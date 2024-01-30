@@ -22,7 +22,7 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
-            Collider = new BoxCollider(this, 16, 16);
+            Collider = CollisionComponent.CreateBox(this, 0f, 0f, 16, 16);
             Collider.Layer = EntityLayers.Trigger;
             Collider.Enable();
             GraphicsComponent = sprite = new Sprite(this, Store.Gfx.PressurePlate)

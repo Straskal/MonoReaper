@@ -12,7 +12,7 @@ namespace Adventure.Entities
         public const float MaxSpeed = 0.75f;
 
         private AnimatedSprite animatedSprite;
-        private CircleCollider hurtArea;
+        private CollisionComponent hurtArea;
         private Vector2 direction;
         private bool isAiming;
         private PlayerInput input;
@@ -25,11 +25,11 @@ namespace Adventure.Entities
 
         public override void Spawn()
         {
-            hurtArea = new CircleCollider(this, 6f);
+            hurtArea = CollisionComponent.CreateCircle(this, 0f, 0f, 6f);
             hurtArea.Layer = BoxLayers.Damageable;
             hurtArea.Enable();
 
-            Collider = new BoxCollider(this, 0f, 4f, 9f, 8f);
+            Collider = CollisionComponent.CreateBox(this, 0f, 4f, 9f, 8f);
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
 
@@ -37,6 +37,8 @@ namespace Adventure.Entities
             {
                 DrawOrder = 5
             };
+
+            OverlapsTriggers = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -76,7 +78,6 @@ namespace Adventure.Entities
 
             SlideMove(velocity);
             hurtArea.Update();
-            OverlapTriggers();
             Animate();
         }
 

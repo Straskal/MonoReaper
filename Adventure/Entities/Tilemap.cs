@@ -2,7 +2,6 @@
 using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
@@ -31,13 +30,13 @@ namespace Adventure.Entities
         }
 
         public MapData Data { get; }
+        public TilemapCollider TMCollider { get; private set; }
 
         public override void Spawn()
         {
             Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
-            Collider = new TilemapCollider(this, 0, 0, Data);
-            Collider.Layer = EntityLayers.Solid;
-            Collider.Enable();
+            TMCollider = new TilemapCollider(this, Data);
+            TMCollider.Enable();
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)
