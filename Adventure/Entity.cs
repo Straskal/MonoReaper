@@ -18,7 +18,7 @@ namespace Adventure
         public World World { get; set; }
         public int DrawOrder { get; set; }
         public abstract EntityType Type { get; }
-        public int OwnerNumber { get; set; }
+        public int OwnerId { get; set; }
         public bool IsActive { get; set; }
         public HashSet<string> Tags { get; } = new();
         public Vector2 Position { get; set; }
@@ -29,8 +29,8 @@ namespace Adventure
 
         public bool IsServer => Adventure.Instance.Session.IsServer;
         public bool IsClient => !Adventure.Instance.Session.IsServer;
-        public bool IsLocal => Adventure.Instance.Player.Id == OwnerNumber;
-        public bool IsRemote => Adventure.Instance.Player.Id != OwnerNumber;
+        public bool IsLocal => Adventure.Instance.Player.Id == OwnerId;
+        public bool IsRemote => Adventure.Instance.Player.Id != OwnerId;
 
 
         public virtual void Spawn()

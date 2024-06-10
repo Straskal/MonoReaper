@@ -165,12 +165,12 @@ namespace Adventure
         private void OnPeerConnected(int peerId)
         {
             var profile = new PlayerProfile();
-            profile.Id = _currentPlayerId++;
             profile.IsProfileLoaded = false;
             RemotePlayers.Add(profile);
 
-            if (Session.IsServer)
+            if (Session.IsServer) 
             {
+                profile.Id = _currentPlayerId++;
                 ServerSendWelcomeMessage(profile);
             }
             else
@@ -184,12 +184,14 @@ namespace Adventure
             if (Session.IsServer)
             {
                 var player = RemotePlayers.SingleOrDefault(p => p.PeerId == peerId);
-                if (player != null)
+                if (player == null) 
                 {
-                    CurrentState.PlayerLeft(player);
-                    RemotePlayers.Remove(player);
-                    ServerSendPlayerDisconnectedMessage(player.Id);
+                    // TODO: Log?
+                    return;
                 }
+                CurrentState.PlayerLeft(player);
+                RemotePlayers.Remove(player);
+                ServerSendPlayerDisconnectedMessage(player.Id);
             }
             else
             {
@@ -244,34 +246,42 @@ namespace Adventure
             var playerId = message.ReadInt();
             var player = RemotePlayers.SingleOrDefault(p => p.Id == playerId);
 
-            if (player != null)
+            if (player == null) 
             {
-                CurrentState.PlayerLeft(player);
-                RemotePlayers.Remove(player);
+                // TODO: Log?
+                return;
             }
+
+            CurrentState.PlayerLeft(player);
+            RemotePlayers.Remove(player);
         }
 
-        private void ServerSendWelcomeMessage(PlayerProfile player)
+        private void ServerSendWelcomeMessage(PlayerProfile newProfile)
         {
             var welcome = new Message();
             welcome.Write((byte)MessageType.WelcomeMessage);
-            welcome.Write(player.Id);
+
+            // Give player their ID.
+            welcome.Write(newProfile.Id);
+
+            // Write host profile.
             welcome.Write(Player.Name);
 
+            // Write other remote profiles.
             welcome.Write(RemotePlayers.Count - 1);
             foreach (var other in RemotePlayers)
             {
-                if (other.Id != player.Id)
+                if (other.Id != newProfile.Id)
                 {
                     welcome.Write(other.Id);
                     welcome.Write(other.Name);
                 }
             }
 
-            // Write the current initial state.
+            // Write the initial game state.
             welcome.Write((int)CurrentState.Type);
             CurrentState.ServerWriteToInitialMessage(welcome);
-            Session.ServerSendReliable(player.PeerId, welcome);
+            Session.ServerSendReliable(newProfile.PeerId, welcome);
         }
 
         private void ClientReceiveWelcomeMessage(Message message)
@@ -279,6 +289,7 @@ namespace Adventure
             Player.Id = message.ReadInt();
 
             var hostProfile = RemotePlayers.SingleOrDefault() ?? throw new Exception();
+            hostProfile.Id = 0;
             hostProfile.Name = message.ReadString();
             hostProfile.IsProfileLoaded = true;
 
@@ -287,7 +298,7 @@ namespace Adventure
             for (int i = 0; i < otherPlayerCount; i++)
             {
                 var profile = new PlayerProfile();
-                profile.PeerId = message.ReadInt();
+                profile.Id = message.ReadInt();
                 profile.Name = message.ReadString();
                 profile.IsProfileLoaded = true;
                 RemotePlayers.Add(profile);
@@ -306,6 +317,18 @@ namespace Adventure
             CurrentState.ClientReadFromInitialMessage(message);
         }
 
+        private void ReceiveProfileMessage(int peerId, Message message)
+        {
+            if (Session.IsServer)
+            {
+                ServerReceiveProfileMessage(peerId, message);
+            }
+            else
+            {
+                ClientReceiveProfileMessage(message);
+            }
+        }
+
         private void ClientSendProfileMessage()
         {
             var profileMessage = new Message();
@@ -314,68 +337,68 @@ namespace Adventure
             Session.ClientSendReliable(profileMessage);
         }
 
-        private void ReceiveProfileMessage(int peerId, Message message)
+        private void ServerReceiveProfileMessage(int peerId, Message message) 
         {
-            if (Session.IsServer)
+            PlayerProfile profile = null;
+
+            foreach (var player in RemotePlayers)
             {
-                PlayerProfile profile = null;
-
-                foreach (var player in RemotePlayers)
+                if (player.PeerId == peerId)
                 {
-                    if (player.PeerId == peerId)
-                    {
-                        profile = player;
-                        break;
-                    }
+                    profile = player;
+                    break;
                 }
-
-                if (profile == null)
-                {
-                    // TODO: Log?
-                    return;
-                }
-
-                profile.Name = message.ReadString();
-                profile.IsProfileLoaded = true;
-
-                var broadcast = new Message();
-                broadcast.Write((int)MessageType.ProfileMessage);
-                broadcast.Write(peerId);
-                broadcast.Write(profile.Name);
-
-                foreach (var other in RemotePlayers)
-                {
-                    if (other.PeerId != profile.PeerId)
-                    {
-                        Session.ServerSendReliable(other.PeerId, broadcast);
-                    }
-                }
-
-                CurrentState.PlayerJoined(profile);
             }
-            else
+
+            if (profile == null)
             {
-                var id = message.ReadInt();
-                var name = message.ReadString();
-
-                PlayerProfile profile = null;
-
-                foreach (var player in RemotePlayers)
-                {
-                    if (player.PeerId == id)
-                    {
-                        profile = player;
-                        break;
-                    }
-                }
-
-                profile ??= new PlayerProfile();
-                profile.PeerId = id;
-                profile.Name = name;
-                profile.IsProfileLoaded = true;
-
-                RemotePlayers.Add(profile);
+                // TODO: Log?
+                return;
             }
+
+            profile.Name = message.ReadString();
+            profile.IsProfileLoaded = true;
+            ServerSendProfileMessage(profile);
+            CurrentState.PlayerJoined(profile);
+        }
+
+        private void ServerSendProfileMessage(PlayerProfile profile) 
+        {
+            var broadcast = new Message();
+            broadcast.Write((int)MessageType.ProfileMessage);
+            broadcast.Write(profile.Id);
+            broadcast.Write(profile.Name);
+
+            foreach (var other in RemotePlayers)
+            {
+                if (other.PeerId != profile.PeerId)
+                {
+                    Session.ServerSendReliable(other.PeerId, broadcast);
+                }
+            }
+        }
+
+        private void ClientReceiveProfileMessage(Message message)
+        {
+            var id = message.ReadInt();
+            var name = message.ReadString();
+
+            PlayerProfile profile = null;
+
+            foreach (var player in RemotePlayers)
+            {
+                if (player.Id == id)
+                {
+                    profile = player;
+                    break;
+                }
+            }
+
+            profile ??= new PlayerProfile();
+            profile.PeerId = id;
+            profile.Name = name;
+            profile.IsProfileLoaded = true;
+            RemotePlayers.Add(profile);
         }
 
         private void ServerSendSnapshotEvent()
@@ -389,35 +412,35 @@ namespace Adventure
             Session.ServerSendUnreliable(message);
         }
 
-        private void ReceiveSnapshot(Message buffer)
+        private void ReceiveSnapshot(Message message)
         {
-            var tick = buffer.ReadInt();
-            if (Timestep.TickDiff(tick, ClientLastProcessedSnapshotTick) <= 0)
+            var serverTick = message.ReadInt();
+            if (Timestep.TickDiff(serverTick, ClientLastProcessedSnapshotTick) <= 0)
             {
                 return;
             }
 
-            ClientLastProcessedSnapshotTick = tick;
-
-            var state = (AdventureState)buffer.ReadByte();
+            var state = (AdventureState)message.ReadByte();
             if (state == CurrentState.Type)
             {
-                CurrentState.ClientReadFromSnapshot(buffer);
+                ClientLastProcessedSnapshotTick = serverTick;
+                CurrentState.ClientReadFromSnapshot(message);
             }
         }
 
         private void ServerSendStateChangeEvent()
         {
-            var buffer = new Message();
-            buffer.Write((byte)MessageType.StateChangedMessage);
-            buffer.Write((byte)CurrentState.Type);
-            CurrentState.ServerWriteToInitialMessage(buffer);
-            Session.ServerSendReliable(buffer);
+            var message = new Message();
+            message.Write((byte)MessageType.StateChangedMessage);
+            message.Write((byte)CurrentState.Type);
+
+            CurrentState.ServerWriteToInitialMessage(message);
+            Session.ServerSendReliable(message);
         }
 
-        private void ReceiveStateChange(Message buffer)
+        private void ReceiveStateChange(Message message)
         {
-            switch ((AdventureState)buffer.ReadByte())
+            switch ((AdventureState)message.ReadByte())
             {
                 case AdventureState.Inn:
                     CurrentState = new Inn(this);
@@ -425,7 +448,7 @@ namespace Adventure
             }
 
             CurrentState.Start();
-            CurrentState.ClientReadFromInitialMessage(buffer);
+            CurrentState.ClientReadFromInitialMessage(message);
         }
     }
 }

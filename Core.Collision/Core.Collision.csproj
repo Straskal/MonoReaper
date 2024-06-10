@@ -10,7 +10,4 @@
   <ItemGroup>
     <EditorConfigFiles Remove="C:\git\MonoReaper\.editorconfig" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="C:\git\MonoReaper\.editorconfig" />
-  </ItemGroup>
 </Project>

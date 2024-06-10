@@ -452,7 +452,7 @@ namespace Adventure
             foreach (var entity in _entities)
             {
                 message.Write(entity.Id);
-                message.Write(entity.OwnerNumber);
+                message.Write(entity.OwnerId);
                 message.Write((int)entity.Type);
                 entity.ServerWriteToSnapshot(message);
             }
@@ -467,7 +467,7 @@ namespace Adventure
             for (var i = 0; i < entityCount; i++)
             {
                 var id = message.ReadInt();
-                var ownerNumber = message.ReadInt();
+                var ownerId = message.ReadInt();
                 var type = (EntityType)message.ReadInt();
 
                 _processedSnapshotEntities.Add(id);
@@ -478,7 +478,7 @@ namespace Adventure
                     if (entity != null)
                     {
                         entity.Id = id;
-                        entity.OwnerNumber = ownerNumber;
+                        entity.OwnerId = ownerId;
                         Spawn(entity);
                     }
                 }

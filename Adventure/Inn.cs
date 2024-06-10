@@ -37,7 +37,7 @@ namespace Adventure
             if (Session.Instance.IsServer)
             {
                 var entity = new TopDownPlayer();
-                entity.OwnerNumber = player.Id;
+                entity.OwnerId = player.Id;
                 World.Spawn(entity);
             }
         }
@@ -46,7 +46,7 @@ namespace Adventure
         {
             if (Session.Instance.IsServer)
             {
-                var entity = World.FindFirst<TopDownPlayer>(p => p.OwnerNumber == player.Id);
+                var entity = World.FindFirst<TopDownPlayer>(p => p.OwnerId == player.Id);
                 if (entity != null) 
                 {
                     World.Destroy(entity);

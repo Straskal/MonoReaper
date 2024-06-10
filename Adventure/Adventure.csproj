@@ -11,8 +11,11 @@
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Remove="Character\**" />
 		<Compile Remove="Content\obj\DesktopGL\net6.0\**" />
+		<EmbeddedResource Remove="Character\**" />
 		<EmbeddedResource Remove="Content\obj\DesktopGL\net6.0\**" />
+		<None Remove="Character\**" />
 		<None Remove="Content\obj\DesktopGL\net6.0\**" />
 	</ItemGroup>
 	<ItemGroup>
@@ -53,9 +56,5 @@
 		<Content Include="Content\**\*.xnb">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Character\" />
 	</ItemGroup>
 </Project>

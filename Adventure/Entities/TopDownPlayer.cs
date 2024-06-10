@@ -12,21 +12,23 @@ namespace Adventure.Entities
 {
     public class TopDownPlayer : Entity
     {
+        public const int ClientInputMessageIntervalMilliseconds = 33;
+        public const int ClientInputBufferCapacity = 100;
         public const float Speed = 50f;
         public const float MaxSpeed = 0.75f;
 
         public override EntityType Type => EntityType.Player;
 
-        private const int InputRequestIntervalMilliseconds = 33;
-        private int _inputRequestTimerMilliseconds = 0;
+        private int _clientInputMessageTimerMilliseconds = 0;
+        private int _clientRemoteInterpolationTimerTicks = 0;
 
         public Sprite Sprite { get; set; }
         public Animator Animator { get; set; }
         public Vector2 FaceDirection { get; private set; }
 
         public int ServerLastProcessedClientInput { get; set; }
-        public Queue<Input> ServerInputBuffer { get; private set; } = new();
-        public RingBuffer<Input> ClientInputBuffer { get; private set; } = new(50);
+        public Queue<Vector2Snapshot> ServerInputBuffer { get; private set; } = new();
+        public Queue<ClientLocalSnapshot> ClientSnapshotBuffer { get; private set; } = new();
 
         public override void Spawn()
         {
@@ -38,52 +40,44 @@ namespace Adventure.Entities
             Collider.Enable();
         }
 
-        public void SetMovementInput(Vector2 movementInput)
-        {
-            var movementLength = movementInput.LengthSquared();
-
-            if (movementLength > 1f)
-            {
-                movementInput.Normalize();
-            }
-
-            ClientInputBuffer.Push(new Input(Adventure.Instance.Session.Tick, movementInput));
-        }
-
-        public void ApplyMovementInput(Vector2 input, float deltaTime)
-        {
-            Position += input * Speed * deltaTime;
-            Position = Vector2.Round(Position);
-        }
-
-        private int SS_INTERPOLATE_TIMER = 0;
-
         public override void Update(GameTime gameTime)
         {
-            SS_INTERPOLATE_TIMER = Timestep.IncrementTick(SS_INTERPOLATE_TIMER);
-
             var deltaTime = gameTime.GetDeltaTime();
 
             if (IsLocal)
             {
-                var movementInput = Engine.Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
+                var movementInput = Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S);
 
                 ApplyMovementInput(movementInput, deltaTime);
 
                 if (IsClient)
                 {
-                    ClientInputBuffer.Push(new Input(Session.Instance.Tick, movementInput));
-                }
-
-                if (IsClient)
-                {
-                    _inputRequestTimerMilliseconds += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
-                    
-                    if (_inputRequestTimerMilliseconds >= InputRequestIntervalMilliseconds)
+                    if (movementInput != Vector2.Zero) 
                     {
-                        _inputRequestTimerMilliseconds = 0;
+                        // Keep the input buffer circular and let go of old records if we exceed the max.
+                        var localSnapshot = new ClientLocalSnapshot
+                        {
+                            Input = new Vector2Snapshot(Session.Instance.Tick, movementInput),
+                            Position = new Vector2Snapshot(Session.Instance.Tick, Position)
+                        };
 
-                        ClientSendInputMessage();
+                        ClientSnapshotBuffer.Enqueue(localSnapshot);
+                        if (ClientSnapshotBuffer.Count > 100) 
+                        {
+                            ClientSnapshotBuffer.Dequeue();
+                        }
+                    }
+
+                    _clientInputMessageTimerMilliseconds += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                    if (_clientInputMessageTimerMilliseconds >= ClientInputMessageIntervalMilliseconds)
+                    {
+                        _clientInputMessageTimerMilliseconds = 0;
+
+                        if (ClientSnapshotBuffer.Count > 0)
+                        {
+                            ClientSendInputMessage();
+                        }
                     }
                 }
             }
@@ -93,21 +87,19 @@ namespace Adventure.Entities
                 {
                     while (ServerInputBuffer.TryDequeue(out var input))
                     {
-                        Position += input.Movement * Speed * deltaTime;
-                        Position = Vector2.Round(Position);
+                        ApplyMovementInput(input.Value, Adventure.Time.GetDeltaTime());
                     }
                 }
                 else 
                 {
-                    var diff = Timestep.TickDiff(SS_INTERPOLATE_TIMER, Adventure.Instance.ClientLastProcessedSnapshotTick);
-                    var elapsed = diff * Timestep.FixedDelta;
-                    var percent = elapsed / (AdventureSettings.SnapshotSeconds + Session.Instance.Latency);
+                    _clientRemoteInterpolationTimerTicks = Timestep.IncrementTick(_clientRemoteInterpolationTimerTicks);
 
-                    if (percent <= 1f)
-                    {
-                        Position = Vector2.Lerp(ClientInterpolateFrom, ClientInterpolateTo, percent);
-                        Position = Vector2.Round(Position);
-                    }
+                    var diff = Timestep.TickDiff(_clientRemoteInterpolationTimerTicks, Adventure.Instance.ClientLastProcessedSnapshotTick);
+                    var elapsed = diff * Timestep.FixedDelta;
+                    var percent = Math.Clamp(elapsed / (AdventureSettings.SnapshotSeconds + Session.Instance.Latency), 0f, 1f);
+
+                    Position = Vector2.Lerp(ClientInterpolateFrom, ClientInterpolateTo, percent);
+                    Position = Vector2.Round(Position);
                 }
             }
 
@@ -117,6 +109,14 @@ namespace Adventure.Entities
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             renderer.Draw(Sprite, Position);
+            renderer.DrawString(Store.Fonts.Default, OwnerId.ToString(), Position + new Vector2(0, -25), Color.White);
+
+        }
+
+        private void ApplyMovementInput(Vector2 input, float deltaTime)
+        {
+            Position += input * Speed * deltaTime;
+            Position = Vector2.Round(Position);
         }
 
         private void Animate(GameTime gameTime)
@@ -149,21 +149,16 @@ namespace Adventure.Entities
 
         public void ClientSendInputMessage()
         {
-            if (ClientInputBuffer.Count == 0) 
-            {
-                return;
-            }
-
             var message = new Message();
             message.Write((byte)MessageType.EntityMessage);
             message.Write(Id);
             message.Write((byte)EntityMessageType.InputRequest);
-            message.Write(ClientInputBuffer.Count);
+            message.Write(ClientSnapshotBuffer.Count);
 
-            foreach (var input in ClientInputBuffer)
+            foreach (var localSnapshot in ClientSnapshotBuffer)
             {
-                message.Write(input.Tick);
-                message.Write(input.Movement);
+                message.Write(localSnapshot.Input.Tick);
+                message.Write(localSnapshot.Input.Value);
             }
 
             Session.Instance.ClientSendUnreliable(message);
@@ -179,7 +174,7 @@ namespace Adventure.Entities
 
                 if (Timestep.TickDiff(tick, ServerLastProcessedClientInput) > 0)
                 {
-                    ServerInputBuffer.Enqueue(new Input(tick, movement));
+                    ServerInputBuffer.Enqueue(new Vector2Snapshot(tick, movement));
                     ServerLastProcessedClientInput = tick;
                 }
             }
@@ -206,48 +201,69 @@ namespace Adventure.Entities
 
         public override void ClientReadFromSnapshot(Message buffer)
         {
-            SS_INTERPOLATE_TIMER = Adventure.Instance.ClientLastProcessedSnapshotTick;
-
             var positionX = buffer.ReadSingle();
             var positionY = buffer.ReadSingle();
             var lastProcessedInputTick = buffer.ReadInt();
 
             if (IsClient && IsRemote)
             {
+                // Reset interpolation timer to the latest snapshot server tick.
+                _clientRemoteInterpolationTimerTicks = Adventure.Instance.ClientLastProcessedSnapshotTick;
+
                 ClientInterpolateFrom = ClientInterpolateTo;
                 ClientInterpolateTo = new Vector2(positionX, positionY);
                 return;
             }
 
-            while (ClientInputBuffer.TryPeek(out var input))
+            ClientLocalSnapshot? snapshotAtTick = null;
+
+            while (ClientSnapshotBuffer.TryPeek(out var localSnapshot))
             {
-                if (Timestep.TickDiff(input.Tick, lastProcessedInputTick) > 0)
+                if (Timestep.TickDiff(localSnapshot.Input.Tick, lastProcessedInputTick) > 0)
                 {
                     break;
                 }
 
-                ClientInputBuffer.Pop();
+                snapshotAtTick = ClientSnapshotBuffer.Dequeue();
             }
 
-            // Reset position and then replay all inputs.
-            Position = new Vector2(positionX, positionY);
-
-            foreach (var input in ClientInputBuffer)
+            if (snapshotAtTick != null) 
             {
-                ApplyMovementInput(input.Movement, Adventure.Time.GetDeltaTime());
+                const float Threshold = 1f;
+
+                var diffX = snapshotAtTick.Value.Position.Value.X - positionX;
+                var diffY = snapshotAtTick.Value.Position.Value.Y - positionY;
+
+                // If the client position is too far from what the server has, then correct to the server position and reapply all local inputs.
+                if (diffX > Threshold || diffY > Threshold) 
+                {
+                    // Reset position and then replay all inputs.
+                    Position = new Vector2(positionX, positionY);
+
+                    foreach (var localSnapshot in ClientSnapshotBuffer)
+                    {
+                        ApplyMovementInput(localSnapshot.Position.Value, Adventure.Time.GetDeltaTime());
+                    }
+                }
             }
         }
     }
 
-    public struct Input
+    public struct ClientLocalSnapshot 
     {
-        public Input(int tick, Vector2 movement)
+        public Vector2Snapshot Input;
+        public Vector2Snapshot Position;
+    }
+
+    public struct Vector2Snapshot
+    {
+        public Vector2Snapshot(int tick, Vector2 value)
         {
             Tick = tick;
-            Movement = movement;
+            Value = value;
         }
 
         public int Tick;
-        public Vector2 Movement;
+        public Vector2 Value;
     }
 }
