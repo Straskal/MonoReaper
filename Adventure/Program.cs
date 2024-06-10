@@ -1,3 +1,2 @@
-﻿
-using var application = new Adventure.Adventure();
+﻿using var application = new Adventure.Adventure();
 application.Run();

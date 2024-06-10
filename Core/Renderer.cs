@@ -27,9 +27,9 @@ namespace Engine
             );
         }
 
-        public void Draw(Sprite sprite) 
+        public void Draw(Sprite sprite, Vector2 position) 
         {
-            Draw(sprite.Texture, sprite.Position, sprite.SourceRectangle, sprite.Color, 0f, Vector2.Zero, 1f, sprite.SpriteEffects, 0f);
+            Draw(sprite.Texture, position, sprite.SourceRectangle, sprite.Color, 0f, Vector2.Zero, 1f, sprite.SpriteEffects, 0f);
         }
 
         public void DrawRectangle(Rectangle rectangle, Color color)

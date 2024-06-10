@@ -1,7 +1,9 @@
-﻿using Adventure.Components;
+﻿using Adventure.Networking;
 using Engine;
+using LiteNetLib.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using static Adventure.Constants;
 
 namespace Adventure.Entities
@@ -25,26 +27,40 @@ namespace Adventure.Entities
             public bool IsSolid { get; set; }
         }
 
-        public Tilemap(MapData data)
-        {
-            Data = data;
-        }
+        public MapData Data { get; set; }
+        public override EntityType Type => EntityType.Tilemap;
 
-        public MapData Data { get; }
+        private List<Collider> colliders = new();
+
+        public Tilemap() 
+        {
+            IsSyncEnabled = false;
+        }
 
         public override void Spawn()
         {
             Data.Texture = Adventure.Instance.Content.Load<Texture2D>(Data.TilesetFilePath);
-            Collider = new TilemapCollider(this, 0, 0, Data);
-            Collider.Layer = EntityLayers.Solid;
-            Collider.Enable();
+
+            foreach (var tile in Data.Tiles)
+            {
+                colliders.Add(new Collider(this, new BoxCollisionShape(Data.CellSize, Data.CellSize))
+                {
+                    Layer = EntityLayers.Solid,
+                    Offset = new Vector2(tile.Position.X + Data.CellSize * 0.5f, tile.Position.Y + Data.CellSize * 0.5f)
+                });
+            }
+
+            foreach (var collider in colliders)
+            {
+                collider.Enable();
+            }
         }
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
             foreach (var tile in Data.Tiles)
             {
-                renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White, SpriteEffects.None);
+                renderer.Draw(Data.Texture, tile.Position, tile.Source, Color.White);
             }
         }
     }

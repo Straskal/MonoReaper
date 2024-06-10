@@ -1,146 +1,93 @@
-﻿using Adventure.Content;
-using Adventure.Entities;
+﻿using Adventure.Networking;
 using Engine;
-using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Adventure
 {
+    public static class AdventureSettings
+    {
+        public const int HostPort = 7777;
+        public const int SnapshotMilliseconds = 100;
+        public const float SnapshotSeconds = SnapshotMilliseconds / 1000f;
+        public const int ResolutionWidth = 256;
+        public const int ResolutionHeight = 256;
+    }
+
     public sealed class Adventure : Game
     {
-        public const int RESOLUTION_WIDTH = 256;
-        public const int RESOLUTION_HEIGHT = 256;
-
-        private readonly PauseScreen pauseScreen = new();
-        private readonly List<LevelData> zones = new();
-        private LevelData currentZone;
+        private int _snapshotTimerMilliseconds = 0;
+        private int _currentPlayerId = 1;
 
         public Adventure()
         {
             Instance = this;
-            Window.Title = "Adventure Game 2000";
+            Window.Title = "The Trail of Adventure";
             Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += (s, e) => RenderTarget?.SyncWithBackBuffer();
             IsMouseVisible = false;
+            Session = new LiteSession();
             Content = new ContentManager(Services, "Content");
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
             GraphicsDeviceManager.IsFullScreen = false;
-            GraphicsDeviceManager.PreferredBackBufferWidth = RESOLUTION_WIDTH;
-            GraphicsDeviceManager.PreferredBackBufferHeight = RESOLUTION_HEIGHT;
+            GraphicsDeviceManager.PreferredBackBufferWidth = AdventureSettings.ResolutionWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = AdventureSettings.ResolutionHeight;
             IsFixedTimeStep = true;
+            Session.PeerConnected += OnPeerConnected;
+            Session.PeerDisconnected += OnPeerDisconnected;
+            Session.EventReceived += OnReceiveMessage;
+            RemotePlayers = new List<PlayerProfile>();
         }
 
         public static Adventure Instance { get; private set; }
         public static GameTime Time { get; private set; }
-        public static Player Player { get; private set; }
-        public static bool IsPaused { get; set; }
-        public static bool IsTransitioningAreas { get; set; }
+
+        public PlayerProfile Player { get; private set; }
+        public List<PlayerProfile> RemotePlayers { get; }
+        public Session Session { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
-        public BackBuffer BackBuffer { get; private set; }
         public Renderer Renderer { get; private set; }
-        public Camera Camera { get; private set; }
-        public World World { get; private set; }
+        public FixedResolutionRenderTarget2D RenderTarget { get; private set; }
         public CoroutineRunner Coroutines { get; } = new();
-        public bool Debug { get; set; }
+        public AdventureStateBase CurrentState { get; private set; }
+        public AdventureStateBase NextState { get; private set; }
+        public int ClientLastProcessedSnapshotTick { get; private set; }
 
         protected override void Initialize()
         {
-            BackBuffer = new BackBuffer(Window, GraphicsDevice, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            Renderer = new Renderer(GraphicsDevice);
-            Camera = new Camera(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            World = new World();
+            // Internally calls LoadContent()
             base.Initialize();
+
+            Renderer = new Renderer(GraphicsDevice);
+            RenderTarget = new FixedResolutionRenderTarget2D(GraphicsDevice, AdventureSettings.ResolutionWidth, AdventureSettings.ResolutionHeight);
+
+            // TODO: Load profile from disk.
+            Player = new PlayerProfile();
+            Player.Id = 0;
+            Player.Name = "Character name";
+            Player.IsProfileLoaded = true;
+
+            // Initialize state after content has loaded.
+            try
+            {
+                Session.Join("127.0.0.1", AdventureSettings.HostPort);
+                CurrentState = new BlankState();
+            }
+            catch
+            {
+                Session.Host(AdventureSettings.HostPort);
+                CurrentState = new Inn(this);
+                CurrentState.Start();
+            }
         }
 
         protected override void LoadContent()
-        {
-            LoadAllContent();
-            LoadGUI();
-            LoadMap();
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            BackBuffer.Dispose();
-            Renderer.Dispose();
-            Content.Unload();
-            base.UnloadContent();
-        }
-
-        public void LoadMap()
-        {
-            World.Clear();
-            zones.Clear();
-            Player = null;
-
-            LoadLevel("Levels/world/level_0");
-            LoadLevel("Levels/world/level_1");
-            LoadLevel("Levels/world/level_2");
-
-            Player = World.Find<Player>();
-        }
-
-        public void LoadLevel(string path)
-        {
-            var data = Content.Load<LevelData>(path);
-            zones.Add(data);
-            World.Spawn(data.GetEntities());
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            Time = gameTime;
-            Input.Update(BackBuffer);
-            Coroutines.Update();
-
-            HandleInput();
-
-            if (!(IsPaused || IsTransitioningAreas))
-            {
-                World.Update(gameTime);
-            }
-
-            DoCameraEffects(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            Renderer.SetTarget(BackBuffer.RenderTarget);
-            Renderer.SetViewport(BackBuffer.RenderTargetViewport);
-            Renderer.Clear();
-            Renderer.BeginDraw(Camera.TransformationMatrix);
-            World.Draw(Renderer, gameTime);
-            Renderer.EndDraw();
-
-            if (Debug)
-            {
-                Renderer.BeginDraw(Camera.TransformationMatrix);
-                World.DebugDraw(Renderer);
-                DebugOverlay.Draw(Renderer);
-                Renderer.EndDraw();
-            }
-
-            if (IsPaused)
-            {
-                pauseScreen.Draw(Renderer, gameTime);
-            }
-
-            Renderer.SetTarget(null);
-            Renderer.SetViewport(BackBuffer.LetterboxViewport);
-            Renderer.Clear();
-            Renderer.BeginDraw(BackBuffer.ScaleMatrix);
-            Renderer.Draw(BackBuffer.RenderTarget, Vector2.Zero);
-            Renderer.EndDraw();
-        }
-
-        private void LoadAllContent()
         {
             Store.Fonts.Default = Content.Load<SpriteFont>("fonts/font");
             Store.Gfx.Cursor = Content.Load<Texture2D>("art/cursor");
@@ -153,118 +100,332 @@ namespace Adventure
             Store.Vfx.SolidColor = Content.Load<Effect>("shaders/SolidColor");
             Store.Sfx.Shoot = Content.Load<SoundEffect>("audio/fireball_shoot");
             Store.Sfx.Explosion = Content.Load<SoundEffect>("audio/explosion4");
+
+            base.LoadContent();
         }
 
-        private void LoadGUI()
+        protected override void UnloadContent()
         {
-            GUI.Renderer = Renderer;
-            GUI.BackBuffer = BackBuffer;
+            RenderTarget.Dispose();
+            Renderer.Dispose();
+            Content.Unload();
+
+            base.UnloadContent();
         }
 
-        private void HandleInput()
+        protected override void Update(GameTime gameTime)
         {
-            if (Input.IsKeyPressed(Keys.F))
+            Time = gameTime;
+            Input.Update(RenderTarget);
+            Coroutines.Update();
+            Session.Update(gameTime);
+            CurrentState.Update(gameTime);
+
+            if (!Session.IsServer)
             {
-                GraphicsDeviceManager.ToggleFullScreen();
-                GraphicsDeviceManager.ApplyChanges();
+                return;
             }
 
-            if (Input.IsKeyPressed(Keys.Escape))
+            if (NextState != null)
             {
-                IsPaused = !IsPaused;
+                CurrentState.Stop();
+                CurrentState = NextState;
+                CurrentState.Start();
+                NextState = null;
+
+                ServerSendStateChangeEvent();
+
+                _snapshotTimerMilliseconds = 0;
             }
 
-            if (Input.IsKeyPressed(Keys.OemTilde))
-            {
-                Debug = !Debug;
-            }
+            _snapshotTimerMilliseconds += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            SetPlayerInput();
+            if (_snapshotTimerMilliseconds >= AdventureSettings.SnapshotMilliseconds)
+            {
+                _snapshotTimerMilliseconds = 0;
+
+                ServerSendSnapshotEvent();
+            }
         }
 
-        private void SetPlayerInput()
+        protected override void Draw(GameTime gameTime)
         {
-            if (Player != null)
-            {
-                Vector2 aim, arrowAim;
-                bool shoot;
+            GraphicsDevice.SetRenderTarget(RenderTarget);
+            GraphicsDevice.Viewport = RenderTarget.Viewport;
+            GraphicsDevice.Clear(Color.Black);
+            CurrentState.Draw(Time, Renderer);
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Viewport = RenderTarget.LetterboxViewport;
+            GraphicsDevice.Clear(Color.Black);
+            Renderer.Begin(RenderTarget.ScaleMatrix);
+            Renderer.Draw(RenderTarget, Vector2.Zero, Color.White);
+            Renderer.End();
+        }
 
-                if (Input.IsMouseRightDown())
+        private void OnPeerConnected(int peerId)
+        {
+            var profile = new PlayerProfile();
+            profile.Id = _currentPlayerId++;
+            profile.IsProfileLoaded = false;
+            RemotePlayers.Add(profile);
+
+            if (Session.IsServer)
+            {
+                ServerSendWelcomeMessage(profile);
+            }
+            else
+            {
+                ClientSendProfileMessage();
+            }
+        }
+
+        private void OnPeerDisconnected(int peerId)
+        {
+            if (Session.IsServer)
+            {
+                var player = RemotePlayers.SingleOrDefault(p => p.PeerId == peerId);
+                if (player != null)
                 {
-                    var mousePosition = Camera.ToWorld(Input.MousePosition);
-                    var direction = mousePosition - Player.Position;
-                    direction.Normalize();
-                    aim = direction;
-                    shoot = Input.IsMouseLeftDown();
+                    CurrentState.PlayerLeft(player);
+                    RemotePlayers.Remove(player);
+                    ServerSendPlayerDisconnectedMessage(player.Id);
                 }
-                else if ((arrowAim = Input.GetVector(Keys.Left, Keys.Right, Keys.Up, Keys.Down)) != Vector2.Zero)
-                {
-                    arrowAim.Normalize();
-                    aim = arrowAim;
-                    shoot = true;
-                }
-                else
-                {
-                    aim = Vector2.Zero;
-                    shoot = false;
-                }
-
-                Player.SetInput(new PlayerInput(Input.GetVector(Keys.A, Keys.D, Keys.W, Keys.S), aim, shoot));
+            }
+            else
+            {
+                RemotePlayers.Clear();
+                Session.Host(AdventureSettings.HostPort);
+                CurrentState = new Inn(this);
+                CurrentState.Start();
             }
         }
 
-        private void DoCameraEffects(GameTime gameTime)
+        private void OnReceiveMessage(int peerId, Message message)
         {
-            CameraFollow();
-            ScreenShake.Update(gameTime);
-            Camera.Position.Round();
+            var type = (MessageType)message.ReadByte();
+
+            switch (type)
+            {
+                case MessageType.ProfileMessage:
+                    ReceiveProfileMessage(peerId, message);
+                    break;
+                case MessageType.PlayerDisconnected:
+                    ReceivePlayerDisconnectedMessage(message);
+                    break;
+                case MessageType.WelcomeMessage:
+                    ClientReceiveWelcomeMessage(message);
+                    break;
+                case MessageType.StateChangedMessage:
+                    ReceiveStateChange(message);
+                    break;
+                case MessageType.StateMessage:
+                    CurrentState.ReceiveStateMessage(message);
+                    break;
+                case MessageType.SnapshotMessage:
+                    ReceiveSnapshot(message);
+                    break;
+                case MessageType.EntityMessage:
+                    var entityId = message.ReadInt();
+                    CurrentState.ReceiveEntityMessage(entityId, message);
+                    break;
+            }
         }
 
-        private void CameraFollow()
+        private void ServerSendPlayerDisconnectedMessage(int playerId)
         {
-            if (Player != null)
+            var message = new Message();
+            message.Write((byte)MessageType.PlayerDisconnected);
+            message.Write(playerId);
+            Session.ServerSendReliable(message);
+        }
+
+        private void ReceivePlayerDisconnectedMessage(Message message) 
+        {
+            var playerId = message.ReadInt();
+            var player = RemotePlayers.SingleOrDefault(p => p.Id == playerId);
+
+            if (player != null)
             {
-                foreach (var zone in zones)
+                CurrentState.PlayerLeft(player);
+                RemotePlayers.Remove(player);
+            }
+        }
+
+        private void ServerSendWelcomeMessage(PlayerProfile player)
+        {
+            var welcome = new Message();
+            welcome.Write((byte)MessageType.WelcomeMessage);
+            welcome.Write(player.Id);
+            welcome.Write(Player.Name);
+
+            welcome.Write(RemotePlayers.Count - 1);
+            foreach (var other in RemotePlayers)
+            {
+                if (other.Id != player.Id)
                 {
-                    if (zone.Bounds.Contains(Player.Position))
+                    welcome.Write(other.Id);
+                    welcome.Write(other.Name);
+                }
+            }
+
+            // Write the current initial state.
+            welcome.Write((int)CurrentState.Type);
+            CurrentState.ServerWriteToInitialMessage(welcome);
+            Session.ServerSendReliable(player.PeerId, welcome);
+        }
+
+        private void ClientReceiveWelcomeMessage(Message message)
+        {
+            Player.Id = message.ReadInt();
+
+            var hostProfile = RemotePlayers.SingleOrDefault() ?? throw new Exception();
+            hostProfile.Name = message.ReadString();
+            hostProfile.IsProfileLoaded = true;
+
+            var otherPlayerCount = message.ReadInt();
+
+            for (int i = 0; i < otherPlayerCount; i++)
+            {
+                var profile = new PlayerProfile();
+                profile.PeerId = message.ReadInt();
+                profile.Name = message.ReadString();
+                profile.IsProfileLoaded = true;
+                RemotePlayers.Add(profile);
+            }
+
+            var stateType = (AdventureState)message.ReadInt();
+
+            switch (stateType)
+            {
+                case AdventureState.Inn:
+                    CurrentState = new Inn(this);
+                    break;
+            }
+
+            CurrentState.Start();
+            CurrentState.ClientReadFromInitialMessage(message);
+        }
+
+        private void ClientSendProfileMessage()
+        {
+            var profileMessage = new Message();
+            profileMessage.Write((byte)MessageType.ProfileMessage);
+            profileMessage.Write(Player.Name);
+            Session.ClientSendReliable(profileMessage);
+        }
+
+        private void ReceiveProfileMessage(int peerId, Message message)
+        {
+            if (Session.IsServer)
+            {
+                PlayerProfile profile = null;
+
+                foreach (var player in RemotePlayers)
+                {
+                    if (player.PeerId == peerId)
                     {
-                        var boundsF = new RectangleF(zone.Bounds);
-
-                        if (currentZone != zone)
-                        {
-                            currentZone = zone;
-                            Coroutines.Start(TransitionCameraBetweenZones(boundsF));
-                        }
-                        else if (!IsTransitioningAreas)
-                        {
-                            // If player is still within the same zone, but the transition finished,
-                            // Keep forcing the position to the center to account for screen shake offsets
-                            Camera.Position = boundsF.Center;
-                        }
-
-                        return;
+                        profile = player;
+                        break;
                     }
                 }
+
+                if (profile == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+
+                profile.Name = message.ReadString();
+                profile.IsProfileLoaded = true;
+
+                var broadcast = new Message();
+                broadcast.Write((int)MessageType.ProfileMessage);
+                broadcast.Write(peerId);
+                broadcast.Write(profile.Name);
+
+                foreach (var other in RemotePlayers)
+                {
+                    if (other.PeerId != profile.PeerId)
+                    {
+                        Session.ServerSendReliable(other.PeerId, broadcast);
+                    }
+                }
+
+                CurrentState.PlayerJoined(profile);
+            }
+            else
+            {
+                var id = message.ReadInt();
+                var name = message.ReadString();
+
+                PlayerProfile profile = null;
+
+                foreach (var player in RemotePlayers)
+                {
+                    if (player.PeerId == id)
+                    {
+                        profile = player;
+                        break;
+                    }
+                }
+
+                profile ??= new PlayerProfile();
+                profile.PeerId = id;
+                profile.Name = name;
+                profile.IsProfileLoaded = true;
+
+                RemotePlayers.Add(profile);
             }
         }
 
-        private IEnumerator TransitionCameraBetweenZones(RectangleF bounds)
+        private void ServerSendSnapshotEvent()
         {
-            const float EPSILON = 0.05f;
-            var duration = 5.5f;
-            IsTransitioningAreas = true;
+            var message = new Message();
+            message.Write((byte)MessageType.SnapshotMessage);
+            message.Write(Session.Tick);
+            message.Write((byte)CurrentState.Type);
 
-            while (Vector2.Distance(bounds.Center, Camera.Position) > EPSILON)
+            CurrentState.ServerWriteToSnapshot(message);
+            Session.ServerSendUnreliable(message);
+        }
+
+        private void ReceiveSnapshot(Message buffer)
+        {
+            var tick = buffer.ReadInt();
+            if (Timestep.TickDiff(tick, ClientLastProcessedSnapshotTick) <= 0)
             {
-                var direction = bounds.Center - Camera.Position;
-                Camera.Position = Camera.Position + direction * (1f / duration);
-                duration -= Time.GetDeltaTime();
-                yield return null;
+                return;
             }
 
-            // Force camera position to zone center once we've reached epsilon
-            Camera.Position = bounds.Center;
-            IsTransitioningAreas = false;
+            ClientLastProcessedSnapshotTick = tick;
+
+            var state = (AdventureState)buffer.ReadByte();
+            if (state == CurrentState.Type)
+            {
+                CurrentState.ClientReadFromSnapshot(buffer);
+            }
+        }
+
+        private void ServerSendStateChangeEvent()
+        {
+            var buffer = new Message();
+            buffer.Write((byte)MessageType.StateChangedMessage);
+            buffer.Write((byte)CurrentState.Type);
+            CurrentState.ServerWriteToInitialMessage(buffer);
+            Session.ServerSendReliable(buffer);
+        }
+
+        private void ReceiveStateChange(Message buffer)
+        {
+            switch ((AdventureState)buffer.ReadByte())
+            {
+                case AdventureState.Inn:
+                    CurrentState = new Inn(this);
+                    break;
+            }
+
+            CurrentState.Start();
+            CurrentState.ClientReadFromInitialMessage(buffer);
         }
     }
 }

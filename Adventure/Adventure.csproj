@@ -29,13 +29,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="LiteNetLib" Version="1.2.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Adventure.Content\Adventure.Content.csproj" />
-		<ProjectReference Include="..\Engine\Engine.csproj" />
+		<ProjectReference Include="..\Core.Collision\Core.Collision.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="Content\Levels\world\Level_0.ldtkl">
@@ -51,5 +53,9 @@
 		<Content Include="Content\**\*.xnb">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Character\" />
 	</ItemGroup>
 </Project>

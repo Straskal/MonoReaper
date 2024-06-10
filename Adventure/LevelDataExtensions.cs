@@ -1,6 +1,5 @@
 ﻿using Adventure.Content;
 using Adventure.Entities;
-using Engine;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,54 +17,35 @@ namespace Adventure
                 result.Add(entity);
             }
 
-            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
-            {
-                result.Add(tileMapEntity);
-            }
+            //foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
+            //{
+            //    result.Add(tileMapEntity);
+            //}
 
             return result;
         }
 
         private static IEnumerable<Entity> GetEntitiesFromLevelData(LevelData levelData)
         {
-            var offset = new Vector2(levelData.Bounds.X, levelData.Bounds.Y);
+            var levelOffset = new Vector2(levelData.Bounds.X, levelData.Bounds.Y);
 
             foreach (var entityData in levelData.Entities)
             {
+                Entity result = null;
+
                 switch (entityData.Type)
                 {
                     case "PlayerSpawn":
-                        yield return new Player()
+                        result = new TopDownPlayer()
                         {
-                            Position = entityData.Position + offset
+                            Position = entityData.Position + levelOffset
                         };
                         break;
-                    case "Barrel":
-                        yield return new Barrel()
-                        {
-                            Position = entityData.Position + offset
-                        };
-                        break;
-                    case "FireballShooter":
-                        yield return new EnemyFireballShooter()
-                        {
-                            Position = entityData.Position + offset
-                        };
-                        break;
-                    case "PressurePlate":
-                        yield return new PressurePlate(entityData)
-                        {
-                            Position = entityData.Position + offset
-                        };
-                        break;
-                    case "LargeDoor":
-                        yield return new Door(entityData)
-                        {
-                            Position = entityData.Position + offset
-                        };
-                        break;
-                    default:
-                        continue;
+                }
+
+                if (result != null) 
+                {
+                    yield return result;
                 }
             }
         }
@@ -90,9 +70,9 @@ namespace Adventure
                     IsSolid = true
                 };
 
-                yield return new Tilemap(mapData)
+                yield return new Tilemap 
                 {
-                    Origin = Origin.TopLeft
+                    Data = mapData
                 };
             }
         }

@@ -8,9 +8,9 @@ namespace Engine
         public Sprite(Texture2D texture)
         {
             Texture = texture;
+            SourceRectangle = Texture.Bounds;
         }
 
-        public Vector2 Position { get; set; }
         public Texture2D Texture { get; set; }
         public Rectangle SourceRectangle { get; set; }
         public Color Color { get; set; } = Color.White;
