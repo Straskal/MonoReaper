@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 
 namespace Adventure
 {
-    public class Inn : AdventureStateBase
+    public class InnState : AdventureStateBase
     {
-        public Inn(Adventure adventure)
+        public InnState(Adventure adventure)
         {
             Adventure = adventure;
             World = new World();
@@ -16,20 +16,23 @@ namespace Adventure
         public override AdventureState Type => AdventureState.Inn;
         public Adventure Adventure { get; }
         public World World { get; }
-        public TopDownPlayer LocalPlayer { get; set; }
 
         public override void Start()
         {
-            if (Adventure.Session.IsServer)
+            World.Spawn(Adventure.Content.Load<LevelData>("Levels/world/level_0").GetEntities());
+
+            if (!Adventure.Session.IsServer) 
             {
-                World.Spawn(Adventure.Content.Load<LevelData>("Levels/world/level_0").GetEntities());
+                return;
             }
 
-            LocalPlayer = World.FindLocalEntity<TopDownPlayer>();
-        }
+            // Spawn net entities
+            AddPlayer(Adventure.Player);
 
-        public override void Stop()
-        {
+            foreach (var player in Adventure.OtherPlayers) 
+            {
+                AddPlayer(player);
+            }
         }
 
         public override void AddPlayer(PlayerProfile player)
@@ -46,10 +49,12 @@ namespace Adventure
         {
             if (Session.Instance.IsServer)
             {
-                var entity = World.FindFirst<TopDownPlayer>(p => p.OwnerId == player.Id);
-                if (entity != null) 
+                foreach (var entity in World) 
                 {
-                    World.Destroy(entity);
+                    if (entity.OwnerId == player.Id) 
+                    {
+                        World.Destroy(entity);
+                    }
                 }
             }
         }
@@ -65,7 +70,7 @@ namespace Adventure
             World.Draw(renderer, gameTime);
             var source = new Rectangle(8, 0, 8, 8);
             var cursorOffset = source.Size.ToVector2() / 2f;
-            var cursorPosition = Vector2.Floor(Engine.Input.MousePosition) - cursorOffset;
+            var cursorPosition = Vector2.Floor(Input.MousePosition) - cursorOffset;
             renderer.Draw(Store.Gfx.Cursor, cursorPosition, source, Color.White);
             renderer.End();
         }

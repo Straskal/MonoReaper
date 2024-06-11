@@ -30,7 +30,7 @@ namespace Adventure
         {
             Debug.WriteLine("Connection request received");
 
-            if (_manager.ConnectedPeersCount == 4) 
+            if (_manager.ConnectedPeersCount == 3) 
             {
                 Debug.WriteLine("Connection request rejected because server is full");
                 request.Reject();

@@ -17,10 +17,10 @@ namespace Adventure
                 result.Add(entity);
             }
 
-            //foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
-            //{
-            //    result.Add(tileMapEntity);
-            //}
+            foreach (var tileMapEntity in GetTilemapEntitiesFromLevelData(levelData))
+            {
+                result.Add(tileMapEntity);
+            }
 
             return result;
         }
@@ -35,12 +35,12 @@ namespace Adventure
 
                 switch (entityData.Type)
                 {
-                    case "PlayerSpawn":
-                        result = new TopDownPlayer()
-                        {
-                            Position = entityData.Position + levelOffset
-                        };
-                        break;
+                    //case "PlayerSpawn":
+                    //    result = new TopDownPlayer()
+                    //    {
+                    //        Position = entityData.Position + levelOffset
+                    //    };
+                    //    break;
                 }
 
                 if (result != null) 

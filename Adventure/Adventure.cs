@@ -79,7 +79,7 @@ namespace Adventure
             catch
             {
                 Session.HostSession(HostPort);
-                CurrentState = new Inn(this);
+                CurrentState = new InnState(this);
                 CurrentState.Start();
             }
 
@@ -211,7 +211,7 @@ namespace Adventure
                 OtherPlayers.Clear();
                 Session.StopSession();
                 Session.HostSession(HostPort);
-                CurrentState = new Inn(this);
+                CurrentState = new InnState(this);
                 CurrentState.Start();
             }
         }
@@ -337,7 +337,7 @@ namespace Adventure
             switch (stateType)
             {
                 case AdventureState.Inn:
-                    CurrentState = new Inn(this);
+                    CurrentState = new InnState(this);
                     break;
             }
 
@@ -464,7 +464,7 @@ namespace Adventure
             switch ((AdventureState)message.ReadByte())
             {
                 case AdventureState.Inn:
-                    CurrentState = new Inn(this);
+                    CurrentState = new InnState(this);
                     break;
             }
 

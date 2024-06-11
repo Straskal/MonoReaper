@@ -32,7 +32,7 @@ namespace Adventure.Entities
 
         public Tilemap() 
         {
-            IsSyncEnabled = false;
+            IsNetEntity = false;
         }
 
         public override void Spawn()

@@ -29,6 +29,11 @@ namespace Adventure.Entities
         public Queue<Vector2Snapshot> ServerInputBuffer { get; private set; } = new();
         public Queue<ClientLocalSnapshot> ClientSnapshotBuffer { get; private set; } = new();
 
+        public TopDownPlayer() 
+        {
+            IsNetEntity = true;
+        }
+
         public override void Spawn()
         {
             Sprite = new Sprite(Store.Gfx.Player);

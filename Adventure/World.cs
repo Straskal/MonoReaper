@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -13,24 +14,18 @@ namespace Adventure
         // Keep ID count within 256
         public const int MaxEntities = 256;
 
-        private readonly HashSet<int> _processedSnapshotEntities = new HashSet<int>();
-        private readonly List<Entity> _entities;
-        private readonly Dictionary<int, Entity> _entitiesById;
-        private readonly List<Entity> _entitiesToRemove;
-        private readonly List<Collider> _colliders;
-        private readonly Queue<int> _availableIds;
-        private readonly Queue<int> _reservedIds;
+        private readonly HashSet<int> _snapshotEntityIdSet = new();
+        private readonly List<Entity> _entities = new();
+        private readonly Dictionary<int, Entity> _entitiesById = new();
+        private readonly List<Entity> _entitiesToRemove = new();
+        private readonly List<Collider> _colliders = new();
+        private readonly Queue<int> _availableIds = new();
+        private readonly Queue<int> _reservedIds = new();
         private bool _shouldSortEntities;
+        private int _netEntityCount;
 
         public World()
         {
-            _entities = new List<Entity>();
-            _entitiesById = new Dictionary<int, Entity>();
-            _entitiesToRemove = new List<Entity>();
-            _colliders = new List<Collider>();
-            _availableIds = new Queue<int>();
-            _reservedIds = new Queue<int>();
-
             for (int i = 0; i < MaxEntities; i++)
             {
                 _availableIds.Enqueue(i);
@@ -62,17 +57,23 @@ namespace Adventure
 
         public void Spawn(Entity entity)
         {
-            if (entity.World == null)
+            Debug.Assert(entity.World == null);
+            Debug.Assert(_availableIds.Count > 0);
+
+            entity.Id = _availableIds.Dequeue();
+            entity.World = this;
+            entity.IsActive = true;
+
+            _entities.Add(entity);
+            _entitiesById.Add(entity.Id, entity);
+            _shouldSortEntities = true;
+
+            if (entity.IsNetEntity)
             {
-                // TODO: Log when there is no available id
-                entity.Id = _availableIds.Dequeue();
-                entity.World = this;
-                entity.IsActive = true;
-                _entities.Add(entity);
-                _entitiesById.Add(entity.Id, entity);
-                entity.Spawn();
-                _shouldSortEntities = true;
+                _netEntityCount++;
             }
+
+            entity.Spawn();
         }
 
         public void Destroy(Entity entity)
@@ -92,53 +93,12 @@ namespace Adventure
             _colliders.Clear();
             _availableIds.Clear();
             _reservedIds.Clear();
+            _netEntityCount = 0;
 
             for (int i = 0; i < MaxEntities; i++)
             {
                 _availableIds.Enqueue(i);
             }
-        }
-
-        public T FindFirst<T>() where T : Entity
-        {
-            T result = null;
-            foreach (var entity in _entities)
-            {
-                if (entity is T t)
-                {
-                    result = t;
-                    break;
-                }
-            }
-            return result;
-        }
-
-        public T FindFirstWithTag<T>(string tag) where T : Entity
-        {
-            T result = null;
-            foreach (var entity in _entities)
-            {
-                if (entity is T t && entity.Tags.Contains(tag))
-                {
-                    result = t;
-                    break;
-                }
-            }
-            return result;
-        }
-
-        public T FindFirst<T>(Func<T, bool> predicate) where T : Entity
-        {
-            T result = null;
-            foreach (var entity in _entities)
-            {
-                if (entity is T t && predicate(t))
-                {
-                    result = t;
-                    break;
-                }
-            }
-            return result;
         }
 
         public void Update(GameTime gameTime)
@@ -153,23 +113,17 @@ namespace Adventure
                 _entities[i].PostUpdate(gameTime);
             }
 
-            if (Session.Instance.IsClient) 
-            {
-                for (int i = 0; i < _entities.Count; i++)
-                {
-                    if (!_processedSnapshotEntities.Contains(_entities[i].Id)) 
-                    {
-                        Destroy(_entities[i]);
-                    }
-                }
-            }
-
             for (int i = 0; i < _entitiesToRemove.Count; i++)
             {
                 _entitiesToRemove[i].Destroy();
                 _entitiesToRemove[i].Collider?.Disable();
                 _entitiesToRemove[i].World = null;
                 _entities.Remove(_entitiesToRemove[i]);
+
+                if (_entitiesToRemove[i].IsNetEntity)
+                {
+                    _netEntityCount--;
+                }
             }
 
             _entitiesToRemove.Clear();
@@ -446,20 +400,24 @@ namespace Adventure
 
         public void ServerWriteToSnapshot(Message message)
         {
-            message.Write(_entities.Count);
+            message.Write(_netEntityCount);
 
             foreach (var entity in _entities)
             {
-                message.Write(entity.Id);
-                message.Write(entity.OwnerId);
-                message.Write((int)entity.Type);
-                entity.ServerWriteToSnapshot(message);
+                if (entity.IsNetEntity) 
+                {
+                    message.Write(entity.Id);
+                    message.Write(entity.OwnerId);
+                    message.Write((int)entity.Type);
+
+                    entity.ServerWriteToSnapshot(message);
+                }
             }
         }
 
         public void ClientReadFromSnapshot(Message message)
         {
-            _processedSnapshotEntities.Clear();
+            _snapshotEntityIdSet.Clear();
 
             var entityCount = message.ReadInt();
 
@@ -469,19 +427,33 @@ namespace Adventure
                 var ownerId = message.ReadInt();
                 var type = (EntityType)message.ReadInt();
 
-                _processedSnapshotEntities.Add(id);
+                _snapshotEntityIdSet.Add(id);
 
                 if (!_entitiesById.TryGetValue(id, out var entity))
                 {
                     entity = EntityFactory.CreateEntityFromType(type);
-                    if (entity != null)
-                    {
-                        entity.Id = id;
-                        entity.OwnerId = ownerId;
-                        Spawn(entity);
-                    }
+                    entity.Id = id;
+                    entity.OwnerId = ownerId;
+
+                    Spawn(entity);
                 }
+
                 entity.ClientReadFromSnapshot(message);
+            }
+
+            foreach (var entity in _entities) 
+            {
+                if (!entity.IsNetEntity)
+                {
+                    continue;
+                }
+
+                if (_snapshotEntityIdSet.Contains(entity.Id))
+                {
+                    continue;
+                }
+
+                Destroy(entity);
             }
         }
 
