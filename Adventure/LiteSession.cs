@@ -1,10 +1,10 @@
 ﻿using LiteNetLib;
 using Microsoft.Xna.Framework;
-using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Adventure.Networking
+namespace Adventure
 {
     internal sealed class LiteSession : Session, INetEventListener
     {
@@ -20,6 +20,7 @@ namespace Adventure.Networking
             {
                 IPv6Enabled = false,
 #if DEBUG
+                // Increase timeout for debugging so that breakpoints do not cause a disconnect.
                 DisconnectTimeout = 1000 * 60
 #endif
             };
@@ -27,9 +28,16 @@ namespace Adventure.Networking
 
         public void OnConnectionRequest(ConnectionRequest request)
         {
-            Console.WriteLine("Connection Request");
+            Debug.WriteLine("Connection request received");
 
-            // TODO: Basic accept is for testing.
+            if (_manager.ConnectedPeersCount == 4) 
+            {
+                Debug.WriteLine("Connection request rejected because server is full");
+                request.Reject();
+                return;
+            }
+
+            Debug.WriteLine("Connection request accepted");
             request.Accept();
         }
 
@@ -50,10 +58,12 @@ namespace Adventure.Networking
 
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
         {
+            // Don't care
         }
 
         public void OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
+            Debug.WriteLine($"Network error received: {socketError}");
         }
 
         public void OnNetworkLatencyUpdate(NetPeer peer, int latency)
@@ -61,18 +71,18 @@ namespace Adventure.Networking
             Latency = latency;
         }
 
-        public override void Host(int port)
+        public override void HostSession(int port)
         {
             StopSession();
             _manager.Start(port);
             IsServer = true;
         }
 
-        public override void Join(string ipAddress, int port)
+        public override void JoinSession(string ipAddress, int port)
         {
             StopSession();
             _manager.Start();
-            _server = _manager.Connect(ipAddress, port, "key");
+            _server = _manager.Connect(ipAddress, port, "dummy_key");
             IsServer = false;
         }
 
@@ -89,6 +99,7 @@ namespace Adventure.Networking
             }
 
             _manager.Stop();
+            IsServer = false;
         }
 
         public override void Update(GameTime gameTime)

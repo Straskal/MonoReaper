@@ -1,5 +1,4 @@
-﻿using Adventure.Networking;
-using Engine;
+﻿using Engine;
 using Engine.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -96,7 +95,7 @@ namespace Adventure.Entities
 
                     var diff = Timestep.TickDiff(_clientRemoteInterpolationTimerTicks, Adventure.Instance.ClientLastProcessedSnapshotTick);
                     var elapsed = diff * Timestep.FixedDelta;
-                    var percent = Math.Clamp(elapsed / (AdventureSettings.SnapshotSeconds + Session.Instance.Latency), 0f, 1f);
+                    var percent = Math.Clamp(elapsed / (Adventure.SnapshotSeconds + Session.Instance.Latency), 0f, 1f);
 
                     Position = Vector2.Lerp(ClientInterpolateFrom, ClientInterpolateTo, percent);
                     Position = Vector2.Round(Position);
@@ -152,7 +151,7 @@ namespace Adventure.Entities
             var message = new Message();
             message.Write((byte)MessageType.EntityMessage);
             message.Write(Id);
-            message.Write((byte)EntityMessageType.InputRequest);
+            message.Write((byte)EntityMessageType.InputMessage);
             message.Write(ClientSnapshotBuffer.Count);
 
             foreach (var localSnapshot in ClientSnapshotBuffer)
@@ -186,7 +185,7 @@ namespace Adventure.Entities
 
             switch (type)
             {
-                case EntityMessageType.InputRequest:
+                case EntityMessageType.InputMessage:
                     ServerReadInputMessage(buffer);
                     break;
             }

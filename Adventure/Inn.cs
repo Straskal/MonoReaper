@@ -32,7 +32,7 @@ namespace Adventure
         {
         }
 
-        public override void PlayerJoined(PlayerProfile player)
+        public override void AddPlayer(PlayerProfile player)
         {
             if (Session.Instance.IsServer)
             {
@@ -42,7 +42,7 @@ namespace Adventure
             }
         }
 
-        public override void PlayerLeft(PlayerProfile player)
+        public override void RemovePlayer(PlayerProfile player)
         {
             if (Session.Instance.IsServer)
             {

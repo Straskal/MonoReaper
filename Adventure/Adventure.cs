@@ -1,28 +1,24 @@
-﻿using Adventure.Networking;
-using Engine;
+﻿using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 
 namespace Adventure
 {
-    public static class AdventureSettings
-    {
-        public const int HostPort = 7777;
-        public const int SnapshotMilliseconds = 100;
-        public const float SnapshotSeconds = SnapshotMilliseconds / 1000f;
-        public const int ResolutionWidth = 256;
-        public const int ResolutionHeight = 256;
-    }
-
     public sealed class Adventure : Game
     {
+        public const int ResolutionWidth = 256;
+        public const int ResolutionHeight = 256;
+        public const int HostPort = 7777;
+        public const int MaxConnections = 3;
+        public const int SnapshotMilliseconds = 100;
+        public const float SnapshotSeconds = SnapshotMilliseconds / 1000f;
+
         private int _snapshotTimerMilliseconds = 0;
-        private int _currentPlayerId = 1;
+        private int _nextPlayerId = 1;
 
         public Adventure()
         {
@@ -36,20 +32,20 @@ namespace Adventure
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             GraphicsDeviceManager.HardwareModeSwitch = false;
             GraphicsDeviceManager.IsFullScreen = false;
-            GraphicsDeviceManager.PreferredBackBufferWidth = AdventureSettings.ResolutionWidth;
-            GraphicsDeviceManager.PreferredBackBufferHeight = AdventureSettings.ResolutionHeight;
+            GraphicsDeviceManager.PreferredBackBufferWidth = ResolutionWidth;
+            GraphicsDeviceManager.PreferredBackBufferHeight = ResolutionHeight;
             IsFixedTimeStep = true;
             Session.PeerConnected += OnPeerConnected;
             Session.PeerDisconnected += OnPeerDisconnected;
             Session.EventReceived += OnReceiveMessage;
-            RemotePlayers = new List<PlayerProfile>();
+            OtherPlayers = new List<PlayerProfile>();
         }
 
         public static Adventure Instance { get; private set; }
         public static GameTime Time { get; private set; }
 
         public PlayerProfile Player { get; private set; }
-        public List<PlayerProfile> RemotePlayers { get; }
+        public List<PlayerProfile> OtherPlayers { get; }
         public Session Session { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public Renderer Renderer { get; private set; }
@@ -65,7 +61,7 @@ namespace Adventure
             base.Initialize();
 
             Renderer = new Renderer(GraphicsDevice);
-            RenderTarget = new FixedResolutionRenderTarget2D(GraphicsDevice, AdventureSettings.ResolutionWidth, AdventureSettings.ResolutionHeight);
+            RenderTarget = new FixedResolutionRenderTarget2D(GraphicsDevice, ResolutionWidth, ResolutionHeight);
 
             // TODO: Load profile from disk.
             Player = new PlayerProfile();
@@ -73,18 +69,21 @@ namespace Adventure
             Player.Name = "Character name";
             Player.IsProfileLoaded = true;
 
-            // Initialize state after content has loaded.
+            #region LOCAL TESTING
+
             try
             {
-                Session.Join("127.0.0.1", AdventureSettings.HostPort);
+                Session.JoinSession("127.0.0.1", HostPort);
                 CurrentState = new BlankState();
             }
             catch
             {
-                Session.Host(AdventureSettings.HostPort);
+                Session.HostSession(HostPort);
                 CurrentState = new Inn(this);
                 CurrentState.Start();
             }
+
+            #endregion
         }
 
         protected override void LoadContent()
@@ -140,7 +139,7 @@ namespace Adventure
 
             _snapshotTimerMilliseconds += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            if (_snapshotTimerMilliseconds >= AdventureSettings.SnapshotMilliseconds)
+            if (_snapshotTimerMilliseconds >= SnapshotMilliseconds)
             {
                 _snapshotTimerMilliseconds = 0;
 
@@ -164,14 +163,16 @@ namespace Adventure
 
         private void OnPeerConnected(int peerId)
         {
-            var profile = new PlayerProfile();
-            profile.IsProfileLoaded = false;
-            RemotePlayers.Add(profile);
+            var peer = new PlayerProfile();
+
+            OtherPlayers.Add(peer);
 
             if (Session.IsServer) 
             {
-                profile.Id = _currentPlayerId++;
-                ServerSendWelcomeMessage(profile);
+                peer.PeerId = peerId;
+                peer.Id = _nextPlayerId++;
+
+                ServerSendWelcomeMessage(peer);
             }
             else
             {
@@ -183,20 +184,33 @@ namespace Adventure
         {
             if (Session.IsServer)
             {
-                var player = RemotePlayers.SingleOrDefault(p => p.PeerId == peerId);
+                PlayerProfile player = null;
+
+                foreach (var other in OtherPlayers) 
+                {
+                    if (other.PeerId == peerId) 
+                    {
+                        player = other;
+                        return;
+                    }
+                }
+
                 if (player == null) 
                 {
-                    // TODO: Log?
+                    Debug.WriteLine($"Peer {peerId} has disconnected, but no player profile was found.");
                     return;
                 }
-                CurrentState.PlayerLeft(player);
-                RemotePlayers.Remove(player);
-                ServerSendPlayerDisconnectedMessage(player.Id);
+
+                CurrentState.RemovePlayer(player);
+                OtherPlayers.Remove(player);
+
+                SendPlayerDisconnectedMessage(player.Id);
             }
             else
             {
-                RemotePlayers.Clear();
-                Session.Host(AdventureSettings.HostPort);
+                OtherPlayers.Clear();
+                Session.StopSession();
+                Session.HostSession(HostPort);
                 CurrentState = new Inn(this);
                 CurrentState.Start();
             }
@@ -208,14 +222,14 @@ namespace Adventure
 
             switch (type)
             {
+                case MessageType.WelcomeMessage:
+                    ReceiveWelcomeMessage(message);
+                    break;
                 case MessageType.ProfileMessage:
                     ReceiveProfileMessage(peerId, message);
                     break;
-                case MessageType.PlayerDisconnected:
+                case MessageType.PlayerDisconnectedMessage:
                     ReceivePlayerDisconnectedMessage(message);
-                    break;
-                case MessageType.WelcomeMessage:
-                    ClientReceiveWelcomeMessage(message);
                     break;
                 case MessageType.StateChangedMessage:
                     ReceiveStateChange(message);
@@ -233,75 +247,89 @@ namespace Adventure
             }
         }
 
-        private void ServerSendPlayerDisconnectedMessage(int playerId)
+        private void SendPlayerDisconnectedMessage(int playerId)
         {
             var message = new Message();
-            message.Write((byte)MessageType.PlayerDisconnected);
+            message.Write((byte)MessageType.PlayerDisconnectedMessage);
             message.Write(playerId);
+
             Session.ServerSendReliable(message);
         }
 
         private void ReceivePlayerDisconnectedMessage(Message message) 
         {
             var playerId = message.ReadInt();
-            var player = RemotePlayers.SingleOrDefault(p => p.Id == playerId);
+
+            PlayerProfile player = null;
+
+            foreach (var other in OtherPlayers)
+            {
+                if (other.Id == playerId)
+                {
+                    player = other;
+                    return;
+                }
+            }
 
             if (player == null) 
             {
-                // TODO: Log?
+                Debug.WriteLine($"Player {playerId} has disconnected, but no player profile was found.");
                 return;
             }
 
-            CurrentState.PlayerLeft(player);
-            RemotePlayers.Remove(player);
+            CurrentState.RemovePlayer(player);
+            OtherPlayers.Remove(player);
         }
 
-        private void ServerSendWelcomeMessage(PlayerProfile newProfile)
+        private void ServerSendWelcomeMessage(PlayerProfile player)
         {
-            var welcome = new Message();
-            welcome.Write((byte)MessageType.WelcomeMessage);
+            var message = new Message();
+            message.Write((byte)MessageType.WelcomeMessage);
 
             // Give player their ID.
-            welcome.Write(newProfile.Id);
+            message.Write(player.Id);
 
             // Write host profile.
-            welcome.Write(Player.Name);
+            message.Write(Player.Name);
 
             // Write other remote profiles.
-            welcome.Write(RemotePlayers.Count - 1);
-            foreach (var other in RemotePlayers)
+            message.Write(OtherPlayers.Count - 1);
+            foreach (var other in OtherPlayers)
             {
-                if (other.Id != newProfile.Id)
+                if (other.Id != player.Id)
                 {
-                    welcome.Write(other.Id);
-                    welcome.Write(other.Name);
+                    message.Write(other.Id);
+                    message.Write(other.Name);
                 }
             }
 
             // Write the initial game state.
-            welcome.Write((int)CurrentState.Type);
-            CurrentState.ServerWriteToInitialMessage(welcome);
-            Session.ServerSendReliable(newProfile.PeerId, welcome);
+            message.Write((int)CurrentState.Type);
+            CurrentState.ServerWriteToInitialMessage(message);
+
+            Session.ServerSendReliable(player.PeerId, message);
         }
 
-        private void ClientReceiveWelcomeMessage(Message message)
+        private void ReceiveWelcomeMessage(Message message)
         {
+            Debug.Assert(OtherPlayers.Count == 1);
+
             Player.Id = message.ReadInt();
 
-            var hostProfile = RemotePlayers.SingleOrDefault() ?? throw new Exception();
-            hostProfile.Id = 0;
-            hostProfile.Name = message.ReadString();
-            hostProfile.IsProfileLoaded = true;
+            OtherPlayers[0].Id = 0;
+            OtherPlayers[0].Name = message.ReadString();
+            OtherPlayers[0].IsProfileLoaded = true;
 
             var otherPlayerCount = message.ReadInt();
 
             for (int i = 0; i < otherPlayerCount; i++)
             {
-                var profile = new PlayerProfile();
-                profile.Id = message.ReadInt();
-                profile.Name = message.ReadString();
-                profile.IsProfileLoaded = true;
-                RemotePlayers.Add(profile);
+                var otherPlayer = new PlayerProfile();
+                otherPlayer.Id = message.ReadInt();
+                otherPlayer.Name = message.ReadString();
+                otherPlayer.IsProfileLoaded = true;
+
+                OtherPlayers.Add(otherPlayer);
             }
 
             var stateType = (AdventureState)message.ReadInt();
@@ -317,88 +345,83 @@ namespace Adventure
             CurrentState.ClientReadFromInitialMessage(message);
         }
 
+        private void ClientSendProfileMessage()
+        {
+            var message = new Message();
+            message.Write((byte)MessageType.ProfileMessage);
+            message.Write(Player.Name);
+
+            Session.ClientSendReliable(message);
+        }
+
+        private void ServerSendProfileMessage(PlayerProfile player)
+        {
+            var message = new Message();
+            message.Write((byte)MessageType.ProfileMessage);
+            message.Write(player.Id);
+            message.Write(player.Name);
+
+            foreach (var other in OtherPlayers)
+            {
+                if (other.PeerId != player.PeerId)
+                {
+                    Session.ServerSendReliable(other.PeerId, message);
+                }
+            }
+        }
+
         private void ReceiveProfileMessage(int peerId, Message message)
         {
             if (Session.IsServer)
             {
-                ServerReceiveProfileMessage(peerId, message);
+                PlayerProfile player = null;
+
+                foreach (var otherPlayer in OtherPlayers)
+                {
+                    if (otherPlayer.PeerId == peerId)
+                    {
+                        player = otherPlayer;
+                        break;
+                    }
+                }
+
+                if (player == null)
+                {
+                    // TODO: Log?
+                    return;
+                }
+
+                player.Name = message.ReadString();
+                player.IsProfileLoaded = true;
+                CurrentState.AddPlayer(player);
+
+                ServerSendProfileMessage(player);
+
             }
             else
             {
-                ClientReceiveProfileMessage(message);
-            }
-        }
+                var id = message.ReadInt();
+                var name = message.ReadString();
 
-        private void ClientSendProfileMessage()
-        {
-            var profileMessage = new Message();
-            profileMessage.Write((byte)MessageType.ProfileMessage);
-            profileMessage.Write(Player.Name);
-            Session.ClientSendReliable(profileMessage);
-        }
+                PlayerProfile player = null;
 
-        private void ServerReceiveProfileMessage(int peerId, Message message) 
-        {
-            PlayerProfile profile = null;
-
-            foreach (var player in RemotePlayers)
-            {
-                if (player.PeerId == peerId)
+                foreach (var otherPlayer in OtherPlayers)
                 {
-                    profile = player;
-                    break;
+                    if (otherPlayer.Id == id)
+                    {
+                        player = otherPlayer;
+                        break;
+                    }
                 }
+
+                // If we don't have a profile yet, then create it instead of updating it.
+                player ??= new PlayerProfile();
+                player.Id = id;
+                player.Name = name;
+                player.IsProfileLoaded = true;
+
+                OtherPlayers.Add(player);
             }
-
-            if (profile == null)
-            {
-                // TODO: Log?
-                return;
-            }
-
-            profile.Name = message.ReadString();
-            profile.IsProfileLoaded = true;
-            ServerSendProfileMessage(profile);
-            CurrentState.PlayerJoined(profile);
-        }
-
-        private void ServerSendProfileMessage(PlayerProfile profile) 
-        {
-            var broadcast = new Message();
-            broadcast.Write((int)MessageType.ProfileMessage);
-            broadcast.Write(profile.Id);
-            broadcast.Write(profile.Name);
-
-            foreach (var other in RemotePlayers)
-            {
-                if (other.PeerId != profile.PeerId)
-                {
-                    Session.ServerSendReliable(other.PeerId, broadcast);
-                }
-            }
-        }
-
-        private void ClientReceiveProfileMessage(Message message)
-        {
-            var id = message.ReadInt();
-            var name = message.ReadString();
-
-            PlayerProfile profile = null;
-
-            foreach (var player in RemotePlayers)
-            {
-                if (player.Id == id)
-                {
-                    profile = player;
-                    break;
-                }
-            }
-
-            profile ??= new PlayerProfile();
-            profile.PeerId = id;
-            profile.Name = name;
-            profile.IsProfileLoaded = true;
-            RemotePlayers.Add(profile);
         }
 
         private void ServerSendSnapshotEvent()
@@ -407,7 +430,6 @@ namespace Adventure
             message.Write((byte)MessageType.SnapshotMessage);
             message.Write(Session.Tick);
             message.Write((byte)CurrentState.Type);
-
             CurrentState.ServerWriteToSnapshot(message);
             Session.ServerSendUnreliable(message);
         }
@@ -433,7 +455,6 @@ namespace Adventure
             var message = new Message();
             message.Write((byte)MessageType.StateChangedMessage);
             message.Write((byte)CurrentState.Type);
-
             CurrentState.ServerWriteToInitialMessage(message);
             Session.ServerSendReliable(message);
         }

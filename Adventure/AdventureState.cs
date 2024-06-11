@@ -31,11 +31,11 @@ namespace Adventure
         {
         }
 
-        public virtual void PlayerJoined(PlayerProfile player) 
+        public virtual void AddPlayer(PlayerProfile player) 
         {
         }
 
-        public virtual void PlayerLeft(PlayerProfile player) 
+        public virtual void RemovePlayer(PlayerProfile player) 
         {
         }
 

@@ -1,5 +1,4 @@
 ﻿using Adventure.Entities;
-using Adventure.Networking;
 
 namespace Adventure
 {

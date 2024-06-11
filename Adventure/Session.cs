@@ -17,8 +17,8 @@ namespace Adventure
         public float Latency { get; protected set; }
         public int Tick { get; protected set; }
 
-        public abstract void Host(int port);
-        public abstract void Join(string ipAddress, int port);
+        public abstract void HostSession(int port);
+        public abstract void JoinSession(string ipAddress, int port);
         public abstract void StopSession();
         public abstract void Update(GameTime gameTime);
         public abstract void ClientSendReliable(Message message);

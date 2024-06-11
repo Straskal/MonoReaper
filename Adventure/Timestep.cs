@@ -1,4 +1,4 @@
-﻿namespace Adventure.Networking
+﻿namespace Adventure
 {
     public class Timestep
     {
