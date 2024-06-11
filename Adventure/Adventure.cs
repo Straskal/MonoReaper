@@ -372,19 +372,19 @@ namespace Adventure
 
         private void ReceiveProfileMessage(int peerId, Message message)
         {
+            PlayerProfile player = null;
+
+            foreach (var otherPlayer in OtherPlayers)
+            {
+                if (otherPlayer.PeerId == peerId)
+                {
+                    player = otherPlayer;
+                    break;
+                }
+            }
+
             if (Session.IsServer)
             {
-                PlayerProfile player = null;
-
-                foreach (var otherPlayer in OtherPlayers)
-                {
-                    if (otherPlayer.PeerId == peerId)
-                    {
-                        player = otherPlayer;
-                        break;
-                    }
-                }
-
                 if (player == null)
                 {
                     // TODO: Log?
@@ -402,17 +402,6 @@ namespace Adventure
             {
                 var id = message.ReadInt();
                 var name = message.ReadString();
-
-                PlayerProfile player = null;
-
-                foreach (var otherPlayer in OtherPlayers)
-                {
-                    if (otherPlayer.Id == id)
-                    {
-                        player = otherPlayer;
-                        break;
-                    }
-                }
 
                 // If we don't have a profile yet, then create it instead of updating it.
                 player ??= new PlayerProfile();

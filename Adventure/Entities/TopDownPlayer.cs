@@ -19,7 +19,7 @@ namespace Adventure.Entities
         public override EntityType Type => EntityType.Player;
 
         private int _clientInputMessageTimerMilliseconds = 0;
-        private int _clientRemoteInterpolationTimerTicks = 0;
+        private int _remoteInterpolationTimerTicks = 0;
 
         public Sprite Sprite { get; set; }
         public Animator Animator { get; set; }
@@ -29,7 +29,7 @@ namespace Adventure.Entities
         public Queue<Vector2Snapshot> ServerInputBuffer { get; private set; } = new();
         public Queue<ClientLocalSnapshot> ClientSnapshotBuffer { get; private set; } = new();
 
-        public TopDownPlayer() 
+        public TopDownPlayer()
         {
             IsNetEntity = true;
         }
@@ -56,20 +56,17 @@ namespace Adventure.Entities
 
                 if (IsClient)
                 {
-                    if (movementInput != Vector2.Zero) 
+                    // Keep the input buffer circular and let go of old records if we exceed the max.
+                    var localSnapshot = new ClientLocalSnapshot
                     {
-                        // Keep the input buffer circular and let go of old records if we exceed the max.
-                        var localSnapshot = new ClientLocalSnapshot
-                        {
-                            Input = new Vector2Snapshot(Session.Instance.Tick, movementInput),
-                            Position = new Vector2Snapshot(Session.Instance.Tick, Position)
-                        };
+                        Input = new Vector2Snapshot(Session.Instance.Tick, movementInput),
+                        Position = new Vector2Snapshot(Session.Instance.Tick, Position)
+                    };
 
-                        ClientSnapshotBuffer.Enqueue(localSnapshot);
-                        if (ClientSnapshotBuffer.Count > 100) 
-                        {
-                            ClientSnapshotBuffer.Dequeue();
-                        }
+                    ClientSnapshotBuffer.Enqueue(localSnapshot);
+                    if (ClientSnapshotBuffer.Count > 100)
+                    {
+                        ClientSnapshotBuffer.Dequeue();
                     }
 
                     _clientInputMessageTimerMilliseconds += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -94,12 +91,11 @@ namespace Adventure.Entities
                         ApplyMovementInput(input.Value, Adventure.Time.GetDeltaTime());
                     }
                 }
-                else 
+                else
                 {
-                    _clientRemoteInterpolationTimerTicks = Timestep.IncrementTick(_clientRemoteInterpolationTimerTicks);
+                    _remoteInterpolationTimerTicks = Timestep.IncrementTick(_remoteInterpolationTimerTicks);
 
-                    var diff = Timestep.TickDiff(_clientRemoteInterpolationTimerTicks, Adventure.Instance.ClientLastProcessedSnapshotTick);
-                    var elapsed = diff * Timestep.FixedDelta;
+                    var elapsed = Timestep.TickDiff(_remoteInterpolationTimerTicks, Adventure.Instance.ClientLastProcessedSnapshotTick) * Timestep.FixedDelta;
                     var percent = Math.Clamp(elapsed / (Adventure.SnapshotSeconds + Session.Instance.Latency), 0f, 1f);
 
                     Position = Vector2.Lerp(ClientInterpolateFrom, ClientInterpolateTo, percent);
@@ -114,7 +110,6 @@ namespace Adventure.Entities
         {
             renderer.Draw(Sprite, Position);
             renderer.DrawString(Store.Fonts.Default, OwnerId.ToString(), Position + new Vector2(0, -25), Color.White);
-
         }
 
         private void ApplyMovementInput(Vector2 input, float deltaTime)
@@ -151,6 +146,18 @@ namespace Adventure.Entities
             Animator.RunFrame(gameTime);
         }
 
+        public override void ReadFromEntityMessage(Message buffer)
+        {
+            var type = (EntityMessageType)buffer.ReadByte();
+
+            switch (type)
+            {
+                case EntityMessageType.InputMessage:
+                    ServerReadInputMessage(buffer);
+                    break;
+            }
+        }
+
         public void ClientSendInputMessage()
         {
             var message = new Message();
@@ -184,18 +191,6 @@ namespace Adventure.Entities
             }
         }
 
-        public override void ReadFromEntityMessage(Message buffer)
-        {
-            var type = (EntityMessageType)buffer.ReadByte();
-
-            switch (type)
-            {
-                case EntityMessageType.InputMessage:
-                    ServerReadInputMessage(buffer);
-                    break;
-            }
-        }
-
         public override void ServerWriteToSnapshot(Message buffer)
         {
             buffer.Write(Position.X);
@@ -209,10 +204,10 @@ namespace Adventure.Entities
             var positionY = buffer.ReadSingle();
             var lastProcessedInputTick = buffer.ReadInt();
 
-            if (IsClient && IsRemote)
+            if (IsRemote)
             {
                 // Reset interpolation timer to the latest snapshot server tick.
-                _clientRemoteInterpolationTimerTicks = Adventure.Instance.ClientLastProcessedSnapshotTick;
+                _remoteInterpolationTimerTicks = Adventure.Instance.ClientLastProcessedSnapshotTick;
 
                 ClientInterpolateFrom = ClientInterpolateTo;
                 ClientInterpolateTo = new Vector2(positionX, positionY);
@@ -231,7 +226,7 @@ namespace Adventure.Entities
                 snapshotAtTick = ClientSnapshotBuffer.Dequeue();
             }
 
-            if (snapshotAtTick != null) 
+            if (snapshotAtTick != null)
             {
                 const float Threshold = 1f;
 
@@ -239,7 +234,7 @@ namespace Adventure.Entities
                 var diffY = snapshotAtTick.Value.Position.Value.Y - positionY;
 
                 // If the client position is too far from what the server has, then correct to the server position and reapply all local inputs.
-                if (diffX > Threshold || diffY > Threshold) 
+                if (diffX > Threshold || diffY > Threshold)
                 {
                     // Reset position and then replay all inputs.
                     Position = new Vector2(positionX, positionY);
@@ -253,7 +248,7 @@ namespace Adventure.Entities
         }
     }
 
-    public struct ClientLocalSnapshot 
+    public struct ClientLocalSnapshot
     {
         public Vector2Snapshot Input;
         public Vector2Snapshot Position;
