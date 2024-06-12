@@ -8,14 +8,11 @@ namespace Adventure.Entities
         {
             Position = new Vector2(x, y);
             Size = new Vector2(width, height);
+            IsNetEntity = false;
         }
 
         public Vector2 Size { get; set; }
 
         public override EntityType Type => EntityType.Tile;
-
-        public override void Spawn()
-        {
-        }
     }
 }

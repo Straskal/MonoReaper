@@ -33,14 +33,23 @@ namespace Adventure
             Shape.CalculateBounds();
         }
 
-        public void Enable() 
+        public void Enable()
         {
+            Update();
             Entity.World.EnableCollider(this);
         }
 
         public void Disable()
         {
             Entity.World.DisableCollider(this);
+        }
+
+        public void Draw(Renderer renderer) 
+        {
+            if (Shape is BoxCollisionShape box) 
+            {
+                renderer.DrawRectangleOutline(box.Bounds.ToXnaRect(), Color.White);
+            }
         }
     }
 }

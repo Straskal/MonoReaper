@@ -20,6 +20,7 @@
     {
         Player,
         Tile,
-        Tilemap
+        Tilemap,
+        SpawnPosition
     }
 }

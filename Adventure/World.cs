@@ -42,9 +42,16 @@ namespace Adventure
             return GetEnumerator();
         }
 
-        public T FindLocalEntity<T>() where T : Entity
+        public T FindEntityOfType<T>() where T : Entity
         {
-            return _entities.FirstOrDefault(entity => entity.IsLocal && entity is T) as T;
+            foreach (var entity in _entities) 
+            {
+                if (entity is T t) 
+                {
+                    return t;
+                }
+            }
+            return null;
         }
 
         public void Spawn(IEnumerable<Entity> entities)
@@ -141,6 +148,8 @@ namespace Adventure
             {
                 _entities[i].Draw(renderer, gameTime);
             }
+
+            //DebugDraw(renderer);
         }
 
         public void DebugDraw(Renderer renderer)
@@ -150,10 +159,10 @@ namespace Adventure
                 _entities[i].DebugDraw(renderer);
             }
 
-            //foreach (var collider in colliders)
-            //{
-            //    collider.Draw(renderer);
-            //}
+            foreach (var collider in _colliders)
+            {
+                collider.Draw(renderer);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

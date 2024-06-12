@@ -16,6 +16,7 @@ namespace Adventure
         public override AdventureState Type => AdventureState.Inn;
         public Adventure Adventure { get; }
         public World World { get; }
+        public SpawnPosition SpawnPosition { get; private set; }
 
         public override void Start()
         {
@@ -30,6 +31,8 @@ namespace Adventure
             {
                 return;
             }
+
+            SpawnPosition = World.FindEntityOfType<SpawnPosition>();
 
             // A scenario could be randomly chosen.
             // var scenario = 1;
@@ -70,6 +73,7 @@ namespace Adventure
             {
                 var entity = new TopDownPlayer();
                 entity.OwnerId = player.Id;
+                entity.Position = SpawnPosition.Position;
                 World.Spawn(entity);
             }
         }

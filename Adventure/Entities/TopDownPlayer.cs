@@ -9,7 +9,7 @@ using static Adventure.Constants;
 
 namespace Adventure.Entities
 {
-    public class TopDownPlayer : Entity
+    public class TopDownPlayer : Character
     {
         public const int ClientInputMessageIntervalMilliseconds = 33;
         public const int ClientInputBufferCapacity = 100;
@@ -38,8 +38,7 @@ namespace Adventure.Entities
         {
             Sprite = new Sprite(Store.Gfx.Player);
             Animator = new Animator(Sprite, PlayerAnimations.Frames);
-            Collider = new Collider(this, new BoxCollisionShape(9f, 8f));
-            Collider.Offset = new Vector2(0f, 4f);
+            Collider = new Collider(this, new BoxCollisionShape(12, 16));
             Collider.Layer = EntityLayers.Player;
             Collider.Enable();
         }
@@ -100,6 +99,8 @@ namespace Adventure.Entities
 
                     Position = Vector2.Lerp(ClientInterpolateFrom, ClientInterpolateTo, percent);
                     Position = Vector2.Round(Position);
+
+                    Collider.Update();
                 }
             }
 
@@ -108,14 +109,13 @@ namespace Adventure.Entities
 
         public override void Draw(Renderer renderer, GameTime gameTime)
         {
-            renderer.Draw(Sprite, Position);
+            renderer.Draw(Sprite, Position - new Vector2(8, 8));
             renderer.DrawString(Store.Fonts.Default, OwnerId.ToString(), Position + new Vector2(0, -25), Color.White);
         }
 
         private void ApplyMovementInput(Vector2 input, float deltaTime)
         {
-            Position += input * Speed * deltaTime;
-            Position = Vector2.Round(Position);
+            SlideMove(input * Speed * deltaTime);
         }
 
         private void Animate(GameTime gameTime)
@@ -211,6 +211,15 @@ namespace Adventure.Entities
 
                 ClientInterpolateFrom = ClientInterpolateTo;
                 ClientInterpolateTo = new Vector2(positionX, positionY);
+                return;
+            }
+
+            if (ClientSnapshotBuffer.Count == 0)
+            {
+                // We don't have anything to compare against, so lets just take what the server gave us.
+                // TODO: This feels jank.
+                Position = new Vector2(positionX, positionY);
+                Collider.Update();
                 return;
             }
 

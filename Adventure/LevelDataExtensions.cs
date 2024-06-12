@@ -35,12 +35,13 @@ namespace Adventure
 
                 switch (entityData.Type)
                 {
-                    //case "PlayerSpawn":
-                    //    result = new TopDownPlayer()
-                    //    {
-                    //        Position = entityData.Position + levelOffset
-                    //    };
-                    //    break;
+                    case "PlayerSpawn":
+                        result = new SpawnPosition()
+                        {
+                            IsNetEntity = false,
+                            Position = entityData.Position + levelOffset
+                        };
+                        break;
                 }
 
                 if (result != null) 
