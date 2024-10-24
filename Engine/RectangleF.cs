@@ -74,7 +74,7 @@ namespace Engine
             return new Rectangle(minx, miny, maxx, maxy);
         }
 
-        public static RectangleF Inflate(RectangleF rectangle, CircleF circle)
+        public static RectangleF Grow(RectangleF rectangle, CircleF circle)
         {
             var minx = rectangle.X - circle.Radius;
             var miny = rectangle.Y - circle.Radius;
@@ -84,7 +84,7 @@ namespace Engine
             return new RectangleF(minx, miny, maxx, maxy);
         }
 
-        public static RectangleF Inflate(RectangleF rectangle0, RectangleF rectangle1)
+        public static RectangleF Grow(RectangleF rectangle0, RectangleF rectangle1)
         {
             var minx = rectangle0.X - rectangle1.Width * 0.5f;
             var miny = rectangle0.Y - rectangle1.Height * 0.5f;

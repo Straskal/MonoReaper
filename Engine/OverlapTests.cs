@@ -9,7 +9,7 @@ namespace Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CircleVsCircle(CircleF circle0, CircleF circle1)
         {
-            return CircleVsPoint(CircleF.Inflate(circle0, circle1), circle1.Center);
+            return CircleVsPoint(CircleF.Grow(circle0, circle1), circle1.Center);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -19,6 +19,7 @@ namespace Engine
         {
             Width = width;
             Height = height;
+            isDirty = true;
         }
 
         public int Width { get; }

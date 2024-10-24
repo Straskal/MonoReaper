@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<RollForward>Major</RollForward>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
@@ -9,11 +9,12 @@
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
+		<PublishAot>True</PublishAot>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Content\obj\DesktopGL\net6.0\**" />
-		<EmbeddedResource Remove="Content\obj\DesktopGL\net6.0\**" />
-		<None Remove="Content\obj\DesktopGL\net6.0\**" />
+		<EmbeddedResource Remove="Content\obj\DesktopGL\net8.0\**" />
+		<None Remove="Content\obj\DesktopGL\net8.0\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Content\Content.mgcb" />
@@ -29,12 +30,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
+		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Adventure.Content\Adventure.Content.csproj" />
+		<ProjectReference Include="..\Adventure.Core\Adventure.Core.csproj" />
 		<ProjectReference Include="..\Engine\Engine.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -46,7 +48,6 @@
 		<Message Text="Restoring dotnet tools" Importance="High" />
 		<Exec Command="dotnet tool restore" />
 	</Target>
-
 	<ItemGroup>
 		<Content Include="Content\**\*.xnb">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

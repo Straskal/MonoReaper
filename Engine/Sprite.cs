@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine
 {
-    public class Sprite : GraphicsComponent
+    public class Sprite
     {
-        public Sprite(Entity entity, Texture2D texture) : base(entity)
+        public Sprite(Texture2D texture)
         {
             Texture = texture;
         }
@@ -15,12 +15,5 @@ namespace Engine
         public Rectangle SourceRectangle { get; set; }
         public Color Color { get; set; } = Color.White;
         public SpriteEffects SpriteEffects { get; set; }
-
-        public override void Draw(Renderer renderer, GameTime gameTime)
-        {
-            var bounds = Entity.TransformOrigin(SourceRectangle.Width, SourceRectangle.Height);
-
-            renderer.Draw(Texture, bounds.Position, SourceRectangle, Color, SpriteEffects, Effect);
-        }
     }
 }

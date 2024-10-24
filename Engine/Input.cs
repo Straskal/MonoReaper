@@ -10,7 +10,7 @@ namespace Engine
         private static MouseState MouseState;
         private static MouseState PreviousMouseState;
         private static bool IsMouseWithinViewport;
-        public static void Update(BackBuffer backBuffer)
+        public static void Update(VirtualBackBuffer backBuffer)
         {
             UpdateKeyboardState();
             UpdateMouseState(backBuffer);
@@ -92,12 +92,12 @@ namespace Engine
             KeyState = Keyboard.GetState();
         }
 
-        private static void UpdateMouseState(BackBuffer backBuffer) 
+        private static void UpdateMouseState(VirtualBackBuffer backBuffer) 
         {
             PreviousMouseState = MouseState;
             MouseState = Mouse.GetState();
             MousePosition = backBuffer.Unproject(MouseState.Position.ToVector2());
-            IsMouseWithinViewport = backBuffer.LetterboxViewport.Bounds.Contains(MouseState.Position);
+            IsMouseWithinViewport = backBuffer.NativeViewport.Bounds.Contains(MouseState.Position);
         }
     }
 }

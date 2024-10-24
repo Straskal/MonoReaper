@@ -38,9 +38,9 @@ namespace Engine
             graphicsDevice.Viewport = viewport;
         }
 
-        public void Clear()
+        public void Clear(Color color)
         {
-            graphicsDevice.Clear(Color.Black);
+            graphicsDevice.Clear(color);
         }
 
         public void BeginDraw()
@@ -127,6 +127,14 @@ namespace Engine
         public void DrawRectangle(int x, int y, int width, int height, Color color)
         {
             spriteBatch.Draw(BlankTexture, new Rectangle(x, y, width, height), color);
+        }
+
+        public void Draw(Sprite sprite, Vector2 position)
+        {
+            position.X -= sprite.SourceRectangle.Width / 2;
+            position.Y -= sprite.SourceRectangle.Height / 2;
+
+            Draw(sprite.Texture, position, sprite.SourceRectangle, Color.White, sprite.SpriteEffects, sprite.Effect);
         }
 
         //public void DrawRectangleOutline(Rectangle rectangle, Color color)
