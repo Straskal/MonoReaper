@@ -97,6 +97,7 @@ public static class IntersectionTests
         var d = b * b - c;
 
         // If the discriminant is negative, then we do not have any solutions and there is no intersection.
+        // If the discriminant is zero, then we only have one solution, which means that the ray is tangent to the curve. We don't consider a touch to be an intersection.
         if (d <= 0f)
         {
             return false;
